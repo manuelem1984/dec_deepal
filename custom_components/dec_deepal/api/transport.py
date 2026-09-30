@@ -41,7 +41,10 @@ REQUEST_TIMEOUT: Final = 30
 # estos valores puede hacer que el servidor rechace las peticiones.
 APP_ID: Final = "ca"
 APP_TYPE: Final = "Android"
-APP_VERSION: Final = "V1.11.0"
+# V1.12.0 (antes V1.11.0): es la versión que usa Deepal Alternative, a quien
+# le llegan los SMS de login. Con V1.11.0 el servidor aceptaba la petición de
+# código por SMS pero el SMS no llegaba (el correo sí). Ver b4 en CHANGELOG.
+APP_VERSION: Final = "V1.12.0"
 DEVICE_TYPE: Final = "samsung"
 OS_VERSION: Final = "9"
 USER_AGENT: Final = "okhttp/4.12.0"
@@ -104,13 +107,15 @@ class DeepalTransport:
         """Cabeceras idénticas a las de la app oficial.
 
         Args:
-            with_auth: añade ``authorization`` (sesión iniciada).
+            with_auth: añade ``authorization`` si hay sesión. Si no, la
+                cabecera no se envía en absoluto (ni siquiera vacía).
             with_tsp: añade ``X-Tsp-User-Token`` = access token. Lo exige la
                 pasarela CA (MQTT). Comprobado ✅ que debe ser el *access token*
                 y no el ``cac_token``.
         """
+        # Sin sesión (pasos de login) NO se envía "authorization": la app
+        # oficial no la manda. La versión anterior mandaba una cadena vacía.
         headers = {
-            "authorization": "",
             "appid": APP_ID,
             "language": self.country.api_language,
             "appversion": APP_VERSION,
