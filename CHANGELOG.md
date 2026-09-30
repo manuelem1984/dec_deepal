@@ -3,6 +3,21 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc1] — 2026-09-30
+
+Candidata a primera versión estable. Si la prueba mínima de comandos con el
+coche (ver `docs/roadmap.md`) sale bien, se publica como **2.0.0** sin cambios
+de código.
+
+### Cambiado
+
+- **Acceso por SMS desaconsejado:** ahora mismo Deepal responde que ha enviado
+  el código (`SUC`) pero el SMS no llega. La petición es idéntica a la de la
+  v1 (con la que funcionaba) y a la de Deepal Alternative, así que el fallo es
+  del lado de Deepal. El asistente lo avisa, propone el **correo** por defecto
+  y marca el SMS como "ahora mismo no llega". Documentado en README y en
+  `docs/protocolo.md`.
+
 ## [2.0.0b5] — 2026-09-30
 
 ### Corregido

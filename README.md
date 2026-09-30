@@ -40,7 +40,11 @@ y reinicia.
 ## ⚙️ Configuración
 
 Ajustes → Dispositivos y servicios → Añadir integración → **DEC Deepal** →
-SMS o correo → código → (si hay varios) elegir coches.
+**correo** → código → (si hay varios) elegir coches.
+
+> ⚠️ **Entra con el correo.** El acceso por SMS no funciona ahora mismo: Deepal
+> responde que ha enviado el código, pero el SMS no llega (no es un fallo de
+> la integración; ver [docs/protocolo.md](docs/protocolo.md), apartado "Login por SMS").
 
 El coche arranca en **modo genérico** (solo datos básicos). Ve a **Ajustes →
 Reparaciones → "Configura tu vehículo"** y elige modelo, versión y color: se
@@ -77,6 +81,8 @@ Qué está comprobado con el coche real y qué no:
 
 ## 🛟 Problemas frecuentes
 
+- **No llega el SMS con el código:** ahora mismo Deepal no entrega los SMS de
+  acceso. Tras pedir el código, elige *Usar otro método* y entra con el correo.
 - **Pide volver a iniciar sesión:** se entró en la app con la misma cuenta.
   Usa una cuenta secundaria.
 - **Un comando falla con el coche parado mucho tiempo:** el coche a veces

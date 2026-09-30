@@ -9,7 +9,7 @@
       },
       "login_method": {
         "title": "Cómo iniciar sesión",
-        "description": "Elige cómo quieres recibir el código de acceso ({country}). Recomendado: una cuenta secundaria con el coche compartido, para no cerrar la sesión de la app en tu móvil.",
+        "description": "Elige cómo quieres recibir el código de acceso ({country}). Recomendado: una cuenta secundaria con el coche compartido, para no cerrar la sesión de la app en tu móvil.\n\n⚠️ **Usa el correo.** Ahora mismo Deepal no está entregando los SMS de acceso: el servidor dice que lo envía, pero no llega.",
         "data": { "login_method": "Método" }
       },
       "email": {
@@ -19,7 +19,7 @@
       },
       "sms": {
         "title": "Acceso por SMS",
-        "description": "Escribe tu móvil ({digits} cifras). Puedes ponerlo con o sin el prefijo {prefix}.",
+        "description": "Escribe tu móvil ({digits} cifras). Puedes ponerlo con o sin el prefijo {prefix}.\n\n⚠️ Ahora mismo Deepal no está entregando los SMS de acceso. Si no te llega en un par de minutos, en el paso siguiente elige **Usar otro método** y entra con el correo.",
         "data": { "mobile": "Móvil" }
       },
       "code_menu": {
@@ -140,7 +140,7 @@
   },
   "selector": {
     "login_method": {
-      "options": { "sms": "SMS", "email": "Correo electrónico" }
+      "options": { "sms": "SMS (ahora mismo no llega)", "email": "Correo electrónico (recomendado)" }
     },
     "pin_mode": {
       "options": {

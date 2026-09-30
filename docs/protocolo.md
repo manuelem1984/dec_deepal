@@ -22,6 +22,29 @@ Cabeceras: las de la app Android (`appid: ca`, `apptype: Android`,
 
 Los errores llegan con HTTP 200 y `{"success": false, "code", "msg"}`.
 
+## Login por SMS ⚠️ no llega el código
+
+Desde septiembre de 2026 (probado con la b1-b5), `send-auth-code` responde
+éxito completo pero el SMS no llega al móvil (con el teléfono bien asociado a
+la cuenta):
+
+```json
+{"success": true, "code": "00000", "msg": "success", "data": "SUC"}
+```
+
+Descartado en la integración:
+
+- La petición es **idéntica** a la de la v1 (con la que el SMS estaba
+  verificado) y a la de Deepal Alternative (endpoint, cuerpo y cabeceras,
+  incluidas `appversion V1.12.0` y la ausencia de `authorization`).
+- Deepal Alternative solo prueba su SMS contra un servidor simulado: no hay
+  constancia de que les llegue.
+- Un número, prefijo o cifrado incorrecto produce `success: false`, no `SUC`.
+
+Conclusión: fallo de entrega del lado de Deepal. El asistente recomienda el
+correo y lo propone por defecto. Pendiente: comprobar si en la app oficial
+llega el SMS (si llegara, capturar su tráfico para comparar).
+
 ## Login ✅
 
 | Paso | Endpoint | Cuerpo |
