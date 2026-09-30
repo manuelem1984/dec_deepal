@@ -21,6 +21,8 @@ Ajustes tras una prueba real en marcha y parado con el coche arrancado.
 
 ### Verificado con el coche real
 
+- Climatización (encender/apagar), parpadear luces y claxon, nivel del
+  ventilador.
 - Lectura y control de calefacción y ventilación de asientos (escala 1:1 y
   `6` = módulo dormido confirmados), volante calefactado, climatizador.
 - Alguna puerta abierta, cierre centralizado y cerraduras, puertas, humedad,

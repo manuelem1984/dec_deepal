@@ -4,9 +4,9 @@
 
 La rc2 pasa a 2.0.0 (sin cambiar código) si esto funciona:
 
-- [ ] Climatización: encender a 21 °C y apagar (cambio inmediato en HA y
+- [x] Climatización: encender a 21 °C y apagar (cambio inmediato en HA y
       confirmado en la app oficial).
-- [ ] Parpadear luces y tocar el claxon; repetir enseguida → mensaje
+- [x] Parpadear luces y tocar el claxon; repetir enseguida → mensaje
       "Espera N s".
 - [ ] Botón *Actualizar datos del vehículo*.
 - [x] Volante calefactado y asientos (calefacción y ventilación).
