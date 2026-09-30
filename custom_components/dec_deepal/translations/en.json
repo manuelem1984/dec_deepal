@@ -242,7 +242,10 @@
       "pin_arm": { "name": "Desbloqueo acciones con PIN" }
     },
     "cover": {
-      "windows": { "name": "Ventanillas" },
+      "windows": {
+        "name": "Ventanillas - Modo Ventilación",
+        "state": { "open": "Cerradas", "closed": "Ventilando", "opening": "Cerrando", "closing": "Entreabriendo" }
+      },
       "trunk_control": { "name": "Maletero (control)" }
     },
     "image": {

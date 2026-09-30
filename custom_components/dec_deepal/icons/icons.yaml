@@ -394,10 +394,13 @@ pin_arm:
     unlocked: {mdi: mdi:lock-open-outline}
 windows:
   plataforma: cover
-  descripcion: Todas las ventanillas (control con PIN)
+  descripcion: >-
+    Ventanillas - Modo Ventilación (entreabrir con PIN). OJO: el estado de HA
+    está invertido ("open" = ventanillas CERRADAS), por eso los archivos se
+    llaman por lo que pasa de verdad.
   estados:
-    open: {mdi: mdi:window-open-variant}
-    closed: {mdi: mdi:window-closed-variant}
+    open: {archivo: closed, mdi: mdi:window-closed-variant}   # cerradas de verdad
+    closed: {archivo: vent, mdi: mdi:window-open-variant}     # ventilando
   defecto: mdi:window-closed-variant
 trunk_control:
   plataforma: cover

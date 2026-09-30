@@ -136,7 +136,7 @@ Un error con `TBOX_` suele indicar coche dormido u ocupado.
 | Volante | `control/steering-wheel/heat` | `command: steering_wheel_heating, open` | ⚠️ |
 | Desempañado | `control/defrost` | `command: defrost, enabled` | ⚠️ |
 | Puertas (PIN) | `control/doors` | `command: lock, open` (`open: true` = desbloquear) | ⚠️ |
-| Ventanillas (PIN) | `control/windows` | `command: window, open, openType: 10` (todas) | ⚠️ |
+| Ventanillas (PIN) | `control/windows` | `command: window, open, openType: 10` → **entreabrir** (ventilar) o cerrar todas | ✅ (cerrar exige coche apagado: 1032) |
 | Maletero (PIN) | `control/trunk` | `command: trunk, open` | ⚠️ |
 
 Asientos: para **apagar**, `switch: 0` **sin** nivel (un nivel 0 lo rechaza el

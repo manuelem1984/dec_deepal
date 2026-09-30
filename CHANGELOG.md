@@ -3,6 +3,20 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc3] — 2026-09-30
+
+### Cambiado
+
+- **"Ventanillas" pasa a "Ventanillas - Modo Ventilación".** El comando que
+  usamos entreabre las ventanillas para ventilar (no las baja del todo).
+- **Flechas al revés, a propósito:** Home Assistant pinta "abrir" con ↑, al
+  contrario que el cristal. Ahora, con las ventanillas cerradas el botón activo
+  es **↓ (entreabrir)** y ventilando es **↑ (cerrar)**. El estado se muestra
+  como "Cerradas" / "Ventilando". En automatizaciones, el estado `open` de esta
+  entidad significa ventanillas **cerradas**. Sigue necesitando el PIN y el
+  armado (Opción B).
+- Iconos propios de ventanillas: `windows_closed.svg` y `windows_vent.svg`.
+
 ## [2.0.0rc2] — 2026-09-30
 
 Ajustes tras una prueba real en marcha y parado con el coche arrancado.

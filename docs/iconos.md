@@ -16,10 +16,10 @@ custom_components/dec_deepal/icons/
 
 Para cada entidad, en este orden (gana el primero que exista):
 
-| # | Qué se busca | Ejemplo (entidad `windows`, estado `open`) |
+| # | Qué se busca | Ejemplo (entidad `trunk_control`, estado `open`) |
 | --- | --- | --- |
-| 1 | `svg/<entidad>_<sufijo>.svg` | `svg/windows_open.svg` |
-| 2 | `svg/<entidad>.svg` | `svg/windows.svg` |
+| 1 | `svg/<entidad>_<sufijo>.svg` | `svg/trunk_control_open.svg` |
+| 2 | `svg/<entidad>.svg` | `svg/trunk_control.svg` |
 | 3 | `mdi` del estado en `icons.yaml` | `mdi:window-open-variant` |
 | 4 | `defecto` en `icons.yaml` | `mdi:window-closed-variant` |
 | 5 | nada | Icono estándar de Home Assistant para ese tipo |
@@ -49,8 +49,14 @@ Para cada entidad, en este orden (gana el primero que exista):
 **Un solo icono para la temperatura exterior:** copia
 `outside_temperature.svg` en `icons/svg/`.
 
-**Iconos distintos para ventanillas abiertas y cerradas:** copia
-`windows_open.svg` y `windows_closed.svg`.
+**Iconos distintos para las ventanillas cerradas y ventilando:** copia
+`windows_closed.svg` (cerradas) y `windows_vent.svg` (entreabiertas).
+
+> Ojo: la entidad de ventanillas presenta su estado **invertido** a Home
+> Assistant para que las flechas coincidan con el cristal (↓ entreabre,
+> ↑ cierra). Por eso en `icons.yaml` el estado `open` usa el archivo
+> `closed` y el estado `closed` usa `vent`: los nombres de archivo dicen lo
+> que pasa de verdad.
 
 **Puertas con nombres semánticos:** en `icons.yaml`, `door_front_left` tiene
 `"on": {archivo: open}` y `"off": {archivo: closed}`; por eso sus archivos son

@@ -2,10 +2,26 @@
 
 Solo se crean con el bloque de PIN activo en Configurar.
 
-- **windows** — abre o cierra **todas** las ventanillas a la vez. No se
-  conoce ningún comando para una sola ventanilla: la versión anterior lo
-  intentaba con un formato inventado que nunca se verificó. El estado se
-  considera "abierto" si cualquiera de las cuatro lo está.
+- **windows** — "Ventanillas - Modo Ventilación": **entreabre** (baja un poco)
+  o cierra todas las ventanillas a la vez. El comando (``openType: 10``) es el
+  de ventilar, no el de bajarlas del todo (✅ comprobado con el coche; encaja
+  con la capacidad ``WindowSlightlyDown``). No se conoce comando para una sola
+  ventanilla ni para bajarlas del todo.
+
+  **Estado invertido a propósito.** Home Assistant pinta "abrir" con ↑ y
+  "cerrar" con ↓, al revés de lo que hace el cristal. Para que el botón activo
+  coincida con el movimiento real, a HA se le presenta el estado al revés:
+
+  ==========================  ===============  ============  ==============
+  Ventanillas (realidad)      Estado en HA     Botón activo  Qué hace
+  ==========================  ===============  ============  ==============
+  Cerradas                    ``open``         ↓ (cerrar)    Entreabrir
+  Entreabiertas (ventilando)  ``closed``       ↑ (abrir)     Cerrar
+  ==========================  ===============  ============  ==============
+
+  Los textos del estado se traducen como "Cerradas" / "Ventilando"
+  (``translations`` → ``entity.cover.windows.state``). **En automatizaciones:**
+  el estado ``open`` significa ventanillas CERRADAS.
 - **trunk_control** — abre o cierra el maletero.
 
 Las lecturas individuales (cada ventanilla, maletero) siguen existiendo como
@@ -62,16 +78,18 @@ class _DecCover(DecDeepalEntity, CoverEntity):
 
 
 class DecWindowsCover(_DecCover):
-    """Todas las ventanillas."""
+    """Ventanillas - Modo Ventilación (estado invertido, ver docstring del módulo)."""
 
     _attr_device_class = CoverDeviceClass.WINDOW
 
     def __init__(self, runtime: DecDeepalRuntime, vehicle: VehicleContext) -> None:
         super().__init__(runtime, vehicle, "cover", "windows")
 
-    @property
-    def is_closed(self) -> bool | None:
-        """Cerrado solo si se sabe que las cuatro están cerradas."""
+    def _physically_closed(self) -> bool | None:
+        """¿Están las cuatro ventanillas cerradas de verdad?
+
+        ``False`` si cualquiera está abierta; ``None`` si falta algún dato.
+        """
         values = [self.signal(signal) for signal in _WINDOW_SIGNALS]
         if any(value is True for value in values):
             return False
@@ -79,20 +97,27 @@ class DecWindowsCover(_DecCover):
             return None
         return True
 
+    @property
+    def is_closed(self) -> bool | None:
+        """Estado INVERTIDO para HA: "cerrada" = ventilando (entreabiertas)."""
+        closed = self._physically_closed()
+        return None if closed is None else not closed
+
     async def async_open_cover(self, **kwargs: Any) -> None:
-        """Bajar todas."""
-        await self._set(open_windows=True)
+        """Botón ↑ (abrir para HA) → CERRAR las ventanillas (subir el cristal)."""
+        await self._set(vent=False)
 
     async def async_close_cover(self, **kwargs: Any) -> None:
-        """Subir todas."""
-        await self._set(open_windows=False)
+        """Botón ↓ (cerrar para HA) → ENTREABRIR las ventanillas (bajar un poco)."""
+        await self._set(vent=True)
 
-    async def _set(self, *, open_windows: bool) -> None:
+    async def _set(self, *, vent: bool) -> None:
         vehicle_id = self.vehicle.info.vehicle_id
         await self.vehicle.runner.run(
             "windows",
-            lambda: self.runtime.commands.windows(vehicle_id, open_windows=open_windows),
-            optimistic={signal: open_windows for signal in _WINDOW_SIGNALS},
+            lambda: self.runtime.commands.windows(vehicle_id, open_windows=vent),
+            # Las señales siguen siendo las reales (True = ventanilla abierta).
+            optimistic={signal: vent for signal in _WINDOW_SIGNALS},
             needs_arming=True,
         )
 
