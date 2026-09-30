@@ -20,6 +20,7 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
@@ -27,8 +28,9 @@ from .api.account import DeepalAccount
 from .api.client import DeepalClient
 from .api.commands import DeepalCommands
 from .api.errors import DeepalError
-from .api.models import VehicleInfo
+from .api.models import Capabilities, VehicleInfo
 from .api.session import DeepalSession
+from .appearance import issue_id
 from .api.transport import DeepalTransport
 from .command_runner import CommandRunner
 from .const import (
@@ -139,12 +141,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     for raw_vehicle in entry.data[CONF_VEHICLES]:
         info = VehicleInfo.from_dict(raw_vehicle)
         appearance = appearance_by_vehicle.get(info.vehicle_id, {})
-        model = (
-            registries.vehicles.get(appearance[OPT_MODEL])
-            if appearance.get(OPT_MODEL)
-            else registries.vehicles.match(info, country.id)
-        )
-        trim = appearance.get(OPT_TRIM) or await _guess_trim(client, info, model)
+        # Modelo reconocido por el nombre que da el servidor: solo es una
+        # SUGERENCIA para el usuario. Hasta que elija su modelo, el coche
+        # funciona como "genérico" y se le avisa en Reparaciones.
+        suggested = registries.vehicles.match(info, country.id)
+        configured = bool(appearance.get(OPT_MODEL))
+        model = registries.vehicles.get(appearance.get(OPT_MODEL)) if configured else registries.vehicles.generic
+        trim = appearance.get(OPT_TRIM)
+        _update_setup_issue(hass, entry, info, suggested.name, configured)
         coordinator = VehicleCoordinator(
             hass,
             entry,
@@ -171,6 +175,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             color=appearance.get(OPT_COLOR),
             coordinator=coordinator,
             runner=runner,
+            suggested_model=suggested,
+            configured=configured,
+            # Solo para diagnóstico: permite comprobar con datos reales si las
+            # capacidades del servidor distinguen Pro de Max (hoy no se usan
+            # para decidir nada; la primera prueba adivinó mal un Max).
+            capabilities=await _fetch_capabilities(client, info),
         )
         _LOGGER.debug(
             "%s: modelo=%s versión=%s mqtt=%s",
@@ -215,21 +225,51 @@ async def async_unload_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     return unloaded
 
 
-async def _guess_trim(client: DeepalClient, info: VehicleInfo, model) -> str | None:  # noqa: ANN001
-    """Pista automática de versión si el usuario no eligió ninguna. ⚠️
+async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -> None:
+    """Al borrar la cuenta, borra también sus avisos de Reparaciones."""
+    for raw_vehicle in entry.data.get(CONF_VEHICLES, []):
+        ir.async_delete_issue(hass, DOMAIN, issue_id(str(raw_vehicle.get("vehicle_id"))))
 
-    Usa las capacidades del servidor (``function-config``): con ventilación
-    de asientos → Max; sin ella → Pro. Solo si el modelo tiene esa versión.
-    Nunca falla: si no hay pista, devuelve ``None``.
+
+async def _fetch_capabilities(client: DeepalClient, info: VehicleInfo) -> Capabilities | None:
+    """Capacidades del servidor (``function-config``), solo para diagnóstico.
+
+    Nunca falla: si el endpoint no responde, devuelve ``None``.
     """
-    if not model.trims:
-        return None
     try:
-        capabilities = await client.get_capabilities(info)
+        return await client.get_capabilities(info)
     except DeepalError:
         return None
-    hint = capabilities.trim_hint if capabilities else None
-    return hint if hint in model.trims else None
+
+
+def _update_setup_issue(
+    hass: HomeAssistant,
+    entry: DecDeepalConfigEntry,
+    info: VehicleInfo,
+    suggestion: str,
+    configured: bool,
+) -> None:
+    """Crea o borra el aviso "Configura tu vehículo" en Reparaciones.
+
+    Aparece en Ajustes → Reparaciones mientras el coche no tenga modelo
+    elegido. Tiene un asistente ("Enviar") que pide modelo, versión y color
+    (ver ``repairs.py``); al terminar, el aviso desaparece solo.
+    """
+    issue = issue_id(info.vehicle_id)
+    if configured:
+        ir.async_delete_issue(hass, DOMAIN, issue)
+        return
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        issue,
+        is_fixable=True,
+        is_persistent=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="vehicle_not_configured",
+        translation_placeholders={"vehicle": info.display_name, "suggestion": suggestion},
+        data={"entry_id": entry.entry_id, "vehicle_id": info.vehicle_id},
+    )
 
 
 def _set_debug_logging(hass: HomeAssistant, entry_id: str, enabled: bool) -> None:

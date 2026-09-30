@@ -52,6 +52,19 @@ async def async_get_config_entry_diagnostics(
             "modelo": vehicle.model.id,
             "version": vehicle.trim,
             "color": vehicle.color,
+            "configurado": vehicle.configured,
+            "modelo_sugerido": vehicle.suggested_model.id if vehicle.suggested_model else None,
+            # Para validar si el servidor distingue Pro/Max: lista de funciones
+            # que dice tener el coche y la versión que se deduciría de ella.
+            "capacidades": (
+                {
+                    "codigos": vehicle.capabilities.raw_codes,
+                    "version_deducida": vehicle.capabilities.trim_hint,
+                }
+                if vehicle.capabilities
+                else "no disponibles"
+            ),
+            "imagen_oficial": vehicle.official_image_status,
             "usa_mqtt": vehicle.coordinator.use_mqtt,
             "ultima_lectura_ok": vehicle.coordinator.last_update_success,
             "armado": vehicle.runner.is_armed,

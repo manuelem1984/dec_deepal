@@ -34,24 +34,21 @@ from .const import (
     OPT_APPEARANCE,
     OPT_ARM_NOTIFY,
     OPT_ARM_SECONDS,
-    OPT_COLOR,
     OPT_DEBUG,
     OPT_MODEL,
     OPT_PIN,
     OPT_PIN_ENABLED,
     OPT_PIN_MODE,
     OPT_SCAN_MINUTES,
-    OPT_TRIM,
     PIN_MODE_ARMED,
     PIN_MODE_DIRECT,
 )
+from .appearance import details_schema, model_schema, needs_details, updated_options
 from .runtime import DecDeepalRuntime
 
 _LOGGER = logging.getLogger(__name__)
 
 _VEHICLE = "vehicle"
-#: Valor de "sin elegir" en los desplegables de versión/color.
-_NONE = "_ninguno"
 
 
 def _select(options: list[selector.SelectOptionDict]) -> selector.SelectSelector:
@@ -94,7 +91,11 @@ class DecDeepalOptionsFlow(OptionsFlow):
     async def async_step_appearance(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Paso 1: qué coche y qué modelo del catálogo."""
+        """Paso 1: qué coche y qué modelo del catálogo.
+
+        Por defecto se propone el modelo ya elegido o, si el coche aún no está
+        configurado, el que se reconoció por el nombre que da el servidor.
+        """
         runtime = self._runtime
         if user_input is not None:
             self._vehicle_id = user_input.get(_VEHICLE) or next(iter(runtime.vehicles))
@@ -103,18 +104,25 @@ class DecDeepalOptionsFlow(OptionsFlow):
 
         vehicles = list(runtime.vehicles.values())
         current = vehicles[0]
-        models = runtime.registries.vehicles.for_country(runtime.country.id)
-        schema: dict[Any, Any] = {}
-        if len(vehicles) > 1:
-            schema[vol.Required(_VEHICLE, default=current.info.vehicle_id)] = _select(
-                [
-                    selector.SelectOptionDict(value=vehicle.info.vehicle_id, label=vehicle.info.display_name)
-                    for vehicle in vehicles
-                ]
-            )
-        schema[vol.Required(OPT_MODEL, default=current.model.id)] = _select(
-            [selector.SelectOptionDict(value=model.id, label=model.name) for model in models]
+        default_model = (
+            current.model.id
+            if current.configured or current.suggested_model is None
+            else current.suggested_model.id
         )
+        models = runtime.registries.vehicles.for_country(runtime.country.id)
+        schema = model_schema(models, default_model).schema.copy()
+        if len(vehicles) > 1:
+            schema = {
+                vol.Required(_VEHICLE, default=current.info.vehicle_id): _select(
+                    [
+                        selector.SelectOptionDict(
+                            value=vehicle.info.vehicle_id, label=vehicle.info.display_name
+                        )
+                        for vehicle in vehicles
+                    ]
+                ),
+                **schema,
+            }
         return self.async_show_form(step_id="appearance", data_schema=vol.Schema(schema))
 
     async def async_step_appearance_details(
@@ -124,40 +132,16 @@ class DecDeepalOptionsFlow(OptionsFlow):
         runtime = self._runtime
         assert self._vehicle_id is not None
         model = runtime.registries.vehicles.get(self._model_id)
-        appearance: dict[str, Any] = dict(self.config_entry.options.get(OPT_APPEARANCE, {}))
 
-        if user_input is not None or (not model.trims and not model.colors):
-            user_input = user_input or {}
-            trim = user_input.get(OPT_TRIM)
-            color = user_input.get(OPT_COLOR)
-            appearance[self._vehicle_id] = {
-                OPT_MODEL: model.id,
-                OPT_TRIM: None if trim in (None, _NONE) else trim,
-                OPT_COLOR: None if color in (None, _NONE) else color,
-            }
-            return self._save({OPT_APPEARANCE: appearance})
+        if user_input is not None or not needs_details(model):
+            return self.async_create_entry(
+                data=updated_options(self.config_entry.options, self._vehicle_id, model, user_input)
+            )
 
-        vehicle = runtime.vehicles[self._vehicle_id]
-        stored = appearance.get(self._vehicle_id, {})
-        default_trim = stored.get(OPT_TRIM) or vehicle.trim or _NONE
-        default_color = stored.get(OPT_COLOR) or _NONE
-        none_option = selector.SelectOptionDict(value=_NONE, label="—")
-        schema = {
-            vol.Required(OPT_TRIM, default=default_trim if default_trim in model.trims else _NONE): _select(
-                [none_option]
-                + [selector.SelectOptionDict(value=trim.id, label=trim.name) for trim in model.trims.values()]
-            ),
-            vol.Required(OPT_COLOR, default=default_color if default_color in model.colors else _NONE): _select(
-                [none_option]
-                + [
-                    selector.SelectOptionDict(value=color.id, label=color.name)
-                    for color in model.colors.values()
-                ]
-            ),
-        }
+        stored = self.config_entry.options.get(OPT_APPEARANCE, {}).get(self._vehicle_id, {})
         return self.async_show_form(
             step_id="appearance_details",
-            data_schema=vol.Schema(schema),
+            data_schema=details_schema(model, stored),
             description_placeholders={"model": model.name},
         )
 

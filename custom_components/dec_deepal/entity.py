@@ -54,13 +54,13 @@ class DecDeepalEntity(CoordinatorEntity[VehicleCoordinator]):
         self._attr_translation_key = key
         self._attr_unique_id = f"{vehicle.info.vehicle_id}_{platform}_{key}"
 
-        trim = vehicle.model.trims.get(vehicle.trim or "")
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, vehicle.info.vehicle_id)},
             name=vehicle.info.display_name,
             manufacturer=MANUFACTURER,
-            model=vehicle.model.name,
-            model_id=trim.name if trim else None,
+            # "Deepal S05 Max (2024-25)": modelo y versión en un solo texto
+            # (ver "nombre_con_version" en vehicles.yaml).
+            model=vehicle.model.display_name(vehicle.trim),
             serial_number=vehicle.info.vin,
             sw_version=VERSION,
             configuration_url=COMMUNITY_URL,

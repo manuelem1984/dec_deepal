@@ -6,7 +6,14 @@ Prioridad alta: todo lo que en
 [correlacion_endpoints_entidades.csv](correlacion_endpoints_entidades.csv)
 tiene `Verificado = No`.
 
-- [ ] Arranque limpio en HA 2026.3+ con una cuenta española (SMS y correo).
+- [x] Arranque limpio en HA 2026.3+ con una cuenta española por **correo**.
+- [ ] Login por **SMS**: en la primera prueba el SMS no llegó (el servidor
+      aceptó la petición). Reintentar con el nuevo "Reenviar el código" y
+      mirar el registro (`Deepal aceptó la petición de código por sms…`).
+- [x] Batería, autonomía, 4 presiones, temperatura interior y del climatizador.
+- [ ] Imagen oficial: revisar `vehiculos → imagen_oficial` en diagnósticos.
+- [ ] Capacidades (`vehiculos → capacidades`) de un Pro y un Max, para ver si
+      permiten distinguir la versión.
 - [ ] Reautenticación: entrar en la app oficial con la misma cuenta y
       comprobar que HA pide volver a entrar y que funciona.
 - [ ] Iconos `dec:` visibles (luces, intermitentes, volante) y selector de

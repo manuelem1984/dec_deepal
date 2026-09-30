@@ -268,24 +268,28 @@ tire_alarm_front_left:
   estados:
     "on": {archivo: alert, mdi: mdi:car-tire-alert}
     "off": {archivo: ok, mdi: mdi:tire}
+  defecto: mdi:tire
 tire_alarm_front_right:
   plataforma: binary_sensor
   descripcion: Aviso neumático delantero derecho
   estados:
     "on": {archivo: alert, mdi: mdi:car-tire-alert}
     "off": {archivo: ok, mdi: mdi:tire}
+  defecto: mdi:tire
 tire_alarm_rear_left:
   plataforma: binary_sensor
   descripcion: Aviso neumático trasero izquierdo
   estados:
     "on": {archivo: alert, mdi: mdi:car-tire-alert}
     "off": {archivo: ok, mdi: mdi:tire}
+  defecto: mdi:tire
 tire_alarm_rear_right:
   plataforma: binary_sensor
   descripcion: Aviso neumático trasero derecho
   estados:
     "on": {archivo: alert, mdi: mdi:car-tire-alert}
     "off": {archivo: ok, mdi: mdi:tire}
+  defecto: mdi:tire
 high_beam:
   plataforma: binary_sensor
   descripcion: Luz de carretera

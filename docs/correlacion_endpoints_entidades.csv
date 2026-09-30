@@ -1,66 +1,66 @@
 ﻿EndPoint,Tipo de EndPoint,Formato,Campo,Descripción,Entidad,Tipo de Entidad,Verificado,Notas
-MQTT car_condition,MQTT (lectura),"Entero 0-100 (%)","soc | socDsp | remainPower",Nivel de batería,battery_level (Batería),sensor,Sí,Se usa la primera clave que llegue
-/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero 0-100 (%)",vehicleStatus.soc,Nivel de batería (respaldo),battery_level (Batería),sensor,No,Solo si MQTT no lo trae
-MQTT car_condition,MQTT (lectura),Entero (km),"remainedPowerMile | totalResidualMileage",Autonomía eléctrica estimada,range (Autonomía),sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero 0-100 (%),soc | socDsp | remainPower,Nivel de batería,battery_level (Batería),sensor,Sí,Se usa la primera clave que llegue. Comprobado en v2.0.0b1 (30-09-2026)
+/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero 0-100 (%),vehicleStatus.soc,Nivel de batería (respaldo),battery_level (Batería),sensor,No,Solo si MQTT no lo trae
+MQTT car_condition,MQTT (lectura),Entero (km),remainedPowerMile | totalResidualMileage,Autonomía eléctrica estimada,range (Autonomía),sensor,Sí,Comprobado en v2.0.0b1 (30-09-2026)
 /intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero (km),vehicleStatus.drvMileage,Autonomía (respaldo),range (Autonomía),sensor,No,
 MQTT car_condition,MQTT (lectura),"Entero; 0 = no, otro = sí",ChrgSts,Está cargando,charging (Cargando),binary_sensor,Sí,
 /intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero; 0 = no, otro = sí",charge.chargeStatus,Está cargando (respaldo),charging (Cargando),binary_sensor,No,
-MQTT car_condition,MQTT (lectura),"Entero; 0-1 = no enchufado, 2+ = enchufado",acChargeGunConnectionState,Manguera AC enchufada,ac_connector (Conector AC),binary_sensor,Sí,"Un 1 significa desenchufado: no es un booleano"
-MQTT car_condition,MQTT (lectura),"Entero; 0-1 = no enchufado, 2+ = enchufado","dcChargeGunConnectionState | dcDhargeGunConnectionState",Manguera DC enchufada,dc_connector (Conector DC),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),"Entero; 0-1 = no enchufado, 2+ = enchufado",acChargeGunConnectionState,Manguera AC enchufada,ac_connector (Conector AC),binary_sensor,Sí,Un 1 significa desenchufado: no es un booleano
+MQTT car_condition,MQTT (lectura),"Entero; 0-1 = no enchufado, 2+ = enchufado",dcChargeGunConnectionState | dcDhargeGunConnectionState,Manguera DC enchufada,dc_connector (Conector DC),binary_sensor,Sí,
 /intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero; 0-1 = no, 2+ = sí",charge.dcChargeGunConnectStatus,Manguera DC enchufada (respaldo),dc_connector (Conector DC),binary_sensor,No,
-(calculado),Interno,Texto (enum),"charging + ac_connector + dc_connector",Estado de carga combinado,charge_status (Estado de carga),sensor,Sí,"Desconectado / Conectado AC / Conectado DC / Cargando AC / Cargando DC"
-MQTT car_condition,MQTT (lectura),Decimal (A),"BattACChrgInCurr | BattDCChrgInCurr | battACChrgInCurr | battDCChrgInCurr",Corriente de carga,charge_current (Corriente de carga),sensor,Sí,
-MQTT car_condition,MQTT (lectura),Decimal (A),"BattACChrgInCurr | battACChrgInCurr",Corriente de carga AC,ac_charge_current (Corriente de carga AC),sensor,No,
-MQTT car_condition,MQTT (lectura),Decimal (A),"BattDCChrgInCurr | battDCChrgInCurr",Corriente de carga DC,dc_charge_current (Corriente de carga DC),sensor,No,
-MQTT car_condition,MQTT (lectura),"Entero (min); 8191 = sin estimación",chargDeltMins,Tiempo de carga restante,remaining_charge_time (Tiempo de carga restante),sensor,Sí,
+(calculado),Interno,Texto (enum),charging + ac_connector + dc_connector,Estado de carga combinado,charge_status (Estado de carga),sensor,Sí,Desconectado / Conectado AC / Conectado DC / Cargando AC / Cargando DC
+MQTT car_condition,MQTT (lectura),Decimal (A),BattACChrgInCurr | BattDCChrgInCurr | battACChrgInCurr | battDCChrgInCurr,Corriente de carga,charge_current (Corriente de carga),sensor,Sí,
+MQTT car_condition,MQTT (lectura),Decimal (A),BattACChrgInCurr | battACChrgInCurr,Corriente de carga AC,ac_charge_current (Corriente de carga AC),sensor,No,
+MQTT car_condition,MQTT (lectura),Decimal (A),BattDCChrgInCurr | battDCChrgInCurr,Corriente de carga DC,dc_charge_current (Corriente de carga DC),sensor,No,
+MQTT car_condition,MQTT (lectura),Entero (min); 8191 = sin estimación,chargDeltMins,Tiempo de carga restante,remaining_charge_time (Tiempo de carga restante),sensor,Sí,
 (calculado),Interno,Texto H:MM,remaining_charge_min,Tiempo de carga restante en horas,remaining_charge_time_hhmm (Tiempo de carga restante (H:MM)),sensor,Sí,Cálculo directo del anterior
 MQTT car_condition,MQTT (lectura),Decimal (km),totalOdometer,Kilometraje total,odometer (Kilometraje total),sensor,Sí,
-MQTT car_condition,MQTT (lectura),Fecha ISO 8601,"latestDate | lastUpdatedAt | lastUpdatedTime",Fecha del último informe del coche,last_update (Último informe del coche),sensor,Sí,
+MQTT car_condition,MQTT (lectura),Fecha ISO 8601,latestDate | lastUpdatedAt | lastUpdatedTime,Fecha del último informe del coche,last_update (Último informe del coche),sensor,Sí,
 MQTT car_condition,MQTT (lectura),Entero (código),powerStatusFeedBack,Estado de alimentación en bruto,power_status (Estado de alimentación),sensor (diagnóstico),No,Falta anotar qué valor es apagado / contacto / listo
-MQTT car_condition,MQTT (lectura),"Entero; 0 = apagado",engineStatus,Motor en marcha,engine (Motor),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = apagado,engineStatus,Motor en marcha,engine (Motor),binary_sensor,Sí,
 (lectura MQTT correcta),Interno,Booleano,(ninguno),El coche respondió en la nube,cloud_connected (Conexión con la nube),binary_sensor (diagnóstico),Sí,No indica que esté enchufado
 /intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Decimal (km/h),vehicleStatus.speed,Velocidad,speed (Velocidad),sensor (desactivado),No,Nunca ha llegado por MQTT en el S05
 /intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Decimal (km),vehicleStatus.igniteCumulativeMileage,Km desde el último arranque,trip_mileage (Kilómetros del trayecto),sensor (desactivado),No,Nunca ha llegado por MQTT en el S05
 /intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Decimal (km),vehicleStatus.totalMeterYesterday,Km recorridos ayer,mileage_yesterday (Kilómetros de ayer),sensor (desactivado),No,Nunca ha llegado por MQTT en el S05
-MQTT car_condition,MQTT (lectura),Decimal (°C),vehicleTemperature,Temperatura interior,inside_temperature (Temperatura interior),sensor,Sí,
+MQTT car_condition,MQTT (lectura),Decimal (°C),vehicleTemperature,Temperatura interior,inside_temperature (Temperatura interior),sensor,Sí,Comprobado en v2.0.0b1 (30-09-2026)
 /intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Décimas de °C,hvac.outsideTemp,Temperatura exterior,outside_temperature (Temperatura exterior),sensor (desactivado),No,Nunca ha llegado por MQTT en el S05; por REST sin confirmar
 MQTT car_condition,MQTT (lectura),Décimas de %,innerHumidity,Humedad interior,cabin_humidity (Humedad interior),sensor,Sí,Se divide entre 10
-MQTT car_condition,MQTT (lectura),"Entero; 1 = encendido",airStatus,Climatizador encendido,climate_on (Climatizador) · cabin_climate (Climatización),binary_sensor · climate,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 1 = encendido,airStatus,Climatizador encendido,climate_on (Climatizador) · cabin_climate (Climatización),binary_sensor · climate,Sí,
 MQTT car_condition,MQTT (lectura),Entero (nivel),airConditioningHairRatings,Nivel del ventilador,fan_level (Ventilador del climatizador),sensor,Sí,Máximo sin confirmar
-MQTT car_condition,MQTT (lectura),Decimal (°C),airConditioningSetTemperature,Temperatura objetivo,climate_target_temperature (Temperatura del climatizador) · cabin_climate,sensor · climate,Sí,
-/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero 0-3",seat.leftFront.heatStatus,Calefacción asiento conductor (fuente principal),seat_heat_driver (Calefacción asiento conductor),number,No,"El MQTT no es fiable para asientos (comprobado); el REST, pendiente de confirmar"
-MQTT car_condition,MQTT (lectura),"Entero 0-3; 6 = dormido",driverSeatHeatStatus,Calefacción asiento conductor (respaldo),seat_heat_driver (Calefacción asiento conductor),number,No,Escala 1:1 según Deepal Alternative
-/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero 0-3",seat.rightFront.heatStatus,Calefacción asiento acompañante,seat_heat_passenger (Calefacción asiento acompañante),number,No,
-/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero 0-3",seat.leftFront.ventStatus,Ventilación asiento conductor,seat_vent_driver (Ventilación asiento conductor),number,No,Solo versiones con ventilación (S05 Max)
-/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero 0-3",seat.rightFront.ventStatus,Ventilación asiento acompañante,seat_vent_passenger (Ventilación asiento acompañante),number,No,Solo versiones con ventilación (S05 Max)
-/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero; 0 = apagado",vehicleStatus.steeringWheelHeater,Volante calefactado,steering_wheel_heat (Volante calefactado),switch,No,Se conserva el último valor si no llega
-/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),"Entero; 0 = apagado",hvac.defrostStatus,Desempañado delantero,front_defrost (Desempañado delantero),switch,No,Se conserva el último valor si no llega
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",driverDoor,Puerta delantera izquierda,door_front_left (Puerta delantera izquierda),binary_sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",passengerDoor,Puerta delantera derecha,door_front_right (Puerta delantera derecha),binary_sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",leftRearDoor,Puerta trasera izquierda,door_rear_left (Puerta trasera izquierda),binary_sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",rightRearDoor,Puerta trasera derecha,door_rear_right (Puerta trasera derecha),binary_sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrado",trunk,Maletero abierto,trunk (Maletero) · trunk_control (Maletero (control)),binary_sensor · cover,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrado","hoodStatus | hood",Capó abierto,hood (Capó),binary_sensor,Sí,
-(calculado),Interno,Booleano,"4 puertas + maletero",Alguna puerta o maletero abiertos,any_door_open (Alguna puerta abierta),binary_sensor,No,El capó no cuenta
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",diverWindow,Ventanilla delantera izquierda,window_front_left (Ventanilla delantera izquierda) · windows,binary_sensor · cover,No,"diverWindow (sic). El S05 baja un poco el cristal al abrir la puerta"
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",passengerWindow,Ventanilla delantera derecha,window_front_right (Ventanilla delantera derecha) · windows,binary_sensor · cover,No,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",leftRearWindow,Ventanilla trasera izquierda,window_rear_left (Ventanilla trasera izquierda) · windows,binary_sensor · cover,No,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = cerrada",rightRearWindow,Ventanilla trasera derecha,window_rear_right (Ventanilla trasera derecha) · windows,binary_sensor · cover,No,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = bloqueada",driverDoorLock,Cerradura puerta del conductor,lock_driver (Cerradura del conductor),binary_sensor,No,Pendiente: cerrar con el mando y comparar dos capturas
-MQTT car_condition,MQTT (lectura),"Entero; 0 = bloqueada",passengerDoorLock,Cerradura puerta del acompañante,lock_passenger (Cerradura del acompañante),binary_sensor,No,
-(calculado),Interno,Booleano,"lock_driver + lock_passenger",Coche bloqueado,central_locking (Cierre centralizado) · doors (Puertas),binary_sensor · lock,No,
-MQTT car_condition,MQTT (lectura),Decimal (kPa),lfTyrePressure,Presión neumático delantero izquierdo,tire_pressure_front_left,sensor,Sí,Se muestra en bar
-MQTT car_condition,MQTT (lectura),Decimal (kPa),rfTyrePressure,Presión neumático delantero derecho,tire_pressure_front_right,sensor,Sí,
-MQTT car_condition,MQTT (lectura),Decimal (kPa),lrTyrePressure,Presión neumático trasero izquierdo,tire_pressure_rear_left,sensor,Sí,
-MQTT car_condition,MQTT (lectura),Decimal (kPa),rrTyrePressure,Presión neumático trasero derecho,tire_pressure_rear_right,sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = OK","lfPressureWarning | rfPressureWarning | lrPressureWarning | rrPressureWarning",Aviso de cada neumático,tire_alarm_* (Aviso neumático ...),binary_sensor,No,Difícil de provocar a propósito
-MQTT car_condition,MQTT (lectura),"Entero; 0 = apagada",highBeam,Luz de carretera,high_beam (Luz de carretera),binary_sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = apagada",lowBeam,Luz de cruce,low_beam (Luz de cruce),binary_sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = apagada",positionLamp,Luz de posición,position_lamp (Luz de posición),binary_sensor,Sí,
-MQTT car_condition,MQTT (lectura),"Entero; 0 = apagado","turnLndicatorLeft | turnLndicatorRight",Intermitentes,indicator_left / indicator_right,binary_sensor,Sí,Lndicator (sic)
-/intl-app-gw/intl-app-user/api/car/vehicles,REST (lectura),URL,"vehicleImageUrl | imgUrl | imageUrl | carImageUrl | modelImageUrl",Foto oficial del modelo,official_image (Imagen oficial),image,Sí,Si no hay URL la entidad aparece no disponible
-vehicles/photos (catálogo local),Local,PNG/JPG/WEBP,"<grupo_foto>_<color>",Foto según versión y color,dec_photo (Foto DEC),image,Sí,Ver docs/imagenes.md
-/intl-app-gw/intl-app-car-control/api/control/condition-inquiry,REST firmado (comando),"JSON {command: COMMAND_GET_NEW_CONDITION}",-,Pedir datos frescos al coche,refresh (Actualizar datos del vehículo),button,Sí,
+MQTT car_condition,MQTT (lectura),Decimal (°C),airConditioningSetTemperature,Temperatura objetivo,climate_target_temperature (Temperatura del climatizador) · cabin_climate,sensor · climate,Sí,Comprobado en v2.0.0b1 (30-09-2026)
+/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero 0-3,seat.leftFront.heatStatus,Calefacción asiento conductor (fuente principal),seat_heat_driver (Calefacción asiento conductor),number,No,"El MQTT no es fiable para asientos (comprobado); el REST, pendiente de confirmar"
+MQTT car_condition,MQTT (lectura),Entero 0-3; 6 = dormido,driverSeatHeatStatus,Calefacción asiento conductor (respaldo),seat_heat_driver (Calefacción asiento conductor),number,No,Escala 1:1 según Deepal Alternative
+/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero 0-3,seat.rightFront.heatStatus,Calefacción asiento acompañante,seat_heat_passenger (Calefacción asiento acompañante),number,No,
+/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero 0-3,seat.leftFront.ventStatus,Ventilación asiento conductor,seat_vent_driver (Ventilación asiento conductor),number,No,Solo versiones con ventilación (S05 Max)
+/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero 0-3,seat.rightFront.ventStatus,Ventilación asiento acompañante,seat_vent_passenger (Ventilación asiento acompañante),number,No,Solo versiones con ventilación (S05 Max)
+/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero; 0 = apagado,vehicleStatus.steeringWheelHeater,Volante calefactado,steering_wheel_heat (Volante calefactado),switch,No,Se conserva el último valor si no llega
+/intl-app-gw/intl-app-car-condition/api/vehicle/condition,REST (lectura),Entero; 0 = apagado,hvac.defrostStatus,Desempañado delantero,front_defrost (Desempañado delantero),switch,No,Se conserva el último valor si no llega
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,driverDoor,Puerta delantera izquierda,door_front_left (Puerta delantera izquierda),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,passengerDoor,Puerta delantera derecha,door_front_right (Puerta delantera derecha),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,leftRearDoor,Puerta trasera izquierda,door_rear_left (Puerta trasera izquierda),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,rightRearDoor,Puerta trasera derecha,door_rear_right (Puerta trasera derecha),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrado,trunk,Maletero abierto,trunk (Maletero) · trunk_control (Maletero (control)),binary_sensor · cover,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrado,hoodStatus | hood,Capó abierto,hood (Capó),binary_sensor,Sí,
+(calculado),Interno,Booleano,4 puertas + maletero,Alguna puerta o maletero abiertos,any_door_open (Alguna puerta abierta),binary_sensor,No,El capó no cuenta
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,diverWindow,Ventanilla delantera izquierda,window_front_left (Ventanilla delantera izquierda) · windows,binary_sensor · cover,No,diverWindow (sic). El S05 baja un poco el cristal al abrir la puerta
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,passengerWindow,Ventanilla delantera derecha,window_front_right (Ventanilla delantera derecha) · windows,binary_sensor · cover,No,
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,leftRearWindow,Ventanilla trasera izquierda,window_rear_left (Ventanilla trasera izquierda) · windows,binary_sensor · cover,No,
+MQTT car_condition,MQTT (lectura),Entero; 0 = cerrada,rightRearWindow,Ventanilla trasera derecha,window_rear_right (Ventanilla trasera derecha) · windows,binary_sensor · cover,No,
+MQTT car_condition,MQTT (lectura),Entero; 0 = bloqueada,driverDoorLock,Cerradura puerta del conductor,lock_driver (Cerradura del conductor),binary_sensor,No,Pendiente: cerrar con el mando y comparar dos capturas
+MQTT car_condition,MQTT (lectura),Entero; 0 = bloqueada,passengerDoorLock,Cerradura puerta del acompañante,lock_passenger (Cerradura del acompañante),binary_sensor,No,
+(calculado),Interno,Booleano,lock_driver + lock_passenger,Coche bloqueado,central_locking (Cierre centralizado) · doors (Puertas),binary_sensor · lock,No,
+MQTT car_condition,MQTT (lectura),Decimal (kPa),lfTyrePressure,Presión neumático delantero izquierdo,tire_pressure_front_left,sensor,Sí,Se muestra en bar. Comprobado en v2.0.0b1 (30-09-2026)
+MQTT car_condition,MQTT (lectura),Decimal (kPa),rfTyrePressure,Presión neumático delantero derecho,tire_pressure_front_right,sensor,Sí,Comprobado en v2.0.0b1 (30-09-2026)
+MQTT car_condition,MQTT (lectura),Decimal (kPa),lrTyrePressure,Presión neumático trasero izquierdo,tire_pressure_rear_left,sensor,Sí,Comprobado en v2.0.0b1 (30-09-2026)
+MQTT car_condition,MQTT (lectura),Decimal (kPa),rrTyrePressure,Presión neumático trasero derecho,tire_pressure_rear_right,sensor,Sí,Comprobado en v2.0.0b1 (30-09-2026)
+MQTT car_condition,MQTT (lectura),Entero; 0 = OK,lfPressureWarning | rfPressureWarning | lrPressureWarning | rrPressureWarning,Aviso de cada neumático,tire_alarm_* (Aviso neumático ...),binary_sensor,No,Difícil de provocar a propósito
+MQTT car_condition,MQTT (lectura),Entero; 0 = apagada,highBeam,Luz de carretera,high_beam (Luz de carretera),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = apagada,lowBeam,Luz de cruce,low_beam (Luz de cruce),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = apagada,positionLamp,Luz de posición,position_lamp (Luz de posición),binary_sensor,Sí,
+MQTT car_condition,MQTT (lectura),Entero; 0 = apagado,turnLndicatorLeft | turnLndicatorRight,Intermitentes,indicator_left / indicator_right,binary_sensor,Sí,Lndicator (sic)
+/intl-app-gw/intl-app-user/api/car/vehicles,REST (lectura),URL,vehicleImageUrl | imgUrl | imageUrl | carImageUrl | modelImageUrl,Foto oficial del modelo,official_image (Imagen oficial),image,Sí,Si no hay URL la entidad aparece no disponible
+vehicles/photos (catálogo local),Local,PNG/JPG/WEBP,<grupo_foto>_<color>,Foto según versión y color,dec_photo (Foto DEC),image,Sí,Ver docs/imagenes.md
+/intl-app-gw/intl-app-car-control/api/control/condition-inquiry,REST firmado (comando),JSON {command: COMMAND_GET_NEW_CONDITION},-,Pedir datos frescos al coche,refresh (Actualizar datos del vehículo),button,Sí,
 /intl-app-gw/intl-app-car-control/api/control/flashing-honking,REST firmado (comando),"JSON {command: flash_bee, type: 1}",type,Parpadear luces,flash_lights (Parpadear luces),button,Sí,Espera de 30 s entre repeticiones
 /intl-app-gw/intl-app-car-control/api/control/flashing-honking,REST firmado (comando),"JSON {command: flash_bee, type: 2}",type,Tocar el claxon,honk_horn (Tocar el claxon),button,Sí,Espera de 6 s entre repeticiones
 /intl-app-gw/intl-app-car-control/api/control/flashing-honking,REST firmado (comando),"JSON {command: flash_bee, type: 3}",type,Luces y claxon a la vez,flash_and_honk (Luces y claxon),button,No,
@@ -72,5 +72,5 @@ vehicles/photos (catálogo local),Local,PNG/JPG/WEBP,"<grupo_foto>_<color>",Foto
 /intl-app-gw/intl-app-car-control/api/control/doors,REST firmado + PIN (comando),"JSON {command: lock, open, rcToken}",open,Bloquear / desbloquear puertas,doors (Puertas),lock,No,Formato de Deepal Alternative
 /intl-app-gw/intl-app-car-control/api/control/windows,REST firmado + PIN (comando),"JSON {command: window, open, openType: 10, rcToken}",open,Abrir / cerrar todas las ventanillas,windows (Ventanillas),cover,No,Formato de Deepal Alternative
 /intl-app-gw/intl-app-car-control/api/control/trunk,REST firmado + PIN (comando),"JSON {command: trunk, open, rcToken}",open,Abrir / cerrar maletero,trunk_control (Maletero (control)),cover,No,
-/intl-app-gw/intl-app-car-control/api/security-code/check-code,REST (PIN),"JSON {safeCode (RSA)}",rcToken,Canjear el PIN por un rcToken,(opciones: Control remoto con PIN),-,No,Se comprueba al guardar el PIN
+/intl-app-gw/intl-app-car-control/api/security-code/check-code,REST (PIN),JSON {safeCode (RSA)},rcToken,Canjear el PIN por un rcToken,(opciones: Control remoto con PIN),-,No,Se comprueba al guardar el PIN
 (ninguno),Interno,Booleano,-,Ventana de armado de la Opción B,pin_arm (Desbloqueo acciones con PIN),lock,No,No envía nada al coche

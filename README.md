@@ -42,6 +42,10 @@ y reinicia.
 Ajustes → Dispositivos y servicios → Añadir integración → **DEC Deepal** →
 SMS o correo → código → (si hay varios) elegir coches.
 
+El coche arranca en **modo genérico** (solo datos básicos). Ve a **Ajustes →
+Reparaciones → "Configura tu vehículo"** y elige modelo, versión y color: se
+crearán las entidades de tu versión (asientos, volante, PIN...) y su foto.
+
 En **Configurar**:
 
 | Apartado | Qué permite |

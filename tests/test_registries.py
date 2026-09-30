@@ -40,6 +40,15 @@ def test_trim_features_and_photos(registries) -> None:  # noqa: ANN001
     assert model.has(FEATURE_SEAT_VENT, "max")
     assert model.photo_for("max_awd", "andromeda_blue").name == "max_andromeda_blue.png"
     assert model.photo_for(None, None).name == "default.png"
+    assert model.display_name("max") == "Deepal S05 Max (2024-25)"
+    assert model.display_name(None) == "Deepal S05 (2024-25)"
+
+
+def test_tire_alarm_icons(registries) -> None:  # noqa: ANN001
+    icons = registries.icons
+    assert icons.resolve("tire_alarm_front_left", "off") == "mdi:tire"
+    assert icons.resolve("tire_alarm_front_left", "on") == "mdi:car-tire-alert"
+    assert icons.resolve("tire_alarm_front_left", None) == "mdi:tire"
 
 
 def test_icon_resolution(registries) -> None:  # noqa: ANN001

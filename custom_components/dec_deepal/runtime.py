@@ -37,7 +37,7 @@ from homeassistant.core import HomeAssistant
 from .api.account import DeepalAccount
 from .api.client import DeepalClient
 from .api.commands import DeepalCommands
-from .api.models import VehicleInfo
+from .api.models import Capabilities, VehicleInfo
 from .const import DOMAIN, INTEGRATION_DIR
 from .debug.recorder import DebugRecorder
 from .registries import Registries, load_all
@@ -63,6 +63,14 @@ class VehicleContext:
     color: str | None
     coordinator: VehicleCoordinator
     runner: CommandRunner
+    #: Modelo reconocido por el nombre que da el servidor (solo sugerencia).
+    suggested_model: VehicleModel | None = None
+    #: ``True`` si el usuario ya eligió el modelo (si no, funciona como genérico).
+    configured: bool = False
+    #: Capacidades del servidor, solo para diagnóstico.
+    capabilities: Capabilities | None = None
+    #: Resultado de la última descarga de la imagen oficial (diagnóstico).
+    official_image_status: dict[str, Any] = field(default_factory=dict)
 
     def has(self, feature: str) -> bool:
         """¿El coche tiene esta función? (según modelo y versión)."""

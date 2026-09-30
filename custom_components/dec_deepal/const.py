@@ -135,6 +135,9 @@ ICONS_LIST_API: Final = "/api/dec_deepal/icons"
 # Depuración (ver docs/depuracion.md)
 # ---------------------------------------------------------------------------
 
+#: Prefijo del aviso de Reparaciones "Configura tu vehículo" (uno por coche).
+VEHICLE_ISSUE_PREFIX: Final = "vehicle_not_configured_"
+
 #: Carpeta (dentro de /config) donde el servicio de captura guarda los JSON.
 CAPTURES_DIR: Final = "dec_deepal_capturas"
 #: Eventos que guarda en memoria el registro de depuración (los más recientes).

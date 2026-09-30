@@ -13,6 +13,11 @@
 # CAMPOS DE CADA MODELO
 # -----------------------------------------------------------------------------
 #   nombre          Nombre que se muestra (ficha del dispositivo, opciones).
+#   nombre_con_version
+#                   (opcional) Nombre cuando se conoce la versión; {version}
+#                   se sustituye por el nombre de la versión. Ejemplo:
+#                   "Deepal S05 {version} (2024-25)" → "Deepal S05 Max (2024-25)".
+#                   Si no se pone, se usa "<nombre> <versión>".
 #   descripcion     Texto libre.
 #   fabricante      Marca que se muestra como "modelo" en la ficha.
 #   paises          Lista de países (claves de countries.yaml) donde se ofrece.
@@ -49,14 +54,17 @@
 # -----------------------------------------------------------------------------
 # MODELO "generico"
 # -----------------------------------------------------------------------------
-#   Se usa cuando un coche de la cuenta no encaja con ningún modelo. Tiene las
-#   funciones básicas de lectura y ninguna foto propia. Así la integración no
-#   falla con coches aún no catalogados.
+#   Es el modelo con el que ARRANCA todo coche hasta que el usuario elige el
+#   suyo (Configurar → Apariencia, o el aviso "Configura tu vehículo" en
+#   Ajustes → Reparaciones). Tiene solo las funciones básicas y ninguna foto
+#   propia: así nunca se crean entidades de funciones que el coche no tiene.
+#   También se usa para coches aún no catalogados.
 # =============================================================================
 
 modelos:
   s05_2024:
-    nombre: Deepal S05 (2024-2025)
+    nombre: Deepal S05 (2024-25)
+    nombre_con_version: Deepal S05 {version} (2024-25)
     descripcion: >-
       SUV eléctrico compacto. Modelo de referencia del proyecto, probado con
       coches reales en España.
@@ -112,10 +120,11 @@ modelos:
         descripcion: Blanco.
 
   generico:
-    nombre: Deepal (modelo no catalogado)
+    nombre: Deepal (sin configurar)
     descripcion: >-
-      Perfil de respaldo para coches que aún no están en este catálogo. Solo
-      lectura de datos básicos y comandos sin PIN.
+      Perfil inicial de todo coche hasta que se elige su modelo, y de respaldo
+      para coches aún no catalogados. Solo lectura de datos básicos y comandos
+      sin PIN.
     fabricante: Changan Deepal
     paises: [es]
     reconocer:

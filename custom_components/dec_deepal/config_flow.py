@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import logging
 import secrets
-from collections.abc import Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from typing import Any
 
 import voluptuous as vol
@@ -75,6 +75,8 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
         self._device_id: str | None = None  # se reutiliza al reautenticar
         self._transport: DeepalTransport | None = None
         self._vehicles: list[VehicleInfo] = []
+        # Función que pide el código (se guarda para poder "Reenviar").
+        self._resend: Callable[[DeepalAuth], Awaitable[Any]] | None = None
 
     @staticmethod
     @callback
@@ -137,18 +139,25 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="login_method",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_LOGIN_METHOD, default=methods[0]): selector.SelectSelector(
-                        selector.SelectSelectorConfig(
-                            options=list(methods),
-                            translation_key="login_method",
-                            mode=selector.SelectSelectorMode.LIST,
-                        )
-                    )
-                }
-            ),
+            data_schema=self._login_method_schema(),
             description_placeholders={"country": self._country.name},
+        )
+
+    def _login_method_schema(self) -> vol.Schema:
+        """Formulario SMS / correo (por defecto, el último usado)."""
+        assert self._country is not None
+        methods = self._country.login_methods
+        default = self._method if self._method in methods else methods[0]
+        return vol.Schema(
+            {
+                vol.Required(CONF_LOGIN_METHOD, default=default): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=list(methods),
+                        translation_key="login_method",
+                        mode=selector.SelectSelectorMode.LIST,
+                    )
+                )
+            }
         )
 
     # ------------------------------------------------------------------
@@ -157,65 +166,75 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def async_step_email(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Pedir el código por correo."""
-        errors: dict[str, str] = {}
-        if user_input is not None:
-            email = str(user_input[CONF_EMAIL]).strip().lower()
-            error = await self._send_code(lambda auth: auth.send_email_code(email))
-            if error is None:
-                self._identifier = email
-                return await self.async_step_code()
-            errors["base"] = error
-
-        return self.async_show_form(
-            step_id="email",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_EMAIL): selector.TextSelector(
-                        selector.TextSelectorConfig(type=selector.TextSelectorType.EMAIL)
-                    )
-                }
-            ),
-            errors=errors,
-        )
+        if user_input is None:
+            return self._email_form()
+        email = str(user_input[CONF_EMAIL]).strip().lower()
+        self._identifier = email
+        self._resend = lambda auth: auth.send_email_code(email)
+        error = await self._send_code()
+        if error:
+            return self._email_form({"base": error})
+        return await self.async_step_code_menu()
 
     async def async_step_sms(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Pedir el código por SMS."""
         assert self._country is not None
-        errors: dict[str, str] = {}
-        if user_input is not None:
-            mobile = self._country.normalize_mobile(str(user_input[CONF_MOBILE]))
-            if not self._country.is_valid_mobile(mobile):
-                errors[CONF_MOBILE] = "invalid_mobile"
-            else:
-                error = await self._send_code(lambda auth: auth.send_sms_code(mobile))
-                if error is None:
-                    self._identifier = mobile
-                    return await self.async_step_code()
-                errors["base"] = error
+        if user_input is None:
+            return self._sms_form()
+        mobile = self._country.normalize_mobile(str(user_input[CONF_MOBILE]))
+        if not self._country.is_valid_mobile(mobile):
+            return self._sms_form({CONF_MOBILE: "invalid_mobile"})
+        self._identifier = mobile
+        self._resend = lambda auth: auth.send_sms_code(mobile)
+        error = await self._send_code()
+        if error:
+            return self._sms_form({"base": error})
+        return await self.async_step_code_menu()
 
+    def _email_form(self, errors: dict[str, str] | None = None) -> ConfigFlowResult:
+        """Formulario del correo (también para mostrar errores al reenviar)."""
+        return self.async_show_form(
+            step_id="email",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_EMAIL, default=self._identifier or vol.UNDEFINED): selector.TextSelector(
+                        selector.TextSelectorConfig(type=selector.TextSelectorType.EMAIL)
+                    )
+                }
+            ),
+            errors=errors or {},
+        )
+
+    def _sms_form(self, errors: dict[str, str] | None = None) -> ConfigFlowResult:
+        """Formulario del móvil (también para mostrar errores al reenviar)."""
+        assert self._country is not None
         return self.async_show_form(
             step_id="sms",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_MOBILE): selector.TextSelector(
+                    vol.Required(CONF_MOBILE, default=self._identifier or vol.UNDEFINED): selector.TextSelector(
                         selector.TextSelectorConfig(type=selector.TextSelectorType.TEL)
                     )
                 }
             ),
-            errors=errors,
+            errors=errors or {},
             description_placeholders={
                 "prefix": f"+{self._country.dial_code}",
                 "digits": str(self._country.mobile_digits or ""),
             },
         )
 
-    async def _send_code(self, action) -> str | None:  # noqa: ANN001
+    async def _send_code(self) -> str | None:
         """Crea el transporte (si hace falta) y pide el código.
+
+        Deja constancia en el registro de Home Assistant (nivel INFO) de que
+        el servidor aceptó la petición: si el SMS o el correo no llegan, así
+        se sabe que el problema no está en la integración sino en el envío.
 
         Returns:
             ``None`` si fue bien, o la clave del error a mostrar.
         """
-        assert self._country is not None
+        assert self._country is not None and self._resend is not None
         if self._transport is None:
             self._device_id = self._device_id or secrets.token_hex(16)
             self._transport = DeepalTransport(
@@ -224,15 +243,61 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
                 DeepalSession(device_id=self._device_id),
             )
         try:
-            await action(DeepalAuth(self._transport))
+            await self._resend(DeepalAuth(self._transport))
         except DeepalRateLimitError:
             return "too_many_codes"
         except DeepalConnectionError:
             return "cannot_connect"
         except DeepalError as err:
-            _LOGGER.debug("No se pudo enviar el código: %s", err)
+            _LOGGER.warning("Deepal rechazó la petición de código (%s): %s", self._method, err)
             return "send_code_failed"
+        _LOGGER.info(
+            "Deepal aceptó la petición de código por %s para %s",
+            self._method,
+            _mask(self._identifier or ""),
+        )
         return None
+
+    async def async_step_code_menu(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Tras pedir el código: introducirlo, reenviarlo o cambiar de método.
+
+        Home Assistant no tiene botón "atrás" en los formularios; este menú
+        es la forma de volver si el código no llega.
+        """
+        return self.async_show_menu(
+            step_id="code_menu",
+            menu_options=["code", "resend_code", "change_method"],
+            description_placeholders={"destination": _mask(self._identifier or "")},
+        )
+
+    async def async_step_resend_code(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Volver a pedir el código al mismo destino."""
+        error = await self._send_code()
+        if error:
+            if self._method == LOGIN_METHOD_SMS:
+                return self._sms_form({"base": error})
+            return self._email_form({"base": error})
+        return await self.async_step_code_menu()
+
+    async def async_step_change_method(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Volver a elegir SMS o correo (o corregir el dato)."""
+        self._identifier = None
+        self._resend = None
+        assert self._country is not None
+        if len(self._country.login_methods) == 1:
+            # Solo hay un método: "cambiar" es volver a escribir el dato.
+            return self._sms_form() if self._method == LOGIN_METHOD_SMS else self._email_form()
+        return self.async_show_form(
+            step_id="login_method",
+            data_schema=self._login_method_schema(),
+            description_placeholders={"country": self._country.name},
+        )
 
     # ------------------------------------------------------------------
     # 4. Entrar con el código
@@ -385,6 +450,14 @@ def _account_unique_id(session: DeepalSession, vehicles: list[VehicleInfo]) -> s
     primer coche (así no se puede añadir dos veces la misma cuenta).
     """
     return str(session.user_id or vehicles[0].vehicle_id)
+
+
+def _mask(identifier: str) -> str:
+    """Oculta casi todo un correo o móvil: ``m•••@gmail.com``, ``•••••6789``."""
+    if "@" in identifier:
+        user, _, domain = identifier.partition("@")
+        return f"{user[:1]}•••@{domain}"
+    return f"•••••{identifier[-4:]}" if len(identifier) > 4 else "•••••"
 
 
 def _vehicle_label(vehicle: VehicleInfo) -> str:

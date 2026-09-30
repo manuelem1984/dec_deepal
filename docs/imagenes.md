@@ -50,13 +50,27 @@ vehicles/photos/s05_2024/
 
 Ver [anadir-pais-vehiculo-idioma.md](anadir-pais-vehiculo-idioma.md).
 
-## Elegir versión y color
+## Elegir modelo, versión y color
 
-Configurar → **Apariencia del vehículo** → modelo → versión y color.
+**Todo coche arranca como "Deepal (sin configurar)"** (modelo `generico`):
+solo datos básicos, sin asientos, volante ni control con PIN. Así nunca se
+crean entidades de funciones que el coche no tiene.
 
-Si no se elige versión, la integración intenta adivinarla (⚠️) con las
-capacidades que informa el servidor: con ventilación de asientos → Max; sin
-ella → Pro. El color no se puede adivinar.
+Mientras tanto aparece un aviso en **Ajustes → Reparaciones** ("Configura tu
+vehículo"). Al pulsar *Enviar* pide modelo (se propone el reconocido por el
+nombre que da el servidor), versión y color. Al terminar, la integración se
+recarga con las entidades correctas y el aviso desaparece.
+
+Se puede cambiar en cualquier momento en Configurar → **Apariencia del
+vehículo**.
+
+En la ficha del dispositivo el modelo aparece como
+`nombre_con_version` del catálogo, p. ej. **Deepal S05 Max (2024-25)**.
+
+> La versión **no** se adivina. Una primera versión intentaba deducirla de las
+> capacidades que informa el servidor (`function-config`) y clasificó un Max
+> como Pro. Esas capacidades se siguen leyendo y aparecen en los diagnósticos
+> (`vehiculos → capacidades`) para estudiarlas con coches reales.
 
 ## Funciones (qué entidades se crean)
 

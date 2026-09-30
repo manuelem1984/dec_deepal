@@ -78,6 +78,9 @@ class VehicleModel:
 
     id: str
     name: str
+    #: Plantilla del nombre con versión, con ``{version}`` donde va la versión
+    #: (p. ej. ``"Deepal S05 {version} (2024-25)"``). Vacía = "<nombre> <versión>".
+    name_with_trim: str
     description: str
     manufacturer: str
     countries: tuple[str, ...]
@@ -88,6 +91,19 @@ class VehicleModel:
     default_photo: str
     trims: dict[str, Trim]
     colors: dict[str, Color]
+
+    def display_name(self, trim_id: str | None) -> str:
+        """Nombre para mostrar, con la versión si se conoce.
+
+        Ejemplo: ``"Deepal S05 Pro (2024-25)"`` (con plantilla) o
+        ``"Deepal S05 (2024-25)"`` (sin versión elegida).
+        """
+        trim = self.trims.get(trim_id or "")
+        if trim is None:
+            return self.name
+        if self.name_with_trim:
+            return self.name_with_trim.replace("{version}", trim.name)
+        return f"{self.name} {trim.name}"
 
     def features_for(self, trim_id: str | None) -> dict[str, bool]:
         """Funciones efectivas: las del modelo, cambiadas por las de la versión.
@@ -212,6 +228,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
         models[str(model_id)] = VehicleModel(
             id=str(model_id),
             name=str(require(raw, "nombre", where)),
+            name_with_trim=str(raw.get("nombre_con_version") or ""),
             description=str(raw.get("descripcion") or ""),
             manufacturer=str(raw.get("fabricante") or "Changan Deepal"),
             countries=as_str_list(raw.get("paises"), f"{where}.paises"),

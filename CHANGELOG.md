@@ -3,6 +3,40 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0b2] — 2026-09-30
+
+Primeras correcciones tras probar la b1 con un S05 Max real.
+
+### Cambiado
+
+- **Todo coche arranca como genérico** ("Deepal (sin configurar)") hasta que
+  se elige su modelo. Ya no se adivina la versión (la b1 clasificó un Max como
+  Pro). Nuevo aviso en **Ajustes → Reparaciones**, "Configura tu vehículo",
+  con asistente de modelo, versión y color.
+- La ficha del dispositivo muestra el modelo con la versión en un solo texto:
+  **Deepal S05 Max (2024-25)** (campo `nombre_con_version` del catálogo).
+- Iconos de avisos de neumáticos: `mdi:tire` (OK y desconocido) y
+  `mdi:car-tire-alert` (aviso). `mdi:car-tire` no existe en MDI.
+
+### Añadido
+
+- Tras pedir el código de acceso, menú con **Ya tengo el código / Reenviar el
+  código / Usar otro método o corregir el dato** (antes no había forma de
+  volver atrás si el SMS no llegaba).
+- Registro (INFO) de cada petición de código aceptada por Deepal.
+- Diagnósticos: modelo sugerido, si está configurado, capacidades del servidor
+  (para estudiar Pro/Max) y resultado de la descarga de la imagen oficial.
+
+### Corregido
+
+- **Imagen oficial:** se descarga con un método propio que no depende de que el
+  servidor indique bien el tipo de imagen; si falla, se registra el motivo.
+
+### Verificado con el coche real
+
+- Batería, autonomía, presión de los 4 neumáticos, temperatura interior y
+  temperatura del climatizador.
+
 ## [2.0.0b1] — 2026-09-30
 
 Reescritura completa desde cero de
