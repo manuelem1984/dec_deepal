@@ -44,7 +44,7 @@ from .api.errors import (
     DeepalRateLimitError,
     DeepalSigningError,
 )
-from .api.models import CommandStatus
+from .api.models import CommandResult, CommandStatus
 from .const import DOMAIN, PIN_MODE_ARMED
 from .coordinator import VehicleCoordinator
 from .debug.recorder import DebugRecorder
@@ -64,6 +64,20 @@ RESULT_TIMEOUT: Final = 15.0  # s máximos esperando control-result
 RESULT_INTERVAL: Final = 1.0  # s entre consultas
 LOCK_TIMEOUT: Final = 30.0  # s máximos esperando turno en la cola
 REFRESH_DELAYS: Final = (5.0, 20.0)  # s antes de cada relectura tras un comando
+
+
+#: resultCode que significa "el coche tiene que estar apagado" (visto con
+#: ventanillas: "Operation failed. Power is not off.", 30-09-2026).
+RESULT_POWER_NOT_OFF: Final = 1032
+
+
+def _rejection_key(result: CommandResult) -> str:
+    """Clave de traducción del mensaje de rechazo más útil para el usuario."""
+    if result.code == RESULT_POWER_NOT_OFF:
+        return "command_rejected_power_on"
+    if result.vehicle_asleep_hint:
+        return "command_rejected_asleep"
+    return "command_rejected"
 
 
 def to_ha_error(err: DeepalError) -> HomeAssistantError:
@@ -276,9 +290,7 @@ class CommandRunner:
                 )
                 raise HomeAssistantError(
                     translation_domain=DOMAIN,
-                    translation_key=(
-                        "command_rejected_asleep" if result.vehicle_asleep_hint else "command_rejected"
-                    ),
+                    translation_key=_rejection_key(result),
                     translation_placeholders={"error": result.error_message or str(result.code)},
                 )
             if result.status in (CommandStatus.SUCCESS, CommandStatus.ALREADY_DONE):

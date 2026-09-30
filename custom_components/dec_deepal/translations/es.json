@@ -189,7 +189,7 @@
     },
     "binary_sensor": {
       "cloud_connected": { "name": "Conexión con la nube" },
-      "engine": { "name": "Motor" },
+      "engine": { "name": "Encendido" },
       "charging": { "name": "Cargando" },
       "ac_connector": { "name": "Conector AC" },
       "dc_connector": { "name": "Conector DC" },
@@ -213,7 +213,7 @@
       "tire_alarm_rear_right": { "name": "Aviso neumático trasero derecho" },
       "high_beam": { "name": "Luz de carretera" },
       "low_beam": { "name": "Luz de cruce" },
-      "position_lamp": { "name": "Luz de posición" },
+      "position_lamp": { "name": "Luces encendidas (testigo)" },
       "indicator_left": { "name": "Intermitente izquierdo" },
       "indicator_right": { "name": "Intermitente derecho" },
       "climate_on": { "name": "Climatizador" }
@@ -260,6 +260,7 @@
     "command_failed": { "message": "El comando falló: {error}" },
     "command_rejected": { "message": "El coche rechazó el comando: {error}" },
     "command_rejected_asleep": { "message": "El coche rechazó el comando ({error}). Puede estar dormido u ocupado: vuelve a intentarlo tras usarlo un poco." },
+    "command_rejected_power_on": { "message": "El coche tiene que estar apagado para esta orden ({error}). Apágalo y vuelve a intentarlo." },
     "command_busy": { "message": "Hay otro comando en curso para este coche desde hace demasiado tiempo. Inténtalo en unos segundos." },
     "command_cooldown": { "message": "El coche aún está terminando el comando anterior. Espera {seconds} s." },
     "pin_not_armed": { "message": "Primero desbloquea \"Desbloqueo acciones con PIN\"." },

@@ -100,10 +100,23 @@ def central_locked(values: Mapping[str, Any]) -> bool | None:
     return not any(lock is False for lock in locks)
 
 
+def power_on(values: Mapping[str, Any]) -> bool | None:
+    """Coche encendido: estado de alimentación distinto de 0.
+
+    Observado en un S05 real (30-09-2026): ``powerStatusFeedBack`` vale 0 con
+    el coche apagado y 2 en marcha (circulando o parado con el coche
+    arrancado). ``engineStatus`` NO sirve en un eléctrico: vale 0 también
+    circulando. Otros valores (¿1 = accesorios?) se consideran encendido.
+    """
+    status = values.get(s.POWER_STATUS)
+    return None if status is None else status != 0
+
+
 #: Señal calculada → función que la calcula.
 DERIVED: Final[dict[str, Callable[[Mapping[str, Any]], Any]]] = {
     s.CHARGE_STATUS: charge_status,
     s.REMAINING_CHARGE_HHMM: remaining_charge_hhmm,
     s.ANY_DOOR_OPEN: any_door_open,
     s.CENTRAL_LOCKED: central_locked,
+    s.POWER_ON: power_on,
 }

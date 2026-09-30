@@ -3,6 +3,32 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc2] — 2026-09-30
+
+Ajustes tras una prueba real en marcha y parado con el coche arrancado.
+
+### Cambiado
+
+- **"Motor" pasa a llamarse "Encendido"** y se calcula con el estado de
+  alimentación (`powerStatusFeedBack`: 0 = apagado, 2 = en marcha).
+  `engineStatus` no sirve en un eléctrico: vale 0 también circulando. El
+  `entity_id` no cambia.
+- **"Luz de posición" pasa a llamarse "Luces encendidas (testigo)"**: el dato
+  del coche es un testigo de "hay luces encendidas" (posición forzada o
+  cruce/carretera en automático), no la luz de posición.
+- Rechazo `1032` ("Power is not off") con mensaje claro: el coche tiene que
+  estar apagado para esa orden (visto al subir las ventanillas).
+
+### Verificado con el coche real
+
+- Lectura y control de calefacción y ventilación de asientos (escala 1:1 y
+  `6` = módulo dormido confirmados), volante calefactado, climatizador.
+- Alguna puerta abierta, cierre centralizado y cerraduras, puertas, humedad,
+  kilometraje, luces de carretera y cruce, intermitentes, avisos de
+  neumáticos, Imagen DEC e imagen oficial.
+- Desbloqueo de puertas y bajada de ventanillas con PIN: aceptados por el
+  coche (código 0).
+
 ## [2.0.0rc1] — 2026-09-30
 
 Candidata a primera versión estable. Si la prueba mínima de comandos con el

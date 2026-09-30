@@ -58,7 +58,7 @@ BINARY_SENSORS: tuple[DecBinaryDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     DecBinaryDescription(
-        key="engine", signal=s.ENGINE_ON, device_class=BinarySensorDeviceClass.RUNNING
+        key="engine", signal=s.POWER_ON, device_class=BinarySensorDeviceClass.RUNNING
     ),
     DecBinaryDescription(
         key="charging", signal=s.CHARGING, device_class=BinarySensorDeviceClass.BATTERY_CHARGING

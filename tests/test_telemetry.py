@@ -128,3 +128,10 @@ def test_derived_signals() -> None:
     assert state.get(s.CHARGE_STATUS) == "charging_ac"
     assert state.get(s.REMAINING_CHARGE_HHMM) == "2:05"
     assert state.get(s.CENTRAL_LOCKED) is False
+
+
+def test_power_on_from_power_status() -> None:
+    """Encendido = estado de alimentación distinto de 0 (S05 real: 0 apagado, 2 en marcha)."""
+    assert build_state(mqtt_params={"powerStatusFeedBack": "2", "engineStatus": "0"}, rest_raw=None, previous=None).get(s.POWER_ON) is True
+    assert build_state(mqtt_params={"powerStatusFeedBack": "0"}, rest_raw=None, previous=None).get(s.POWER_ON) is False
+    assert build_state(mqtt_params={}, rest_raw=None, previous=None).get(s.POWER_ON) is None

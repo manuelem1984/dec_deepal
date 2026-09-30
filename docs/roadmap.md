@@ -1,15 +1,15 @@
 # Hoja de ruta
 
-## De 2.0.0rc1 a 2.0.0 — prueba mínima con el coche
+## De 2.0.0rc2 a 2.0.0 — prueba mínima con el coche
 
-La rc1 pasa a 2.0.0 (sin cambiar código) si esto funciona:
+La rc2 pasa a 2.0.0 (sin cambiar código) si esto funciona:
 
 - [ ] Climatización: encender a 21 °C y apagar (cambio inmediato en HA y
       confirmado en la app oficial).
 - [ ] Parpadear luces y tocar el claxon; repetir enseguida → mensaje
       "Espera N s".
 - [ ] Botón *Actualizar datos del vehículo*.
-- [ ] Volante calefactado y un asiento (encender y apagar).
+- [x] Volante calefactado y asientos (calefacción y ventilación).
 - [ ] Con el coche dormido: un comando rechazado muestra un mensaje claro y
       la entidad vuelve a su estado anterior.
 

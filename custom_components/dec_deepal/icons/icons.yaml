@@ -160,10 +160,10 @@ cloud_connected:
   descripcion: El coche responde en la nube
 engine:
   plataforma: binary_sensor
-  descripcion: Motor en marcha
+  descripcion: Coche encendido (estado de alimentación distinto de 0)
   estados:
-    "on": {mdi: mdi:engine}
-    "off": {mdi: mdi:engine-off-outline}
+    "on": {mdi: mdi:power}
+    "off": {mdi: mdi:power-off}
 charging:
   plataforma: binary_sensor
   descripcion: Cargando
@@ -304,7 +304,7 @@ low_beam:
     "off": {mdi: mdi:car-light-dimmed}
 position_lamp:
   plataforma: binary_sensor
-  descripcion: Luz de posición
+  descripcion: Testigo de luces encendidas (no es la luz de posición en sí)
   estados:
     "on": {mdi: mdi:car-parking-lights}
     "off": {mdi: mdi:car-parking-lights}
