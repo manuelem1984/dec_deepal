@@ -1,0 +1,20 @@
+# Definición de los servicios de DEC Deepal. Los textos visibles (nombre,
+# descripción de cada campo) están en translations/<idioma>.json → services.
+
+capture_snapshot:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: dec_deepal
+    label:
+      required: false
+      example: "A - coche cerrado en reposo"
+      selector:
+        text:
+    refresh:
+      required: false
+      default: true
+      selector:
+        boolean:

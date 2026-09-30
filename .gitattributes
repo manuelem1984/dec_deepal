@@ -1,0 +1,9 @@
+# Todos los ficheros de texto con saltos de línea LF (Home Assistant corre en
+# Linux). Evita diferencias falsas al editar desde Windows.
+* text=auto eol=lf
+
+# Binarios: no tocar.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary

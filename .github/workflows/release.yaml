@@ -1,0 +1,22 @@
+# Al publicar una release, comprueba que la etiqueta (v2.0.0b1) coincide con
+# la versión de manifest.json. Evita publicar versiones desalineadas.
+name: Comprobar versión de la release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Comparar etiqueta y manifest
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          MANIFEST=$(python -c "import json;print(json.load(open('custom_components/dec_deepal/manifest.json'))['version'])")
+          echo "Etiqueta: $TAG · manifest.json: $MANIFEST"
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "::error::La etiqueta v$TAG no coincide con manifest.json ($MANIFEST)"
+            exit 1
+          fi

@@ -1,0 +1,14 @@
+{
+  "domain": "dec_deepal",
+  "name": "DEC Deepal",
+  "codeowners": ["@manuelem1984"],
+  "config_flow": true,
+  "dependencies": ["frontend", "http", "persistent_notification"],
+  "documentation": "https://github.com/manuelem1984/dec_deepal",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/manuelem1984/dec_deepal/issues",
+  "loggers": ["custom_components.dec_deepal"],
+  "requirements": [],
+  "version": "2.0.0b1"
+}

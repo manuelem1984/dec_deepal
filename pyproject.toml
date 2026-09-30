@@ -1,0 +1,20 @@
+# Configuración de herramientas de desarrollo (no afecta a la integración).
+
+[tool.pytest.ini_options]
+# Permite "import custom_components.dec_deepal..." desde las pruebas.
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = ["_ref"]
+
+[tool.ruff.lint]
+# Errores reales (E, F, W) y fallos típicos (B). Se pueden endurecer más
+# adelante (I, UP, SIM...) cuando el código esté estabilizado.
+select = ["E", "F", "W", "B"]
+ignore = [
+    "E501", # líneas largas: se prioriza la legibilidad de textos y tablas
+]

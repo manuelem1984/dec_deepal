@@ -1,0 +1,28 @@
+# Ejecuta las pruebas y el linter en cada push y pull request.
+name: Pruebas
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Instalar dependencias
+        run: pip install -r requirements_test.txt
+      - name: Pruebas
+        run: pytest -v
+
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/ruff-action@v3
+        with:
+          args: check .

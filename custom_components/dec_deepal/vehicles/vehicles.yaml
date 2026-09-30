@@ -1,0 +1,137 @@
+# =============================================================================
+# DEC Deepal — Catálogo de VEHÍCULOS (modelos, versiones, colores y fotos)
+# =============================================================================
+#
+# Este fichero describe cada modelo de coche soportado: cómo reconocerlo en la
+# respuesta del servidor, qué funciones tiene (para crear solo las entidades
+# que tienen sentido), sus versiones (acabados), sus colores y sus fotos.
+#
+# Tras editarlo, reiniciar Home Assistant.
+# Guía completa: docs/imagenes.md y docs/anadir-pais-vehiculo-idioma.md
+#
+# -----------------------------------------------------------------------------
+# CAMPOS DE CADA MODELO
+# -----------------------------------------------------------------------------
+#   nombre          Nombre que se muestra (ficha del dispositivo, opciones).
+#   descripcion     Texto libre.
+#   fabricante      Marca que se muestra como "modelo" en la ficha.
+#   paises          Lista de países (claves de countries.yaml) donde se ofrece.
+#   reconocer       Cómo se identifica el coche en la lista de vehículos del
+#                   servidor. Basta con que se cumpla UNA de las reglas:
+#                     nombre_contiene:  textos que aparecen en "modelName" o
+#                                       "seriesName" (sin distinguir mayúsculas).
+#                     codigo_serie:     valores exactos de "seriesCode".
+#   funciones       Qué tiene el coche. Cada función desactivada (false) hace
+#                   que NO se creen sus entidades. Lista de funciones posibles
+#                   en docs/imagenes.md (sección "Funciones").
+#   carpeta_fotos   Carpeta dentro de vehicles/photos/ con las fotos del modelo.
+#   foto_defecto    Foto que se usa si el usuario no ha elegido versión y color
+#                   (o si falta la foto exacta). Ruta relativa a carpeta_fotos.
+#   versiones       Acabados. Clave = id interno (minúsculas, sin espacios).
+#                     nombre        Texto que ve el usuario.
+#                     descripcion   Texto libre.
+#                     grupo_foto    Prefijo del nombre de la foto. Versiones que
+#                                   son iguales por fuera comparten grupo.
+#                     funciones     (opcional) cambia funciones del modelo solo
+#                                   para esta versión.
+#   colores         Colores oficiales. Clave = id interno.
+#                     nombre        Nombre comercial.
+#                     descripcion   Texto libre.
+#
+# -----------------------------------------------------------------------------
+# NOMBRE DE LAS FOTOS
+# -----------------------------------------------------------------------------
+#   vehicles/photos/<carpeta_fotos>/<grupo_foto>_<color>.png
+#   Ejemplo: vehicles/photos/s05_2024/max_andromeda_blue.png
+#   Formatos admitidos: .png, .jpg, .jpeg, .webp (se busca en ese orden).
+#   Si falta la foto exacta, se usa foto_defecto. No hace falta tocar código.
+#
+# -----------------------------------------------------------------------------
+# MODELO "generico"
+# -----------------------------------------------------------------------------
+#   Se usa cuando un coche de la cuenta no encaja con ningún modelo. Tiene las
+#   funciones básicas de lectura y ninguna foto propia. Así la integración no
+#   falla con coches aún no catalogados.
+# =============================================================================
+
+modelos:
+  s05_2024:
+    nombre: Deepal S05 (2024-2025)
+    descripcion: >-
+      SUV eléctrico compacto. Modelo de referencia del proyecto, probado con
+      coches reales en España.
+    fabricante: Changan Deepal
+    paises: [es]
+    reconocer:
+      nombre_contiene: ["S05"]
+      codigo_serie: []
+    funciones:
+      telemetria_mqtt: true          # lee el estado por MQTT (rápido y completo)
+      climatizacion: true            # encender/apagar y temperatura
+      luces_claxon: true             # parpadear luces / tocar claxon
+      asientos_calefaccion: true     # calefacción asientos delanteros 0-3
+      asientos_ventilacion: true     # ventilación asientos delanteros 0-3 (solo Max)
+      volante_calefactado: true
+      desempanado: true
+      comandos_pin: true             # puertas, ventanillas y maletero (con PIN)
+      combustible: false             # solo híbridos enchufables / autonomía extendida
+    carpeta_fotos: s05_2024
+    foto_defecto: default.png
+    versiones:
+      pro:
+        nombre: Pro
+        descripcion: Versión de acceso. Sin ventilación de asientos.
+        grupo_foto: pro
+        funciones:
+          asientos_ventilacion: false
+      max:
+        nombre: Max
+        descripcion: Versión alta, propulsión trasera. Con ventilación de asientos.
+        grupo_foto: max
+      max_awd:
+        nombre: Max AWD
+        descripcion: >-
+          Tracción total. Por fuera es idéntica al Max, así que comparte sus
+          fotos (grupo_foto: max).
+        grupo_foto: max
+    colores:
+      andromeda_blue:
+        nombre: Andromeda Blue
+        descripcion: Azul.
+      deep_space_black:
+        nombre: Deep Space Black
+        descripcion: Negro.
+      ganymade_grey:
+        nombre: Ganymade Grey
+        descripcion: Gris.
+      mercury_silver:
+        nombre: Mercury Silver
+        descripcion: Plata.
+      moonlight_white:
+        nombre: Moonlight White
+        descripcion: Blanco.
+
+  generico:
+    nombre: Deepal (modelo no catalogado)
+    descripcion: >-
+      Perfil de respaldo para coches que aún no están en este catálogo. Solo
+      lectura de datos básicos y comandos sin PIN.
+    fabricante: Changan Deepal
+    paises: [es]
+    reconocer:
+      nombre_contiene: []
+      codigo_serie: []
+    funciones:
+      telemetria_mqtt: true
+      climatizacion: true
+      luces_claxon: true
+      asientos_calefaccion: false
+      asientos_ventilacion: false
+      volante_calefactado: false
+      desempanado: false
+      comandos_pin: false
+      combustible: false
+    carpeta_fotos: generico
+    foto_defecto: default.png
+    versiones: {}
+    colores: {}

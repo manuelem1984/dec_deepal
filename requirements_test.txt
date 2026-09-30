@@ -1,0 +1,5 @@
+# Dependencias para ejecutar las pruebas (pytest) en local o en GitHub Actions.
+# pytest-homeassistant-custom-component instala Home Assistant y sus
+# dependencias (aiohttp, cryptography, PyYAML...), necesarias porque importar
+# custom_components.dec_deepal carga también su __init__.py.
+pytest-homeassistant-custom-component

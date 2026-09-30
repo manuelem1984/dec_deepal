@@ -1,0 +1,31 @@
+# -----------------------------------------------------------------------------
+# .gitignore de DEC Deepal
+# -----------------------------------------------------------------------------
+
+# Copia de referencia del proyecto anterior (ha-deepal-spain-dec). Solo se usa
+# en local para consultar el código viejo durante la reescritura; NO se sube.
+_ref/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Entornos virtuales
+.venv/
+venv/
+
+# Editores / sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Capturas de depuración generadas en local (ver docs/depuracion.md). Pueden
+# contener datos del coche: nunca se suben al repositorio.
+dec_deepal_capturas/

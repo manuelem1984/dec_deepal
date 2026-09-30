@@ -1,0 +1,64 @@
+# =============================================================================
+# DEC Deepal — Catálogo de PAÍSES
+# =============================================================================
+#
+# Este fichero decide en qué países se puede usar la integración y contra qué
+# servidor habla cada uno. Se lee al arrancar Home Assistant: tras editarlo,
+# hay que reiniciar.
+#
+# Guía completa: docs/anadir-pais-vehiculo-idioma.md
+#
+# -----------------------------------------------------------------------------
+# 1) ENTORNOS (servidores)
+# -----------------------------------------------------------------------------
+# Un "entorno" es el grupo de servidores de una región. Varios países pueden
+# compartir el mismo entorno (toda Europa usa "eu").
+#
+#   nombre           Texto descriptivo (solo documentación).
+#   url_intl         Servidor principal: login, vehículos, estado y comandos.
+#   url_ca           Servidor de conexión MQTT (telemetría del S05).
+#   url_sda          Servidor SDA (llave digital; hoy no se usa).
+#
+# -----------------------------------------------------------------------------
+# 2) PAÍSES
+# -----------------------------------------------------------------------------
+# La clave de cada país es su código ISO 3166-1 alfa-2 en minúsculas.
+#
+#   nombre           Nombre que se muestra en el asistente de configuración.
+#   activo           true = aparece en el asistente. Poner false para dejar un
+#                    país preparado pero oculto mientras no esté probado.
+#   entorno          Clave de la sección "entornos".
+#   pais_venta       Código que espera el servidor en "salesCountry" y en la
+#                    cabecera "selectcountry" (mayúsculas, p. ej. "ES").
+#   prefijo          Prefijo telefónico SIN "+" (España: "34").
+#   digitos_movil    Cifras del móvil sin prefijo, para validar lo que escribe
+#                    el usuario (España: 9). Poner 0 para no validar.
+#   idioma_api       Cabecera "language" que se manda al servidor. La app usa
+#                    "en_US" en Europa; no confundir con el idioma de la
+#                    interfaz de Home Assistant (eso va en translations/).
+#   metodos_login    Lista con "sms" y/o "email".
+#   verificado       true si se ha probado de verdad con una cuenta del país.
+#   notas            Texto libre (opcional).
+# =============================================================================
+
+entornos:
+  eu:
+    nombre: Europa
+    url_intl: https://m.iov.changanauto.com.de
+    url_ca: https://ca-m.iov.changanauto.com.de
+    url_sda: https://sda-m.iov.changanauto.com.de
+
+paises:
+  es:
+    nombre: España
+    activo: true
+    entorno: eu
+    pais_venta: ES
+    prefijo: "34"
+    digitos_movil: 9
+    idioma_api: en_US
+    metodos_login: [sms, email]
+    verificado: true
+    notas: >-
+      País de referencia del proyecto. Login por SMS (+34) y por correo
+      verificados con cuentas reales.

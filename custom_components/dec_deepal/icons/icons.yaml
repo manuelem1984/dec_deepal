@@ -1,0 +1,413 @@
+# =============================================================================
+# DEC Deepal — Registro de ICONOS de cada entidad
+# =============================================================================
+#
+# Idea: cambiar el icono de una entidad SIN tocar código. Basta con dejar un
+# archivo .svg con el nombre correcto en la carpeta icons/svg/ y reiniciar
+# Home Assistant (y refrescar el navegador con Ctrl+F5).
+#
+# Guía completa, con ejemplos y requisitos del SVG: docs/iconos.md
+#
+# -----------------------------------------------------------------------------
+# CÓMO SE ELIGE EL ICONO (en este orden; gana el primero que exista)
+# -----------------------------------------------------------------------------
+#   1. icons/svg/<entidad>_<sufijo>.svg   icono propio para ESE estado
+#   2. icons/svg/<entidad>.svg            icono propio para TODOS los estados
+#   3. "mdi" del estado (abajo)           icono de Home Assistant para ese estado
+#   4. "defecto" (abajo)                  icono de Home Assistant general
+#   5. nada                               icono estándar de HA según el tipo
+#
+#   <entidad>  = la clave de cada bloque de este fichero (p. ej. "windows").
+#   <sufijo>   = el "archivo" del estado; si no se indica, el propio estado.
+#
+#   Ejemplo "windows" (ventanillas):
+#     icons/svg/windows_open.svg     → cuando están abiertas
+#     icons/svg/windows_closed.svg   → cuando están cerradas
+#     icons/svg/windows.svg          → siempre (si no hay los anteriores)
+#
+# -----------------------------------------------------------------------------
+# ESTADOS POR TIPO DE ENTIDAD (lo que Home Assistant llama "estado")
+# -----------------------------------------------------------------------------
+#   binary_sensor  "on" / "off"    ← ¡ENTRE COMILLAS! Sin comillas, YAML los
+#                                     convierte en true/false (se tolera, pero
+#                                     mejor evitarlo).
+#   switch         "on" / "off"
+#   cover          open / closed / opening / closing
+#   lock           locked / unlocked
+#   climate        "off" / heat_cool
+#   number         el nivel: "0", "1", "2", "3"
+#   sensor enum    cada opción (p. ej. charging_ac)
+#   sensor normal, button, image → no tienen estados: solo <entidad>.svg
+#
+# -----------------------------------------------------------------------------
+# CAMPOS DE CADA ENTIDAD
+# -----------------------------------------------------------------------------
+#   plataforma   Tipo de entidad en Home Assistant (solo informativo y para
+#                validar).
+#   descripcion  Qué es (en español).
+#   estados      (opcional) Estado → {archivo: sufijo, mdi: icono de respaldo}
+#   defecto      (opcional) Icono de respaldo si el estado no está en la lista.
+#
+# Al añadir una ENTIDAD NUEVA a la integración, añade aquí su bloque: así
+# queda documentado qué nombres de archivo acepta. Al arrancar, en el registro
+# de Home Assistant aparece un aviso si hay un .svg que no corresponde a
+# ninguna entidad (útil para detectar erratas en el nombre).
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# SENSORES
+# ---------------------------------------------------------------------------
+battery_level:
+  plataforma: sensor
+  descripcion: Nivel de batería (%)
+range:
+  plataforma: sensor
+  descripcion: Autonomía estimada (km)
+  defecto: mdi:map-marker-distance
+odometer:
+  plataforma: sensor
+  descripcion: Kilometraje total
+  defecto: mdi:counter
+last_update:
+  plataforma: sensor
+  descripcion: Fecha del último informe del coche
+  defecto: mdi:clock-check-outline
+charge_status:
+  plataforma: sensor
+  descripcion: Estado de carga combinado
+  estados:
+    disconnected: {mdi: mdi:power-plug-off}
+    connected_ac: {mdi: mdi:ev-plug-type2}
+    connected_dc: {mdi: mdi:ev-plug-ccs2}
+    charging_ac: {mdi: mdi:lightning-bolt-outline}
+    charging_dc: {mdi: mdi:flash-outline}
+  defecto: mdi:ev-station
+charge_current:
+  plataforma: sensor
+  descripcion: Corriente de carga (AC o DC)
+ac_charge_current:
+  plataforma: sensor
+  descripcion: Corriente de carga AC
+  defecto: mdi:current-ac
+dc_charge_current:
+  plataforma: sensor
+  descripcion: Corriente de carga DC
+  defecto: mdi:current-dc
+remaining_charge_time:
+  plataforma: sensor
+  descripcion: Tiempo de carga restante (minutos)
+  defecto: mdi:timer-sand
+remaining_charge_time_hhmm:
+  plataforma: sensor
+  descripcion: Tiempo de carga restante (H:MM)
+  defecto: mdi:timer-sand
+inside_temperature:
+  plataforma: sensor
+  descripcion: Temperatura interior
+outside_temperature:
+  plataforma: sensor
+  descripcion: Temperatura exterior
+  defecto: mdi:thermometer
+cabin_humidity:
+  plataforma: sensor
+  descripcion: Humedad interior
+climate_target_temperature:
+  plataforma: sensor
+  descripcion: Temperatura objetivo del climatizador
+  defecto: mdi:thermostat
+fan_level:
+  plataforma: sensor
+  descripcion: Nivel del ventilador del climatizador
+  defecto: mdi:fan
+tire_pressure_front_left:
+  plataforma: sensor
+  descripcion: Presión neumático delantero izquierdo
+  defecto: mdi:car-tire-alert
+tire_pressure_front_right:
+  plataforma: sensor
+  descripcion: Presión neumático delantero derecho
+  defecto: mdi:car-tire-alert
+tire_pressure_rear_left:
+  plataforma: sensor
+  descripcion: Presión neumático trasero izquierdo
+  defecto: mdi:car-tire-alert
+tire_pressure_rear_right:
+  plataforma: sensor
+  descripcion: Presión neumático trasero derecho
+  defecto: mdi:car-tire-alert
+power_status:
+  plataforma: sensor
+  descripcion: Estado de alimentación (código en bruto)
+  defecto: mdi:car-cog
+speed:
+  plataforma: sensor
+  descripcion: Velocidad
+  defecto: mdi:speedometer
+trip_mileage:
+  plataforma: sensor
+  descripcion: Kilómetros del trayecto actual
+  defecto: mdi:map-marker-path
+mileage_yesterday:
+  plataforma: sensor
+  descripcion: Kilómetros recorridos ayer
+  defecto: mdi:calendar-arrow-left
+
+# ---------------------------------------------------------------------------
+# SENSORES BINARIOS
+# ---------------------------------------------------------------------------
+cloud_connected:
+  plataforma: binary_sensor
+  descripcion: El coche responde en la nube
+engine:
+  plataforma: binary_sensor
+  descripcion: Motor en marcha
+  estados:
+    "on": {mdi: mdi:engine}
+    "off": {mdi: mdi:engine-off-outline}
+charging:
+  plataforma: binary_sensor
+  descripcion: Cargando
+  estados:
+    "on": {mdi: mdi:lightning-bolt}
+    "off": {mdi: mdi:lightning-bolt-outline}
+ac_connector:
+  plataforma: binary_sensor
+  descripcion: Manguera AC (Tipo 2) enchufada
+  defecto: mdi:ev-plug-type2
+dc_connector:
+  plataforma: binary_sensor
+  descripcion: Manguera DC (CCS2) enchufada
+  defecto: mdi:ev-plug-ccs2
+door_front_left:
+  plataforma: binary_sensor
+  descripcion: Puerta delantera izquierda
+  estados:
+    "on": {archivo: open, mdi: mdi:car-door}
+    "off": {archivo: closed, mdi: mdi:car-door}
+door_front_right:
+  plataforma: binary_sensor
+  descripcion: Puerta delantera derecha
+  estados:
+    "on": {archivo: open, mdi: mdi:car-door}
+    "off": {archivo: closed, mdi: mdi:car-door}
+door_rear_left:
+  plataforma: binary_sensor
+  descripcion: Puerta trasera izquierda
+  estados:
+    "on": {archivo: open, mdi: mdi:car-door}
+    "off": {archivo: closed, mdi: mdi:car-door}
+door_rear_right:
+  plataforma: binary_sensor
+  descripcion: Puerta trasera derecha
+  estados:
+    "on": {archivo: open, mdi: mdi:car-door}
+    "off": {archivo: closed, mdi: mdi:car-door}
+trunk:
+  plataforma: binary_sensor
+  descripcion: Maletero (lectura)
+  estados:
+    "on": {archivo: open}
+    "off": {archivo: closed}
+hood:
+  plataforma: binary_sensor
+  descripcion: Capó
+  estados:
+    "on": {archivo: open}
+    "off": {archivo: closed}
+any_door_open:
+  plataforma: binary_sensor
+  descripcion: Alguna puerta o el maletero abiertos
+  estados:
+    "on": {archivo: open, mdi: mdi:car-door}
+    "off": {archivo: closed, mdi: mdi:car}
+window_front_left:
+  plataforma: binary_sensor
+  descripcion: Ventanilla delantera izquierda
+  estados:
+    "on": {archivo: open, mdi: mdi:window-open-variant}
+    "off": {archivo: closed, mdi: mdi:window-closed-variant}
+window_front_right:
+  plataforma: binary_sensor
+  descripcion: Ventanilla delantera derecha
+  estados:
+    "on": {archivo: open, mdi: mdi:window-open-variant}
+    "off": {archivo: closed, mdi: mdi:window-closed-variant}
+window_rear_left:
+  plataforma: binary_sensor
+  descripcion: Ventanilla trasera izquierda
+  estados:
+    "on": {archivo: open, mdi: mdi:window-open-variant}
+    "off": {archivo: closed, mdi: mdi:window-closed-variant}
+window_rear_right:
+  plataforma: binary_sensor
+  descripcion: Ventanilla trasera derecha
+  estados:
+    "on": {archivo: open, mdi: mdi:window-open-variant}
+    "off": {archivo: closed, mdi: mdi:window-closed-variant}
+lock_driver:
+  plataforma: binary_sensor
+  descripcion: Cerradura puerta del conductor (on = desbloqueada)
+  estados:
+    "on": {archivo: unlocked, mdi: mdi:car-door-lock-open}
+    "off": {archivo: locked, mdi: mdi:car-door-lock}
+lock_passenger:
+  plataforma: binary_sensor
+  descripcion: Cerradura puerta del acompañante (on = desbloqueada)
+  estados:
+    "on": {archivo: unlocked, mdi: mdi:car-door-lock-open}
+    "off": {archivo: locked, mdi: mdi:car-door-lock}
+central_locking:
+  plataforma: binary_sensor
+  descripcion: Cierre centralizado (on = desbloqueado)
+  estados:
+    "on": {archivo: unlocked, mdi: mdi:lock-open-variant}
+    "off": {archivo: locked, mdi: mdi:lock}
+tire_alarm_front_left:
+  plataforma: binary_sensor
+  descripcion: Aviso neumático delantero izquierdo
+  estados:
+    "on": {archivo: alert, mdi: mdi:car-tire-alert}
+    "off": {archivo: ok, mdi: mdi:tire}
+tire_alarm_front_right:
+  plataforma: binary_sensor
+  descripcion: Aviso neumático delantero derecho
+  estados:
+    "on": {archivo: alert, mdi: mdi:car-tire-alert}
+    "off": {archivo: ok, mdi: mdi:tire}
+tire_alarm_rear_left:
+  plataforma: binary_sensor
+  descripcion: Aviso neumático trasero izquierdo
+  estados:
+    "on": {archivo: alert, mdi: mdi:car-tire-alert}
+    "off": {archivo: ok, mdi: mdi:tire}
+tire_alarm_rear_right:
+  plataforma: binary_sensor
+  descripcion: Aviso neumático trasero derecho
+  estados:
+    "on": {archivo: alert, mdi: mdi:car-tire-alert}
+    "off": {archivo: ok, mdi: mdi:tire}
+high_beam:
+  plataforma: binary_sensor
+  descripcion: Luz de carretera
+  estados:
+    "on": {mdi: mdi:car-light-high}
+    "off": {mdi: mdi:car-light-high}
+low_beam:
+  plataforma: binary_sensor
+  descripcion: Luz de cruce
+  estados:
+    "on": {mdi: mdi:car-light-dimmed}
+    "off": {mdi: mdi:car-light-dimmed}
+position_lamp:
+  plataforma: binary_sensor
+  descripcion: Luz de posición
+  estados:
+    "on": {mdi: mdi:car-parking-lights}
+    "off": {mdi: mdi:car-parking-lights}
+indicator_left:
+  plataforma: binary_sensor
+  descripcion: Intermitente izquierdo
+  estados:
+    "on": {mdi: mdi:arrow-left-bold-circle}
+    "off": {mdi: mdi:arrow-left-bold-circle-outline}
+indicator_right:
+  plataforma: binary_sensor
+  descripcion: Intermitente derecho
+  estados:
+    "on": {mdi: mdi:arrow-right-bold-circle}
+    "off": {mdi: mdi:arrow-right-bold-circle-outline}
+climate_on:
+  plataforma: binary_sensor
+  descripcion: Climatizador encendido
+  estados:
+    "on": {mdi: mdi:air-conditioner}
+    "off": {mdi: mdi:fan-off}
+
+# ---------------------------------------------------------------------------
+# BOTONES
+# ---------------------------------------------------------------------------
+refresh:
+  plataforma: button
+  descripcion: Pedir datos frescos al coche
+  defecto: mdi:refresh
+flash_lights:
+  plataforma: button
+  descripcion: Parpadear luces
+  defecto: mdi:car-light-alert
+honk_horn:
+  plataforma: button
+  descripcion: Tocar el claxon
+  defecto: mdi:bullhorn
+flash_and_honk:
+  plataforma: button
+  descripcion: Luces y claxon a la vez
+  defecto: mdi:alarm-light
+
+# ---------------------------------------------------------------------------
+# CONTROLES
+# ---------------------------------------------------------------------------
+cabin_climate:
+  plataforma: climate
+  descripcion: Climatización del habitáculo
+  estados:
+    "off": {mdi: mdi:fan-off}
+    heat_cool: {mdi: mdi:air-conditioner}
+seat_heat_driver:
+  plataforma: number
+  descripcion: Calefacción asiento conductor (0-3)
+  defecto: mdi:car-seat-heater
+seat_heat_passenger:
+  plataforma: number
+  descripcion: Calefacción asiento acompañante (0-3)
+  defecto: mdi:car-seat-heater
+seat_vent_driver:
+  plataforma: number
+  descripcion: Ventilación asiento conductor (0-3)
+  defecto: mdi:car-seat-cooler
+seat_vent_passenger:
+  plataforma: number
+  descripcion: Ventilación asiento acompañante (0-3)
+  defecto: mdi:car-seat-cooler
+steering_wheel_heat:
+  plataforma: switch
+  descripcion: Volante calefactado
+  defecto: mdi:steering
+front_defrost:
+  plataforma: switch
+  descripcion: Desempañado delantero
+  defecto: mdi:car-defrost-front
+doors:
+  plataforma: lock
+  descripcion: Cierre centralizado (control con PIN)
+  estados:
+    locked: {mdi: mdi:car-door-lock}
+    unlocked: {mdi: mdi:car-door-lock-open}
+pin_arm:
+  plataforma: lock
+  descripcion: Desbloqueo acciones con PIN (Opción B)
+  estados:
+    locked: {mdi: mdi:lock}
+    unlocked: {mdi: mdi:lock-open-outline}
+windows:
+  plataforma: cover
+  descripcion: Todas las ventanillas (control con PIN)
+  estados:
+    open: {mdi: mdi:window-open-variant}
+    closed: {mdi: mdi:window-closed-variant}
+  defecto: mdi:window-closed-variant
+trunk_control:
+  plataforma: cover
+  descripcion: Maletero (control con PIN)
+  estados:
+    open: {mdi: mdi:car-back}
+    closed: {mdi: mdi:car-back}
+
+# ---------------------------------------------------------------------------
+# IMÁGENES
+# ---------------------------------------------------------------------------
+official_image:
+  plataforma: image
+  descripcion: Imagen oficial que envía el servidor de Deepal
+dec_photo:
+  plataforma: image
+  descripcion: Foto DEC según versión y color elegidos
