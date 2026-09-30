@@ -7,11 +7,13 @@ Prioridad alta: todo lo que en
 tiene `Verificado = No`.
 
 - [x] Arranque limpio en HA 2026.3+ con una cuenta española por **correo**.
-- [ ] Login por **SMS**: el servidor acepta la petición pero el SMS no llega
-      (b1-b4, también con cabeceras V1.12.0 y sin `authorization`). En b5 se
-      registra la respuesta completa: buscar `DEC Deepal login (informativo)`.
-- [ ] Asistente de Reparaciones "Configura tu vehículo" (arreglado en b5,
-      pendiente de probar).
+- [ ] Login por **SMS**: el servidor responde éxito completo
+      (`success: true, code: 00000, data: "SUC"`, b5) pero el SMS no llega.
+      La petición es idéntica a la de v1 (verificada en su día) y a la de
+      Deepal Alternative → el fallo parece estar en el envío de Deepal o en
+      que el número no pertenece a la cuenta. Pendiente: probar SMS en la app
+      oficial con el mismo número.
+- [x] Asistente de Reparaciones "Configura tu vehículo" (b5).
 - [x] Batería, autonomía, 4 presiones, temperatura interior y del climatizador.
 - [x] Imagen oficial (b2): PNG de `ca-m.iov.changanauto.com.de`.
 - [x] Capacidades de un **Max** (responde con `vehicleId`).
