@@ -23,6 +23,9 @@ REDACTED: Final = "**OCULTO**"
 EXACT_KEYS: Final = frozenset(
     {
         "vin",
+        "VIN",
+        "vinCode",
+        "vehicle_vin",
         "vehicle_id",
         "vehicleId",
         "carId",
@@ -55,7 +58,8 @@ SENSITIVE_PARTS: Final = (
     "private",
     "pin",
     "serial",
-    "vin",
+    # "vin" NO va aquí: "driving" lo contiene y ocultaba claves inocentes como
+    # "unlockKeyDrivingStatus". El VIN se oculta por nombre exacto (EXACT_KEYS).
     "device_id",
     "deviceid",
     "user_id",

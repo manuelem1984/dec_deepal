@@ -44,6 +44,16 @@ def test_trim_features_and_photos(registries) -> None:  # noqa: ANN001
     assert model.display_name(None) == "Deepal S05 (2024-25)"
 
 
+def test_capabilities_spanish_max_codes() -> None:
+    """Códigos reales de un S05 Max de España (diagnóstico 30-09-2026)."""
+    from custom_components.dec_deepal.api.models import Capabilities
+
+    max_codes = ["#battery", "#heat3", "#vent3", "FronSeatVentilationSW", "DriverSeatHeaterSW"]
+    assert Capabilities(raw_codes=max_codes).trim_hint == "max"
+    assert Capabilities(raw_codes=["#battery", "#heat3"]).trim_hint == "pro"
+    assert Capabilities(raw_codes=[]).trim_hint is None
+
+
 def test_tire_alarm_icons(registries) -> None:  # noqa: ANN001
     icons = registries.icons
     assert icons.resolve("tire_alarm_front_left", "off") == "mdi:tire"

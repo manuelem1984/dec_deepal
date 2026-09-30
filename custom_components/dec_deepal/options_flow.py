@@ -139,9 +139,11 @@ class DecDeepalOptionsFlow(OptionsFlow):
             )
 
         stored = self.config_entry.options.get(OPT_APPEARANCE, {}).get(self._vehicle_id, {})
+        capabilities = runtime.vehicles[self._vehicle_id].capabilities
+        hint = capabilities.trim_hint if capabilities else None
         return self.async_show_form(
             step_id="appearance_details",
-            data_schema=details_schema(model, stored),
+            data_schema=details_schema(model, stored, hint),
             description_placeholders={"model": model.name},
         )
 

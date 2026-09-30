@@ -82,9 +82,12 @@ class VehicleSetupFlow(RepairsFlow):
         if user_input is not None:
             return self._save(entry, user_input)
         stored = entry.options.get(OPT_APPEARANCE, {}).get(self._vehicle_id, {})
+        runtime = getattr(entry, "runtime_data", None)
+        context = runtime.vehicles.get(self._vehicle_id) if runtime else None
+        hint = context.capabilities.trim_hint if context and context.capabilities else None
         return self.async_show_form(
             step_id="details",
-            data_schema=details_schema(self._model, stored),
+            data_schema=details_schema(self._model, stored, hint),
             description_placeholders={"model": self._model.name},
         )
 

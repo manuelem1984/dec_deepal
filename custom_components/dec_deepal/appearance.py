@@ -50,15 +50,23 @@ def model_schema(models: list[VehicleModel], default_model: str) -> vol.Schema:
     )
 
 
-def details_schema(model: VehicleModel, stored: Mapping[str, Any]) -> vol.Schema:
+def details_schema(
+    model: VehicleModel,
+    stored: Mapping[str, Any],
+    suggested_trim: str | None = None,
+) -> vol.Schema:
     """Formulario: versión y color del modelo elegido.
 
     Args:
         model: modelo elegido en el paso anterior.
         stored: lo guardado antes para este coche (para rellenar por defecto).
+        suggested_trim: versión deducida de las capacidades del servidor; se
+            propone por defecto si no había nada guardado. Solo es una
+            propuesta: el usuario la confirma o la cambia.
     """
     none_option = selector.SelectOptionDict(value=NONE_CHOICE, label="—")
     trim = stored.get(OPT_TRIM) if stored.get(OPT_MODEL) == model.id else None
+    trim = trim or suggested_trim
     color = stored.get(OPT_COLOR) if stored.get(OPT_MODEL) == model.id else None
     return vol.Schema(
         {

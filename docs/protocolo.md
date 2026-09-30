@@ -56,6 +56,18 @@ la privada firma los comandos.
 categorías. Temperaturas en **décimas**; presión en kPa; `door.doors` y
 `window.windows` son listas de 4.
 
+### Capacidades (`function-config`) ✅
+
+`POST /intl-app-gw/intl-app-user/api/vehicle/function-config` con
+`{"vehicleId": "<carId>"}` (con `carId` responde `COMMON_1_1_01_005`) →
+`{"confList": [...]}`. Códigos vistos en un S05 **Max** de España, entre otros:
+`#heat3`, `#vent3`, `FronSeatHeaterSW`, `FronSeatVentilationSW`,
+`FronSeatVentilationLevel`, `DriverSeatVentilatorSW`, `SteeringWheelSW`,
+`DoorLock`, `WindowSW`, `WindowSlightlyDown`, `TrunkUnlock`, `TrunkAutoSW`,
+`FlashHonk`, `ACSW`, `ACTemperature`, `BatteryChargingPlan`,
+`#batteryHeatingSchedule`, `#lockControl`, `#windowControl`, `#trunkControl`.
+Se usan solo para **proponer** la versión (ventilación → Max).
+
 ### MQTT ✅
 
 1. `getConnConf` (pasarela CA) → broker, puerto, topics.

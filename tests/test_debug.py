@@ -27,6 +27,8 @@ def test_redact_nested_and_jwt() -> None:
     assert result["session"] == {"access_token": REDACTED, "user_id": REDACTED}
     assert result["soc"] == 80
     assert result["note"] == REDACTED
+    # "driving" contiene "vin": no debe ocultarse por eso.
+    assert redact({"unlockKeyDrivingStatus": "0"}) == {"unlockKeyDrivingStatus": "0"}
 
 
 def test_error_classification() -> None:

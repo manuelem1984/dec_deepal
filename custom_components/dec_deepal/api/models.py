@@ -166,17 +166,35 @@ class CommandResult:
 # Capacidades del vehículo
 # ---------------------------------------------------------------------------
 
-#: Códigos de función que usa la app para los asientos (FunctionConfigManager).
-SEAT_VENT_CODES: Final = frozenset({"#driverSeatVent", "#passengerSeatVent"})
+#: Códigos que indican ventilación de asientos delanteros.
+#: - ``#driverSeatVent`` / ``#passengerSeatVent``: los que documenta Deepal
+#:   Alternative (otras regiones).
+#: - ``FronSeatVentilationSW``, ``FronSeatVentilationLevel``,
+#:   ``DriverSeatVentilatorSW``, ``DriverSeatVentilatorLevel``, ``#vent3``:
+#:   los que manda el servidor europeo para un S05 **Max** de España
+#:   (diagnóstico real, 30-09-2026). ⚠️ Falta un diagnóstico de un **Pro** para
+#:   confirmar que el Pro NO los manda.
+SEAT_VENT_CODES: Final = frozenset(
+    {
+        "#driverSeatVent",
+        "#passengerSeatVent",
+        "FronSeatVentilationSW",
+        "FronSeatVentilationLevel",
+        "DriverSeatVentilatorSW",
+        "DriverSeatVentilatorLevel",
+        "#vent3",
+    }
+)
 FUEL_CODE: Final = "#oilMileage"
 
 
 @dataclass(slots=True)
 class Capabilities:
-    """Lista de funciones que el servidor asocia al vehículo (⚠️ opcional).
+    """Lista de funciones que el servidor asocia al vehículo.
 
-    El endpoint ``function-config`` no está verificado en España; si falla, la
-    integración usa las capacidades declaradas en ``vehicles/vehicles.yaml``.
+    ✅ El endpoint ``function-config`` responde en España (cuerpo con
+    ``vehicleId``). Solo se usa como **sugerencia** de versión en el asistente
+    de Configurar / Reparaciones; nunca decide nada por sí solo.
     """
 
     raw_codes: list[str] = field(default_factory=list)
@@ -195,8 +213,8 @@ class Capabilities:
     def trim_hint(self) -> str | None:
         """Pista de versión del S05: ``"max"`` si tiene ventilación, si no ``"pro"``.
 
-        Idea de Deepal Alternative. Solo es una pista: el usuario puede elegir
-        otra versión en las opciones.
+        Idea de Deepal Alternative. Solo es una pista: se propone por defecto
+        en el asistente y el usuario la confirma o la cambia.
         """
         if not self.raw_codes:
             return None

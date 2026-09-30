@@ -3,6 +3,29 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0b3] — 2026-09-30
+
+Ajustes tras el primer diagnóstico real de un S05 Max (b2).
+
+### Cambiado
+
+- Capacidades: se reconocen los códigos de ventilación del servidor europeo
+  (`FronSeatVentilationSW`, `DriverSeatVentilatorSW`, `#vent3`…). La versión
+  deducida ahora se **propone por defecto** en el asistente de Configurar /
+  Reparaciones (el usuario la confirma).
+- `function-config` se pide primero con `vehicleId` (el formato que funciona
+  en España), ahorrando una petición fallida en cada arranque.
+
+### Corregido
+
+- Diagnósticos: la clave `unlockKeyDrivingStatus` (y cualquiera con
+  "driving") se ocultaba por contener "vin".
+
+### Verificado con el coche real
+
+- Imagen oficial; temperaturas y presiones REST (décimas de grado, kPa);
+  endpoint de capacidades.
+
 ## [2.0.0b2] — 2026-09-30
 
 Primeras correcciones tras probar la b1 con un S05 Max real.

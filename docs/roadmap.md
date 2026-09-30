@@ -11,9 +11,11 @@ tiene `Verificado = No`.
       aceptó la petición). Reintentar con el nuevo "Reenviar el código" y
       mirar el registro (`Deepal aceptó la petición de código por sms…`).
 - [x] Batería, autonomía, 4 presiones, temperatura interior y del climatizador.
-- [ ] Imagen oficial: revisar `vehiculos → imagen_oficial` en diagnósticos.
-- [ ] Capacidades (`vehiculos → capacidades`) de un Pro y un Max, para ver si
-      permiten distinguir la versión.
+- [x] Imagen oficial (b2): PNG de `ca-m.iov.changanauto.com.de`.
+- [x] Capacidades de un **Max** (responde con `vehicleId`).
+- [ ] Capacidades de un **Pro**: confirmar que no manda `FronSeatVentilationSW`
+      ni `#vent3` (pedir diagnóstico a alguien con un Pro).
+- [ ] Cerraduras con el coche **abierto** (con el coche cerrado vale 0: ✅).
 - [ ] Reautenticación: entrar en la app oficial con la misma cuenta y
       comprobar que HA pide volver a entrar y que funciona.
 - [ ] Iconos `dec:` visibles (luces, intermitentes, volante) y selector de

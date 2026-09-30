@@ -67,10 +67,13 @@ vehículo**.
 En la ficha del dispositivo el modelo aparece como
 `nombre_con_version` del catálogo, p. ej. **Deepal S05 Max (2024-25)**.
 
-> La versión **no** se adivina. Una primera versión intentaba deducirla de las
-> capacidades que informa el servidor (`function-config`) y clasificó un Max
-> como Pro. Esas capacidades se siguen leyendo y aparecen en los diagnósticos
-> (`vehiculos → capacidades`) para estudiarlas con coches reales.
+> La versión **nunca se aplica sola**: en el asistente se **propone** la que
+> se deduce de las capacidades del servidor (`function-config`) y el usuario
+> la confirma o la cambia. La b1 la aplicaba sola y clasificó un Max como Pro,
+> porque en España los códigos de ventilación son otros
+> (`FronSeatVentilationSW`, `#vent3`…). Las capacidades se ven en los
+> diagnósticos (`vehiculos → capacidades`). Falta el diagnóstico de un **Pro**
+> para confirmar que no manda esos códigos.
 
 ## Funciones (qué entidades se crean)
 

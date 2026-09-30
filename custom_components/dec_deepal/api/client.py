@@ -70,15 +70,16 @@ class DeepalClient:
         return vehicles
 
     async def get_capabilities(self, vehicle: VehicleInfo) -> Capabilities | None:
-        """Funciones que el servidor asocia al coche. ⚠️ Sin verificar en España.
+        """Funciones que el servidor asocia al coche.
 
-        No se conoce con certeza el nombre del campo del cuerpo, así que se
-        prueban los candidatos conocidos (como hace Deepal Alternative). Nunca
-        lanza error: si no hay forma, devuelve ``None``.
+        ✅ En España funciona con ``{"vehicleId": ...}`` (con ``carId`` responde
+        ``COMMON_1_1_01_005``), así que se prueba primero. Los demás
+        candidatos quedan por si otra región los necesita. Nunca lanza error:
+        si no hay forma, devuelve ``None``.
         """
         candidates: list[dict[str, Any]] = [
-            {"carId": vehicle.vehicle_id},
             {"vehicleId": vehicle.vehicle_id},
+            {"carId": vehicle.vehicle_id},
         ]
         if vehicle.vin:
             candidates.append({"vin": vehicle.vin})
