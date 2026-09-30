@@ -71,6 +71,9 @@ class VehicleContext:
     capabilities: Capabilities | None = None
     #: Resultado de la última descarga de la imagen oficial (diagnóstico).
     official_image_status: dict[str, Any] = field(default_factory=dict)
+    #: Imagen oficial ya descargada ``(bytes, content_type)``; la comparten
+    #: "Imagen oficial" e "Imagen DEC" (cuando no hay foto del catálogo).
+    official_image_cache: tuple[bytes, str] | None = None
 
     def has(self, feature: str) -> bool:
         """¿El coche tiene esta función? (según modelo y versión)."""

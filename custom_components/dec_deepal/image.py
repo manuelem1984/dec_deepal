@@ -3,7 +3,7 @@
 - **official_image** — "Imagen oficial": la foto que manda el servidor de
   Deepal en la lista de vehículos. Si el servidor no manda ninguna, la entidad
   aparece como no disponible.
-- **dec_photo** — "Foto DEC": la foto del catálogo (``vehicles/photos``) que
+- **dec_photo** — "Imagen DEC": la foto del catálogo (``vehicles/photos``) que
   corresponde a la versión y el color elegidos en Configurar. Si no se han
   elegido, o falta esa foto, se usa la foto por defecto del modelo. Ver
   ``docs/imagenes.md``.
@@ -60,6 +60,56 @@ def _guess_content_type(url: str, header: str | None, data: bytes) -> str | None
     return guessed if guessed and guessed.startswith("image/") else None
 
 
+async def fetch_official_image(
+    hass: HomeAssistant, vehicle: VehicleContext
+) -> tuple[bytes, str] | None:
+    """Descarga la imagen oficial del coche (una vez; luego, de memoria).
+
+    La usan las dos entidades: "Imagen oficial" siempre, e "Imagen DEC" cuando
+    el catálogo no tiene foto para el coche. El resultado de cada intento se
+    guarda en ``vehicle.official_image_status`` (lo muestran los diagnósticos,
+    sin la URL completa).
+
+    Returns:
+        ``(bytes, content_type)`` o ``None`` si no hay URL o la descarga falla.
+    """
+    if vehicle.official_image_cache is not None:
+        return vehicle.official_image_cache
+    url = vehicle.info.image_url
+    if not url:
+        vehicle.official_image_status = {"estado": "sin_url"}
+        return None
+    host = urlparse(url).netloc or "(URL relativa)"
+    try:
+        async with async_get_clientsession(hass).get(
+            url, timeout=aiohttp.ClientTimeout(total=DOWNLOAD_TIMEOUT)
+        ) as response:
+            data = await response.read()
+            header = response.headers.get("Content-Type")
+            status = response.status
+    except (aiohttp.ClientError, TimeoutError, ValueError) as err:
+        vehicle.official_image_status = {"estado": "error", "servidor": host, "error": str(err)}
+        _LOGGER.warning("Imagen oficial: no se pudo descargar de %s: %s", host, err)
+        return None
+
+    content_type = _guess_content_type(url, header, data)
+    vehicle.official_image_status = {
+        "estado": "ok" if status == 200 and content_type else "error",
+        "servidor": host,
+        "http": status,
+        "content_type_servidor": header,
+        "content_type_usado": content_type,
+        "bytes": len(data),
+    }
+    if status != 200 or content_type is None:
+        _LOGGER.warning(
+            "Imagen oficial no válida (servidor %s, HTTP %s, tipo %s)", host, status, header
+        )
+        return None
+    vehicle.official_image_cache = (data, content_type)
+    return vehicle.official_image_cache
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: DecDeepalConfigEntry,
@@ -69,13 +119,17 @@ async def async_setup_entry(
     runtime = entry.runtime_data
     entities: list[ImageEntity] = []
     for vehicle in runtime.vehicles.values():
+        vehicle.official_image_status = {
+            "estado": "sin_descargar",
+            "tiene_url": bool(vehicle.info.image_url),
+        }
         entities.append(DecOfficialImage(hass, runtime, vehicle))
-        entities.append(DecPhoto(hass, runtime, vehicle))
+        entities.append(DecImage(hass, runtime, vehicle))
     async_add_entities(entities)
 
 
 class DecOfficialImage(DecDeepalEntity, ImageEntity):
-    """Foto oficial que devuelve el servidor (``vehicleImageUrl``...)."""
+    """"Imagen oficial": la que devuelve el servidor (``vehicleImageUrl``...)."""
 
     def __init__(
         self, hass: HomeAssistant, runtime: DecDeepalRuntime, vehicle: VehicleContext
@@ -84,65 +138,31 @@ class DecOfficialImage(DecDeepalEntity, ImageEntity):
         ImageEntity.__init__(self, hass)
         # La URL no cambia mientras la integración está cargada.
         self._attr_image_last_updated = datetime.now(UTC)
-        self._cached: bytes | None = None
-        # Resultado de cada descarga: vehicle.official_image_status (lo
-        # muestran los diagnósticos, sin la URL completa).
-        self.vehicle.official_image_status = {
-            "estado": "sin_descargar",
-            "tiene_url": bool(vehicle.info.image_url),
-        }
-
-    @property
-    def _url(self) -> str | None:
-        return self.vehicle.info.image_url
 
     @property
     def available(self) -> bool:
         """Solo disponible si el servidor dio una URL."""
-        return bool(self._url)
+        return bool(self.vehicle.info.image_url)
 
     async def async_image(self) -> bytes | None:
-        """Descarga la imagen (una vez; luego se sirve de memoria)."""
-        if self._cached is not None:
-            return self._cached
-        url = self._url
-        if not url:
-            self.vehicle.official_image_status = {"estado": "sin_url"}
+        """Imagen oficial (descargada una vez)."""
+        result = await fetch_official_image(self.hass, self.vehicle)
+        if result is None:
             return None
-        host = urlparse(url).netloc or "(URL relativa)"
-        try:
-            async with async_get_clientsession(self.hass).get(
-                url, timeout=aiohttp.ClientTimeout(total=DOWNLOAD_TIMEOUT)
-            ) as response:
-                data = await response.read()
-                header = response.headers.get("Content-Type")
-                status = response.status
-        except (aiohttp.ClientError, TimeoutError, ValueError) as err:
-            self.vehicle.official_image_status = {"estado": "error", "servidor": host, "error": str(err)}
-            _LOGGER.warning("Imagen oficial: no se pudo descargar de %s: %s", host, err)
-            return None
-
-        content_type = _guess_content_type(url, header, data)
-        self.vehicle.official_image_status = {
-            "estado": "ok" if status == 200 and content_type else "error",
-            "servidor": host,
-            "http": status,
-            "content_type_servidor": header,
-            "content_type_usado": content_type,
-            "bytes": len(data),
-        }
-        if status != 200 or content_type is None:
-            _LOGGER.warning(
-                "Imagen oficial no válida (servidor %s, HTTP %s, tipo %s)", host, status, header
-            )
-            return None
-        self._attr_content_type = content_type
-        self._cached = data
+        data, self._attr_content_type = result
         return data
 
 
-class DecPhoto(DecDeepalEntity, ImageEntity):
-    """Foto del catálogo DEC según versión y color."""
+class DecImage(DecDeepalEntity, ImageEntity):
+    """"Imagen DEC": foto del catálogo según versión y color.
+
+    Si el catálogo no tiene foto para este coche (modelo genérico, o falta
+    la foto y no hay foto por defecto), muestra la **imagen oficial** del
+    servidor. Así la ficha del dispositivo siempre tiene imagen.
+
+    La clave interna sigue siendo ``dec_photo`` (antes "Imagen DEC") para no
+    cambiar el ``entity_id`` de quien ya la tiene.
+    """
 
     def __init__(
         self, hass: HomeAssistant, runtime: DecDeepalRuntime, vehicle: VehicleContext
@@ -158,11 +178,15 @@ class DecPhoto(DecDeepalEntity, ImageEntity):
 
     @property
     def available(self) -> bool:
-        """Disponible si el catálogo tiene foto para este coche."""
-        return self._path is not None
+        """Disponible si hay foto del catálogo o, en su defecto, imagen oficial."""
+        return self._path is not None or bool(self.vehicle.info.image_url)
 
     async def async_image(self) -> bytes | None:
-        """Lee la foto del disco (en un hilo aparte: es bloqueante)."""
-        if self._path is None:
+        """Foto del catálogo (leída del disco) o, si no hay, la imagen oficial."""
+        if self._path is not None:
+            return await self.hass.async_add_executor_job(self._path.read_bytes)
+        result = await fetch_official_image(self.hass, self.vehicle)
+        if result is None:
             return None
-        return await self.hass.async_add_executor_job(self._path.read_bytes)
+        data, self._attr_content_type = result
+        return data

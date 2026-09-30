@@ -80,7 +80,7 @@
       },
       "appearance_details": {
         "title": "Apariencia — versión y color",
-        "description": "Versión y color de tu {model}. Sirven para la \"Foto DEC\" y para crear solo las entidades que tiene tu versión.",
+        "description": "Versión y color de tu {model}. Sirven para la \"Imagen DEC\" y para crear solo las entidades que tiene tu versión.",
         "data": { "trim": "Versión", "color": "Color" }
       },
       "pin": {
@@ -128,7 +128,7 @@
           },
           "details": {
             "title": "Versión y color",
-            "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Foto DEC\".",
+            "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Imagen DEC\".",
             "data": { "trim": "Versión", "color": "Color" }
           }
         },
@@ -247,7 +247,7 @@
     },
     "image": {
       "official_image": { "name": "Imagen oficial" },
-      "dec_photo": { "name": "Foto DEC" }
+      "dec_photo": { "name": "Imagen DEC" }
     }
   },
   "exceptions": {

@@ -64,5 +64,6 @@ SOFTWARE.
 ## Iconos
 
 Los iconos incluidos en `custom_components/dec_deepal/icons/svg/` proceden de
-Material Symbols (Google, Apache 2.0) y line-md (Vjacheslav Trushkin, MIT),
-vía Iconify. Detalle por icono en `custom_components/dec_deepal/icons/icons.yaml`.
+Material Symbols (Google, Apache 2.0) y Material Design Icons (Pictogrammers,
+Apache 2.0), vía Iconify. Detalle por icono en
+`custom_components/dec_deepal/icons/README.md`.

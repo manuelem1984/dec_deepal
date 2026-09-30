@@ -37,7 +37,7 @@ Atribución: [NOTICE.md](../NOTICE.md).
 ## Lo propio de DEC Deepal
 
 - Catálogos editables sin código: países, vehículos/colores/fotos, iconos.
-- Dos imágenes separadas (oficial y foto DEC).
+- Dos imágenes separadas (oficial y imagen DEC).
 - Opción A / Opción B (armado) para comandos con PIN.
 - Módulo de depuración con capturas y comparación.
 - Archivo de correlación endpoints ↔ entidades.

@@ -3,7 +3,7 @@
 Menú con tres apartados:
 
 - **Apariencia** (``appearance`` → ``appearance_details``): modelo, versión y
-  color de cada coche. Decide la "Foto DEC" y qué entidades se crean (p. ej.
+  color de cada coche. Decide la "Imagen DEC" y qué entidades se crean (p. ej.
   ventilación de asientos solo en versiones que la tienen).
 - **Control con PIN** (``pin``): activar puertas/ventanillas/maletero. El PIN
   se **comprueba contra el servidor** antes de guardarlo: un PIN incorrecto o

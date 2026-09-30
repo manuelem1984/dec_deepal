@@ -22,7 +22,7 @@ tiene `Verificado = No`.
       iconos mostrando los `dec:`.
 - [ ] Dejar un SVG nuevo (`outside_temperature.svg`) y comprobar que aparece
       tras reiniciar sin tocar código.
-- [ ] Foto DEC cambia al elegir versión/color; imagen oficial aparece si el
+- [ ] Imagen DEC cambia al elegir versión/color; imagen oficial aparece si el
       servidor manda URL.
 - [ ] Asientos (escala 1:1), volante y desempañado: lectura y control.
 - [ ] Encender el clima NO apaga el volante en pantalla.

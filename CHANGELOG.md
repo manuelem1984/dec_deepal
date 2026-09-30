@@ -3,6 +3,31 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0b4] — 2026-09-30
+
+### Cambiado
+
+- "Foto DEC" pasa a llamarse **"Imagen DEC"**. Si el catálogo no tiene foto
+  para el coche (p. ej. modelo genérico), muestra la **imagen oficial** en vez
+  de quedar no disponible. La imagen oficial se descarga una sola vez para las
+  dos entidades. (El `entity_id` no cambia: la clave interna sigue siendo
+  `dec_photo`.)
+- Nuevos iconos de luces de carretera, cruce y posición (Material Design
+  Icons), un solo icono para encendida y apagada. Se retiran los `_on`/`_off`
+  anteriores.
+
+### Corregido
+
+- **Login por SMS:** las cabeceras ahora son las de la app actual, iguales a
+  las de Deepal Alternative (a quien le llegan los SMS): `appversion V1.12.0`
+  (antes `V1.11.0`) y sin cabecera `authorization` vacía antes de iniciar
+  sesión. El servidor aceptaba la petición pero el SMS no llegaba.
+  ⚠️ Pendiente de confirmar.
+
+### Pruebas
+
+- Nueva prueba del asistente de Reparaciones "Configura tu vehículo".
+
 ## [2.0.0b3] — 2026-09-30
 
 Ajustes tras el primer diagnóstico real de un S05 Max (b2).
@@ -83,7 +108,7 @@ Reescritura completa desde cero de
 - **Multi-idioma:** todos los textos en `translations/`, incluidos los errores.
 - **Iconos sin código:** `icons/icons.yaml` + `icons/svg/<entidad>_<estado>.svg`,
   con respaldo `mdi:` y avisos al arrancar.
-- **Dos imágenes separadas:** "Imagen oficial" (servidor) y "Foto DEC" (catálogo).
+- **Dos imágenes separadas:** "Imagen oficial" (servidor) y "Imagen DEC" (catálogo).
 - **Correlación endpoints ↔ entidades:** `docs/correlacion_endpoints_entidades.csv`.
 - **Depuración:** modo depuración en opciones, registro de eventos en
   diagnósticos y servicio `dec_deepal.capture_snapshot` con comparación entre

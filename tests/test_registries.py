@@ -63,7 +63,9 @@ def test_tire_alarm_icons(registries) -> None:  # noqa: ANN001
 
 def test_icon_resolution(registries) -> None:  # noqa: ANN001
     icons = registries.icons
-    assert icons.resolve("high_beam", "on") == "dec:high_beam_on"
+    assert icons.resolve("high_beam", "on") == "dec:high_beam"
+    assert icons.resolve("high_beam", "off") == "dec:high_beam"
+    assert icons.resolve("indicator_left", "on") == "dec:indicator_left_on"
     assert icons.resolve("steering_wheel_heat", "off") == "dec:steering_wheel_heat"
     assert icons.resolve("windows", "open") == "mdi:window-open-variant"
     assert icons.resolve("door_front_left", "on") == "mdi:car-door"

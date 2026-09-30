@@ -5,7 +5,9 @@ Cada coche tiene **dos entidades de imagen, independientes**:
 | Entidad | De dónde sale | Si no hay imagen |
 | --- | --- | --- |
 | **Imagen oficial** (`official_image`) | URL que envía el servidor de Deepal en la lista de vehículos | No disponible |
-| **Foto DEC** (`dec_photo`) | Catálogo local `vehicles/photos/`, según modelo + versión + color | Foto por defecto del modelo; si tampoco hay, no disponible |
+| **Imagen DEC** (`dec_photo`) | Catálogo local `vehicles/photos/`, según modelo + versión + color | Foto por defecto del modelo; si tampoco hay (p. ej. modelo genérico), **la imagen oficial** |
+
+La imagen oficial se descarga una sola vez y la comparten las dos entidades.
 
 ## El catálogo: `vehicles/vehicles.yaml`
 

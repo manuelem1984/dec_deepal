@@ -60,7 +60,7 @@ Un dispositivo por coche con: batería, autonomía, estado de carga, corrientes,
 tiempo restante, kilometraje, puertas, ventanillas, cerraduras, capó,
 maletero, presión y avisos de neumáticos, luces, temperatura y humedad
 interior, climatización, asientos, volante, desempañado, botones de luces y
-claxon, y dos imágenes (oficial y foto DEC).
+claxon, y dos imágenes (oficial y imagen DEC).
 
 Qué está comprobado con el coche real y qué no:
 [docs/correlacion_endpoints_entidades.csv](docs/correlacion_endpoints_entidades.csv)
