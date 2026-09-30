@@ -61,5 +61,10 @@ def test_parse_connection_config() -> None:
 
 
 def test_parse_connection_config_reports_missing() -> None:
+    # Broker presente pero sin ningún topic: debe decir qué falta.
+    config = {"mqttConnectionInfos": [{"clusterInfos": [{"brokerUrl": "ssl://b"}]}]}
     with pytest.raises(ValueError, match="falta"):
+        parse_connection_config(config)
+    # Sin bloque de broker: error específico.
+    with pytest.raises(ValueError, match="clusterInfos"):
         parse_connection_config({"mqttConnectionInfos": [{"clusterInfos": [{}]}]})
