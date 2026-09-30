@@ -7,9 +7,11 @@ Prioridad alta: todo lo que en
 tiene `Verificado = No`.
 
 - [x] Arranque limpio en HA 2026.3+ con una cuenta española por **correo**.
-- [ ] Login por **SMS**: en la primera prueba el SMS no llegó (el servidor
-      aceptó la petición). Reintentar con el nuevo "Reenviar el código" y
-      mirar el registro (`Deepal aceptó la petición de código por sms…`).
+- [ ] Login por **SMS**: el servidor acepta la petición pero el SMS no llega
+      (b1-b4, también con cabeceras V1.12.0 y sin `authorization`). En b5 se
+      registra la respuesta completa: buscar `DEC Deepal login (informativo)`.
+- [ ] Asistente de Reparaciones "Configura tu vehículo" (arreglado en b5,
+      pendiente de probar).
 - [x] Batería, autonomía, 4 presiones, temperatura interior y del climatizador.
 - [x] Imagen oficial (b2): PNG de `ca-m.iov.changanauto.com.de`.
 - [x] Capacidades de un **Max** (responde con `vehicleId`).

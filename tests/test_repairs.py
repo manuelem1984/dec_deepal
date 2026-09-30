@@ -51,11 +51,14 @@ async def test_vehicle_setup_fix_flow(hass: HomeAssistant) -> None:
     flow.handler = DOMAIN
     flow.flow_id = "test"
 
-    result = await flow.async_step_init()
-    assert result["type"] == "form", result
+    # Home Assistant arranca el asistente llamando a init con {"issue_id": ...}
+    # (así lo hace FlowManager.async_init en 2026.9). Debe mostrar el
+    # formulario del modelo, no intentar procesarlo.
+    result = await flow.async_step_init({"issue_id": "vehicle_not_configured_car1"})
+    assert result["type"] == "form" and result["step_id"] == "model", result
     _serialize(result)
 
-    result = await flow.async_step_init({"model": "s05_2024"})
+    result = await flow.async_step_model({"model": "s05_2024"})
     assert result["type"] == "form" and result["step_id"] == "details", result
     _serialize(result)
 

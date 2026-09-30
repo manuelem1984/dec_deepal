@@ -56,6 +56,7 @@ from .const import (
     LOGIN_METHOD_SMS,
     NAME,
 )
+from .debug.redact import redact
 from .registries import RegistryError
 from .registries.countries import Country
 from .runtime import async_get_registries
@@ -241,6 +242,7 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
                 async_get_clientsession(self.hass),
                 self._country.profile(),
                 DeepalSession(device_id=self._device_id),
+                on_exchange=_log_login_exchange,
             )
         try:
             await self._resend(DeepalAuth(self._transport))
@@ -450,6 +452,27 @@ def _account_unique_id(session: DeepalSession, vehicles: list[VehicleInfo]) -> s
     primer coche (así no se puede añadir dos veces la misma cuenta).
     """
     return str(session.user_id or vehicles[0].vehicle_id)
+
+
+def _log_login_exchange(exchange: dict[str, Any]) -> None:
+    """Registra (INFO) la respuesta COMPLETA del servidor a cada paso del login.
+
+    Sirve para investigar por qué no llega un SMS o un correo: el servidor
+    puede responder "success: true" pero con un aviso en ``msg`` o ``data``.
+    Los datos personales (móvil, correo, tokens...) salen ocultos. Busca en el
+    registro de Home Assistant: ``DEC Deepal login``.
+
+    Se usa nivel WARNING (y no INFO) a propósito: muchas instalaciones solo
+    muestran avisos por defecto, y esto solo ocurre durante el asistente de
+    login (pocas líneas). Es informativo, no un error.
+    """
+    _LOGGER.warning(
+        "DEC Deepal login (informativo): %s → respuesta=%s error=%s (%s ms)",
+        exchange.get("path"),
+        redact(exchange.get("response")),
+        exchange.get("error"),
+        exchange.get("duration_ms"),
+    )
 
 
 def _mask(identifier: str) -> str:

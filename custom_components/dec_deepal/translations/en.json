@@ -121,7 +121,7 @@
       "title": "Configura tu vehículo: {vehicle}",
       "fix_flow": {
         "step": {
-          "init": {
+          "model": {
             "title": "Modelo de {vehicle}",
             "description": "Hasta que elijas el modelo, el coche funciona en modo genérico (solo datos básicos, sin asientos, volante ni control con PIN). Modelo reconocido por el nombre: {suggestion}.",
             "data": { "model": "Modelo" }

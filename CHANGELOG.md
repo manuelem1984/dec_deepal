@@ -3,6 +3,22 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0b5] — 2026-09-30
+
+### Corregido
+
+- **Reparaciones "Configura tu vehículo" daba error 500.** Home Assistant
+  arranca el asistente llamando al primer paso con `{"issue_id": ...}`, y el
+  asistente lo tomaba por el formulario enviado (buscaba el campo `model`).
+  Ahora el primer paso solo redirige al formulario. La prueba automática
+  reproduce la llamada real.
+
+### Añadido
+
+- Durante el asistente de login se registra (aviso "DEC Deepal login
+  (informativo)") la **respuesta completa** del servidor a cada paso, con los
+  datos personales ocultos, para investigar por qué no llega el SMS.
+
 ## [2.0.0b4] — 2026-09-30
 
 ### Cambiado

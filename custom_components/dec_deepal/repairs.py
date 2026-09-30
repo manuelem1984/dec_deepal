@@ -4,7 +4,8 @@ Mientras un coche no tiene modelo elegido, funciona como "genérico" y aparece
 un aviso en **Ajustes → Reparaciones** (lo crea ``__init__.py``). Al pulsar
 "Enviar" se abre este asistente:
 
-1. ``init``    → Modelo (por defecto, el que se reconoció por el nombre).
+0. ``init``    → Solo redirige a ``model`` (HA lo llama con datos propios).
+1. ``model``   → Modelo (por defecto, el que se reconoció por el nombre).
 2. ``details`` → Versión y color (se salta si el modelo no tiene).
 
 Al terminar se guardan las opciones; la integración se recarga sola, crea las
@@ -39,6 +40,16 @@ class VehicleSetupFlow(RepairsFlow):
         return self.hass.config_entries.async_get_entry(self._entry_id)
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Entrada del asistente: salta directamente al formulario del modelo.
+
+        ¡Ojo! Home Assistant llama a este paso con ``{"issue_id": ...}`` como
+        ``user_input`` (no con ``None``). Por eso aquí no se procesa nada: si
+        se tratara como un formulario enviado, faltaría el campo ``model`` y el
+        asistente fallaría con un error 500 (fallo de la b2-b4).
+        """
+        return await self.async_step_model()
+
+    async def async_step_model(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Paso 1: modelo."""
         entry = self._entry()
         if entry is None:
@@ -62,7 +73,7 @@ class VehicleSetupFlow(RepairsFlow):
             else list(registries.vehicles.models.values())
         )
         return self.async_show_form(
-            step_id="init",
+            step_id="model",
             data_schema=model_schema(models, suggested or models[0].id),
             description_placeholders={
                 "vehicle": context.info.display_name if context else self._vehicle_id,
