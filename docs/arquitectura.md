@@ -118,6 +118,15 @@ Entidad (p. ej. switch volante)
         └─ en segundo plano: condition-inquiry + releer a los 5 s y 25 s
 ```
 
+## Varios coches en una cuenta
+
+- Un coordinador por coche, pero **una sola conexión MQTT a la vez por
+  cuenta** (candado en `api/client.py`): todas las conexiones de la cuenta usan
+  el mismo identificador de cliente y el broker solo admite una; si se abren
+  dos a la vez, cierra la anterior (visto con dos S05, 01-10-2026).
+- La primera lectura de cada coche se hace uno detrás de otro.
+- Si el broker cierra la conexión, se usa el REST de respaldo.
+
 ## Sesión y renovación
 
 - Una **cuenta** = una entrada de configuración = una sesión, compartida por

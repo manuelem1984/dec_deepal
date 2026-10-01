@@ -75,7 +75,9 @@ class WakeResult(StrEnum):
 
 
 #: Errores de la lectura MQTT que permiten seguir con el REST.
-_MQTT_RECOVERABLE: Final = (DeepalError, ConnectionError, TimeoutError, OSError, ValueError)
+#: ``EOFError`` cubre el cierre de la conexión por el broker (por si alguno se
+#: escapa de la traducción a ConnectionError de ``api/mqtt/client.py``).
+_MQTT_RECOVERABLE: Final = (DeepalError, ConnectionError, TimeoutError, OSError, ValueError, EOFError)
 
 
 class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
@@ -260,7 +262,7 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
             previous = self.data.get(s.REPORT_TIME) if self.data else None
             try:
                 code = await self.client.wake(self.vehicle, await self._ssl())
-            except (DeepalError, ConnectionError, TimeoutError, OSError, ValueError) as err:
+            except _MQTT_RECOVERABLE as err:
                 _LOGGER.warning("%s: no se pudo despertar el coche: %s", self.vehicle.display_name, err)
                 self.recorder.record("wake", ok=False, error=str(err))
                 return WakeResult.FAILED

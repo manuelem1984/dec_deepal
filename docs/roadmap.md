@@ -1,8 +1,8 @@
 # Hoja de ruta
 
-## De 2.0.0rc4 a 2.0.0 — prueba mínima con el coche
+## De 2.0.0rc5 a 2.0.0 — prueba mínima con el coche
 
-La rc4 pasa a 2.0.0 (sin cambiar código) si esto funciona:
+La rc5 pasa a 2.0.0 (sin cambiar código) si esto funciona:
 
 - [x] Climatización: encender a 21 °C y apagar (cambio inmediato en HA y
       confirmado en la app oficial).
@@ -16,6 +16,8 @@ La rc4 pasa a 2.0.0 (sin cambiar código) si esto funciona:
 - [x] Volante calefactado y asientos (calefacción y ventilación).
 - [ ] Con el coche dormido: un comando rechazado muestra un mensaje claro y
       la entidad vuelve a su estado anterior.
+
+- [ ] Cuenta con **dos coches**: arranca y los dos muestran datos (rc5).
 
 Lo demás (PIN, ventanillas, cerraduras abiertas, desempañado...) puede
 seguir como ⚠️ en la 2.0.0: está señalado en el CSV de correlación.

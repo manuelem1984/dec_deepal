@@ -144,7 +144,7 @@ def _extract(payload: dict[str, Any], secret_key: str, reading: MqttReading) -> 
     return added
 
 
-async def read_telemetry(
+async def _read_telemetry(
     connection: MqttConnection,
     auth_token: str,
     ssl_context: ssl.SSLContext,
@@ -353,7 +353,7 @@ def _service_result(payload: dict[str, Any], secret_key: str) -> tuple[str, bool
     return None
 
 
-async def wake_vehicle(
+async def _wake_vehicle(
     connection: MqttConnection,
     auth_token: str,
     ssl_context: ssl.SSLContext,
@@ -448,3 +448,53 @@ async def wake_vehicle(
             await writer.wait_closed()
         except (ConnectionError, TimeoutError, OSError, ssl.SSLError):
             pass
+
+
+# ---------------------------------------------------------------------------
+# Puntos de entrada públicos
+# ---------------------------------------------------------------------------
+#
+# El broker puede cerrar la conexión sin avisar (p. ej. si entra otra conexión
+# con el mismo identificador de cliente: lo vimos con dos coches en la misma
+# cuenta, 01-10-2026). Python lo notifica como ``IncompleteReadError``
+# (``EOFError``), que NO es un ``ConnectionError``; si se dejaba escapar, el
+# coordinador no usaba el REST de respaldo y la integración no arrancaba.
+# Aquí se traduce a ``ConnectionError`` para que siempre se trate como un fallo
+# de conexión normal (recuperable).
+
+_DROPPED_CONNECTION = (asyncio.IncompleteReadError, EOFError, ssl.SSLError)
+
+
+async def read_telemetry(
+    connection: MqttConnection,
+    auth_token: str,
+    ssl_context: ssl.SSLContext,
+) -> MqttReading:
+    """Lectura completa de telemetría (ver :func:`_read_telemetry`).
+
+    Raises:
+        ConnectionError: el broker rechazó o cerró la conexión.
+        TimeoutError: no llegó ningún dato a tiempo.
+    """
+    try:
+        return await _read_telemetry(connection, auth_token, ssl_context)
+    except _DROPPED_CONNECTION as err:
+        raise ConnectionError(f"El broker MQTT cerró la conexión: {err}") from err
+
+
+async def wake_vehicle(
+    connection: MqttConnection,
+    auth_token: str,
+    ssl_context: ssl.SSLContext,
+) -> str:
+    """Despierta el coche (ver :func:`_wake_vehicle`).
+
+    Raises:
+        ConnectionError: el broker rechazó o cerró la conexión, o falta el topic.
+        TimeoutError: no llegó la confirmación a tiempo.
+        ValueError: la pasarela rechazó el despertar.
+    """
+    try:
+        return await _wake_vehicle(connection, auth_token, ssl_context)
+    except _DROPPED_CONNECTION as err:
+        raise ConnectionError(f"El broker MQTT cerró la conexión: {err}") from err

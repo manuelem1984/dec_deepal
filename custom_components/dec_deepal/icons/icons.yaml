@@ -410,11 +410,11 @@ trunk_control:
     closed: {mdi: mdi:car-back}
 
 # ---------------------------------------------------------------------------
-# DATOS FIJOS Y UBICACIÓN (deshabilitados por defecto: hoy el S05 no los envía)
+# DATOS FIJOS Y UBICACIÓN (la ubicación, deshabilitada: hoy el S05 no la envía)
 # ---------------------------------------------------------------------------
 license_plate:
   plataforma: sensor
-  descripcion: Matrícula (si el servidor la envía)
+  descripcion: Matrícula (plateNumber de la lista de vehículos)
   defecto: mdi:card-text-outline
 location:
   plataforma: device_tracker

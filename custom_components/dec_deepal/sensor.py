@@ -200,15 +200,12 @@ SENSORS: tuple[DecSensorDescription, ...] = (
     _pressure("tire_pressure_rear_left", s.TIRE_PRESSURE_REAR_LEFT),
     _pressure("tire_pressure_rear_right", s.TIRE_PRESSURE_REAR_RIGHT),
     # --- Datos fijos del coche ----------------------------------------------
-    # Matrícula: la lista de vehículos del servidor puede traerla
-    # (licensePlate / plateNumber). Hoy no llega para el S05 de España:
-    # se crea deshabilitada, por si algún día aparece.
+    # Matrícula: la lista de vehículos del servidor la trae en "plateNumber"
+    # (✅ visto con dos S05 de España, 01-10-2026). Se actualiza al arrancar.
     DecSensorDescription(
         key="license_plate",
         signal="",
         info_value=lambda info: info.license_plate,
-        entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_enabled_default=False,
     ),
 )
 

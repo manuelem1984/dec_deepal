@@ -8,6 +8,7 @@ y reintenta una vez si el servidor dice que el token caducó.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import ssl
 import time
@@ -49,6 +50,12 @@ class DeepalClient:
 
     def __init__(self, account: DeepalAccount) -> None:
         self.account = account
+        # UNA sola conexión MQTT a la vez por cuenta. Todas las conexiones de
+        # la cuenta usan el mismo identificador de cliente (el del
+        # "teléfono"), y el broker solo admite una por identificador: si se
+        # abre otra, cierra la anterior. Con dos coches leyendo a la vez,
+        # ninguno conseguía leer (visto el 01-10-2026). Así van en fila.
+        self._mqtt_lock = asyncio.Lock()
 
     @property
     def _transport(self):  # noqa: ANN202 - atajo interno
@@ -147,7 +154,8 @@ class DeepalClient:
             connection, token = await self._mqtt_session(vehicle)
             return await read_telemetry(connection, token, ssl_context)
 
-        return await self._with_ca_retry(_read)
+        async with self._mqtt_lock:
+            return await self._with_ca_retry(_read)
 
     async def wake(self, vehicle: VehicleInfo, ssl_context: ssl.SSLContext) -> str:
         """Pide al coche que se despierte por MQTT (``TxWakeup``). ⚠️
@@ -164,7 +172,8 @@ class DeepalClient:
             connection, token = await self._mqtt_session(vehicle)
             return await wake_vehicle(connection, token, ssl_context)
 
-        return await self._with_ca_retry(_wake)
+        async with self._mqtt_lock:
+            return await self._with_ca_retry(_wake)
 
     async def _with_ca_retry(self, action):  # noqa: ANN001, ANN202
         """Ejecuta ``action``; si el token de la pasarela CA caducó, renueva y reintenta."""

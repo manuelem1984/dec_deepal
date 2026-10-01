@@ -3,6 +3,26 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc5] — 2026-10-01
+
+### Corregido
+
+- **Cuentas con dos o más coches no arrancaban** ("Error de configuración:
+  0 bytes read..."). Cada coche abría su propia conexión MQTT a la vez, todas
+  con el mismo identificador de cliente (el de la cuenta), y el servidor solo
+  admite una: cerraba las demás. Ahora las conexiones MQTT de una cuenta
+  (lecturas y despertares) van **en fila**, y la primera lectura de cada
+  coche se hace uno detrás de otro.
+- Si el servidor MQTT cierra la conexión, ahora se trata como un fallo de
+  conexión normal y se usa el **REST de respaldo**, en vez de dejar la
+  integración sin arrancar.
+
+### Cambiado
+
+- **Matrícula** habilitada por defecto: el servidor la envía (`plateNumber`)
+  para el S05 de España. Si ya tenías la entidad creada deshabilitada (rc4),
+  habilítala una vez en su ficha.
+
 ## [2.0.0rc4] — 2026-10-01
 
 Incorpora lo útil de las últimas betas de Deepal Alternative (1.3.2-beta.1 a

@@ -14,7 +14,6 @@ Mapa de la integración: ``docs/arquitectura.md``.
 
 from __future__ import annotations
 
-import asyncio
 import logging
 
 from homeassistant.core import HomeAssistant
@@ -196,14 +195,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
 
     entry.runtime_data = runtime
 
-    # Primera lectura de todos los coches a la vez. Si falla, Home Assistant
-    # reintenta la carga más tarde (o pide volver a iniciar sesión).
-    await asyncio.gather(
-        *(
-            vehicle.coordinator.async_config_entry_first_refresh()
-            for vehicle in runtime.vehicles.values()
-        )
-    )
+    # Primera lectura de cada coche, UNO DETRÁS DE OTRO (no a la vez): el
+    # MQTT de la cuenta solo admite una conexión simultánea (ver el candado
+    # de api/client.py). Si falla, Home Assistant reintenta la carga más tarde
+    # (o pide volver a iniciar sesión).
+    for vehicle in runtime.vehicles.values():
+        await vehicle.coordinator.async_config_entry_first_refresh()
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
