@@ -69,17 +69,24 @@ SENSITIVE_PARTS: Final = (
     "phone",
     "latitude",
     "longitude",
+    "plate",  # licensePlate, plateNumber, license_plate...
     "authorization",
 )
 
 _JWT: Final = re.compile(r"^eyJ[\w-]+\.[\w-]+\.[\w-]+$")
 
 
+#: Las mismas claves exactas, en minúsculas: la comparación no distingue
+#: mayúsculas (Deepal manda a veces ``Lat``/``Lng``, visto por Deepal
+#: Alternative en v1.4.0-beta.3).
+_EXACT_KEYS_LOWER: Final = frozenset(key.lower() for key in EXACT_KEYS)
+
+
 def is_sensitive_key(key: Any) -> bool:
-    """¿Hay que ocultar el valor de esta clave?"""
-    if key in EXACT_KEYS:
-        return True
+    """¿Hay que ocultar el valor de esta clave? (sin distinguir mayúsculas)."""
     lowered = str(key).lower()
+    if lowered in _EXACT_KEYS_LOWER:
+        return True
     return any(part in lowered for part in SENSITIVE_PARTS)
 
 

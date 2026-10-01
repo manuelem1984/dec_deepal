@@ -37,6 +37,9 @@ class MqttConnection:
     properties_topic: str  # donde se publica la petición de estado
     login_device_id: str  # did del teléfono (usuario del CONNECT)
     vehicle_device_id: str  # did del coche
+    #: Donde se publican las ÓRDENES por MQTT (``.../properties/set/req``). Solo
+    #: se usa para despertar el coche (ver ``client.wake_vehicle``).
+    properties_set_topic: str | None = None
 
 
 def topic_device_id(topic: str) -> str | None:
@@ -57,8 +60,11 @@ def _first_dict(value: Any) -> dict[str, Any]:
 def parse_connection_config(config: dict[str, Any]) -> MqttConnection:
     """Convierte la respuesta de ``getConnConf`` en :class:`MqttConnection`.
 
-    Los topics de comandos (``/commands/``, ``/set/``) se descartan: la
-    integración solo lee, nunca manda comandos por MQTT.
+    Los topics de comandos (``/commands/``, ``/set/``) no se SUSCRIBEN: no
+    interesan sus respuestas. El de publicar órdenes (``properties/set/req``)
+    sí se guarda, porque es por donde se despierta al coche. Si la
+    configuración no lo trae, se deduce del de estado (``get`` → ``set``),
+    igual que hace Deepal Alternative.
 
     Raises:
         ValueError: si falta cualquier dato imprescindible. El mensaje dice cuál.
@@ -77,7 +83,7 @@ def parse_connection_config(config: dict[str, Any]) -> MqttConnection:
         raise ValueError("Puerto del broker no válido") from err
 
     subscribe: list[str] = []
-    login_topic = properties_topic = None
+    login_topic = properties_topic = set_topic = None
     login_did = vehicle_did = None
 
     for topic_info in info.get("topicInfos") or []:
@@ -93,6 +99,8 @@ def parse_connection_config(config: dict[str, Any]) -> MqttConnection:
             if message_type == "properties" and "/properties/get/req" in topic:
                 properties_topic = topic
                 vehicle_did = topic_device_id(topic)
+            if "/properties/set/req" in topic:
+                set_topic = topic
         for topic in topic_info.get("subTopics") or []:
             if not isinstance(topic, str):
                 continue
@@ -116,6 +124,9 @@ def parse_connection_config(config: dict[str, Any]) -> MqttConnection:
     if missing:
         raise ValueError("getConnConf incompleto: falta " + ", ".join(missing))
 
+    if set_topic is None and properties_topic:
+        set_topic = properties_topic.replace("/properties/get/req", "/properties/set/req")
+
     return MqttConnection(
         host=host,
         port=port,
@@ -124,4 +135,5 @@ def parse_connection_config(config: dict[str, Any]) -> MqttConnection:
         properties_topic=properties_topic,  # type: ignore[arg-type]
         login_device_id=login_did,  # type: ignore[arg-type]
         vehicle_device_id=vehicle_did,  # type: ignore[arg-type]
+        properties_set_topic=set_topic,
     )

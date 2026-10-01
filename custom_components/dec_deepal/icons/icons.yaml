@@ -410,6 +410,18 @@ trunk_control:
     closed: {mdi: mdi:car-back}
 
 # ---------------------------------------------------------------------------
+# DATOS FIJOS Y UBICACIÓN (deshabilitados por defecto: hoy el S05 no los envía)
+# ---------------------------------------------------------------------------
+license_plate:
+  plataforma: sensor
+  descripcion: Matrícula (si el servidor la envía)
+  defecto: mdi:card-text-outline
+location:
+  plataforma: device_tracker
+  descripcion: Ubicación del coche (si el servidor la envía)
+  defecto: mdi:car-search
+
+# ---------------------------------------------------------------------------
 # IMÁGENES
 # ---------------------------------------------------------------------------
 official_image:

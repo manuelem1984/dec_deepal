@@ -98,10 +98,12 @@
         "title": "Avanzado",
         "data": {
           "scan_minutes": "Intervalo de lectura",
+          "wake": "Despertar el coche cuando haga falta",
           "debug": "Modo depuración"
         },
         "data_description": {
           "scan_minutes": "Cada cuánto se leen los datos del coche. Valores muy bajos pueden hacer que Deepal limite la cuenta.",
+          "wake": "Al pulsar \"Actualizar datos del vehículo\" y antes de puertas/ventanillas/maletero, si los datos tienen más de 2 minutos, se despierta el coche y se espera su informe. Como mucho una vez cada 5 minutos, y nunca en las lecturas automáticas, para cuidar la batería de 12 V.",
           "debug": "Guarda peticiones y respuestas completas (sin datos personales) en los diagnósticos y activa los mensajes DEBUG en el registro."
         }
       }
@@ -185,7 +187,8 @@
       "tire_pressure_front_left": { "name": "Presión neumático delantero izquierdo" },
       "tire_pressure_front_right": { "name": "Presión neumático delantero derecho" },
       "tire_pressure_rear_left": { "name": "Presión neumático trasero izquierdo" },
-      "tire_pressure_rear_right": { "name": "Presión neumático trasero derecho" }
+      "tire_pressure_rear_right": { "name": "Presión neumático trasero derecho" },
+      "license_plate": { "name": "Matrícula" }
     },
     "binary_sensor": {
       "cloud_connected": { "name": "Conexión con la nube" },
@@ -248,6 +251,9 @@
       },
       "trunk_control": { "name": "Maletero (control)" }
     },
+    "device_tracker": {
+      "location": { "name": "Ubicación" }
+    },
     "image": {
       "official_image": { "name": "Imagen oficial" },
       "dec_photo": { "name": "Imagen DEC" }
@@ -264,6 +270,8 @@
     "command_rejected": { "message": "El coche rechazó el comando: {error}" },
     "command_rejected_asleep": { "message": "El coche rechazó el comando ({error}). Puede estar dormido u ocupado: vuelve a intentarlo tras usarlo un poco." },
     "command_rejected_power_on": { "message": "El coche tiene que estar apagado para esta orden ({error}). Apágalo y vuelve a intentarlo." },
+    "command_vehicle_asleep": { "message": "El coche no aceptó la orden: puede que esté dormido o sin conexión. Pulsa \"Actualizar datos del vehículo\" para despertarlo y vuelve a intentarlo. ({error})" },
+    "wake_no_report": { "message": "Se pidió al coche que se despertara, pero no ha enviado datos nuevos en 60 segundos. Puede estar sin cobertura; se mantienen los últimos datos." },
     "command_busy": { "message": "Hay otro comando en curso para este coche desde hace demasiado tiempo. Inténtalo en unos segundos." },
     "command_cooldown": { "message": "El coche aún está terminando el comando anterior. Espera {seconds} s." },
     "pin_not_armed": { "message": "Primero desbloquea \"Desbloqueo acciones con PIN\"." },

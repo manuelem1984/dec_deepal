@@ -9,6 +9,8 @@ asistente de voz:
    si no se ha desbloqueado antes "Desbloqueo acciones con PIN".
 2. **Tiempo de espera físico:** parpadear luces (30 s) y claxon (6 s). Repetir
    antes muestra cuántos segundos faltan en vez del rechazo críptico del coche.
+2b. **Despertar previo (solo órdenes con PIN):** si los datos del coche están
+   viejos, se le despierta y se esperan hasta 30 s (ver coordinator.py).
 3. **Cola por vehículo:** los comandos que cambian estado (clima, asientos,
    cierres...) esperan su turno (máx. 30 s) en vez de pisarse.
 4. **Optimista:** la entidad cambia al momento al valor esperado.
@@ -36,6 +38,7 @@ from homeassistant.helpers.event import async_call_later
 
 from .api.commands import DeepalCommands
 from .api.errors import (
+    COMMAND_ASLEEP_CODE,
     DeepalAuthError,
     DeepalCommandNotReady,
     DeepalConnectionError,
@@ -46,7 +49,7 @@ from .api.errors import (
 )
 from .api.models import CommandResult, CommandStatus
 from .const import DOMAIN, PIN_MODE_ARMED
-from .coordinator import VehicleCoordinator
+from .coordinator import WAKE_BEFORE_COMMAND_TIMEOUT, VehicleCoordinator, WakeResult
 from .debug.recorder import DebugRecorder
 
 _LOGGER = logging.getLogger(__name__)
@@ -86,7 +89,9 @@ def to_ha_error(err: DeepalError) -> HomeAssistantError:
     Los textos están en ``strings.json`` → ``exceptions``, así se traducen
     al idioma del usuario.
     """
-    if isinstance(err, DeepalAuthError):
+    if getattr(err, "code", None) == COMMAND_ASLEEP_CODE:
+        key = "command_vehicle_asleep"
+    elif isinstance(err, DeepalAuthError):
         key = "session_expired"
     elif isinstance(err, DeepalRateLimitError):
         key = "rate_limited"
@@ -222,6 +227,8 @@ class CommandRunner:
         if needs_arming and self.pin_mode == PIN_MODE_ARMED and not self._armed:
             raise HomeAssistantError(translation_domain=DOMAIN, translation_key="pin_not_armed")
         self._check_cooldown(name)
+        if needs_arming:
+            await self._wake_before_command(name)
 
         if serialize is None:
             serialize = optimistic is not None
@@ -240,6 +247,18 @@ class CommandRunner:
             await self._run(name, send, optimistic, refresh_after)
         finally:
             self._lock.release()
+
+    async def _wake_before_command(self, name: str) -> None:
+        """Despierta el coche (si hace falta) antes de una orden con PIN.
+
+        Idea de Deepal Alternative (v1.4.0-beta.2): las órdenes con PIN se
+        rechazan a menudo con el coche dormido (``APP_1_1_05_001``). Si sus
+        datos están viejos, se despierta y se espera hasta 30 s a que informe.
+        Es "lo mejor posible": pase lo que pase, la orden se envía después.
+        """
+        result = await self.coordinator.async_wake_and_wait(timeout=WAKE_BEFORE_COMMAND_TIMEOUT)
+        if result is not WakeResult.NOT_NEEDED:
+            self.recorder.record("command", name=name, stage="despertar_previo", result=str(result))
 
     async def _run(
         self,

@@ -36,6 +36,7 @@ class VehicleInfo:
     nickname: str | None = None  # apodo puesto por el usuario en la app
     image_url: str | None = None  # foto oficial del modelo, si la hay
     protocol_type: str | None = None  # "MQTT" en el S05
+    license_plate: str | None = None  # matrícula, si el servidor la tiene
 
     @property
     def uses_mqtt(self) -> bool:
@@ -89,6 +90,7 @@ class VehicleInfo:
                 or item.get("modelImageUrl")
             ),
             protocol_type=_text(item.get("protocolType")),
+            license_plate=_text(item.get("licensePlate") or item.get("plateNumber")),
         )
 
 

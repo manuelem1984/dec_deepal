@@ -84,6 +84,9 @@ OPT_ARM_NOTIFY: Final = "arm_notify"
 #: Opciones avanzadas.
 OPT_SCAN_MINUTES: Final = "scan_minutes"
 OPT_DEBUG: Final = "debug"
+#: Permitir despertar el coche (botón Actualizar y órdenes con PIN).
+OPT_WAKE: Final = "wake"
+DEFAULT_WAKE: Final = True
 
 #: Opción A: los comandos con PIN se ejecutan directamente.
 PIN_MODE_DIRECT: Final = "direct"
@@ -110,6 +113,7 @@ PLATFORMS: Final = (
     "button",
     "climate",
     "cover",
+    "device_tracker",
     "image",
     "lock",
     "number",

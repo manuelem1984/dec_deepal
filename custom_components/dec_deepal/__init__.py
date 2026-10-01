@@ -48,6 +48,8 @@ from .const import (
     OPT_ARM_SECONDS,
     OPT_COLOR,
     OPT_DEBUG,
+    OPT_WAKE,
+    DEFAULT_WAKE,
     OPT_MODEL,
     OPT_PIN,
     OPT_PIN_ENABLED,
@@ -136,6 +138,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     )
 
     # --- Un contexto por coche -----------------------------------------------
+    await _refresh_vehicle_list(hass, entry, client)
     appearance_by_vehicle: dict = options.get(OPT_APPEARANCE, {})
     scan_minutes = int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES))
     for raw_vehicle in entry.data[CONF_VEHICLES]:
@@ -158,6 +161,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             vehicle=info,
             use_mqtt=info.uses_mqtt and model.has(FEATURE_MQTT, trim),
             scan_minutes=scan_minutes,
+            wake_enabled=bool(options.get(OPT_WAKE, DEFAULT_WAKE)),
         )
         runner = CommandRunner(
             hass,
@@ -229,6 +233,31 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     """Al borrar la cuenta, borra también sus avisos de Reparaciones."""
     for raw_vehicle in entry.data.get(CONF_VEHICLES, []):
         ir.async_delete_issue(hass, DOMAIN, issue_id(str(raw_vehicle.get("vehicle_id"))))
+
+
+async def _refresh_vehicle_list(
+    hass: HomeAssistant, entry: DecDeepalConfigEntry, client: DeepalClient
+) -> None:
+    """Actualiza los datos guardados de cada coche (matrícula, imagen, apodo...).
+
+    Los datos se guardaron al configurar la cuenta; si el servidor ha añadido
+    o cambiado algo (p. ej. la matrícula, que versiones anteriores no
+    guardaban), se actualizan sin recargar (no cambian las opciones). Solo se
+    tocan los coches ya elegidos. Nunca falla: si no hay red, se sigue con lo
+    guardado.
+    """
+    try:
+        fresh = {vehicle.vehicle_id: vehicle for vehicle in await client.get_vehicles()}
+    except DeepalError as err:
+        _LOGGER.debug("No se pudo actualizar la lista de vehículos: %s", err)
+        return
+    stored = entry.data[CONF_VEHICLES]
+    updated = [
+        {**item, **fresh[item["vehicle_id"]].to_dict()} if item.get("vehicle_id") in fresh else item
+        for item in stored
+    ]
+    if updated != stored:
+        hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_VEHICLES: updated})
 
 
 async def _fetch_capabilities(client: DeepalClient, info: VehicleInfo) -> Capabilities | None:

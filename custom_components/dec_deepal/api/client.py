@@ -23,8 +23,8 @@ from .errors import (
     DeepalRateLimitError,
 )
 from .models import Capabilities, VehicleInfo
-from .mqtt.client import MqttReading, read_telemetry
-from .mqtt.topics import parse_connection_config
+from .mqtt.client import MqttReading, read_telemetry, wake_vehicle
+from .mqtt.topics import MqttConnection, parse_connection_config
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -142,20 +142,44 @@ class DeepalClient:
         Raises:
             DeepalError / ConnectionError / TimeoutError / ValueError.
         """
+
+        async def _read() -> MqttReading:
+            connection, token = await self._mqtt_session(vehicle)
+            return await read_telemetry(connection, token, ssl_context)
+
+        return await self._with_ca_retry(_read)
+
+    async def wake(self, vehicle: VehicleInfo, ssl_context: ssl.SSLContext) -> str:
+        """Pide al coche que se despierte por MQTT (``TxWakeup``). ⚠️
+
+        Devuelve el código de confirmación de la pasarela. Ver
+        ``mqtt/client.wake_vehicle``. Los límites de uso (cuándo y cada
+        cuánto) los pone el coordinador, no esta función.
+
+        Raises:
+            DeepalError / ConnectionError / TimeoutError / ValueError.
+        """
+
+        async def _wake() -> str:
+            connection, token = await self._mqtt_session(vehicle)
+            return await wake_vehicle(connection, token, ssl_context)
+
+        return await self._with_ca_retry(_wake)
+
+    async def _with_ca_retry(self, action):  # noqa: ANN001, ANN202
+        """Ejecuta ``action``; si el token de la pasarela CA caducó, renueva y reintenta."""
         try:
-            return await self._read_mqtt_once(vehicle, ssl_context)
+            return await action()
         except DeepalApiError as err:
             if err.code not in CA_TOKEN_ERROR_CODES or not self.account.session.refresh_token:
                 raise
             _LOGGER.debug("Token de la pasarela CA rechazado (%s); renovando", err.code)
             if not await self.account.refresh(force=True):
                 raise
-            return await self._read_mqtt_once(vehicle, ssl_context)
+            return await action()
 
-    async def _read_mqtt_once(
-        self, vehicle: VehicleInfo, ssl_context: ssl.SSLContext
-    ) -> MqttReading:
-        """Configuración + token + lectura, sin reintentos propios."""
+    async def _mqtt_session(self, vehicle: VehicleInfo) -> tuple[MqttConnection, str]:
+        """Configuración del broker + token de acceso (sin reintentos propios)."""
         session = self.account.session
         if not session.user_id:
             raise DeepalAuthError("La sesión no tiene user_id; vuelve a iniciar sesión")
@@ -186,5 +210,4 @@ class DeepalClient:
         )
         if not isinstance(token_data, dict) or not token_data.get("authToken"):
             raise DeepalApiError("getAuthTokenByUserId no devolvió authToken")
-
-        return await read_telemetry(connection, str(token_data["authToken"]), ssl_context)
+        return connection, str(token_data["authToken"])

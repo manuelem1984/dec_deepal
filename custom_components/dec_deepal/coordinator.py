@@ -21,11 +21,13 @@ Errores:
 
 from __future__ import annotations
 
+import asyncio
 import dataclasses
 import logging
 import ssl
 import time
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
+from enum import StrEnum
 from typing import Any, Final
 
 from homeassistant.config_entries import ConfigEntry
@@ -39,6 +41,7 @@ from .api.errors import DeepalAuthError, DeepalError
 from .api.models import VehicleInfo
 from .api.mqtt.client import MqttReading
 from .debug.recorder import DebugRecorder
+from .telemetry import signals as s
 from .telemetry.state import OptimisticHold, VehicleState, apply_holds, build_state
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,6 +50,29 @@ _LOGGER = logging.getLogger(__name__)
 #: El coche aplica los comandos con retraso y a veces informa datos viejos
 #: justo después; sin esto la entidad "rebotaría" al valor anterior.
 OPTIMISTIC_HOLD_SECONDS: Final = 120.0
+
+# --- Despertar el coche (ver api/mqtt/client.wake_vehicle) -------------------
+#: Solo se despierta si el último informe tiene más de estos segundos.
+WAKE_STALE_AFTER: Final = 120.0
+#: Como mucho un despertar cada estos segundos por coche (batería de 12 V).
+WAKE_COOLDOWN: Final = 300.0
+#: Segundos esperando el informe nuevo tras despertar (botón de actualizar).
+WAKE_REPORT_TIMEOUT: Final = 60.0
+#: Segundos esperando el informe nuevo antes de una orden con PIN.
+WAKE_BEFORE_COMMAND_TIMEOUT: Final = 30.0
+#: Cada cuántos segundos se relee mientras se espera el informe nuevo.
+WAKE_POLL_INTERVAL: Final = 5.0
+
+
+class WakeResult(StrEnum):
+    """Resultado de :meth:`VehicleCoordinator.async_wake_and_wait`."""
+
+    NOT_NEEDED = "no_hace_falta"  # datos recientes, MQTT no usado o desactivado
+    THROTTLED = "limitado"  # ya se despertó hace menos de WAKE_COOLDOWN
+    FRESH = "informe_nuevo"  # se despertó y llegó un informe nuevo
+    NO_REPORT = "sin_informe"  # la pasarela aceptó, pero el coche no informó a tiempo
+    FAILED = "fallo"  # no se pudo enviar el despertar
+
 
 #: Errores de la lectura MQTT que permiten seguir con el REST.
 _MQTT_RECOVERABLE: Final = (DeepalError, ConnectionError, TimeoutError, OSError, ValueError)
@@ -66,6 +92,7 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         vehicle: VehicleInfo,
         use_mqtt: bool,
         scan_minutes: int,
+        wake_enabled: bool = True,
     ) -> None:
         """Crea el coordinador.
 
@@ -77,6 +104,8 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
             use_mqtt: leer por MQTT (según el modelo del catálogo y el
                 ``protocolType`` que indica el servidor).
             scan_minutes: intervalo entre lecturas.
+            wake_enabled: permitir despertar el coche (botón de actualizar y
+                antes de órdenes con PIN). Opción "Despertar el coche".
         """
         super().__init__(
             hass,
@@ -94,6 +123,9 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         # vez en un hilo aparte y se reutiliza en cada lectura MQTT.
         self._ssl_context: ssl.SSLContext | None = None
         self._holds: dict[str, OptimisticHold] = {}
+        self.wake_enabled = wake_enabled
+        self._last_wake: float | None = None
+        self._wake_lock = asyncio.Lock()
 
     # ------------------------------------------------------------------
     # Lectura
@@ -187,6 +219,70 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
                 ssl.create_default_context
             )
         return self._ssl_context
+
+    # ------------------------------------------------------------------
+    # Despertar el coche
+    # ------------------------------------------------------------------
+
+    def _report_age(self) -> float | None:
+        """Segundos desde el último informe del coche (``None`` si no se sabe)."""
+        report = self.data.get(s.REPORT_TIME) if self.data else None
+        if report is None:
+            return None
+        return (datetime.now(UTC) - report).total_seconds()
+
+    async def async_wake_and_wait(
+        self, *, timeout: float = WAKE_REPORT_TIMEOUT
+    ) -> WakeResult:
+        """Despierta el coche si sus datos están viejos y espera un informe nuevo.
+
+        Reglas (mismas que Deepal Alternative, para cuidar la batería de 12 V):
+        - Solo coches MQTT (el S05) y con la opción activada.
+        - Solo si el último informe tiene más de ``WAKE_STALE_AFTER`` s.
+        - Como mucho uno cada ``WAKE_COOLDOWN`` s por coche (el límite cuenta
+          desde que la pasarela acepta el despertar, llegue o no el informe).
+        - Nunca lo llama la lectura periódica: solo el botón "Actualizar" y
+          las órdenes con PIN.
+
+        Tras despertar, relee cada ``WAKE_POLL_INTERVAL`` s hasta ``timeout``
+        y publica el estado en cuanto el informe es más nuevo que el anterior.
+        Nunca lanza excepciones: el resultado dice qué pasó.
+        """
+        async with self._wake_lock:
+            if not (self.use_mqtt and self.wake_enabled):
+                return WakeResult.NOT_NEEDED
+            age = self._report_age()
+            if age is not None and age <= WAKE_STALE_AFTER:
+                return WakeResult.NOT_NEEDED
+            if self._last_wake is not None and time.monotonic() - self._last_wake < WAKE_COOLDOWN:
+                return WakeResult.THROTTLED
+
+            previous = self.data.get(s.REPORT_TIME) if self.data else None
+            try:
+                code = await self.client.wake(self.vehicle, await self._ssl())
+            except (DeepalError, ConnectionError, TimeoutError, OSError, ValueError) as err:
+                _LOGGER.warning("%s: no se pudo despertar el coche: %s", self.vehicle.display_name, err)
+                self.recorder.record("wake", ok=False, error=str(err))
+                return WakeResult.FAILED
+            self._last_wake = time.monotonic()
+            self.recorder.record("wake", ok=True, code=code, report_age_s=age)
+
+            loop = asyncio.get_running_loop()
+            deadline = loop.time() + timeout
+            while loop.time() < deadline:
+                await asyncio.sleep(WAKE_POLL_INTERVAL)
+                try:
+                    state = await self._fetch()
+                except (DeepalError, UpdateFailed) as err:
+                    _LOGGER.debug("Relectura tras despertar fallida: %s", err)
+                    continue
+                report = state.get(s.REPORT_TIME)
+                if report is not None and (previous is None or report > previous):
+                    self.async_set_updated_data(state)
+                    self.recorder.record("wake", stage="informe_nuevo")
+                    return WakeResult.FRESH
+            self.recorder.record("wake", stage="sin_informe", timeout_s=timeout)
+            return WakeResult.NO_REPORT
 
     # ------------------------------------------------------------------
     # Valores optimistas (los usa command_runner.py)

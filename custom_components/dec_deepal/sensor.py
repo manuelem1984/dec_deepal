@@ -12,7 +12,9 @@ activarlos desde la ficha de la entidad si quiere probarlos.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -33,6 +35,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from .api.models import VehicleInfo
 from .entity import DecDeepalEntity
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
@@ -46,6 +49,9 @@ class DecSensorDescription(SensorEntityDescription):
     signal: str
     #: Función del catálogo necesaria (``None`` = siempre).
     feature: str | None = None
+    #: Si se indica, el valor sale de los datos fijos del coche (lista de
+    #: vehículos del servidor) en vez de una señal de telemetría.
+    info_value: Callable[[VehicleInfo], Any] | None = None
 
 
 def _pressure(key: str, signal: str) -> DecSensorDescription:
@@ -193,6 +199,17 @@ SENSORS: tuple[DecSensorDescription, ...] = (
     _pressure("tire_pressure_front_right", s.TIRE_PRESSURE_FRONT_RIGHT),
     _pressure("tire_pressure_rear_left", s.TIRE_PRESSURE_REAR_LEFT),
     _pressure("tire_pressure_rear_right", s.TIRE_PRESSURE_REAR_RIGHT),
+    # --- Datos fijos del coche ----------------------------------------------
+    # Matrícula: la lista de vehículos del servidor puede traerla
+    # (licensePlate / plateNumber). Hoy no llega para el S05 de España:
+    # se crea deshabilitada, por si algún día aparece.
+    DecSensorDescription(
+        key="license_plate",
+        signal="",
+        info_value=lambda info: info.license_plate,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+    ),
 )
 
 
@@ -227,7 +244,9 @@ class DecSensor(DecDeepalEntity, SensorEntity):
 
     @property
     def native_value(self):  # noqa: ANN201 - el tipo depende del sensor
-        """Valor actual de la señal."""
+        """Valor actual de la señal (o del dato fijo del coche)."""
+        if self.entity_description.info_value is not None:
+            return self.entity_description.info_value(self.vehicle.info)
         return self.signal(self.entity_description.signal)
 
     def icon_state(self) -> str | None:

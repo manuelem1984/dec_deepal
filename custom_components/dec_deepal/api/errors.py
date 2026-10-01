@@ -119,6 +119,10 @@ PIN_ATTEMPTS_CODE: Final = "HW_1_1_01_047"
 PIN_EXPIRED_CODE: Final = "HW_1_1_01_073"
 PIN_NOT_SET_CODE: Final = "HW_1_1_01_074"
 
+#: Al ENVIAR una orden: el coche no la aceptó porque está dormido o sin
+#: conexión (observado por Deepal Alternative en un S05 real, 30-09-2026).
+COMMAND_ASLEEP_CODE: Final = "APP_1_1_05_001"
+
 #: Respuesta de ``serial-no/get`` cuando la clave de firma no es la registrada.
 SIGNING_REJECTED_CODE: Final = "COMMON_1_1_01_001"
 

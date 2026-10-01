@@ -28,6 +28,7 @@ from typing import Any, Final
 
 from . import signals as s
 from .derived import DERIVED
+from .location import find_location
 from .mqtt_map import map_mqtt
 from .rest_map import map_rest
 
@@ -137,6 +138,12 @@ def build_state(
         if connect is not None:
             values[s.CLOUD_CONNECTED] = connect == 1
             sources[s.CLOUD_CONNECTED] = SOURCE_REST
+
+    # Ubicación: búsqueda genérica (hoy el S05 no la envía; ver location.py).
+    location = find_location(mqtt_params, rest_raw)
+    if location is not None:
+        values[s.LATITUDE], values[s.LONGITUDE] = location
+        sources[s.LATITUDE] = sources[s.LONGITUDE] = SOURCE_MQTT if find_location(mqtt_params) else SOURCE_REST
 
     # Regla 4: conservar el último valor conocido.
     if previous is not None:

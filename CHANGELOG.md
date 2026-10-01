@@ -3,6 +3,34 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc4] — 2026-10-01
+
+Incorpora lo útil de las últimas betas de Deepal Alternative (1.3.2-beta.1 a
+1.4.0-beta.3), siempre centrado en el S05 de España.
+
+### Añadido
+
+- **Despertar el coche** por MQTT (`TxWakeup`/`Cnr_ReWakeup`, como la app):
+  - "Actualizar datos del vehículo" lo despierta si su último informe tiene
+    más de 2 minutos y espera hasta 60 s a que lleguen datos nuevos; si no
+    llegan, avisa en vez de mostrar datos viejos sin decir nada.
+  - Puertas, ventanillas y maletero (PIN) lo despiertan antes de enviar la
+    orden (hasta ~30 s); si falla, la orden se envía igualmente.
+  - Límites para cuidar la batería de 12 V: uno cada 5 minutos por coche y
+    nunca en las lecturas automáticas. Se puede desactivar en Configurar →
+    Avanzado ("Despertar el coche cuando haga falta"). ⚠️ Pendiente de probar.
+- Mensaje claro para `APP_1_1_05_001` (orden rechazada con el coche dormido).
+- Entidades **deshabilitadas por defecto**, por si el servidor llega a enviar
+  esos datos (hoy el S05 de España no los envía): **Matrícula** y
+  **Ubicación** (rastreador en el mapa).
+- Al arrancar se actualizan los datos guardados de cada coche (matrícula,
+  imagen, apodo...).
+
+### Corregido
+
+- Privacidad: la ocultación de datos ya no distingue mayúsculas (`Lat`,
+  `Lng`...) y oculta cualquier clave con "plate" (matrícula).
+
 ## [2.0.0rc3] — 2026-09-30
 
 ### Cambiado

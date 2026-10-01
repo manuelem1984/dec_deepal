@@ -89,6 +89,10 @@ POSITION_LAMP: Final = "position_lamp"
 INDICATOR_LEFT: Final = "indicator_left"
 INDICATOR_RIGHT: Final = "indicator_right"
 
+# --- Ubicación (hoy el S05 no la envía; ver location.py) --------------------
+LATITUDE: Final = "latitude"  # grados
+LONGITUDE: Final = "longitude"  # grados
+
 # --- Señales calculadas (ver derived.py) ------------------------------------
 CHARGE_STATUS: Final = "charge_status"  # enum: disconnected / connected_ac / ...
 REMAINING_CHARGE_HHMM: Final = "remaining_charge_hhmm"  # "H:MM"

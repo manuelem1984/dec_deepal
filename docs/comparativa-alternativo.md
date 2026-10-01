@@ -24,6 +24,22 @@ Atribución: [NOTICE.md](../NOTICE.md).
 | Pista de versión Pro/Max por capacidades | Foto y entidades correctas sin configurar | `api/models.py`, `__init__.py` |
 | Sensor "Tiempo de carga (H:MM)" | Útil en paneles | `telemetry/derived.py` |
 
+### Adoptado en 2.0.0rc4 (sus versiones 1.3.2-beta.1 a 1.4.0-beta.3)
+
+| Qué | Dónde |
+| --- | --- |
+| Despertar el coche por MQTT (`TxWakeup`/`Cnr_ReWakeup`) con sus mismos límites (más de 2 min, uno cada 5 min, nunca en lecturas automáticas) | `api/mqtt/client.py`, `coordinator.py` |
+| Botón "Actualizar" que despierta y avisa si el coche no informa | `button.py` |
+| Despertar antes de órdenes con PIN (sin bloquearlas si falla) | `command_runner.py` |
+| `APP_1_1_05_001` = coche dormido al enviar una orden | `api/errors.py`, `command_runner.py` |
+| Ocultar `Lat`/`Lng` con mayúscula y matrícula | `debug/redact.py` (ahora sin distinguir mayúsculas) |
+
+Añadido por nuestra cuenta: opción para **desactivar** el despertar
+(Avanzado), y entidades **Matrícula** y **Ubicación** deshabilitadas por
+defecto, por si el servidor llega a enviarlas.
+
+No adoptado: soporte SDA/E07, ASEAN y Australia (fuera de alcance: S05 España).
+
 ## No adoptado (por ahora)
 
 | Qué | Motivo |

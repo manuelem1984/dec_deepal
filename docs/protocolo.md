@@ -104,6 +104,26 @@ Se usan solo para **proponer** la versión (ventilación → Max).
 Servicios aceptados: `car_condition`, `BDC_Service`, `BMS_Service`,
 `OBC_Service`, `THU_Service`. Otros se guardan como "desconocidos".
 
+### Despertar el coche (MQTT) ⚠️
+
+Descubierto por Deepal Alternative (v1.3.2-beta.1, comprobado en un coche
+real el 30-09-2026); ⚠️ pendiente de comprobar con un S05 de España.
+
+1. Misma sesión MQTT que la lectura (CONNECT, SUBSCRIBE, login → `secretKey`).
+2. PUBLISH en `$vdp/<coche>/properties/set/req` (si la configuración no lo
+   trae, se deduce de `properties/get/req`) con el servicio cifrado:
+   ```json
+   {"service_code": "TxWakeup", "command_code": "Cnr_ReWakeup",
+    "service_req_id": "<r>", "params": {}}
+   ```
+3. La pasarela confirma con el mismo `r` y `code: "000000"`.
+4. El coche publica un informe nuevo en unos 20 s.
+
+Uso en DEC Deepal (`coordinator.async_wake_and_wait`): solo con el botón
+"Actualizar datos del vehículo" y antes de órdenes con PIN; solo si el último
+informe tiene más de 2 min; como mucho uno cada 5 min por coche; nunca en las
+lecturas automáticas. Se puede desactivar en Configurar → Avanzado.
+
 ## Comandos
 
 Todos bajo `/intl-app-gw/intl-app-car-control/api/`:
@@ -158,6 +178,8 @@ servidor con `COMMON_1_1_01_005`).
 | `APIGW_-1_7_01_004`, `APIGW_1_7_02_001` | Token de la pasarela CA caducado | Renovar y reintentar MQTT |
 | `CAC_1_1_01_033` | Demasiados códigos pedidos | Avisar y esperar |
 | `HW_1_1_01_047` | Demasiados intentos de PIN | Avisar |
+| `APP_1_1_05_001` al enviar una orden | Coche dormido o sin conexión | Avisar y proponer "Actualizar datos" para despertarlo |
+| `resultCode 1032` | La orden exige el coche apagado ("Power is not off") | Avisar |
 | `HW_1_1_01_073` / `074` | PIN caducado / no creado | Avisar: revisar en la app |
 | `COMMON_1_1_01_001` en `serial-no/get` | Clave de firma no registrada | Pedir volver a iniciar sesión |
 

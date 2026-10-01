@@ -285,3 +285,166 @@ async def _subscribe(
     )
     if protocol.packet_type(first_byte) != protocol.PACKET_SUBACK:
         raise ConnectionError("El broker MQTT no confirmó la suscripción")
+
+
+# ---------------------------------------------------------------------------
+# Despertar el coche
+# ---------------------------------------------------------------------------
+#
+# Descubierto por Deepal Alternative (v1.3.2-beta.1, comprobado con un coche
+# real el 30-09-2026): la app oficial despierta el coche publicando el servicio
+# "TxWakeup" con la orden "Cnr_ReWakeup" en el topic ``.../properties/set/req``.
+# La pasarela confirma con ``code: "000000"`` y el coche publica un informe
+# nuevo en unos 20 segundos. ⚠️ Pendiente de comprobar con un S05 de España.
+#
+# Cada despertar consume algo de la batería de 12 V: quien llama a esta
+# función (coordinator.py) limita cuándo y cada cuánto se usa.
+
+WAKE_SERVICE_CODE: Final = "TxWakeup"
+WAKE_COMMAND_CODE: Final = "Cnr_ReWakeup"
+#: Código con el que la pasarela confirma que aceptó el despertar.
+WAKE_OK_CODES: Final = frozenset({"000000", "0", "00000"})
+#: Segundos máximos esperando la confirmación de la pasarela.
+WAKE_ACK_TIMEOUT: Final = 20
+
+
+def _wake_payload(
+    vehicle_did: str, login_did: str, secret_key: str, request_id: str
+) -> dict[str, Any]:
+    """Mensaje cifrado que pide al coche que se despierte."""
+    services = [
+        {
+            "service_code": WAKE_SERVICE_CODE,
+            "command_code": WAKE_COMMAND_CODE,
+            "service_req_id": request_id,
+            "params": {},
+        }
+    ]
+    return {
+        "did": vehicle_did,
+        "r": request_id,
+        "v": "v1.0.0",
+        "mt": "properties",
+        "e": 1,
+        "z": "gzip",
+        "tf": 0,
+        "dt": _iso_now(),
+        "b": {"ruid": login_did},
+        "sers": mqtt_encrypt(services, secret_key, request_id),
+    }
+
+
+def _service_result(payload: dict[str, Any], secret_key: str) -> tuple[str, bool] | None:
+    """Primer resultado ``(code, success)`` de una respuesta cifrada, si lo hay."""
+    request_id = payload.get("r")
+    if not isinstance(request_id, str):
+        return None
+    for field_name in ("rs", "sers"):
+        encrypted = payload.get(field_name)
+        if not isinstance(encrypted, str) or not encrypted:
+            continue
+        try:
+            items = mqtt_decrypt(encrypted, secret_key, request_id)
+        except (ValueError, UnicodeDecodeError, json.JSONDecodeError, gzip.BadGzipFile):
+            continue
+        for item in items:
+            if isinstance(item, dict) and item.get("code"):
+                return str(item["code"]), bool(item.get("success"))
+    return None
+
+
+async def wake_vehicle(
+    connection: MqttConnection,
+    auth_token: str,
+    ssl_context: ssl.SSLContext,
+) -> str:
+    """Pide al coche que se despierte. Devuelve el código de la pasarela.
+
+    Solo espera la **confirmación** de la pasarela, no el informe nuevo del
+    coche: eso lo comprueba quien llama, releyendo el estado.
+
+    Raises:
+        ConnectionError: el broker rechazó la conexión, o falta el topic.
+        TimeoutError: no llegó la confirmación a tiempo.
+        ValueError: la pasarela rechazó el despertar (el mensaje trae el código).
+    """
+    if not connection.properties_set_topic:
+        raise ConnectionError("La configuración MQTT no trae el topic de órdenes (set)")
+    reader, writer = await asyncio.wait_for(
+        asyncio.open_connection(
+            connection.host,
+            connection.port,
+            ssl=ssl_context,
+            server_hostname=connection.host,
+        ),
+        timeout=CONNECT_TIMEOUT,
+    )
+    try:
+        await _connect(reader, writer, connection, auth_token)
+        await _subscribe(reader, writer, connection)
+        writer.write(
+            protocol.build_publish(
+                connection.login_topic,
+                _login_payload(connection.login_device_id, _request_id(connection.login_device_id)),
+            )
+        )
+        await writer.drain()
+
+        secret_key: str | None = None
+        wake_request_id: str | None = None
+        deadline = time.monotonic() + WAKE_ACK_TIMEOUT
+        while time.monotonic() < deadline:
+            try:
+                first_byte, body = await asyncio.wait_for(
+                    protocol.read_packet(reader),
+                    timeout=max(1.0, deadline - time.monotonic()),
+                )
+            except TimeoutError:
+                break
+            if protocol.packet_type(first_byte) != protocol.PACKET_PUBLISH:
+                continue
+            _topic, payload, packet_id = protocol.parse_publish(first_byte, body)
+            if packet_id is not None:
+                writer.write(protocol.build_puback(packet_id))
+                await writer.drain()
+
+            if secret_key is None:
+                secret_key = _secret_key(payload)
+                if secret_key:
+                    wake_request_id = _request_id(connection.vehicle_device_id)
+                    writer.write(
+                        protocol.build_publish(
+                            connection.properties_set_topic,
+                            _wake_payload(
+                                connection.vehicle_device_id,
+                                connection.login_device_id,
+                                secret_key,
+                                wake_request_id,
+                            ),
+                        )
+                    )
+                    await writer.drain()
+                continue
+
+            if payload.get("r") != wake_request_id:
+                continue
+            result = _service_result(payload, secret_key)
+            if result is None:
+                continue
+            code, success = result
+            if success or code in WAKE_OK_CODES:
+                return code
+            raise ValueError(f"La pasarela rechazó el despertar (código {code})")
+
+        raise TimeoutError("No llegó la confirmación del despertar")
+    finally:
+        try:
+            writer.write(protocol.build_disconnect())
+            await writer.drain()
+        except (ConnectionError, OSError, ssl.SSLError):
+            pass
+        writer.close()
+        try:
+            await writer.wait_closed()
+        except (ConnectionError, TimeoutError, OSError, ssl.SSLError):
+            pass

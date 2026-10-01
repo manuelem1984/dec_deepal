@@ -12,10 +12,13 @@ from dataclasses import dataclass
 
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .api.commands import FLASH_HONK_BOTH, FLASH_HONK_FLASH, FLASH_HONK_HORN
 from .api.errors import DeepalError
+from .const import DOMAIN
+from .coordinator import WakeResult
 from .entity import DecDeepalEntity
 from .registries.vehicles import FEATURE_LIGHTS_HORN
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
@@ -87,12 +90,24 @@ class DecButton(DecDeepalEntity, ButtonEntity):
         await self.vehicle.runner.run(self.entity_description.key, send, refresh_after=False)
 
     async def _refresh(self) -> None:
-        """Pide al coche datos frescos y relee.
+        """Datos frescos: despierta el coche si hace falta y relee.
 
-        El aviso al coche (``condition-inquiry``) es un comando firmado; si
-        falla (p. ej. falta la clave de firma), se hace igualmente una lectura
-        normal: el botón nunca debe quedarse sin hacer nada.
+        1. Si el coche es MQTT (S05), la opción "Despertar el coche" está
+           activa y el último informe tiene más de 2 minutos, se le despierta
+           y se esperan hasta 60 s a que mande un informe nuevo (ver
+           ``coordinator.async_wake_and_wait``). Si llega, listo.
+        2. Si se despertó pero el coche no informó, se avisa con un error en
+           vez de dejar los datos viejos sin decir nada.
+        3. En los demás casos (datos recientes, despertar limitado a uno cada
+           5 min, o despertar fallido) se hace lo de siempre: aviso al coche
+           (``condition-inquiry``) y lectura normal. El aviso es un comando
+           firmado; si falla (p. ej. falta la clave de firma), se lee igual.
         """
+        result = await self.coordinator.async_wake_and_wait()
+        if result is WakeResult.FRESH:
+            return
+        if result is WakeResult.NO_REPORT:
+            raise HomeAssistantError(translation_domain=DOMAIN, translation_key="wake_no_report")
         try:
             await self.runtime.commands.condition_inquiry(self.vehicle.info.vehicle_id)
         except DeepalError:

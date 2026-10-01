@@ -35,6 +35,8 @@ from .const import (
     OPT_ARM_NOTIFY,
     OPT_ARM_SECONDS,
     OPT_DEBUG,
+    OPT_WAKE,
+    DEFAULT_WAKE,
     OPT_MODEL,
     OPT_PIN,
     OPT_PIN_ENABLED,
@@ -261,6 +263,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
                 {
                     OPT_SCAN_MINUTES: int(user_input[OPT_SCAN_MINUTES]),
                     OPT_DEBUG: bool(user_input[OPT_DEBUG]),
+                    OPT_WAKE: bool(user_input[OPT_WAKE]),
                 }
             )
         schema = vol.Schema(
@@ -276,6 +279,9 @@ class DecDeepalOptionsFlow(OptionsFlow):
                         mode=selector.NumberSelectorMode.BOX,
                     )
                 ),
+                vol.Required(
+                    OPT_WAKE, default=bool(options.get(OPT_WAKE, DEFAULT_WAKE))
+                ): selector.BooleanSelector(),
                 vol.Required(
                     OPT_DEBUG, default=bool(options.get(OPT_DEBUG, False))
                 ): selector.BooleanSelector(),
