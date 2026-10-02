@@ -14,6 +14,14 @@ Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
   20 % transparente. Capas en `vehicles/vista_interior/s05_2024/`. Cualquier
   nivel de asiento (1-3) enciende su capa.
 
+### Corregido
+
+- **Inicio de sesión que fallaba muy de vez en cuando:** al preparar la clave
+  pública que se registra en el servidor se descartaba cualquier línea que
+  contuviera "BEGIN" o "END", y el cuerpo base64 (aleatorio) a veces contiene
+  "END" por casualidad: esa línea se perdía y la clave quedaba rota. Ahora
+  solo se quitan las líneas `-----BEGIN/END-----`. Lo destapó una prueba.
+
 ## [2.0.0rc8] — 2026-10-02
 
 ### Corregido

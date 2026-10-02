@@ -94,11 +94,10 @@ def _public_key_body(public_key: rsa.RSAPublicKey) -> str:
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo,
     ).decode()
-    lines = [
-        line
-        for line in public_pem.splitlines()
-        if "BEGIN" not in line and "END" not in line
-    ]
+    # Solo se quitan las líneas "-----BEGIN/END ...-----": el cuerpo base64
+    # es aleatorio y puede contener "END" (p. ej. "...xENDq..."); filtrar por
+    # subcadena perdía esa línea y la clave registrada quedaba rota.
+    lines = [line for line in public_pem.splitlines() if not line.startswith("-----")]
     return "\n".join(lines) + "\n"
 
 

@@ -31,6 +31,22 @@ def test_keypair_and_private_decrypt_roundtrip() -> None:
     assert crypto.decrypt_with_private_key(private_pem, ciphertext) == "SERIAL123"
 
 
+def test_public_key_body_keeps_lines_containing_end() -> None:
+    """Una línea base64 con "END" o "BEGIN" dentro no debe perderse."""
+
+    class FakeKey:
+        def public_bytes(self, **_kwargs) -> bytes:  # noqa: ANN003
+            return (
+                b"-----BEGIN PUBLIC KEY-----\n"
+                b"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxENDq\n"
+                b"abcBEGINxyz\n"
+                b"-----END PUBLIC KEY-----\n"
+            )
+
+    body = crypto._public_key_body(FakeKey())  # type: ignore[arg-type]
+    assert body == "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCxENDq\nabcBEGINxyz\n"
+
+
 def test_mqtt_roundtrip() -> None:
     services = [{"service_code": "car_condition", "params": {"soc": 80}}]
     secret = "0123456789abcdef"
