@@ -20,6 +20,7 @@
 #   salvo_si      (opcional) Otra señal: si está a "sí", esta capa NO se pone.
 #                 Sirve para no dibujar la ventanilla bajada cuando la puerta
 #                 está abierta (la imagen de puerta abierta ya la incluye).
+#   solo_si       (opcional) Otra señal: la capa SOLO se pone si está a "sí".
 #
 #   Dato desconocido (coche dormido, señal que no llega): se usa el último
 #   valor conocido; si nunca se ha conocido, se dibuja cerrado / apagado.

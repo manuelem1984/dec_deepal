@@ -52,6 +52,8 @@ tiene `Verificado = No`.
       servidor manda URL.
 - [ ] Vista de planta (rc6): abrir una puerta, el capó, el maletero y una
       ventanilla y comprobar que la imagen cambia; luz de cruce encendida.
+- [ ] Vista isométrica (rc7): lo mismo; el capó, el maletero y las luces son
+      lo que más se nota desde ese ángulo.
 - [ ] Asientos (escala 1:1), volante y desempañado: lectura y control.
 - [ ] Encender el clima NO apaga el volante en pantalla.
 - [ ] Puertas / ventanillas / maletero con el payload nuevo (Opción A y B).

@@ -1,13 +1,15 @@
-"""Cargador de la **vista de planta**: ``vehicles/vista_planta/<carpeta>/capas.yaml``.
+"""Cargador de las **vistas por capas**: ``vehicles/<vista>/<carpeta>/capas.yaml``.
 
-La vista de planta es el coche visto desde arriba, montado con capas PNG
-transparentes que se ponen una encima de otra según el estado (puertas,
-capó, maletero, ventanillas, luces). Este módulo:
+Una vista por capas es el coche dibujado desde un ángulo ("Vista de planta",
+"Vista isométrica"...), montado con capas PNG transparentes que se ponen una
+encima de otra según el estado (puertas, capó, maletero, ventanillas,
+luces). Qué vistas tiene cada modelo lo dice ``vistas:`` en
+``vehicles.yaml``. Este módulo:
 
-- lee y valida ``capas.yaml`` (:func:`load_top_view`);
+- lee y valida ``capas.yaml`` (:func:`load_view`);
 - decide **qué imágenes** se ponen para un estado dado
-  (:meth:`TopViewLayers.select`), sin dibujar nada. El dibujo (con Pillow)
-  está en ``top_view.py``, fuera de los catálogos.
+  (:meth:`ViewLayers.select`), sin dibujar nada. El dibujo (con Pillow)
+  está en ``view_renderer.py``, fuera de los catálogos.
 
 Es Python puro (sin Home Assistant ni Pillow): se prueba con ``pytest``.
 """
@@ -27,7 +29,7 @@ LAYERS_FILE: Final = "capas.yaml"
 
 @dataclass(frozen=True, slots=True)
 class Layer:
-    """Una capa de la vista de planta.
+    """Una capa de una vista.
 
     Una capa fija solo tiene ``image``. Una capa con señal pone ``when_on``
     o ``when_off`` según el valor de ``signal`` (``None`` = nada).
@@ -39,11 +41,13 @@ class Layer:
     when_off: str | None = None
     #: Si esta señal está a "sí", la capa no se pone.
     unless: str | None = None
+    #: La capa solo se pone si esta señal está a "sí".
+    only_if: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class Selection:
-    """Resultado de :meth:`TopViewLayers.select`."""
+    """Resultado de :meth:`ViewLayers.select`."""
 
     #: Imágenes a poner, de abajo arriba.
     images: tuple[str, ...]
@@ -54,8 +58,8 @@ class Selection:
 
 
 @dataclass(frozen=True, slots=True)
-class TopViewLayers:
-    """Capas de la vista de planta de un modelo."""
+class ViewLayers:
+    """Capas de una vista de un modelo."""
 
     directory: Path
     layers: tuple[Layer, ...]
@@ -65,7 +69,7 @@ class TopViewLayers:
         """Señales que usa la vista (sin repetir, en orden)."""
         names: list[str] = []
         for layer in self.layers:
-            for name in (layer.signal, layer.unless):
+            for name in (layer.signal, layer.unless, layer.only_if):
                 if name and name not in names:
                     names.append(name)
         return tuple(names)
@@ -94,7 +98,7 @@ class TopViewLayers:
         Args:
             value: devuelve el valor de una señal: ``True``, ``False`` o
                 ``None`` si no se conoce. Quien llama decide qué hacer con
-                los desconocidos (``top_view.py`` usa el último valor
+                los desconocidos (la entidad usa el último valor
                 conocido); aquí ``None`` se dibuja como "no".
         """
         images: list[str] = []
@@ -107,10 +111,12 @@ class TopViewLayers:
             elif state:
                 active.append(name)
         for layer in self.layers:
+            if layer.unless and layer.unless in active:
+                continue
+            if layer.only_if and layer.only_if not in active:
+                continue
             if layer.image:
                 images.append(layer.image)
-                continue
-            if layer.unless and layer.unless in active:
                 continue
             image = layer.when_on if layer.signal in active else layer.when_off
             if image:
@@ -123,7 +129,7 @@ def _optional_str(raw: dict, key: str) -> str | None:
     return None if value in (None, "") else str(value)
 
 
-def load_top_view(directory: Path) -> TopViewLayers:
+def load_view(directory: Path) -> ViewLayers:
     """Lee y valida ``<directory>/capas.yaml``.
 
     Comprueba que cada capa es fija o tiene señal con al menos una imagen, y
@@ -134,7 +140,7 @@ def load_top_view(directory: Path) -> TopViewLayers:
     """
     path = directory / LAYERS_FILE
     data = read_yaml(path)
-    where_file = f"vista_planta/{directory.name}/{LAYERS_FILE}"
+    where_file = f"{directory.parent.name}/{directory.name}/{LAYERS_FILE}"
     raw_layers = data.get("capas")
     if not isinstance(raw_layers, list) or not raw_layers:
         raise RegistryError(f"{where_file}: 'capas' debe ser una lista no vacía")
@@ -149,6 +155,7 @@ def load_top_view(directory: Path) -> TopViewLayers:
             when_on=_optional_str(raw, "si_activo"),
             when_off=_optional_str(raw, "si_inactivo"),
             unless=_optional_str(raw, "salvo_si"),
+            only_if=_optional_str(raw, "solo_si"),
         )
         if layer.image and layer.signal:
             raise RegistryError(f"{where}: usa 'imagen' o 'senal', no las dos")
@@ -158,7 +165,7 @@ def load_top_view(directory: Path) -> TopViewLayers:
             )
         layers.append(layer)
 
-    result = TopViewLayers(directory=directory, layers=tuple(layers))
+    result = ViewLayers(directory=directory, layers=tuple(layers))
     missing = [name for name in result.images if not (directory / name).is_file()]
     if missing:
         raise RegistryError(f"{where_file}: faltan imágenes {missing}")

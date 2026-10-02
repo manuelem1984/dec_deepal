@@ -3,6 +3,26 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc7] — 2026-10-02
+
+### Añadido
+
+- **Vista isométrica** (entidad de imagen nueva): el coche desde delante a la
+  izquierda, realista, con capó, maletero, puertas, ventanillas (bajada = sin
+  cristal) y luz de cruce según su estado. Capas en
+  `vehicles/vista_isometrica/s05_2024/`; lo que queda detrás de la carrocería
+  se pone debajo de ella, así "todo cerrado" es idéntico a la foto del coche
+  cerrado.
+- `capas.yaml`: nueva condición `solo_si` (poner la capa solo si otra señal
+  está a "sí").
+
+### Cambiado
+
+- Las vistas por capas son ahora genéricas: `vistas:` en `vehicles.yaml`
+  (`top_view`, `isometric_view`) en vez de `carpeta_vista_planta`, que se
+  sigue aceptando. Un ángulo nuevo es una carpeta con capas más su nombre.
+  Módulos renombrados: `registries/views.py` y `view_renderer.py`.
+
 ## [2.0.0rc6] — 2026-10-02
 
 ### Añadido

@@ -1,4 +1,4 @@
-"""Imágenes del vehículo: tres entidades separadas.
+"""Imágenes del vehículo: entidades separadas.
 
 - **official_image** — "Imagen oficial": la foto que manda el servidor de
   Deepal en la lista de vehículos. Si el servidor no manda ninguna, la entidad
@@ -7,10 +7,11 @@
   corresponde a la versión y el color elegidos en Configurar. Si no se han
   elegido, o falta esa foto, se usa la foto por defecto del modelo. Ver
   ``docs/imagenes.md``.
-- **top_view** — "Vista de planta": el coche visto desde arriba, montado con
-  capas según su estado (puertas, capó, maletero, ventanillas, luces). Las
-  capas están en ``vehicles/vista_planta/<carpeta>/capas.yaml``; el dibujo,
-  en ``top_view.py``.
+- **Vistas por capas** — "Vista de planta" (``top_view``) y "Vista
+  isométrica" (``isometric_view``): el coche desde un ángulo, montado con
+  capas según su estado (puertas, capó, maletero, ventanillas, luces). Qué
+  vistas tiene cada modelo lo dice ``vistas:`` en ``vehicles.yaml``; las
+  capas, el ``capas.yaml`` de cada vista; el dibujo, ``view_renderer.py``.
 
 La imagen oficial se descarga aquí mismo (y no con el mecanismo estándar de
 Home Assistant) por dos motivos:
@@ -37,9 +38,9 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .entity import DecDeepalEntity
-from .registries.top_view import Selection, TopViewLayers
+from .registries.views import Selection, ViewLayers
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
-from .top_view import TopViewRenderer
+from .view_renderer import ViewRenderer
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -131,23 +132,24 @@ async def async_setup_entry(
         }
         entities.append(DecOfficialImage(hass, runtime, vehicle))
         entities.append(DecImage(hass, runtime, vehicle))
-        layers = top_view_layers(vehicle)
-        if layers is not None:
-            entities.append(DecTopView(hass, runtime, vehicle, layers))
+        entities.extend(
+            DecLayeredView(hass, runtime, vehicle, key, layers)
+            for key, layers in vehicle_views(vehicle).items()
+        )
     async_add_entities(entities)
 
 
-def top_view_layers(vehicle: VehicleContext) -> TopViewLayers | None:
-    """Capas de la vista de planta del coche.
+def vehicle_views(vehicle: VehicleContext) -> dict[str, ViewLayers]:
+    """Vistas por capas del coche (``{clave: capas}``).
 
-    Las del modelo elegido; si aún no se ha elegido (modelo genérico), las del
-    modelo reconocido por el nombre. ``None`` si ninguno tiene.
+    Las del modelo elegido; si aún no se ha elegido (modelo genérico sin
+    vistas), las del modelo reconocido por el nombre.
     """
-    if vehicle.model.top_view is not None:
-        return vehicle.model.top_view
+    if vehicle.model.views:
+        return vehicle.model.views
     if vehicle.suggested_model is not None:
-        return vehicle.suggested_model.top_view
-    return None
+        return vehicle.suggested_model.views
+    return {}
 
 
 class DecOfficialImage(DecDeepalEntity, ImageEntity):
@@ -214,8 +216,8 @@ class DecImage(DecDeepalEntity, ImageEntity):
         return data
 
 
-class DecTopView(DecDeepalEntity, ImageEntity):
-    """"Vista de planta": el coche desde arriba según su estado.
+class DecLayeredView(DecDeepalEntity, ImageEntity):
+    """Vista por capas ("Vista de planta", "Vista isométrica"...) según el estado.
 
     Cada vez que llegan datos se decide qué capas tocan (puerta abierta,
     capó cerrado...). Solo si cambian se marca la imagen como nueva, y Home
@@ -233,14 +235,15 @@ class DecTopView(DecDeepalEntity, ImageEntity):
         hass: HomeAssistant,
         runtime: DecDeepalRuntime,
         vehicle: VehicleContext,
-        layers: TopViewLayers,
+        key: str,
+        layers: ViewLayers,
     ) -> None:
-        DecDeepalEntity.__init__(self, runtime, vehicle, "image", "top_view")
+        DecDeepalEntity.__init__(self, runtime, vehicle, "image", key)
         ImageEntity.__init__(self, hass)
         self._layers = layers
         # Se decide una vez: cambiar el color en Configurar recarga la
         # integración y vuelve a crear esta entidad.
-        self._renderer = TopViewRenderer(layers, vehicle.color)
+        self._renderer = ViewRenderer(layers, vehicle.color)
         self._last_known: dict[str, bool] = {}
         self._unknown: tuple[str, ...] = ()
         self._selection = self._select()

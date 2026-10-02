@@ -1,0 +1,121 @@
+# =============================================================================
+# DEC Deepal — VISTA ISOMÉTRICA del Deepal S05 (2024-25)
+# =============================================================================
+#
+# La entidad "Vista isométrica" dibuja el coche visto desde delante a la
+# izquierda (lado del conductor) poniendo estas capas UNA ENCIMA DE OTRA, en
+# el orden de la lista (la primera queda debajo). Cada capa es un PNG
+# transparente de 750×500 con el coche en la MISMA posición.
+#
+# Tras editarlo, reiniciar Home Assistant. Guía: docs/imagenes.md
+#
+# -----------------------------------------------------------------------------
+# CAMPOS DE CADA CAPA
+# -----------------------------------------------------------------------------
+#   imagen        Capa fija: se pone siempre (p. ej. la base).
+#   senal         Señal de telemetría que decide la capa (ver
+#                 telemetry/signals.py). Debe ser de sí/no.
+#   si_activo     (opcional) Imagen cuando la señal es "sí" (abierto / encendido).
+#   si_inactivo   (opcional) Imagen cuando la señal es "no" (cerrado / apagado).
+#   salvo_si      (opcional) Otra señal: si está a "sí", esta capa NO se pone.
+#   solo_si       (opcional) Otra señal: la capa SOLO se pone si está a "sí".
+#
+#   Dato desconocido (coche dormido, señal que no llega): se usa el último
+#   valor conocido; si nunca se ha conocido, se dibuja cerrado / apagado.
+#
+# -----------------------------------------------------------------------------
+# EL ORDEN IMPORTA
+# -----------------------------------------------------------------------------
+#   La base (base.png) no tiene puertas, capó ni portón: se ve el interior.
+#   Lo que en la realidad queda DETRÁS de la carrocería (puertas del lado
+#   derecho y portón cerrado) va ANTES de la base, para que ella lo tape y
+#   solo asome por los huecos. Lo que queda delante va DESPUÉS.
+#   Con este orden, "todo cerrado" es idéntico a la foto del coche cerrado.
+#
+# -----------------------------------------------------------------------------
+# VENTANILLAS
+# -----------------------------------------------------------------------------
+#   Aquí la capa es el CRISTAL de la ventanilla subida (al revés que en la
+#   vista de planta): ventanilla bajada = sin cristal, se ve el interior.
+#   El cristal cambia si la puerta está abierta (va pegado a la puerta):
+#     window_<pos>_closed.png             cristal con la puerta cerrada
+#     window_<pos>_closed_door_open.png   cristal con la puerta abierta
+#
+# -----------------------------------------------------------------------------
+# COLORES
+# -----------------------------------------------------------------------------
+#   Las imágenes de esta carpeta son el juego por defecto (plata). Para otro
+#   color, crear una subcarpeta con el id del color de vehicles.yaml (p. ej.
+#   "deep_space_black/") con las imágenes que cambien, con el MISMO nombre.
+#
+# -----------------------------------------------------------------------------
+# NOMBRE DE LAS IMÁGENES
+# -----------------------------------------------------------------------------
+#   <pieza>_<estado>.png. Izquierda / derecha vistas desde el asiento del
+#   conductor: left = lado del conductor = el lado que se ve de frente.
+# =============================================================================
+
+capas:
+  # === DETRÁS DE LA CARROCERÍA ===================================================
+  # --- Puerta delantera derecha (lado del fondo) y su cristal -------------------
+  - senal: door_front_right
+    si_activo: door_front_right_open.png
+    si_inactivo: door_front_right_closed.png
+  - senal: window_front_right
+    si_inactivo: window_front_right_closed.png
+    salvo_si: door_front_right
+  - senal: window_front_right
+    si_inactivo: window_front_right_closed_door_open.png
+    solo_si: door_front_right
+
+  # --- Puerta trasera derecha (lado del fondo) y su cristal ---------------------
+  - senal: door_rear_right
+    si_activo: door_rear_right_open.png
+    si_inactivo: door_rear_right_closed.png
+  - senal: window_rear_right
+    si_inactivo: window_rear_right_closed.png
+    salvo_si: door_rear_right
+  - senal: window_rear_right
+    si_inactivo: window_rear_right_closed_door_open.png
+    solo_si: door_rear_right
+
+  # --- Portón cerrado (queda detrás) -----------------------------------------------
+  - senal: trunk_open
+    si_inactivo: trunk_closed.png
+
+  # === CARROCERÍA ===============================================================
+  - imagen: base.png
+
+  # === DELANTE DE LA CARROCERÍA =================================================
+  # --- Portón abierto y capó ---------------------------------------------------------
+  - senal: trunk_open
+    si_activo: trunk_open.png
+  - senal: hood_open
+    si_activo: hood_open.png
+    si_inactivo: hood_closed.png
+
+  # --- Puerta delantera izquierda (conductor) y su cristal ----------------------
+  - senal: door_front_left
+    si_activo: door_front_left_open.png
+    si_inactivo: door_front_left_closed.png
+  - senal: window_front_left
+    si_inactivo: window_front_left_closed.png
+    salvo_si: door_front_left
+  - senal: window_front_left
+    si_inactivo: window_front_left_closed_door_open.png
+    solo_si: door_front_left
+
+  # --- Puerta trasera izquierda y su cristal ---------------------------------------
+  - senal: door_rear_left
+    si_activo: door_rear_left_open.png
+    si_inactivo: door_rear_left_closed.png
+  - senal: window_rear_left
+    si_inactivo: window_rear_left_closed.png
+    salvo_si: door_rear_left
+  - senal: window_rear_left
+    si_inactivo: window_rear_left_closed_door_open.png
+    solo_si: door_rear_left
+
+  # --- Luces -------------------------------------------------------------------------
+  - senal: low_beam
+    si_activo: low_beam_on.png

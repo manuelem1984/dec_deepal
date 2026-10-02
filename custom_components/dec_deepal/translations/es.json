@@ -257,7 +257,8 @@
     "image": {
       "official_image": { "name": "Imagen oficial" },
       "dec_photo": { "name": "Imagen DEC" },
-      "top_view": { "name": "Vista de planta" }
+      "top_view": { "name": "Vista de planta" },
+      "isometric_view": { "name": "Vista isométrica" }
     }
   },
   "exceptions": {

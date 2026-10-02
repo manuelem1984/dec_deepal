@@ -1,4 +1,4 @@
-"""Pruebas de la "Vista de planta": elección de capas y montaje del PNG."""
+"""Pruebas de las vistas por capas (planta e isométrica): capas y montaje."""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ from pathlib import Path
 import pytest
 
 from custom_components.dec_deepal.registries import RegistryError, load_all
-from custom_components.dec_deepal.registries.top_view import load_top_view
+from custom_components.dec_deepal.registries.vehicles import load_vehicles
+from custom_components.dec_deepal.registries.views import load_view
 from custom_components.dec_deepal.telemetry import signals as s
 
 INTEGRATION = Path(__file__).parents[1] / "custom_components" / "dec_deepal"
@@ -25,18 +26,83 @@ ALL_CLOSED = (
 )
 
 
+ISO_CLOSED = (
+    "door_front_right_closed.png",
+    "window_front_right_closed.png",
+    "door_rear_right_closed.png",
+    "window_rear_right_closed.png",
+    "trunk_closed.png",
+    "base.png",
+    "hood_closed.png",
+    "door_front_left_closed.png",
+    "window_front_left_closed.png",
+    "door_rear_left_closed.png",
+    "window_rear_left_closed.png",
+)
+
+
 @pytest.fixture(scope="module")
-def layers():  # noqa: ANN201
-    return load_all(INTEGRATION).vehicles.get("s05_2024").top_view
+def views():  # noqa: ANN201
+    return load_all(INTEGRATION).vehicles.get("s05_2024").views
 
 
-def test_catalogue_links_models(layers) -> None:  # noqa: ANN001
+@pytest.fixture(scope="module")
+def layers(views):  # noqa: ANN001, ANN201
+    return views["top_view"]
+
+
+@pytest.fixture(scope="module")
+def iso(views):  # noqa: ANN001, ANN201
+    return views["isometric_view"]
+
+
+def test_catalogue_links_models(views) -> None:  # noqa: ANN001
     registries = load_all(INTEGRATION)
-    assert layers is not None
-    assert registries.vehicles.get("generico").top_view is None
+    assert list(views) == ["top_view", "isometric_view"]
+    assert registries.vehicles.get("generico").views == {}
     # Todas las señales existen en el vocabulario de telemetría.
     known = {value for name, value in vars(s).items() if name.isupper()}
-    assert set(layers.signals) <= known
+    for view in views.values():
+        assert set(view.signals) <= known
+
+
+def test_isometric_all_closed(iso) -> None:  # noqa: ANN001
+    assert iso.select(lambda _name: None).images == ISO_CLOSED
+
+
+def test_isometric_open_parts(iso) -> None:  # noqa: ANN001
+    state = {s.TRUNK_OPEN: True, s.DOOR_FRONT_LEFT: True, s.WINDOW_REAR_LEFT: True}
+    images = iso.select(lambda name: state.get(name, False)).images
+    # El portón abierto va encima de la base; el cerrado, no aparece.
+    assert "trunk_closed.png" not in images
+    assert images.index("trunk_open.png") > images.index("base.png")
+    # Puerta abierta: cristal de puerta abierta, no el de puerta cerrada.
+    assert "window_front_left_closed_door_open.png" in images
+    assert "window_front_left_closed.png" not in images
+    # Ventanilla bajada: sin cristal.
+    assert not any(name.startswith("window_rear_left") for name in images)
+    # Lo del lado derecho va debajo de la base.
+    assert images.index("door_front_right_closed.png") < images.index("base.png")
+
+
+def test_legacy_top_view_folder(tmp_path: Path) -> None:
+    """``carpeta_vista_planta`` (rc6) sigue funcionando."""
+    view_dir = tmp_path / "vista_planta" / "m"
+    view_dir.mkdir(parents=True)
+    (view_dir / "base.png").write_bytes(b"x")
+    (view_dir / "capas.yaml").write_text("capas: [{imagen: base.png}]", encoding="utf-8")
+    catalogue = tmp_path / "vehicles.yaml"
+    catalogue.write_text(
+        "modelos: {m: {nombre: M, carpeta_vista_planta: m}, generico: {nombre: G}}",
+        encoding="utf-8",
+    )
+    assert list(load_vehicles(tmp_path).get("m").views) == ["top_view"]
+    catalogue.write_text(
+        "modelos: {m: {nombre: M, vistas: {lateral: x}}, generico: {nombre: G}}",
+        encoding="utf-8",
+    )
+    with pytest.raises(RegistryError, match="lateral"):
+        load_vehicles(tmp_path)
 
 
 def test_unknown_draws_closed(layers) -> None:  # noqa: ANN001
@@ -76,7 +142,7 @@ def test_color_folder_overrides(tmp_path: Path) -> None:
     (tmp_path / "negro").mkdir()
     (tmp_path / "negro" / "base.png").write_bytes(b"y")
     (tmp_path / "capas.yaml").write_text("capas:\n  - imagen: base.png\n", encoding="utf-8")
-    view = load_top_view(tmp_path)
+    view = load_view(tmp_path)
     assert view.image_path("base.png", "negro") == tmp_path / "negro" / "base.png"
     assert view.image_path("base.png", "blanco") == tmp_path / "base.png"
     assert view.image_path("base.png", None) == tmp_path / "base.png"
@@ -87,17 +153,17 @@ def test_validation(tmp_path: Path) -> None:
         "capas:\n  - senal: hood_open\n    si_activo: falta.png\n", encoding="utf-8"
     )
     with pytest.raises(RegistryError, match="falta.png"):
-        load_top_view(tmp_path)
+        load_view(tmp_path)
     (tmp_path / "capas.yaml").write_text("capas:\n  - senal: hood_open\n", encoding="utf-8")
     with pytest.raises(RegistryError, match="si_activo"):
-        load_top_view(tmp_path)
+        load_view(tmp_path)
 
 
-def test_render_png(layers) -> None:  # noqa: ANN001
+def test_render_png(layers, iso) -> None:  # noqa: ANN001
     image_module = pytest.importorskip("PIL.Image")
-    from custom_components.dec_deepal.top_view import TopViewRenderer
+    from custom_components.dec_deepal.view_renderer import ViewRenderer
 
-    renderer = TopViewRenderer(layers, "mercury_silver")  # sin subcarpeta: plata
+    renderer = ViewRenderer(layers, "mercury_silver")  # sin subcarpeta: plata
     closed = renderer.render(ALL_CLOSED)
     opened = renderer.render(
         layers.select(lambda name: name == s.DOOR_FRONT_LEFT).images
@@ -107,3 +173,7 @@ def test_render_png(layers) -> None:  # noqa: ANN001
     with image_module.open(io.BytesIO(closed)) as picture:
         assert picture.format == "PNG"
         assert picture.size == (750, 750)
+
+    iso_png = ViewRenderer(iso, None).render(ISO_CLOSED)
+    with image_module.open(io.BytesIO(iso_png)) as picture:
+        assert picture.size == (750, 500)

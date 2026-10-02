@@ -33,7 +33,7 @@ custom_components/dec_deepal/
 ├── command_runner.py      Aduana de comandos de UN coche
 ├── entity.py              Entidad base (dispositivo, nombre, icono)
 ├── sensor.py … image.py   Una plataforma de HA por fichero
-├── top_view.py            Monta la "Vista de planta" (capas PNG, Pillow)
+├── view_renderer.py       Monta las vistas por capas (planta, isométrica; Pillow)
 ├── frontend.py            Publica los iconos "dec:" en el navegador
 ├── services.py/.yaml      Servicio de captura de depuración
 ├── diagnostics.py         "Descargar diagnósticos"
@@ -64,7 +64,7 @@ custom_components/dec_deepal/
 ├── registries/            Cargadores de catálogos (sin Home Assistant)
 │   ├── countries.py       countries/countries.yaml
 │   ├── vehicles.py        vehicles/vehicles.yaml + fotos
-│   ├── top_view.py        vista_planta/<modelo>/capas.yaml (qué capas tocan)
+│   ├── views.py           vista_*/<modelo>/capas.yaml (qué capas tocan)
 │   └── icons.py           icons/icons.yaml + icons/svg
 │
 ├── debug/                 Depuración (sin Home Assistant)
@@ -75,7 +75,7 @@ custom_components/dec_deepal/
 ├── countries/countries.yaml     ← DATOS: países y servidores
 ├── vehicles/vehicles.yaml       ← DATOS: modelos, versiones, colores
 ├── vehicles/photos/<modelo>/    ← DATOS: fotos
-├── vehicles/vista_planta/<modelo>/ ← DATOS: capas de la vista de planta
+├── vehicles/vista_*/<modelo>/   ← DATOS: capas de cada vista (planta, isométrica)
 ├── icons/icons.yaml             ← DATOS: iconos por entidad
 ├── icons/svg/                   ← DATOS: iconos propios
 ├── icons/dec-icons.js           Script del navegador (no se toca)

@@ -7,8 +7,8 @@ Además de leer el catálogo, este módulo:
   (:meth:`VehicleModel.features_for`): así se crean solo las entidades que
   tienen sentido (p. ej. sin ventilación de asientos en el S05 Pro).
 - Busca la **foto** que corresponde a versión + color (:meth:`VehicleModel.photo_for`).
-- Carga las capas de la **vista de planta** del modelo, si tiene
-  (``vehicles/vista_planta/<carpeta>/capas.yaml``, ver :mod:`.top_view`).
+- Carga las capas de las **vistas** del modelo ("Vista de planta", "Vista
+  isométrica"...), si tiene (``vistas:``; ver :mod:`.views`).
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from typing import Final
 
 from ..api.models import VehicleInfo
 from .errors import RegistryError, as_dict, as_str_list, read_yaml, require
-from .top_view import TopViewLayers, load_top_view
+from .views import ViewLayers, load_view
 
 # ---------------------------------------------------------------------------
 # Funciones conocidas (claves de "funciones" en el YAML)
@@ -50,6 +50,12 @@ KNOWN_FEATURES: Final = frozenset(
 
 #: Id del modelo de respaldo (obligatorio en el catálogo).
 GENERIC_MODEL_ID: Final = "generico"
+
+#: Vistas por capas conocidas (claves de "vistas" en el YAML). Cada una es una
+#: entidad de imagen con su nombre en translations (``entity.image.<clave>``).
+VIEW_TOP: Final = "top_view"
+VIEW_ISOMETRIC: Final = "isometric_view"
+KNOWN_VIEWS: Final = (VIEW_TOP, VIEW_ISOMETRIC)
 
 #: Extensiones de foto admitidas, en orden de preferencia.
 PHOTO_EXTENSIONS: Final = (".png", ".jpg", ".jpeg", ".webp")
@@ -94,8 +100,8 @@ class VehicleModel:
     default_photo: str
     trims: dict[str, Trim]
     colors: dict[str, Color]
-    #: Capas de la "Vista de planta" (``None`` = el modelo no tiene).
-    top_view: TopViewLayers | None = None
+    #: Vistas por capas del modelo: ``{clave de vista: capas}``.
+    views: dict[str, ViewLayers] = field(default_factory=dict)
 
     def display_name(self, trim_id: str | None) -> str:
         """Nombre para mostrar, con la versión si se conoce.
@@ -199,11 +205,31 @@ def _features(raw: object, where: str) -> dict[str, bool]:
     return features
 
 
-def _top_view(vehicles_dir: Path, folder: object) -> TopViewLayers | None:
-    """Capas de la vista de planta del modelo (``None`` si no indica carpeta)."""
-    if not folder:
-        return None
-    return load_top_view(vehicles_dir / "vista_planta" / str(folder))
+def _views(vehicles_dir: Path, raw: dict, where: str) -> dict[str, ViewLayers]:
+    """Lee el bloque ``vistas`` (``clave: carpeta dentro de vehicles/``).
+
+    ``carpeta_vista_planta`` (rc6) se sigue aceptando como atajo de
+    ``vistas: {top_view: vista_planta/<carpeta>}``.
+    """
+    folders = {
+        str(key): str(value)
+        for key, value in as_dict(raw.get("vistas"), f"{where}.vistas").items()
+        if value
+    }
+    legacy = raw.get("carpeta_vista_planta")
+    if legacy and VIEW_TOP not in folders:
+        folders[VIEW_TOP] = f"vista_planta/{legacy}"
+    unknown = set(folders) - set(KNOWN_VIEWS)
+    if unknown:
+        raise RegistryError(
+            f"{where}.vistas: vistas desconocidas {sorted(unknown)}; "
+            f"válidas: {list(KNOWN_VIEWS)}"
+        )
+    return {
+        key: load_view(vehicles_dir / folders[key])
+        for key in KNOWN_VIEWS
+        if key in folders
+    }
 
 
 def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
@@ -251,7 +277,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
             default_photo=str(raw.get("foto_defecto") or "default.png"),
             trims=trims,
             colors=colors,
-            top_view=_top_view(vehicles_dir, raw.get("carpeta_vista_planta")),
+            views=_views(vehicles_dir, raw, where),
         )
 
     if GENERIC_MODEL_ID not in models:

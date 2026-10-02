@@ -1,7 +1,8 @@
-"""Dibujo de la **Vista de planta**: pone las capas PNG una encima de otra.
+"""Dibujo de las **vistas por capas** (planta, isométrica...): pone las capas
+PNG una encima de otra.
 
-Qué capas se ponen lo decide :mod:`.registries.top_view` (a partir del
-``capas.yaml`` del modelo); aquí solo se dibujan, con Pillow (viene con Home
+Qué capas se ponen lo decide :mod:`.registries.views` (a partir del
+``capas.yaml`` de la vista); aquí solo se dibujan, con Pillow (viene con Home
 Assistant, no hace falta instalar nada).
 
 Para que sea ligero:
@@ -24,16 +25,16 @@ from typing import Final
 
 from PIL import Image
 
-from .registries.top_view import TopViewLayers
+from .registries.views import ViewLayers
 
 #: Cuántas imágenes montadas se guardan en memoria.
 CACHE_SIZE: Final = 8
 
 
-class TopViewRenderer:
-    """Monta la vista de planta de un coche (un modelo y un color)."""
+class ViewRenderer:
+    """Monta una vista de un coche (una vista, un modelo y un color)."""
 
-    def __init__(self, layers: TopViewLayers, color_id: str | None) -> None:
+    def __init__(self, layers: ViewLayers, color_id: str | None) -> None:
         self._layers = layers
         self._color_id = color_id
         #: Capa recortada y su posición: ``{imagen: (recorte, (x, y))}``.

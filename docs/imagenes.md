@@ -1,12 +1,13 @@
 # Imágenes del vehículo, modelos y colores
 
-Cada coche tiene **tres entidades de imagen, independientes**:
+Cada coche tiene **cuatro entidades de imagen, independientes**:
 
 | Entidad | De dónde sale | Si no hay imagen |
 | --- | --- | --- |
 | **Imagen oficial** (`official_image`) | URL que envía el servidor de Deepal en la lista de vehículos | No disponible |
 | **Imagen DEC** (`dec_photo`) | Catálogo local `vehicles/photos/`, según modelo + versión + color | Foto por defecto del modelo; si tampoco hay (p. ej. modelo genérico), **la imagen oficial** |
-| **Vista de planta** (`top_view`) | Capas de `vehicles/vista_planta/`, montadas según el estado del coche | No se crea si el modelo no tiene capas |
+| **Vista de planta** (`top_view`) | Capas de `vehicles/vista_planta/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
+| **Vista isométrica** (`isometric_view`) | Capas de `vehicles/vista_isometrica/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
 
 La imagen oficial se descarga una sola vez y la comparten las dos entidades.
 
@@ -53,10 +54,27 @@ vehicles/photos/s05_2024/
 
 Ver [anadir-pais-vehiculo-idioma.md](anadir-pais-vehiculo-idioma.md).
 
-## Vista de planta
+## Vistas por capas (planta, isométrica…)
 
-El coche **visto desde arriba**, montado en el momento con capas PNG
-transparentes que se ponen una encima de otra según su estado:
+Cada vista es el coche desde un ángulo, montado en el momento con capas PNG
+transparentes que se ponen una encima de otra según su estado. Qué vistas
+tiene cada modelo lo dice `vistas:` en `vehicles.yaml`:
+
+```yaml
+vistas:
+  top_view: vista_planta/s05_2024            # "Vista de planta"
+  isometric_view: vista_isometrica/s05_2024  # "Vista isométrica"
+```
+
+Cada vista es una entidad de imagen y todas funcionan igual (mismo código);
+solo cambian sus capas. Para un ángulo nuevo: carpeta con sus capas y su
+`capas.yaml`, una clave nueva en `KNOWN_VIEWS` (`registries/vehicles.py`) y
+su nombre en `translations/`.
+
+### Vista de planta (`top_view`)
+
+El coche **visto desde arriba** (750×750). Las piezas abiertas están
+dibujadas en rojo para que se vean de un vistazo:
 
 | Pieza | Señal | Capas |
 | --- | --- | --- |
@@ -68,11 +86,34 @@ transparentes que se ponen una encima de otra según su estado:
 | Luz de cruce | `low_beam` | `low_beam_on.png` |
 
 `<pos>` = `front_left`, `front_right`, `rear_left`, `rear_right` (izquierda /
-derecha vistas desde el asiento del conductor). Las piezas abiertas están
-dibujadas en rojo para que se vean de un vistazo.
+derecha vistas desde el asiento del conductor).
+
+### Vista isométrica (`isometric_view`)
+
+El coche **desde delante a la izquierda** (lado del conductor), 750×500,
+realista (sin rojo):
+
+| Pieza | Señal | Capas |
+| --- | --- | --- |
+| Carrocería | (siempre) | `base.png` (sin puertas, capó ni portón: se ve el interior) |
+| Capó | `hood_open` | `hood_open.png` / `hood_closed.png` |
+| Maletero | `trunk_open` | `trunk_open.png` (encima) / `trunk_closed.png` (debajo) |
+| Puertas (4) | `door_<pos>` | `door_<pos>_open.png` / `door_<pos>_closed.png` |
+| Ventanillas (4) | `window_<pos>` | **cristal** subido: `window_<pos>_closed.png`, o `window_<pos>_closed_door_open.png` con la puerta abierta; bajada = sin cristal |
+| Luz de cruce | `low_beam` | `low_beam_on.png` |
+
+- **El orden importa:** lo que en la realidad queda detrás de la carrocería
+  (puertas del lado derecho con sus cristales y el portón cerrado) va
+  **antes** de `base.png` para que la base lo tape. Con ese orden, "todo
+  cerrado" es idéntico a la foto del coche cerrado.
+- Desde este ángulo las puertas del lado derecho casi no se ven abiertas; para
+  las puertas es mejor la vista de planta. La isométrica luce con capó,
+  maletero y luces.
+
+### Común a todas las vistas
 
 ```
-vehicles/vista_planta/<carpeta_vista_planta>/
+vehicles/<vista>/<modelo>/
 ├── capas.yaml        orden de las capas y qué señal decide cada una
 ├── base.png
 ├── hood_closed.png   hood_open.png
@@ -80,8 +121,10 @@ vehicles/vista_planta/<carpeta_vista_planta>/
 └── <color>/          (opcional, futuro) capas de otro color
 ```
 
-- **Orden:** la lista de `capas.yaml`, de abajo arriba. Todos los campos están
-  explicados en su cabecera.
+- **Orden:** la lista de `capas.yaml`, de abajo arriba. Campos: `imagen`
+  (fija), `senal` + `si_activo` / `si_inactivo`, y las condiciones `salvo_si`
+  (no poner si otra señal está a "sí") y `solo_si` (poner solo si está a
+  "sí"). Todos explicados en la cabecera de cada `capas.yaml`.
 - **Cuándo cambia:** cada vez que llegan datos se decide qué capas tocan; solo
   si cambian, la imagen se marca como nueva y Home Assistant la vuelve a pedir.
   Las últimas combinaciones se guardan en memoria.
