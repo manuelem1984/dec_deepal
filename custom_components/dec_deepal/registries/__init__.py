@@ -8,6 +8,7 @@ Fichero de datos                      Cargador
 ====================================  =======================================
 ``countries/countries.yaml``          :mod:`.countries`
 ``vehicles/vehicles.yaml`` + fotos    :mod:`.vehicles`
+``vehicles/vista_planta/`` + capas    :mod:`.top_view` (lo carga vehicles)
 ``icons/icons.yaml`` + ``icons/svg``  :mod:`.icons`
 ====================================  =======================================
 

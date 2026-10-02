@@ -7,6 +7,8 @@ Además de leer el catálogo, este módulo:
   (:meth:`VehicleModel.features_for`): así se crean solo las entidades que
   tienen sentido (p. ej. sin ventilación de asientos en el S05 Pro).
 - Busca la **foto** que corresponde a versión + color (:meth:`VehicleModel.photo_for`).
+- Carga las capas de la **vista de planta** del modelo, si tiene
+  (``vehicles/vista_planta/<carpeta>/capas.yaml``, ver :mod:`.top_view`).
 """
 
 from __future__ import annotations
@@ -17,6 +19,7 @@ from typing import Final
 
 from ..api.models import VehicleInfo
 from .errors import RegistryError, as_dict, as_str_list, read_yaml, require
+from .top_view import TopViewLayers, load_top_view
 
 # ---------------------------------------------------------------------------
 # Funciones conocidas (claves de "funciones" en el YAML)
@@ -91,6 +94,8 @@ class VehicleModel:
     default_photo: str
     trims: dict[str, Trim]
     colors: dict[str, Color]
+    #: Capas de la "Vista de planta" (``None`` = el modelo no tiene).
+    top_view: TopViewLayers | None = None
 
     def display_name(self, trim_id: str | None) -> str:
         """Nombre para mostrar, con la versión si se conoce.
@@ -194,6 +199,13 @@ def _features(raw: object, where: str) -> dict[str, bool]:
     return features
 
 
+def _top_view(vehicles_dir: Path, folder: object) -> TopViewLayers | None:
+    """Capas de la vista de planta del modelo (``None`` si no indica carpeta)."""
+    if not folder:
+        return None
+    return load_top_view(vehicles_dir / "vista_planta" / str(folder))
+
+
 def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
     """Lee y valida ``vehicles/vehicles.yaml``."""
     path = vehicles_dir / "vehicles.yaml"
@@ -239,6 +251,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
             default_photo=str(raw.get("foto_defecto") or "default.png"),
             trims=trims,
             colors=colors,
+            top_view=_top_view(vehicles_dir, raw.get("carpeta_vista_planta")),
         )
 
     if GENERIC_MODEL_ID not in models:

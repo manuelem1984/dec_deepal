@@ -1,0 +1,86 @@
+# =============================================================================
+# DEC Deepal — VISTA DE PLANTA del Deepal S05 (2024-25)
+# =============================================================================
+#
+# La entidad "Vista de planta" dibuja el coche visto desde arriba poniendo
+# estas capas UNA ENCIMA DE OTRA, en el orden de la lista (la primera queda
+# debajo). Cada capa es un PNG transparente del MISMO tamaño (750×750) y con
+# el coche en la MISMA posición, así encajan sin mover nada.
+#
+# Tras editarlo, reiniciar Home Assistant. Guía: docs/imagenes.md
+#
+# -----------------------------------------------------------------------------
+# CAMPOS DE CADA CAPA
+# -----------------------------------------------------------------------------
+#   imagen        Capa fija: se pone siempre (p. ej. la base).
+#   senal         Señal de telemetría que decide la capa (ver
+#                 telemetry/signals.py). Debe ser de sí/no.
+#   si_activo     Imagen cuando la señal es "sí" (abierto / encendido).
+#   si_inactivo   (opcional) Imagen cuando la señal es "no" (cerrado / apagado).
+#   salvo_si      (opcional) Otra señal: si está a "sí", esta capa NO se pone.
+#                 Sirve para no dibujar la ventanilla bajada cuando la puerta
+#                 está abierta (la imagen de puerta abierta ya la incluye).
+#
+#   Dato desconocido (coche dormido, señal que no llega): se usa el último
+#   valor conocido; si nunca se ha conocido, se dibuja cerrado / apagado.
+#
+# -----------------------------------------------------------------------------
+# COLORES
+# -----------------------------------------------------------------------------
+#   Las imágenes de esta carpeta son el juego por defecto (plata). Para otro
+#   color, crear una subcarpeta con el id del color de vehicles.yaml (p. ej.
+#   "deep_space_black/") con las imágenes que cambien, con el MISMO nombre.
+#   Para cada imagen se busca primero en la subcarpeta del color elegido en
+#   Configurar y, si no está, aquí. No hace falta tocar código.
+#
+# -----------------------------------------------------------------------------
+# NOMBRE DE LAS IMÁGENES
+# -----------------------------------------------------------------------------
+#   <pieza>_<estado>.png     door_front_left_open.png, hood_closed.png...
+#   Lado izquierdo/derecho visto desde el asiento del conductor
+#   (front_left = puerta del conductor en el S05 de España).
+# =============================================================================
+
+capas:
+  # --- Carrocería base (con el hueco del capó y del maletero) ---------------
+  - imagen: base.png
+
+  # --- Capó y maletero ---------------------------------------------------------
+  - senal: hood_open
+    si_activo: hood_open.png
+    si_inactivo: hood_closed.png
+  - senal: trunk_open
+    si_activo: trunk_open.png
+    si_inactivo: trunk_closed.png
+
+  # --- Puertas -------------------------------------------------------------------
+  - senal: door_front_left
+    si_activo: door_front_left_open.png
+    si_inactivo: door_front_left_closed.png
+  - senal: door_front_right
+    si_activo: door_front_right_open.png
+    si_inactivo: door_front_right_closed.png
+  - senal: door_rear_left
+    si_activo: door_rear_left_open.png
+    si_inactivo: door_rear_left_closed.png
+  - senal: door_rear_right
+    si_activo: door_rear_right_open.png
+    si_inactivo: door_rear_right_closed.png
+
+  # --- Ventanillas (solo con la puerta cerrada) ----------------------------------
+  - senal: window_front_left
+    si_activo: window_front_left_open.png
+    salvo_si: door_front_left
+  - senal: window_front_right
+    si_activo: window_front_right_open.png
+    salvo_si: door_front_right
+  - senal: window_rear_left
+    si_activo: window_rear_left_open.png
+    salvo_si: door_rear_left
+  - senal: window_rear_right
+    si_activo: window_rear_right_open.png
+    salvo_si: door_rear_right
+
+  # --- Luces -------------------------------------------------------------------
+  - senal: low_beam
+    si_activo: low_beam_on.png

@@ -430,3 +430,8 @@ official_image:
 dec_photo:
   plataforma: image
   descripcion: Imagen DEC según versión y color elegidos
+top_view:
+  plataforma: image
+  descripcion: >-
+    Vista de planta: el coche desde arriba con puertas, capó, maletero,
+    ventanillas y luces según su estado (capas en vehicles/vista_planta/)

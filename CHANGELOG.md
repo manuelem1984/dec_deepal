@@ -3,6 +3,18 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc6] — 2026-10-02
+
+### Añadido
+
+- **Vista de planta** (entidad de imagen nueva): el coche visto desde arriba
+  con puertas, capó, maletero y ventanillas abiertos (en rojo) y la luz de
+  cruce encendida, según su estado. Se monta con capas PNG de
+  `vehicles/vista_planta/s05_2024/` descritas en `capas.yaml`: añadir o
+  cambiar capas no requiere tocar código. Si un dato no llega se usa el
+  último conocido (o cerrado). Atributos `activo` y `sin_dato`. Preparada
+  para juegos de otros colores (hoy solo plata). Ver `docs/imagenes.md`.
+
 ## [2.0.0rc5] — 2026-10-01
 
 ### Corregido

@@ -32,6 +32,12 @@
 #   carpeta_fotos   Carpeta dentro de vehicles/photos/ con las fotos del modelo.
 #   foto_defecto    Foto que se usa si el usuario no ha elegido versión y color
 #                   (o si falta la foto exacta). Ruta relativa a carpeta_fotos.
+#   carpeta_vista_planta
+#                   (opcional) Carpeta dentro de vehicles/vista_planta/ con las
+#                   capas de la entidad "Vista de planta" (coche visto desde
+#                   arriba con puertas, capó, maletero... según su estado).
+#                   Las capas se describen en su capas.yaml. Sin este campo,
+#                   el modelo no tiene vista de planta.
 #   versiones       Acabados. Clave = id interno (minúsculas, sin espacios).
 #                     nombre        Texto que ve el usuario.
 #                     descripcion   Texto libre.
@@ -85,6 +91,7 @@ modelos:
       combustible: false             # solo híbridos enchufables / autonomía extendida
     carpeta_fotos: s05_2024
     foto_defecto: default.png
+    carpeta_vista_planta: s05_2024
     versiones:
       pro:
         nombre: Pro

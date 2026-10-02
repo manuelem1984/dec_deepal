@@ -1,11 +1,12 @@
 # Imágenes del vehículo, modelos y colores
 
-Cada coche tiene **dos entidades de imagen, independientes**:
+Cada coche tiene **tres entidades de imagen, independientes**:
 
 | Entidad | De dónde sale | Si no hay imagen |
 | --- | --- | --- |
 | **Imagen oficial** (`official_image`) | URL que envía el servidor de Deepal en la lista de vehículos | No disponible |
 | **Imagen DEC** (`dec_photo`) | Catálogo local `vehicles/photos/`, según modelo + versión + color | Foto por defecto del modelo; si tampoco hay (p. ej. modelo genérico), **la imagen oficial** |
+| **Vista de planta** (`top_view`) | Capas de `vehicles/vista_planta/`, montadas según el estado del coche | No se crea si el modelo no tiene capas |
 
 La imagen oficial se descarga una sola vez y la comparten las dos entidades.
 
@@ -51,6 +52,50 @@ vehicles/photos/s05_2024/
 ### Añadir un modelo nuevo
 
 Ver [anadir-pais-vehiculo-idioma.md](anadir-pais-vehiculo-idioma.md).
+
+## Vista de planta
+
+El coche **visto desde arriba**, montado en el momento con capas PNG
+transparentes que se ponen una encima de otra según su estado:
+
+| Pieza | Señal | Capas |
+| --- | --- | --- |
+| Carrocería | (siempre) | `base.png` (con el hueco del capó y del maletero) |
+| Capó | `hood_open` | `hood_open.png` / `hood_closed.png` |
+| Maletero | `trunk_open` | `trunk_open.png` / `trunk_closed.png` |
+| Puertas (4) | `door_<pos>` | `door_<pos>_open.png` / `door_<pos>_closed.png` |
+| Ventanillas (4) | `window_<pos>` | `window_<pos>_open.png`, solo con la puerta cerrada |
+| Luz de cruce | `low_beam` | `low_beam_on.png` |
+
+`<pos>` = `front_left`, `front_right`, `rear_left`, `rear_right` (izquierda /
+derecha vistas desde el asiento del conductor). Las piezas abiertas están
+dibujadas en rojo para que se vean de un vistazo.
+
+```
+vehicles/vista_planta/<carpeta_vista_planta>/
+├── capas.yaml        orden de las capas y qué señal decide cada una
+├── base.png
+├── hood_closed.png   hood_open.png
+├── …
+└── <color>/          (opcional, futuro) capas de otro color
+```
+
+- **Orden:** la lista de `capas.yaml`, de abajo arriba. Todos los campos están
+  explicados en su cabecera.
+- **Cuándo cambia:** cada vez que llegan datos se decide qué capas tocan; solo
+  si cambian, la imagen se marca como nueva y Home Assistant la vuelve a pedir.
+  Las últimas combinaciones se guardan en memoria.
+- **Dato desconocido** (coche dormido, señal que no llega): se usa el último
+  valor conocido; si nunca se ha conocido, se dibuja cerrado / apagado.
+- **Atributos:** `activo` (señales abiertas / encendidas) y `sin_dato`
+  (señales sin dato en la última lectura). Sirven para automatizaciones.
+- **Colores:** hoy solo hay el juego plata (en la raíz de la carpeta). Para
+  otro color basta con una subcarpeta con el id del color (p. ej.
+  `deep_space_black/`) con las capas que cambien, con el mismo nombre; las que
+  falten se toman de la raíz.
+- **Modelo sin configurar:** mientras el coche es "genérico" se usan las capas
+  del modelo reconocido por el nombre (p. ej. el S05).
+- El montaje usa Pillow, que ya viene con Home Assistant.
 
 ## Elegir modelo, versión y color
 

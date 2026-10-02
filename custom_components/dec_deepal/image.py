@@ -1,4 +1,4 @@
-"""Imágenes del vehículo: dos entidades separadas.
+"""Imágenes del vehículo: tres entidades separadas.
 
 - **official_image** — "Imagen oficial": la foto que manda el servidor de
   Deepal en la lista de vehículos. Si el servidor no manda ninguna, la entidad
@@ -7,6 +7,10 @@
   corresponde a la versión y el color elegidos en Configurar. Si no se han
   elegido, o falta esa foto, se usa la foto por defecto del modelo. Ver
   ``docs/imagenes.md``.
+- **top_view** — "Vista de planta": el coche visto desde arriba, montado con
+  capas según su estado (puertas, capó, maletero, ventanillas, luces). Las
+  capas están en ``vehicles/vista_planta/<carpeta>/capas.yaml``; el dibujo,
+  en ``top_view.py``.
 
 La imagen oficial se descarga aquí mismo (y no con el mecanismo estándar de
 Home Assistant) por dos motivos:
@@ -23,17 +27,19 @@ import logging
 import mimetypes
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 from urllib.parse import urlparse
 
 import aiohttp
 from homeassistant.components.image import ImageEntity
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .entity import DecDeepalEntity
+from .registries.top_view import Selection, TopViewLayers
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
+from .top_view import TopViewRenderer
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -115,7 +121,7 @@ async def async_setup_entry(
     entry: DecDeepalConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Crea las dos imágenes de cada coche."""
+    """Crea las imágenes de cada coche."""
     runtime = entry.runtime_data
     entities: list[ImageEntity] = []
     for vehicle in runtime.vehicles.values():
@@ -125,7 +131,23 @@ async def async_setup_entry(
         }
         entities.append(DecOfficialImage(hass, runtime, vehicle))
         entities.append(DecImage(hass, runtime, vehicle))
+        layers = top_view_layers(vehicle)
+        if layers is not None:
+            entities.append(DecTopView(hass, runtime, vehicle, layers))
     async_add_entities(entities)
+
+
+def top_view_layers(vehicle: VehicleContext) -> TopViewLayers | None:
+    """Capas de la vista de planta del coche.
+
+    Las del modelo elegido; si aún no se ha elegido (modelo genérico), las del
+    modelo reconocido por el nombre. ``None`` si ninguno tiene.
+    """
+    if vehicle.model.top_view is not None:
+        return vehicle.model.top_view
+    if vehicle.suggested_model is not None:
+        return vehicle.suggested_model.top_view
+    return None
 
 
 class DecOfficialImage(DecDeepalEntity, ImageEntity):
@@ -190,3 +212,73 @@ class DecImage(DecDeepalEntity, ImageEntity):
             return None
         data, self._attr_content_type = result
         return data
+
+
+class DecTopView(DecDeepalEntity, ImageEntity):
+    """"Vista de planta": el coche desde arriba según su estado.
+
+    Cada vez que llegan datos se decide qué capas tocan (puerta abierta,
+    capó cerrado...). Solo si cambian se marca la imagen como nueva, y Home
+    Assistant la vuelve a pedir; la imagen se monta al pedirla.
+
+    Dato desconocido: se usa el **último valor conocido** de esa señal (desde
+    que arrancó la integración); si nunca se ha conocido, se dibuja cerrado /
+    apagado. Los atributos dicen qué está activo y qué no tiene dato.
+    """
+
+    _attr_content_type = "image/png"
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        runtime: DecDeepalRuntime,
+        vehicle: VehicleContext,
+        layers: TopViewLayers,
+    ) -> None:
+        DecDeepalEntity.__init__(self, runtime, vehicle, "image", "top_view")
+        ImageEntity.__init__(self, hass)
+        self._layers = layers
+        # Se decide una vez: cambiar el color en Configurar recarga la
+        # integración y vuelve a crear esta entidad.
+        self._renderer = TopViewRenderer(layers, vehicle.color)
+        self._last_known: dict[str, bool] = {}
+        self._unknown: tuple[str, ...] = ()
+        self._selection = self._select()
+        self._attr_image_last_updated = datetime.now(UTC)
+
+    def _select(self) -> Selection:
+        """Capas que tocan con los datos actuales (y apunta los desconocidos)."""
+        values: dict[str, bool | None] = {}
+        unknown: list[str] = []
+        for name in self._layers.signals:
+            raw = self.signal(name)
+            if raw is None:
+                unknown.append(name)
+                values[name] = self._last_known.get(name)
+            else:
+                values[name] = self._last_known[name] = bool(raw)
+        self._unknown = tuple(unknown)
+        return self._layers.select(values.get)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Datos nuevos: si cambian las capas, la imagen es nueva."""
+        selection = self._select()
+        if selection.images != self._selection.images:
+            self._attr_image_last_updated = datetime.now(UTC)
+        self._selection = selection
+        super()._handle_coordinator_update()
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Qué está abierto / encendido y qué señales no tienen dato."""
+        return {
+            "activo": list(self._selection.active),
+            "sin_dato": list(self._unknown),
+        }
+
+    async def async_image(self) -> bytes | None:
+        """PNG montado con las capas actuales."""
+        return await self.hass.async_add_executor_job(
+            self._renderer.render, self._selection.images
+        )

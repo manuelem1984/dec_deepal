@@ -50,6 +50,8 @@ tiene `Verificado = No`.
       tras reiniciar sin tocar código.
 - [ ] Imagen DEC cambia al elegir versión/color; imagen oficial aparece si el
       servidor manda URL.
+- [ ] Vista de planta (rc6): abrir una puerta, el capó, el maletero y una
+      ventanilla y comprobar que la imagen cambia; luz de cruce encendida.
 - [ ] Asientos (escala 1:1), volante y desempañado: lectura y control.
 - [ ] Encender el clima NO apaga el volante en pantalla.
 - [ ] Puertas / ventanillas / maletero con el payload nuevo (Opción A y B).
