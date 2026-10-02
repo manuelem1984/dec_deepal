@@ -55,7 +55,8 @@ GENERIC_MODEL_ID: Final = "generico"
 #: entidad de imagen con su nombre en translations (``entity.image.<clave>``).
 VIEW_TOP: Final = "top_view"
 VIEW_ISOMETRIC: Final = "isometric_view"
-KNOWN_VIEWS: Final = (VIEW_TOP, VIEW_ISOMETRIC)
+VIEW_INTERIOR: Final = "interior_view"
+KNOWN_VIEWS: Final = (VIEW_TOP, VIEW_ISOMETRIC, VIEW_INTERIOR)
 
 #: Extensiones de foto admitidas, en orden de preferencia.
 PHOTO_EXTENSIONS: Final = (".png", ".jpg", ".jpeg", ".webp")

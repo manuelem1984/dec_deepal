@@ -1,6 +1,6 @@
 # Imágenes del vehículo, modelos y colores
 
-Cada coche tiene **cuatro entidades de imagen, independientes**:
+Cada coche tiene **cinco entidades de imagen, independientes**:
 
 | Entidad | De dónde sale | Si no hay imagen |
 | --- | --- | --- |
@@ -8,6 +8,7 @@ Cada coche tiene **cuatro entidades de imagen, independientes**:
 | **Imagen DEC** (`dec_photo`) | Catálogo local `vehicles/photos/`, según modelo + versión + color | Foto por defecto del modelo; si tampoco hay (p. ej. modelo genérico), **la imagen oficial** |
 | **Vista de planta** (`top_view`) | Capas de `vehicles/vista_planta/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
 | **Vista isométrica** (`isometric_view`) | Capas de `vehicles/vista_isometrica/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
+| **Vista interior** (`interior_view`) | Capas de `vehicles/vista_interior/`: volante y asientos encendidos | No se crea si el modelo no tiene esa vista |
 
 La imagen oficial se descarga una sola vez y la comparten las dos entidades.
 
@@ -64,6 +65,7 @@ tiene cada modelo lo dice `vistas:` en `vehicles.yaml`:
 vistas:
   top_view: vista_planta/s05_2024            # "Vista de planta"
   isometric_view: vista_isometrica/s05_2024  # "Vista isométrica"
+  interior_view: vista_interior/s05_2024      # "Vista interior"
 ```
 
 Cada vista es una entidad de imagen y todas funcionan igual (mismo código);
@@ -112,6 +114,27 @@ realista (sin rojo):
 - Desde este ángulo las puertas del lado derecho casi no se ven abiertas; para
   las puertas es mejor la vista de planta. La isométrica luce con capó,
   maletero y luces.
+
+### Vista interior (`interior_view`)
+
+El **habitáculo desde arriba** (1125×1500). Encima de la foto se "encienden"
+el volante y los asientos delanteros con un tinte neón que respeta las
+costuras, se apaga hacia el borde y deja un halo suave (20 % transparente):
+
+| Pieza | Señal | Capa | Color |
+| --- | --- | --- | --- |
+| Volante (solo el aro) | `steering_wheel_heat` | `steering_wheel_heat_on.png` | naranja |
+| Asiento conductor, calefacción | `seat_heat_driver` | `seat_heat_driver_on.png` | naranja |
+| Asiento conductor, ventilación | `seat_vent_driver` | `seat_vent_driver_on.png` | celeste |
+| Asiento copiloto, calefacción | `seat_heat_passenger` | `seat_heat_passenger_on.png` | naranja |
+| Asiento copiloto, ventilación | `seat_vent_passenger` | `seat_vent_passenger_on.png` | celeste |
+
+- En los asientos solo se colorean las dos zonas con costuras en diagonal
+  (respaldo y banqueta). Las del copiloto son el reflejo exacto de las del
+  conductor (eje x = 560).
+- Los asientos tienen nivel 0-3: cualquier nivel (1-3) enciende la capa; hoy
+  no se distingue la intensidad.
+- En el S05 Pro (sin ventilación) las capas de ventilación nunca se encienden.
 
 ### Común a todas las vistas
 

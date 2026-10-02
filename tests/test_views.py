@@ -60,7 +60,7 @@ def iso(views):  # noqa: ANN001, ANN201
 
 def test_catalogue_links_models(views) -> None:  # noqa: ANN001
     registries = load_all(INTEGRATION)
-    assert list(views) == ["top_view", "isometric_view"]
+    assert list(views) == ["top_view", "isometric_view", "interior_view"]
     assert registries.vehicles.get("generico").views == {}
     # Todas las señales existen en el vocabulario de telemetría.
     known = {value for name, value in vars(s).items() if name.isupper()}
@@ -88,6 +88,21 @@ def test_isometric_open_parts(iso) -> None:  # noqa: ANN001
     # El cristal (con la puerta abierta) va debajo de su puerta.
     assert images.index("window_front_left_closed_door_open.png") < images.index(
         "door_front_left_open.png"
+    )
+
+
+def test_interior_levels(views) -> None:  # noqa: ANN001
+    interior = views["interior_view"]
+    assert interior.select(lambda _name: None).images == ("base.png",)
+    # Niveles 0-3: cualquier nivel enciende la capa; 0 la apaga.
+    state = {s.SEAT_HEAT_DRIVER: 2, s.SEAT_VENT_PASSENGER: 1, s.SEAT_HEAT_PASSENGER: 0,
+             s.STEERING_WHEEL_HEAT: True}
+    images = interior.select(lambda name: bool(state.get(name))).images
+    assert images == (
+        "base.png",
+        "steering_wheel_heat_on.png",
+        "seat_heat_driver_on.png",
+        "seat_vent_passenger_on.png",
     )
 
 
@@ -183,3 +198,8 @@ def test_render_png(layers, iso) -> None:  # noqa: ANN001
     iso_png = ViewRenderer(iso, None).render(ISO_CLOSED)
     with image_module.open(io.BytesIO(iso_png)) as picture:
         assert picture.size == (750, 500)
+
+    interior = load_all(INTEGRATION).vehicles.get("s05_2024").views["interior_view"]
+    png = ViewRenderer(interior, None).render(("base.png", "seat_heat_driver_on.png"))
+    with image_module.open(io.BytesIO(png)) as picture:
+        assert picture.size == (1125, 1500)

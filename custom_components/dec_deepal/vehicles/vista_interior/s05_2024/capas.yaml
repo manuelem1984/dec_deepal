@@ -1,0 +1,56 @@
+# =============================================================================
+# DEC Deepal — VISTA INTERIOR del Deepal S05 (2024-25)
+# =============================================================================
+#
+# La entidad "Vista interior" dibuja el habitáculo visto desde arriba y
+# "enciende" el volante y los asientos delanteros cuando su calefacción o
+# ventilación está activa. Las capas se ponen UNA ENCIMA DE OTRA, en el orden
+# de la lista (la primera queda debajo). Cada capa es un PNG transparente de
+# 1125×1500 con el habitáculo en la MISMA posición.
+#
+# Tras editarlo, reiniciar Home Assistant. Guía: docs/imagenes.md
+#
+# -----------------------------------------------------------------------------
+# CAMPOS DE CADA CAPA
+# -----------------------------------------------------------------------------
+#   imagen        Capa fija: se pone siempre (p. ej. la base).
+#   senal         Señal de telemetría que decide la capa (ver
+#                 telemetry/signals.py). Sí/no, o un nivel: 0 = "no",
+#                 1-3 = "sí".
+#   si_activo     (opcional) Imagen cuando la señal es "sí" (encendido).
+#   si_inactivo   (opcional) Imagen cuando la señal es "no" (apagado).
+#   salvo_si      (opcional) Otra señal: si está a "sí", esta capa NO se pone.
+#   solo_si       (opcional) Otra señal: la capa SOLO se pone si está a "sí".
+#
+#   Dato desconocido (coche dormido, señal que no llega): se usa el último
+#   valor conocido; si nunca se ha conocido, se dibuja apagado.
+#
+# -----------------------------------------------------------------------------
+# LAS CAPAS DE COLOR
+# -----------------------------------------------------------------------------
+#   Tinte "neón" (naranja = calor, celeste = ventilación) que respeta las
+#   costuras, se apaga hacia el borde y deja un halo suave alrededor; 20 %
+#   transparente. Solo colorean el aro del volante y las dos zonas con
+#   costuras en diagonal de cada asiento (respaldo y banqueta). Las del
+#   copiloto son el reflejo exacto de las del conductor (eje x = 560).
+#   Hoy no distinguen el nivel (1, 2 o 3): cualquier nivel enciende la capa.
+# =============================================================================
+
+capas:
+  - imagen: base.png
+
+  # --- Volante calefactado -----------------------------------------------------
+  - senal: steering_wheel_heat
+    si_activo: steering_wheel_heat_on.png
+
+  # --- Asiento del conductor -----------------------------------------------------
+  - senal: seat_heat_driver
+    si_activo: seat_heat_driver_on.png
+  - senal: seat_vent_driver
+    si_activo: seat_vent_driver_on.png
+
+  # --- Asiento del copiloto --------------------------------------------------------
+  - senal: seat_heat_passenger
+    si_activo: seat_heat_passenger_on.png
+  - senal: seat_vent_passenger
+    si_activo: seat_vent_passenger_on.png

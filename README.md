@@ -64,8 +64,9 @@ Un dispositivo por coche con: batería, autonomía, estado de carga, corrientes,
 tiempo restante, kilometraje, puertas, ventanillas, cerraduras, capó,
 maletero, presión y avisos de neumáticos, luces, temperatura y humedad
 interior, climatización, asientos, volante, desempañado, botones de luces y
-claxon, y cuatro imágenes (oficial, imagen DEC, y vista de planta y vista
-isométrica con puertas, capó, maletero, ventanillas y luces según su estado).
+claxon, y cinco imágenes (oficial, imagen DEC, vista de planta y vista
+isométrica con puertas, capó, maletero, ventanillas y luces según su estado, y
+vista interior con volante y asientos calefactados o ventilados).
 
 Qué está comprobado con el coche real y qué no:
 [docs/correlacion_endpoints_entidades.csv](docs/correlacion_endpoints_entidades.csv)
@@ -77,7 +78,7 @@ Qué está comprobado con el coche real y qué no:
 | --- | --- | --- |
 | Iconos de las entidades | `icons/svg/<entidad>_<estado>.svg` | [docs/iconos.md](docs/iconos.md) |
 | Modelos, versiones, colores y fotos | `vehicles/vehicles.yaml` + `vehicles/photos/` | [docs/imagenes.md](docs/imagenes.md) |
-| Capas de las vistas (planta, isométrica) | `vehicles/vista_*/<modelo>/capas.yaml` | ídem |
+| Capas de las vistas (planta, isométrica, interior) | `vehicles/vista_*/<modelo>/capas.yaml` | ídem |
 | Países | `countries/countries.yaml` | [docs/anadir-pais-vehiculo-idioma.md](docs/anadir-pais-vehiculo-idioma.md) |
 | Idiomas | `translations/<idioma>.json` | ídem |
 

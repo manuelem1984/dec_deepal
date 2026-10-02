@@ -54,6 +54,8 @@ tiene `Verificado = No`.
       ventanilla y comprobar que la imagen cambia; luz de cruce encendida.
 - [ ] Vista isométrica (rc7): lo mismo; el capó, el maletero y las luces son
       lo que más se nota desde ese ángulo.
+- [ ] Vista interior (rc9): encender volante, calefacción y ventilación de
+      cada asiento y comprobar que se ilumina la zona correcta.
 - [ ] Asientos (escala 1:1), volante y desempañado: lectura y control.
 - [ ] Encender el clima NO apaga el volante en pantalla.
 - [ ] Puertas / ventanillas / maletero con el payload nuevo (Opción A y B).

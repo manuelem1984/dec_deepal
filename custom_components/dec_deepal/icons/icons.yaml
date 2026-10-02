@@ -440,3 +440,8 @@ isometric_view:
   descripcion: >-
     Vista isométrica: el coche desde delante a la izquierda con puertas, capó,
     maletero, ventanillas y luces según su estado (capas en vehicles/vista_isometrica/)
+interior_view:
+  plataforma: image
+  descripcion: >-
+    Vista interior: el habitáculo desde arriba con volante y asientos
+    delanteros encendidos (naranja = calor, celeste = ventilación)

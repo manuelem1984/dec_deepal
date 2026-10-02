@@ -39,6 +39,8 @@
 #                   con su capas.yaml. Vistas posibles:
 #                     top_view        "Vista de planta" (desde arriba)
 #                     isometric_view  "Vista isométrica" (delante-izquierda)
+#                     interior_view   "Vista interior" (habitáculo: volante y
+#                                     asientos calefactados / ventilados)
 #                   Sin este campo, el modelo no tiene vistas.
 #   versiones       Acabados. Clave = id interno (minúsculas, sin espacios).
 #                     nombre        Texto que ve el usuario.
@@ -96,6 +98,7 @@ modelos:
     vistas:
       top_view: vista_planta/s05_2024
       isometric_view: vista_isometrica/s05_2024
+      interior_view: vista_interior/s05_2024
     versiones:
       pro:
         nombre: Pro

@@ -7,9 +7,10 @@
   corresponde a la versión y el color elegidos en Configurar. Si no se han
   elegido, o falta esa foto, se usa la foto por defecto del modelo. Ver
   ``docs/imagenes.md``.
-- **Vistas por capas** — "Vista de planta" (``top_view``) y "Vista
-  isométrica" (``isometric_view``): el coche desde un ángulo, montado con
-  capas según su estado (puertas, capó, maletero, ventanillas, luces). Qué
+- **Vistas por capas** — "Vista de planta" (``top_view``), "Vista
+  isométrica" (``isometric_view``) y "Vista interior" (``interior_view``):
+  el coche desde un ángulo, montado con capas según su estado (puertas,
+  capó, maletero, ventanillas, luces, volante y asientos). Qué
   vistas tiene cada modelo lo dice ``vistas:`` en ``vehicles.yaml``; las
   capas, el ``capas.yaml`` de cada vista; el dibujo, ``view_renderer.py``.
 

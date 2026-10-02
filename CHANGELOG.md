@@ -3,6 +3,17 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc9] — 2026-10-02
+
+### Añadido
+
+- **Vista interior** (entidad de imagen nueva): el habitáculo desde arriba con
+  el aro del volante y las zonas acolchadas de los asientos delanteros
+  "encendidas" cuando están calefactados (naranja) o ventilados (celeste).
+  Tinte neón que respeta las costuras, con bordes difuminados y halo suave,
+  20 % transparente. Capas en `vehicles/vista_interior/s05_2024/`. Cualquier
+  nivel de asiento (1-3) enciende su capa.
+
 ## [2.0.0rc8] — 2026-10-02
 
 ### Corregido
