@@ -30,7 +30,11 @@
 #   Lo que en la realidad queda DETRÁS de la carrocería (puertas del lado
 #   derecho y portón cerrado) va ANTES de la base, para que ella lo tape y
 #   solo asome por los huecos. Lo que queda delante va DESPUÉS.
-#   Con este orden, "todo cerrado" es idéntico a la foto del coche cerrado.
+#   Dentro de cada lado: la puerta TRASERA antes que la DELANTERA (el canto
+#   de la delantera tapa el de la trasera) y el CRISTAL antes que su PUERTA
+#   (el espejo y el marco quedan delante del cristal).
+#   Con este orden, "todo cerrado" es idéntico a la foto del coche cerrado
+#   (comprobado píxel a píxel: difieren 10 de 375.000).
 #
 # -----------------------------------------------------------------------------
 # VENTANILLAS
@@ -57,29 +61,30 @@
 
 capas:
   # === DETRÁS DE LA CARROCERÍA ===================================================
-  # --- Puerta delantera derecha (lado del fondo) y su cristal -------------------
-  - senal: door_front_right
-    si_activo: door_front_right_open.png
-    si_inactivo: door_front_right_closed.png
-  - senal: window_front_right
-    si_inactivo: window_front_right_closed.png
-    salvo_si: door_front_right
-  - senal: window_front_right
-    si_inactivo: window_front_right_closed_door_open.png
-    solo_si: door_front_right
-
-  # --- Puerta trasera derecha (lado del fondo) y su cristal ---------------------
-  - senal: door_rear_right
-    si_activo: door_rear_right_open.png
-    si_inactivo: door_rear_right_closed.png
+  # Puertas del lado derecho (el del fondo): trasera antes que delantera.
+  # --- Puerta trasera derecha (cristal y luego puerta) ---
   - senal: window_rear_right
     si_inactivo: window_rear_right_closed.png
     salvo_si: door_rear_right
   - senal: window_rear_right
     si_inactivo: window_rear_right_closed_door_open.png
     solo_si: door_rear_right
+  - senal: door_rear_right
+    si_activo: door_rear_right_open.png
+    si_inactivo: door_rear_right_closed.png
 
-  # --- Portón cerrado (queda detrás) -----------------------------------------------
+  # --- Puerta delantera derecha (cristal y luego puerta) ---
+  - senal: window_front_right
+    si_inactivo: window_front_right_closed.png
+    salvo_si: door_front_right
+  - senal: window_front_right
+    si_inactivo: window_front_right_closed_door_open.png
+    solo_si: door_front_right
+  - senal: door_front_right
+    si_activo: door_front_right_open.png
+    si_inactivo: door_front_right_closed.png
+
+  # --- Portón cerrado (queda detrás) -------------------------------------------
   - senal: trunk_open
     si_inactivo: trunk_closed.png
 
@@ -87,35 +92,37 @@ capas:
   - imagen: base.png
 
   # === DELANTE DE LA CARROCERÍA =================================================
-  # --- Portón abierto y capó ---------------------------------------------------------
+  # --- Portón abierto y capó ---------------------------------------------------
   - senal: trunk_open
     si_activo: trunk_open.png
   - senal: hood_open
     si_activo: hood_open.png
     si_inactivo: hood_closed.png
 
-  # --- Puerta delantera izquierda (conductor) y su cristal ----------------------
-  - senal: door_front_left
-    si_activo: door_front_left_open.png
-    si_inactivo: door_front_left_closed.png
-  - senal: window_front_left
-    si_inactivo: window_front_left_closed.png
-    salvo_si: door_front_left
-  - senal: window_front_left
-    si_inactivo: window_front_left_closed_door_open.png
-    solo_si: door_front_left
-
-  # --- Puerta trasera izquierda y su cristal ---------------------------------------
-  - senal: door_rear_left
-    si_activo: door_rear_left_open.png
-    si_inactivo: door_rear_left_closed.png
+  # Puertas del lado izquierdo (conductor): trasera antes que delantera, porque
+  # el canto de la delantera tapa el de la trasera.
+  # --- Puerta trasera izquierda (cristal y luego puerta) ---
   - senal: window_rear_left
     si_inactivo: window_rear_left_closed.png
     salvo_si: door_rear_left
   - senal: window_rear_left
     si_inactivo: window_rear_left_closed_door_open.png
     solo_si: door_rear_left
+  - senal: door_rear_left
+    si_activo: door_rear_left_open.png
+    si_inactivo: door_rear_left_closed.png
 
-  # --- Luces -------------------------------------------------------------------------
+  # --- Puerta delantera izquierda (cristal y luego puerta) ---
+  - senal: window_front_left
+    si_inactivo: window_front_left_closed.png
+    salvo_si: door_front_left
+  - senal: window_front_left
+    si_inactivo: window_front_left_closed_door_open.png
+    solo_si: door_front_left
+  - senal: door_front_left
+    si_activo: door_front_left_open.png
+    si_inactivo: door_front_left_closed.png
+
+  # --- Luces -------------------------------------------------------------------
   - senal: low_beam
     si_activo: low_beam_on.png

@@ -26,18 +26,20 @@ ALL_CLOSED = (
 )
 
 
+# Orden comprobado píxel a píxel contra la foto del coche cerrado (rc8):
+# cristal antes que su puerta, puerta trasera antes que la delantera.
 ISO_CLOSED = (
-    "door_front_right_closed.png",
-    "window_front_right_closed.png",
-    "door_rear_right_closed.png",
     "window_rear_right_closed.png",
+    "door_rear_right_closed.png",
+    "window_front_right_closed.png",
+    "door_front_right_closed.png",
     "trunk_closed.png",
     "base.png",
     "hood_closed.png",
-    "door_front_left_closed.png",
-    "window_front_left_closed.png",
-    "door_rear_left_closed.png",
     "window_rear_left_closed.png",
+    "door_rear_left_closed.png",
+    "window_front_left_closed.png",
+    "door_front_left_closed.png",
 )
 
 
@@ -83,6 +85,10 @@ def test_isometric_open_parts(iso) -> None:  # noqa: ANN001
     assert not any(name.startswith("window_rear_left") for name in images)
     # Lo del lado derecho va debajo de la base.
     assert images.index("door_front_right_closed.png") < images.index("base.png")
+    # El cristal (con la puerta abierta) va debajo de su puerta.
+    assert images.index("window_front_left_closed_door_open.png") < images.index(
+        "door_front_left_open.png"
+    )
 
 
 def test_legacy_top_view_folder(tmp_path: Path) -> None:

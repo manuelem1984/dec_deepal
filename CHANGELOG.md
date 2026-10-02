@@ -3,6 +3,16 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc8] — 2026-10-02
+
+### Corregido
+
+- **Vista isométrica:** el espejo del conductor salía tapado y se veía la junta
+  entre las puertas izquierdas. El cristal de cada ventanilla va ahora
+  **debajo** de su puerta y la puerta trasera debajo de la delantera. Con todo
+  cerrado la imagen es idéntica a la foto del coche cerrado (comprobado píxel
+  a píxel).
+
 ## [2.0.0rc7] — 2026-10-02
 
 ### Añadido

@@ -104,8 +104,11 @@ realista (sin rojo):
 
 - **El orden importa:** lo que en la realidad queda detrás de la carrocería
   (puertas del lado derecho con sus cristales y el portón cerrado) va
-  **antes** de `base.png` para que la base lo tape. Con ese orden, "todo
-  cerrado" es idéntico a la foto del coche cerrado.
+  **antes** de `base.png` para que la base lo tape. Dentro de cada lado, el
+  **cristal antes que su puerta** (el espejo queda delante) y la **puerta
+  trasera antes que la delantera** (el canto de la delantera tapa el de la
+  trasera). Con ese orden, "todo cerrado" es idéntico a la foto del coche
+  cerrado (comprobado píxel a píxel).
 - Desde este ángulo las puertas del lado derecho casi no se ven abiertas; para
   las puertas es mejor la vista de planta. La isométrica luce con capó,
   maletero y luces.
