@@ -33,7 +33,7 @@ custom_components/dec_deepal/
 ├── command_runner.py      Aduana de comandos de UN coche
 ├── entity.py              Entidad base (dispositivo, nombre, icono)
 ├── sensor.py … image.py   Una plataforma de HA por fichero
-├── view_renderer.py       Monta las vistas por capas (planta, isométrica, interior; Pillow)
+├── view_renderer.py       Monta las vistas por capas (planta, isométrica, interior, carga; Pillow)
 ├── frontend.py            Publica los iconos "dec:" en el navegador
 ├── services.py/.yaml      Servicio de captura de depuración
 ├── diagnostics.py         "Descargar diagnósticos"
@@ -75,7 +75,7 @@ custom_components/dec_deepal/
 ├── countries/countries.yaml     ← DATOS: países y servidores
 ├── vehicles/vehicles.yaml       ← DATOS: modelos, versiones, colores
 ├── vehicles/photos/<modelo>/    ← DATOS: fotos
-├── vehicles/vista_*/<modelo>/   ← DATOS: capas de cada vista (planta, isométrica, interior)
+├── vehicles/vista_*/<modelo>/   ← DATOS: capas de cada vista (planta, isométrica, interior, carga)
 ├── icons/icons.yaml             ← DATOS: iconos por entidad
 ├── icons/svg/                   ← DATOS: iconos propios
 ├── icons/dec-icons.js           Script del navegador (no se toca)

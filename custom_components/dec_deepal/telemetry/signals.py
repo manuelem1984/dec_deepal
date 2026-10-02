@@ -99,3 +99,4 @@ REMAINING_CHARGE_HHMM: Final = "remaining_charge_hhmm"  # "H:MM"
 ANY_DOOR_OPEN: Final = "any_door_open"  # bool
 CENTRAL_LOCKED: Final = "central_locked"  # bool: True = bloqueado
 POWER_ON: Final = "power_on"  # bool: coche encendido (alimentación distinta de 0)
+CHARGER_PLUGGED: Final = "charger_plugged"  # bool: manguera AC o DC enchufada

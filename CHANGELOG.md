@@ -3,6 +3,15 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0rc10] — 2026-10-02
+
+### Añadido
+
+- **Vista de carga** (entidad de imagen nueva): el coche de lado,
+  semitransparente, con el cable de carga gris si está enchufado sin cargar y
+  verde si está cargando. Capas en `vehicles/vista_carga/s05_2024/`.
+- Señal calculada `charger_plugged` (manguera AC o DC enchufada).
+
 ## [2.0.0rc9] — 2026-10-02
 
 ### Añadido

@@ -445,3 +445,8 @@ interior_view:
   descripcion: >-
     Vista interior: el habitáculo desde arriba con volante y asientos
     delanteros encendidos (naranja = calor, celeste = ventilación)
+charging_view:
+  plataforma: image
+  descripcion: >-
+    Vista de carga: el coche de lado con el cable enchufado (gris) o cargando
+    (verde)

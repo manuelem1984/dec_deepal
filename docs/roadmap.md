@@ -56,6 +56,8 @@ tiene `Verificado = No`.
       lo que más se nota desde ese ángulo.
 - [ ] Vista interior (rc9): encender volante, calefacción y ventilación de
       cada asiento y comprobar que se ilumina la zona correcta.
+- [ ] Vista de carga (rc10): enchufar sin cargar (cable gris) y cargando
+      (cable verde), en AC y, si se puede, en DC.
 - [ ] Asientos (escala 1:1), volante y desempañado: lectura y control.
 - [ ] Encender el clima NO apaga el volante en pantalla.
 - [ ] Puertas / ventanillas / maletero con el payload nuevo (Opción A y B).

@@ -56,7 +56,8 @@ GENERIC_MODEL_ID: Final = "generico"
 VIEW_TOP: Final = "top_view"
 VIEW_ISOMETRIC: Final = "isometric_view"
 VIEW_INTERIOR: Final = "interior_view"
-KNOWN_VIEWS: Final = (VIEW_TOP, VIEW_ISOMETRIC, VIEW_INTERIOR)
+VIEW_CHARGING: Final = "charging_view"
+KNOWN_VIEWS: Final = (VIEW_TOP, VIEW_ISOMETRIC, VIEW_INTERIOR, VIEW_CHARGING)
 
 #: Extensiones de foto admitidas, en orden de preferencia.
 PHOTO_EXTENSIONS: Final = (".png", ".jpg", ".jpeg", ".webp")

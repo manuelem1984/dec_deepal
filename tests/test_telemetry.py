@@ -135,3 +135,12 @@ def test_power_on_from_power_status() -> None:
     assert build_state(mqtt_params={"powerStatusFeedBack": "2", "engineStatus": "0"}, rest_raw=None, previous=None).get(s.POWER_ON) is True
     assert build_state(mqtt_params={"powerStatusFeedBack": "0"}, rest_raw=None, previous=None).get(s.POWER_ON) is False
     assert build_state(mqtt_params={}, rest_raw=None, previous=None).get(s.POWER_ON) is None
+
+
+def test_charger_plugged() -> None:
+    from custom_components.dec_deepal.telemetry.derived import charger_plugged
+
+    assert charger_plugged({}) is None
+    assert charger_plugged({s.AC_CONNECTOR: False, s.DC_CONNECTOR: None}) is False
+    assert charger_plugged({s.AC_CONNECTOR: False, s.DC_CONNECTOR: True}) is True
+    assert charger_plugged({s.AC_CONNECTOR: True}) is True

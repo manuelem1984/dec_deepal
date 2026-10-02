@@ -112,6 +112,18 @@ def power_on(values: Mapping[str, Any]) -> bool | None:
     return None if status is None else status != 0
 
 
+def charger_plugged(values: Mapping[str, Any]) -> bool | None:
+    """Manguera enchufada: la de AC (Tipo 2) o la de DC (CCS2).
+
+    ``None`` solo si no se sabe nada de ninguna de las dos. La usa la "Vista
+    de carga" para el cable conectado sin cargar.
+    """
+    connectors = [values.get(s.AC_CONNECTOR), values.get(s.DC_CONNECTOR)]
+    if all(connector is None for connector in connectors):
+        return None
+    return any(connector is True for connector in connectors)
+
+
 #: Señal calculada → función que la calcula.
 DERIVED: Final[dict[str, Callable[[Mapping[str, Any]], Any]]] = {
     s.CHARGE_STATUS: charge_status,
@@ -119,4 +131,5 @@ DERIVED: Final[dict[str, Callable[[Mapping[str, Any]], Any]]] = {
     s.ANY_DOOR_OPEN: any_door_open,
     s.CENTRAL_LOCKED: central_locked,
     s.POWER_ON: power_on,
+    s.CHARGER_PLUGGED: charger_plugged,
 }

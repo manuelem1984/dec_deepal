@@ -60,7 +60,7 @@ def iso(views):  # noqa: ANN001, ANN201
 
 def test_catalogue_links_models(views) -> None:  # noqa: ANN001
     registries = load_all(INTEGRATION)
-    assert list(views) == ["top_view", "isometric_view", "interior_view"]
+    assert list(views) == ["top_view", "isometric_view", "interior_view", "charging_view"]
     assert registries.vehicles.get("generico").views == {}
     # Todas las señales existen en el vocabulario de telemetría.
     known = {value for name, value in vars(s).items() if name.isupper()}
@@ -104,6 +104,21 @@ def test_interior_levels(views) -> None:  # noqa: ANN001
         "seat_heat_driver_on.png",
         "seat_vent_passenger_on.png",
     )
+
+
+def test_charging_states(views) -> None:  # noqa: ANN001
+    charging = views["charging_view"]
+    states = {
+        "sin enchufar": ({}, ("base.png",)),
+        "enchufado": ({s.CHARGER_PLUGGED: True}, ("base.png", "cable_connected.png")),
+        "cargando": (
+            {s.CHARGER_PLUGGED: True, s.CHARGING: True},
+            ("base.png", "cable_charging.png"),
+        ),
+    }
+    for state, expected in states.values():
+        assert charging.select(lambda name, st=state: st.get(name, False)).images == expected
+    assert charging.select(lambda _name: None).images == ("base.png",)
 
 
 def test_legacy_top_view_folder(tmp_path: Path) -> None:

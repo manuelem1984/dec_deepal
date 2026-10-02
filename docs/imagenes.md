@@ -1,6 +1,6 @@
 # Imágenes del vehículo, modelos y colores
 
-Cada coche tiene **cinco entidades de imagen, independientes**:
+Cada coche tiene **seis entidades de imagen, independientes**:
 
 | Entidad | De dónde sale | Si no hay imagen |
 | --- | --- | --- |
@@ -9,6 +9,7 @@ Cada coche tiene **cinco entidades de imagen, independientes**:
 | **Vista de planta** (`top_view`) | Capas de `vehicles/vista_planta/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
 | **Vista isométrica** (`isometric_view`) | Capas de `vehicles/vista_isometrica/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
 | **Vista interior** (`interior_view`) | Capas de `vehicles/vista_interior/`: volante y asientos encendidos | No se crea si el modelo no tiene esa vista |
+| **Vista de carga** (`charging_view`) | Capas de `vehicles/vista_carga/`: cable enchufado o cargando | No se crea si el modelo no tiene esa vista |
 
 La imagen oficial se descarga una sola vez y la comparten las dos entidades.
 
@@ -66,6 +67,7 @@ vistas:
   top_view: vista_planta/s05_2024            # "Vista de planta"
   isometric_view: vista_isometrica/s05_2024  # "Vista isométrica"
   interior_view: vista_interior/s05_2024      # "Vista interior"
+  charging_view: vista_carga/s05_2024         # "Vista de carga"
 ```
 
 Cada vista es una entidad de imagen y todas funcionan igual (mismo código);
@@ -135,6 +137,20 @@ costuras, se apaga hacia el borde y deja un halo suave (20 % transparente):
 - Los asientos tienen nivel 0-3: cualquier nivel (1-3) enciende la capa; hoy
   no se distingue la intensidad.
 - En el S05 Pro (sin ventilación) las capas de ventilación nunca se encienden.
+
+### Vista de carga (`charging_view`)
+
+El coche **de lado**, semitransparente y con la mecánica a la vista
+(750×500), con el cable de carga según su estado:
+
+| Estado | Señales | Capas |
+| --- | --- | --- |
+| Sin enchufar | — | `base.png` |
+| Enchufado sin cargar | `charger_plugged` sí, `charging` no | `base.png` + `cable_connected.png` (gris) |
+| Cargando | `charging` sí | `base.png` + `cable_charging.png` (verde) |
+
+`charger_plugged` es una señal calculada: manguera AC (Tipo 2) **o** DC
+(CCS2) enchufada (`telemetry/derived.py`).
 
 ### Común a todas las vistas
 

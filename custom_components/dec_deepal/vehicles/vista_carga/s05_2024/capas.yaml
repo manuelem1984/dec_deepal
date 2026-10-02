@@ -1,0 +1,49 @@
+# =============================================================================
+# DEC Deepal — VISTA DE CARGA del Deepal S05 (2024-25)
+# =============================================================================
+#
+# La entidad "Vista de carga" dibuja el coche de lado (semitransparente, con
+# la mecánica a la vista) y le añade el cable de carga según su estado. Las
+# capas se ponen UNA ENCIMA DE OTRA, en el orden de la lista (la primera
+# queda debajo). Cada capa es un PNG transparente de 750×500 con el coche en
+# la MISMA posición.
+#
+# Tras editarlo, reiniciar Home Assistant. Guía: docs/imagenes.md
+#
+# -----------------------------------------------------------------------------
+# CAMPOS DE CADA CAPA
+# -----------------------------------------------------------------------------
+#   imagen        Capa fija: se pone siempre (p. ej. la base).
+#   senal         Señal de telemetría que decide la capa (ver
+#                 telemetry/signals.py). Debe ser de sí/no.
+#   si_activo     (opcional) Imagen cuando la señal es "sí".
+#   si_inactivo   (opcional) Imagen cuando la señal es "no".
+#   salvo_si      (opcional) Otra señal: si está a "sí", esta capa NO se pone.
+#   solo_si       (opcional) Otra señal: la capa SOLO se pone si está a "sí".
+#
+#   Dato desconocido (coche dormido, señal que no llega): se usa el último
+#   valor conocido; si nunca se ha conocido, se dibuja sin cable.
+#
+# -----------------------------------------------------------------------------
+# ESTADOS
+# -----------------------------------------------------------------------------
+#   Sin enchufar            solo la base.
+#   Enchufado sin cargar    base + cable gris   (charger_plugged = sí,
+#                                                charging = no)
+#   Cargando                base + cable verde  (charging = sí)
+#
+#   charger_plugged es una señal calculada: manguera AC (Tipo 2) o DC (CCS2)
+#   enchufada (ver telemetry/derived.py).
+# =============================================================================
+
+capas:
+  - imagen: base.png
+
+  # --- Cable enchufado, sin cargar (gris) ---------------------------------------
+  - senal: charger_plugged
+    si_activo: cable_connected.png
+    salvo_si: charging
+
+  # --- Cargando (cable verde) ----------------------------------------------------
+  - senal: charging
+    si_activo: cable_charging.png

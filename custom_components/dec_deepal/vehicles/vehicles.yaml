@@ -41,6 +41,8 @@
 #                     isometric_view  "Vista isométrica" (delante-izquierda)
 #                     interior_view   "Vista interior" (habitáculo: volante y
 #                                     asientos calefactados / ventilados)
+#                     charging_view   "Vista de carga" (lateral con el cable
+#                                     enchufado / cargando)
 #                   Sin este campo, el modelo no tiene vistas.
 #   versiones       Acabados. Clave = id interno (minúsculas, sin espacios).
 #                     nombre        Texto que ve el usuario.
@@ -99,6 +101,7 @@ modelos:
       top_view: vista_planta/s05_2024
       isometric_view: vista_isometrica/s05_2024
       interior_view: vista_interior/s05_2024
+      charging_view: vista_carga/s05_2024
     versiones:
       pro:
         nombre: Pro
