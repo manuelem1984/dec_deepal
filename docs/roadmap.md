@@ -1,71 +1,90 @@
 # Hoja de ruta
 
-## De 2.0.0rc5 a 2.0.0 — prueba mínima con el coche
+## Publicada la 2.0.0 (03-10-2026) — pendiente de probar con el coche
 
-La rc5 pasa a 2.0.0 (sin cambiar código) si esto funciona:
+La 2.0.0 salió con esto **sin verificar** (no rompe nada si falla; ver el
+motivo en cada punto). Quien lo pruebe, que lo cuente en Telegram o en un
+*issue* y se marca en
+[correlacion_endpoints_entidades.csv](correlacion_endpoints_entidades.csv).
 
-- [x] Climatización: encender a 21 °C y apagar (cambio inmediato en HA y
-      confirmado en la app oficial).
-- [x] Parpadear luces y tocar el claxon; repetir enseguida → mensaje
-      "Espera N s".
+### Coche dormido (lo más importante)
+
 - [ ] Botón *Actualizar datos del vehículo* con el coche **dormido** (varias
       horas parado): debe despertarlo y traer datos nuevos en menos de 1 min.
       Pulsarlo otra vez antes de 5 min NO debe volver a despertarlo.
 - [ ] Orden con PIN (p. ej. desbloquear) con el coche dormido: debe
       despertarlo antes (hasta ~30 s) y ejecutarse.
-- [x] Volante calefactado y asientos (calefacción y ventilación).
 - [ ] Con el coche dormido: un comando rechazado muestra un mensaje claro y
       la entidad vuelve a su estado anterior.
 
-- [ ] Cuenta con **dos coches**: arranca y los dos muestran datos (rc5).
+Si el despertar no funcionara, la integración se comporta como antes de la
+rc4 (datos sin refrescar hasta que el coche se despierte solo) y se puede
+desactivar en Configurar → Avanzado.
 
-Lo demás (PIN, ventanillas, cerraduras abiertas, desempañado...) puede
-seguir como ⚠️ en la 2.0.0: está señalado en el CSV de correlación.
+### Órdenes con PIN
 
-## v2.0.0 (esta reescritura) — pruebas con el coche real
+- [ ] Bloquear / desbloquear desde HA y lectura de cerraduras con el coche
+      **abierto** (con el coche cerrado vale 0: ✅).
+- [ ] Cerrar las ventanillas desde HA con el coche apagado (entreabrir para
+      ventilar: ✅ aceptado por el coche en la rc3).
+- [ ] Maletero desde HA: abrir y, si el coche lo permite, cerrar.
 
-Prioridad alta: todo lo que en
-[correlacion_endpoints_entidades.csv](correlacion_endpoints_entidades.csv)
-tiene `Verificado = No`.
+### Luces
 
-- [x] Arranque limpio en HA 2026.3+ con una cuenta española por **correo**.
+- [ ] Luz de cruce encendida en las vistas de planta e isométrica (el sensor
+      de cruce ya está ✅).
+- [ ] Botón *Luces y claxon* a la vez (los otros dos botones: ✅).
+
+### Carga
+
+- [ ] Vista de carga: enchufado sin cargar (cable gris) y cargando (cable
+      verde), en AC y, si se puede, en DC.
+- [ ] Corriente de carga AC / DC y conector DC.
+
+### Otros
+
+- [ ] **Desempañado delantero:** en la prueba del 02-10-2026 el S05 lo dio
+      como **no compatible**. Decidir si se retira del modelo
+      (`desempanado: false` en `vehicles.yaml`).
+- [ ] "Encendido" con el coche en marcha (verificado en la rc2; repetir).
+- [ ] Velocidad, km del trayecto, km de ayer y temperatura exterior (entidades
+      desactivadas: el S05 no parece enviarlas).
 - [ ] Login por **SMS**: el servidor responde éxito completo
-      (`success: true, code: 00000, data: "SUC"`, b5) pero el SMS no llega.
-      La petición es idéntica a la de v1 (verificada en su día) y a la de
-      Deepal Alternative → el fallo parece estar en el envío de Deepal o en
-      que el número no pertenece a la cuenta. Pendiente: probar SMS en la app
+      (`success: true, code: 00000, data: "SUC"`) pero el SMS no llega. La
+      petición es idéntica a la de v1 y a la de Deepal Alternative → el fallo
+      parece estar en el envío de Deepal. Pendiente: probar SMS en la app
       oficial con el mismo número.
-- [x] Asistente de Reparaciones "Configura tu vehículo" (b5).
-- [x] Batería, autonomía, 4 presiones, temperatura interior y del climatizador.
-- [x] Imagen oficial (b2): PNG de `ca-m.iov.changanauto.com.de`.
-- [x] Capacidades de un **Max** (responde con `vehicleId`).
 - [ ] Capacidades de un **Pro**: confirmar que no manda `FronSeatVentilationSW`
       ni `#vent3` (pedir diagnóstico a alguien con un Pro).
-- [ ] Cerraduras con el coche **abierto** (con el coche cerrado vale 0: ✅).
-- [ ] Reautenticación: entrar en la app oficial con la misma cuenta y
-      comprobar que HA pide volver a entrar y que funciona.
-- [ ] Iconos `dec:` visibles (luces, intermitentes, volante) y selector de
-      iconos mostrando los `dec:`.
 - [ ] Dejar un SVG nuevo (`outside_temperature.svg`) y comprobar que aparece
       tras reiniciar sin tocar código.
-- [ ] Imagen DEC cambia al elegir versión/color; imagen oficial aparece si el
-      servidor manda URL.
-- [ ] Vista de planta (rc6): abrir una puerta, el capó, el maletero y una
-      ventanilla y comprobar que la imagen cambia; luz de cruce encendida.
-- [ ] Vista isométrica (rc7): lo mismo; el capó, el maletero y las luces son
-      lo que más se nota desde ese ángulo.
-- [ ] Vista interior (rc9): encender volante, calefacción y ventilación de
-      cada asiento y comprobar que se ilumina la zona correcta.
-- [ ] Vista de carga (rc10): enchufar sin cargar (cable gris) y cargando
-      (cable verde), en AC y, si se puede, en DC.
-- [ ] Asientos (escala 1:1), volante y desempañado: lectura y control.
-- [ ] Encender el clima NO apaga el volante en pantalla.
-- [ ] Puertas / ventanillas / maletero con el payload nuevo (Opción A y B).
-- [ ] Cerraduras: qué valor es "bloqueado" (dos capturas con el mando).
 - [ ] `powerStatusFeedBack`: nombres legibles por valor.
-- [ ] REST: ¿trae temperatura exterior, velocidad, km del trayecto?
-- [ ] Capacidades (`function-config`): ¿responde en España? ¿acierta Pro/Max?
 - [ ] Servicio de captura y comparación.
+
+## Verificado con coches reales antes de la 2.0.0
+
+- [x] Arranque limpio con una cuenta española por **correo**.
+- [x] Cuenta con **dos coches**: arranca y los dos muestran datos (rc5, rc10).
+- [x] Reautenticación: al entrar en la app oficial con la misma cuenta, HA
+      pide volver a entrar y el nuevo acceso funciona (rc10).
+- [x] Asistente de Reparaciones "Configura tu vehículo" (b5).
+- [x] Batería, autonomía, kilometraje, 4 presiones y avisos de neumáticos,
+      temperatura y humedad interior, temperatura del climatizador.
+- [x] Climatización: encender a 21 °C y apagar; ventilador.
+- [x] Parpadear luces y tocar el claxon; repetir enseguida → "Espera N s".
+- [x] Volante calefactado y asientos (calefacción y ventilación), lectura y
+      control; encender el clima NO apaga el volante en pantalla (rc10).
+- [x] Puertas (4), capó, maletero, "Alguna puerta abierta", cierre
+      centralizado con el coche cerrado.
+- [x] Ventanillas: los 4 sensores de abierta y el modo ventilación (rc10).
+- [x] Luces de cruce y carretera, testigo de luces, intermitentes.
+- [x] Matrícula (dos coches, rc10).
+- [x] Imagen oficial e Imagen DEC (cambia al elegir versión / color, rc10).
+- [x] Iconos `dec:` visibles (luces, intermitentes, volante) (rc10).
+- [x] Vista de planta y vista isométrica: puertas, capó, maletero y
+      ventanillas (rc10).
+- [x] Vista interior: volante y los dos asientos, calor y ventilación (rc10).
+- [x] Capacidades de un **Max** (responde con `vehicleId`).
 
 ## Después
 

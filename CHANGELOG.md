@@ -3,6 +3,36 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.0] — 2026-10-03
+
+Primera versión estable de la reescritura. Mismo código que la 2.0.0rc10;
+reúne todo lo de las betas `2.0.0b1`–`2.0.0rc10` (detalle más abajo).
+
+### Verificado con coches reales (S05 Max, España)
+
+- Cuenta con dos coches, reautenticación, asistente "Configura tu vehículo".
+- Batería, autonomía, kilometraje, neumáticos, temperaturas, humedad.
+- Climatización, ventilador, luces y claxon, volante y asientos.
+- Puertas, capó, maletero, ventanillas (sensores y modo ventilación), luces.
+- Imágenes: oficial, Imagen DEC, vista de planta, isométrica e interior.
+
+### Publicado sin verificar con el coche (ver `docs/roadmap.md`)
+
+- Despertar el coche dormido (botón *Actualizar* y órdenes con PIN). Si
+  fallara, se comporta como antes de la rc4 y se puede desactivar en
+  Configurar → Avanzado.
+- Bloquear / desbloquear, cerrar ventanillas y maletero desde HA.
+- Vista de carga y corrientes de carga.
+- Botón *Luces y claxon* a la vez.
+
+### Problemas conocidos
+
+- **Desempañado delantero:** el S05 probado lo da como no compatible.
+- **Login por SMS:** el servidor acepta la petición pero el SMS no llega
+  (lado de Deepal). Usar correo.
+- Velocidad, km del trayecto, temperatura exterior y ubicación: el S05 no las
+  envía (entidades desactivadas).
+
 ## [2.0.0rc10] — 2026-10-02
 
 ### Añadido
