@@ -1,4 +1,8 @@
-"""Sensores binarios (sí/no): puertas, ventanillas, luces, carga...
+"""Sensores binarios (sí/no): puertas, ventanillas, luces, carga, testigos...
+
+Los añadidos en la 2.1.0 (tapa de carga, antinieblas, pila del mando,
+recirculación y testigos del cuadro) salen de claves del informe MQTT que
+solo se han visto a 0: están ⚠️ sin verificar (ver el CSV de correlación).
 
 Ojo con las cerraduras: en Home Assistant, un sensor binario de tipo
 ``LOCK`` está **encendido cuando está desbloqueado**. Las señales de cierre
@@ -48,6 +52,16 @@ def _tire(key: str, signal: str) -> DecBinaryDescription:
 
 def _light(key: str, signal: str) -> DecBinaryDescription:
     return DecBinaryDescription(key=key, signal=signal, device_class=BinarySensorDeviceClass.LIGHT)
+
+
+def _warning(key: str, signal: str) -> DecBinaryDescription:
+    """Testigo del cuadro: encendido = problema. Va en "Diagnóstico"."""
+    return DecBinaryDescription(
+        key=key,
+        signal=signal,
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    )
 
 
 BINARY_SENSORS: tuple[DecBinaryDescription, ...] = (
@@ -109,7 +123,35 @@ BINARY_SENSORS: tuple[DecBinaryDescription, ...] = (
     _light("position_lamp", s.POSITION_LAMP),
     _light("indicator_left", s.INDICATOR_LEFT),
     _light("indicator_right", s.INDICATOR_RIGHT),
+    _light("front_fog_lamp", s.FRONT_FOG_LAMP),
+    _light("rear_fog_lamp", s.REAR_FOG_LAMP),
     DecBinaryDescription(key="climate_on", signal=s.CLIMATE_ON, feature=FEATURE_CLIMATE),
+    DecBinaryDescription(
+        key="air_recirculation", signal=s.AIR_RECIRCULATION, feature=FEATURE_CLIMATE
+    ),
+    DecBinaryDescription(
+        key="charge_cover",
+        signal=s.CHARGE_COVER_OPEN,
+        device_class=BinarySensorDeviceClass.OPENING,
+    ),
+    DecBinaryDescription(
+        key="key_battery_low",
+        signal=s.KEY_BATTERY_LOW,
+        device_class=BinarySensorDeviceClass.BATTERY,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    # --- Testigos del cuadro (encendido = problema) ---------------------------
+    _warning("warning_12v_battery", s.WARNING_12V_BATTERY),
+    _warning("warning_tpms", s.WARNING_TPMS),
+    _warning("warning_abs", s.WARNING_ABS),
+    _warning("warning_airbag", s.WARNING_AIRBAG),
+    _warning("warning_brake_fluid", s.WARNING_BRAKE_FLUID),
+    _warning("warning_brake", s.WARNING_BRAKE),
+    _warning("warning_eps", s.WARNING_EPS),
+    _warning("warning_power_limit", s.WARNING_POWER_LIMIT),
+    _warning("warning_power_system", s.WARNING_POWER_SYSTEM),
+    _warning("warning_traction_battery_low", s.WARNING_TRACTION_BATTERY_LOW),
+    _warning("warning_coolant_temperature", s.WARNING_COOLANT_TEMPERATURE),
 )
 
 

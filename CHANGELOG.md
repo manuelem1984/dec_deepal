@@ -3,6 +3,31 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.1.0b1] — 2026-10-05
+
+Beta. Entidades nuevas a partir de datos que el coche ya enviaba y nadie
+usaba (aparecían en los diagnósticos como "MQTT sin mapear"). Todas están
+**sin verificar**: llegan en cada lectura, pero solo se han visto a 0 (coche
+cerrado y sin averías). Hace falta ver qué valor toman al activarse.
+
+### Añadido
+
+- **Tapa de carga** (abierta / cerrada).
+- **Antiniebla delantera** y **Antiniebla trasera**.
+- **Pila del mando baja**.
+- **Recirculación de aire** del climatizador.
+- **Apertura de cada ventanilla** (4 sensores, en %): para distinguir
+  "entreabierta para ventilar" de "abierta del todo". Se supone escala 0-100.
+- **Testigos del cuadro** como avisos de problema (en "Diagnóstico"): batería
+  de 12 V, presión de neumáticos, ABS, airbag, líquido de frenos, frenos,
+  dirección asistida, potencia limitada, sistema de propulsión, batería baja
+  y temperatura del refrigerante.
+
+### No añadido (a propósito)
+
+- Los testigos `acc`, `aeb`, `lwd`, `oilFuel` y `esp`: valen 1 con el coche
+  sano o cambian sin avería, así que darían falsas alarmas.
+
 ## [2.0.1] — 2026-10-05
 
 ### Eliminado

@@ -144,3 +144,31 @@ def test_charger_plugged() -> None:
     assert charger_plugged({s.AC_CONNECTOR: False, s.DC_CONNECTOR: None}) is False
     assert charger_plugged({s.AC_CONNECTOR: False, s.DC_CONNECTOR: True}) is True
     assert charger_plugged({s.AC_CONNECTOR: True}) is True
+
+
+def test_extras_2_1_0() -> None:
+    """Claves nuevas del informe MQTT: tipos tal como los manda el coche."""
+    values = map_mqtt(
+        {
+            "chargeCoverStatus": 1,
+            "frontFoglamp": 0,
+            "rearFoglamp": 1,
+            "keyLowPower": 0.0,
+            "airRecycleStatus": 1,
+            "leftAnteriorWindowDegree": "35",
+            "rightRearWindowDegree": "0",
+            "batt12VLightStatus": "1",
+            "tpmsLightStatus": "0",
+            # Testigos descartados: no deben crear ninguna señal.
+            "oilFuelLightStatus": "1",
+            "accLightStatus": "1",
+        }
+    )
+    assert values[s.CHARGE_COVER_OPEN] is True
+    assert values[s.FRONT_FOG_LAMP] is False and values[s.REAR_FOG_LAMP] is True
+    assert values[s.KEY_BATTERY_LOW] is False
+    assert values[s.AIR_RECIRCULATION] is True
+    assert values[s.WINDOW_OPENING_FRONT_LEFT] == 35
+    assert values[s.WINDOW_OPENING_REAR_RIGHT] == 0
+    assert values[s.WARNING_12V_BATTERY] is True and values[s.WARNING_TPMS] is False
+    assert len([key for key in values if key.startswith("warning_")]) == 2

@@ -105,6 +105,33 @@ MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
     MqttField(s.POSITION_LAMP, ("positionLamp",), c.to_bool),
     MqttField(s.INDICATOR_LEFT, ("turnLndicatorLeft",), c.to_bool),
     MqttField(s.INDICATOR_RIGHT, ("turnLndicatorRight",), c.to_bool),
+    MqttField(s.FRONT_FOG_LAMP, ("frontFoglamp",), c.to_bool),
+    MqttField(s.REAR_FOG_LAMP, ("rearFoglamp",), c.to_bool),
+    # --- Extras (2.1.0) ⚠️ sin verificar: llegan siempre, pero solo se han
+    # visto a 0 (coche cerrado, sin averías). Falta ver el valor "activo".
+    MqttField(s.CHARGE_COVER_OPEN, ("chargeCoverStatus",), c.to_bool),
+    MqttField(s.KEY_BATTERY_LOW, ("keyLowPower",), c.to_bool),
+    MqttField(s.AIR_RECIRCULATION, ("airRecycleStatus",), c.to_bool),
+    # "Anterior" = delantera.
+    MqttField(s.WINDOW_OPENING_FRONT_LEFT, ("leftAnteriorWindowDegree",), c.to_int),
+    MqttField(s.WINDOW_OPENING_FRONT_RIGHT, ("rightAnteriorWindowDegree",), c.to_int),
+    MqttField(s.WINDOW_OPENING_REAR_LEFT, ("leftRearWindowDegree",), c.to_int),
+    MqttField(s.WINDOW_OPENING_REAR_RIGHT, ("rightRearWindowDegree",), c.to_int),
+    # Testigos del cuadro. NO se exponen accLightStatus, aebLightStatus,
+    # lwdLightStatus ni oilFuelLightStatus (valen "1" con el coche sano; el
+    # último, en un eléctrico) ni espLightStatus (cambia entre lecturas sin
+    # avería): darían falsas alarmas.
+    MqttField(s.WARNING_12V_BATTERY, ("batt12VLightStatus",), c.to_bool),
+    MqttField(s.WARNING_TPMS, ("tpmsLightStatus",), c.to_bool),
+    MqttField(s.WARNING_ABS, ("absLightStatus",), c.to_bool),
+    MqttField(s.WARNING_AIRBAG, ("airBagLightStatus",), c.to_bool),
+    MqttField(s.WARNING_BRAKE_FLUID, ("brakeFluidLightStatus",), c.to_bool),
+    MqttField(s.WARNING_BRAKE, ("brakeLightStatus",), c.to_bool),
+    MqttField(s.WARNING_EPS, ("epsLightStatus",), c.to_bool),
+    MqttField(s.WARNING_POWER_LIMIT, ("powerLimitLightStatus",), c.to_bool),
+    MqttField(s.WARNING_POWER_SYSTEM, ("powerSystemLightStatus",), c.to_bool),
+    MqttField(s.WARNING_TRACTION_BATTERY_LOW, ("bcuBattSocLightStatus",), c.to_bool),
+    MqttField(s.WARNING_COOLANT_TEMPERATURE, ("coolanTemperatureLightStatus",), c.to_bool),
 )
 
 #: Todas las claves MQTT que se leen. Diagnóstico usa esto para listar las

@@ -188,7 +188,11 @@
       "tire_pressure_front_right": { "name": "Presión neumático delantero derecho" },
       "tire_pressure_rear_left": { "name": "Presión neumático trasero izquierdo" },
       "tire_pressure_rear_right": { "name": "Presión neumático trasero derecho" },
-      "license_plate": { "name": "Matrícula" }
+      "license_plate": { "name": "Matrícula" },
+      "window_opening_front_left": { "name": "Apertura ventanilla delantera izquierda" },
+      "window_opening_front_right": { "name": "Apertura ventanilla delantera derecha" },
+      "window_opening_rear_left": { "name": "Apertura ventanilla trasera izquierda" },
+      "window_opening_rear_right": { "name": "Apertura ventanilla trasera derecha" }
     },
     "binary_sensor": {
       "cloud_connected": { "name": "Conexión con la nube" },
@@ -219,7 +223,23 @@
       "position_lamp": { "name": "Luces encendidas (testigo)" },
       "indicator_left": { "name": "Intermitente izquierdo" },
       "indicator_right": { "name": "Intermitente derecho" },
-      "climate_on": { "name": "Climatizador" }
+      "climate_on": { "name": "Climatizador" },
+      "front_fog_lamp": { "name": "Antiniebla delantera" },
+      "rear_fog_lamp": { "name": "Antiniebla trasera" },
+      "air_recirculation": { "name": "Recirculación de aire" },
+      "charge_cover": { "name": "Tapa de carga" },
+      "key_battery_low": { "name": "Pila del mando baja" },
+      "warning_12v_battery": { "name": "Testigo batería de 12 V" },
+      "warning_tpms": { "name": "Testigo presión de neumáticos" },
+      "warning_abs": { "name": "Testigo ABS" },
+      "warning_airbag": { "name": "Testigo airbag" },
+      "warning_brake_fluid": { "name": "Testigo líquido de frenos" },
+      "warning_brake": { "name": "Testigo frenos" },
+      "warning_eps": { "name": "Testigo dirección asistida" },
+      "warning_power_limit": { "name": "Testigo potencia limitada" },
+      "warning_power_system": { "name": "Testigo sistema de propulsión" },
+      "warning_traction_battery_low": { "name": "Testigo batería baja" },
+      "warning_coolant_temperature": { "name": "Testigo temperatura del refrigerante" }
     },
     "button": {
       "refresh": { "name": "Actualizar datos del vehículo" },

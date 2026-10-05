@@ -7,6 +7,20 @@ motivo en cada punto). Quien lo pruebe, que lo cuente en Telegram o en un
 *issue* y se marca en
 [correlacion_endpoints_entidades.csv](correlacion_endpoints_entidades.csv).
 
+### Entidades nuevas de la 2.1.0b1 (todas sin verificar)
+
+Solo se han visto a 0. Para cada una: provocar el estado, pulsar *Actualizar*
+y mirar si la entidad cambia (si no, mandar el diagnóstico).
+
+- [ ] **Tapa de carga:** abrir la tapa → "Abierta".
+- [ ] **Antinieblas:** encender la delantera y la trasera.
+- [ ] **Recirculación de aire:** activarla en el climatizador.
+- [ ] **Apertura de ventanillas:** bajar una a la mitad y otra del todo y
+      apuntar qué número sale (¿0-100?). Mirar también el modo ventilación.
+- [ ] **Pila del mando baja** y **testigos del cuadro:** no se pueden provocar;
+      se verificarán cuando a alguien se le encienda uno de verdad. Vigilar
+      que ninguno aparezca en "Problema" con el coche sano.
+
 ### Coche dormido (lo más importante)
 
 - [ ] Botón *Actualizar datos del vehículo* con el coche **dormido** (varias
@@ -88,7 +102,7 @@ desactivar en Configurar → Avanzado.
 ## Después
 
 - [ ] Horario de carga (sin verificar en el S05).
-- [ ] Testigos del cuadro como sensores de problema (tras capturas).
+- [x] Testigos del cuadro como sensores de problema (2.1.0b1, sin verificar).
 - [ ] Traducción al inglés (`en.json`) y portugués.
 - [ ] Segundo país (Portugal) cuando alguien lo pruebe.
 - [ ] Tarjeta Lovelace propia con foto + datos + comandos.

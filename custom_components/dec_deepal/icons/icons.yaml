@@ -450,3 +450,89 @@ charging_view:
   descripcion: >-
     Vista de carga: el coche de lado con el cable enchufado (gris) o cargando
     (verde)
+
+# ---------------------------------------------------------------------------
+# EXTRAS 2.1.0 (⚠️ sin verificar con el coche)
+# ---------------------------------------------------------------------------
+front_fog_lamp:
+  plataforma: binary_sensor
+  descripcion: Luz antiniebla delantera
+  defecto: mdi:car-light-fog
+rear_fog_lamp:
+  plataforma: binary_sensor
+  descripcion: Luz antiniebla trasera
+  defecto: mdi:car-light-fog
+air_recirculation:
+  plataforma: binary_sensor
+  descripcion: Recirculación de aire del climatizador
+  defecto: mdi:sync
+charge_cover:
+  plataforma: binary_sensor
+  descripcion: Tapa de carga abierta
+  defecto: mdi:ev-plug-type2
+key_battery_low:
+  plataforma: binary_sensor
+  descripcion: Pila del mando baja
+  estados:
+    "on": {mdi: mdi:key-alert}
+    "off": {mdi: mdi:key}
+warning_12v_battery:
+  plataforma: binary_sensor
+  descripcion: Testigo batería de 12 V (encendido = problema)
+  defecto: mdi:car-battery
+warning_tpms:
+  plataforma: binary_sensor
+  descripcion: Testigo presión de neumáticos (encendido = problema)
+  defecto: mdi:car-tire-alert
+warning_abs:
+  plataforma: binary_sensor
+  descripcion: Testigo ABS (encendido = problema)
+  defecto: mdi:car-brake-abs
+warning_airbag:
+  plataforma: binary_sensor
+  descripcion: Testigo airbag (encendido = problema)
+  defecto: mdi:airbag
+warning_brake_fluid:
+  plataforma: binary_sensor
+  descripcion: Testigo líquido de frenos (encendido = problema)
+  defecto: mdi:car-brake-fluid-level
+warning_brake:
+  plataforma: binary_sensor
+  descripcion: Testigo frenos (encendido = problema)
+  defecto: mdi:car-brake-alert
+warning_eps:
+  plataforma: binary_sensor
+  descripcion: Testigo dirección asistida (encendido = problema)
+  defecto: mdi:steering
+warning_power_limit:
+  plataforma: binary_sensor
+  descripcion: Testigo potencia limitada (encendido = problema)
+  defecto: mdi:speedometer-slow
+warning_power_system:
+  plataforma: binary_sensor
+  descripcion: Testigo sistema de propulsión (encendido = problema)
+  defecto: mdi:engine
+warning_traction_battery_low:
+  plataforma: binary_sensor
+  descripcion: Testigo batería baja (encendido = problema)
+  defecto: mdi:battery-alert
+warning_coolant_temperature:
+  plataforma: binary_sensor
+  descripcion: Testigo temperatura del refrigerante (encendido = problema)
+  defecto: mdi:coolant-temperature
+window_opening_front_left:
+  plataforma: sensor
+  descripcion: Apertura de la ventanilla delantera izquierda (0 = cerrada)
+  defecto: mdi:window-open-variant
+window_opening_front_right:
+  plataforma: sensor
+  descripcion: Apertura de la ventanilla delantera derecha (0 = cerrada)
+  defecto: mdi:window-open-variant
+window_opening_rear_left:
+  plataforma: sensor
+  descripcion: Apertura de la ventanilla trasera izquierda (0 = cerrada)
+  defecto: mdi:window-open-variant
+window_opening_rear_right:
+  plataforma: sensor
+  descripcion: Apertura de la ventanilla trasera derecha (0 = cerrada)
+  defecto: mdi:window-open-variant
