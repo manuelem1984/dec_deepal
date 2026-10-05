@@ -58,3 +58,28 @@ async def test_mqtt_sessions_of_one_account_run_one_at_a_time(monkeypatch: pytes
     )
     assert results == ["lectura", "lectura", "lectura"]
     assert max_active == 1  # nunca dos conexiones MQTT a la vez
+
+
+async def test_refresh_does_not_repeat_when_token_unchanged() -> None:
+    """Cerca de la caducidad el servidor devuelve el mismo token: no insistir.
+
+    Caso real (05-10-2026): 7 renovaciones en 2 minutos, una por lectura.
+    """
+    from custom_components.dec_deepal.api.account import DeepalAccount
+
+    session = SimpleNamespace(access_token="A", refresh_token="R", expires_soon=lambda: True)
+    account = DeepalAccount(SimpleNamespace(session=session))
+    calls = []
+
+    async def _refresh() -> None:
+        calls.append(1)  # el servidor no rota el token
+
+    account.auth = SimpleNamespace(refresh=_refresh)
+    await account.ensure_fresh()
+    await account.ensure_fresh()
+    await account.ensure_fresh()
+    assert len(calls) == 1
+    # Si el servidor rechaza el token, la renovación forzada no se frena.
+    assert await account.refresh(force=True) is False
+    assert len(calls) == 2
+

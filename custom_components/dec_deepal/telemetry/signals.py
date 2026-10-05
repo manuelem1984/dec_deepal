@@ -88,14 +88,12 @@ LOW_BEAM: Final = "low_beam"
 POSITION_LAMP: Final = "position_lamp"
 INDICATOR_LEFT: Final = "indicator_left"
 INDICATOR_RIGHT: Final = "indicator_right"
-FRONT_FOG_LAMP: Final = "front_fog_lamp"  # bool
 REAR_FOG_LAMP: Final = "rear_fog_lamp"  # bool
 
-# --- Extras del informe MQTT (2.1.0; ⚠️ sin verificar con el coche) ----------
-CHARGE_COVER_OPEN: Final = "charge_cover_open"  # bool: tapa de carga abierta
+# --- Extras del informe MQTT (2.1.0) -----------------------------------------
 KEY_BATTERY_LOW: Final = "key_battery_low"  # bool: pila del mando baja
 AIR_RECIRCULATION: Final = "air_recirculation"  # bool: recirculación de aire
-# Apertura de cada ventanilla (se supone 0-100 %; 0 = cerrada).
+# Apertura de cada ventanilla. ⚠️ Escala dudosa (ver sensor.py): desactivadas.
 WINDOW_OPENING_FRONT_LEFT: Final = "window_opening_front_left"
 WINDOW_OPENING_FRONT_RIGHT: Final = "window_opening_front_right"
 WINDOW_OPENING_REAR_LEFT: Final = "window_opening_rear_left"

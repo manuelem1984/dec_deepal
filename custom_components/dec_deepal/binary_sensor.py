@@ -1,8 +1,10 @@
 """Sensores binarios (sí/no): puertas, ventanillas, luces, carga, testigos...
 
-Los añadidos en la 2.1.0 (tapa de carga, antinieblas, pila del mando,
-recirculación y testigos del cuadro) salen de claves del informe MQTT que
-solo se han visto a 0: están ⚠️ sin verificar (ver el CSV de correlación).
+Añadidos en la 2.1.0 a partir de claves del informe MQTT: antiniebla
+trasera y recirculación (✅ probadas con el coche), pila del mando y
+testigos del cuadro (⚠️ no se pueden provocar; sin falsas alarmas).
+Retirados tras probarlos (05-10-2026): tapa de carga (el coche no informa)
+y antiniebla delantera (el S05 no tiene).
 
 Ojo con las cerraduras: en Home Assistant, un sensor binario de tipo
 ``LOCK`` está **encendido cuando está desbloqueado**. Las señales de cierre
@@ -12,6 +14,7 @@ son ``True`` = bloqueado, así que esas filas llevan ``invert=True``.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Final
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
@@ -20,8 +23,10 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from .const import DOMAIN
 from .entity import DecDeepalEntity
 from .registries.vehicles import FEATURE_CLIMATE
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
@@ -62,6 +67,11 @@ def _warning(key: str, signal: str) -> DecBinaryDescription:
         device_class=BinarySensorDeviceClass.PROBLEM,
         entity_category=EntityCategory.DIAGNOSTIC,
     )
+
+
+#: Sensores que existieron en alguna beta y se retiraron: se borran del
+#: registro al arrancar para que no queden como "no disponible".
+REMOVED_KEYS: Final = ("charge_cover", "front_fog_lamp")
 
 
 BINARY_SENSORS: tuple[DecBinaryDescription, ...] = (
@@ -123,16 +133,10 @@ BINARY_SENSORS: tuple[DecBinaryDescription, ...] = (
     _light("position_lamp", s.POSITION_LAMP),
     _light("indicator_left", s.INDICATOR_LEFT),
     _light("indicator_right", s.INDICATOR_RIGHT),
-    _light("front_fog_lamp", s.FRONT_FOG_LAMP),
     _light("rear_fog_lamp", s.REAR_FOG_LAMP),
     DecBinaryDescription(key="climate_on", signal=s.CLIMATE_ON, feature=FEATURE_CLIMATE),
     DecBinaryDescription(
         key="air_recirculation", signal=s.AIR_RECIRCULATION, feature=FEATURE_CLIMATE
-    ),
-    DecBinaryDescription(
-        key="charge_cover",
-        signal=s.CHARGE_COVER_OPEN,
-        device_class=BinarySensorDeviceClass.OPENING,
     ),
     DecBinaryDescription(
         key="key_battery_low",
@@ -162,6 +166,12 @@ async def async_setup_entry(
 ) -> None:
     """Crea los sensores binarios de cada coche."""
     runtime = entry.runtime_data
+    registry = er.async_get(hass)
+    for vehicle in runtime.vehicles.values():
+        for key in REMOVED_KEYS:
+            unique_id = f"{vehicle.info.vehicle_id}_binary_sensor_{key}"
+            if entity_id := registry.async_get_entity_id("binary_sensor", DOMAIN, unique_id):
+                registry.async_remove(entity_id)
     async_add_entities(
         DecBinarySensor(runtime, vehicle, description)
         for vehicle in runtime.vehicles.values()

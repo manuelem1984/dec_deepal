@@ -81,5 +81,6 @@ Apache 2.0), vía Iconify. Detalle por icono en
     lenguaje.
   - `hood_*.svg` y `trunk_*.svg` usan la silueta de `mdi:car-hatchback` con la
     tapa del capó o el portón levantados (o su junta, cerrados).
-- `charge_cover_*.svg` (tapa de carga con el puerto CCS2) es un dibujo propio.
+- `icons/reserva/charge_cover_*.svg` (tapa de carga con el puerto CCS2) es un
+  dibujo propio.
 

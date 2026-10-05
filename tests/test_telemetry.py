@@ -151,7 +151,7 @@ def test_extras_2_1_0() -> None:
     values = map_mqtt(
         {
             "chargeCoverStatus": 1,
-            "frontFoglamp": 0,
+            "frontFoglamp": 1,
             "rearFoglamp": 1,
             "keyLowPower": 0.0,
             "airRecycleStatus": 1,
@@ -164,8 +164,9 @@ def test_extras_2_1_0() -> None:
             "accLightStatus": "1",
         }
     )
-    assert values[s.CHARGE_COVER_OPEN] is True
-    assert values[s.FRONT_FOG_LAMP] is False and values[s.REAR_FOG_LAMP] is True
+    # Retiradas: el S05 no informa de la tapa ni tiene antiniebla delantera.
+    assert "charge_cover_open" not in values and "front_fog_lamp" not in values
+    assert values[s.REAR_FOG_LAMP] is True
     assert values[s.KEY_BATTERY_LOW] is False
     assert values[s.AIR_RECIRCULATION] is True
     assert values[s.WINDOW_OPENING_FRONT_LEFT] == 35

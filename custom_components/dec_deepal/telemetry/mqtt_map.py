@@ -105,11 +105,10 @@ MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
     MqttField(s.POSITION_LAMP, ("positionLamp",), c.to_bool),
     MqttField(s.INDICATOR_LEFT, ("turnLndicatorLeft",), c.to_bool),
     MqttField(s.INDICATOR_RIGHT, ("turnLndicatorRight",), c.to_bool),
-    MqttField(s.FRONT_FOG_LAMP, ("frontFoglamp",), c.to_bool),
     MqttField(s.REAR_FOG_LAMP, ("rearFoglamp",), c.to_bool),
-    # --- Extras (2.1.0) ⚠️ sin verificar: llegan siempre, pero solo se han
-    # visto a 0 (coche cerrado, sin averías). Falta ver el valor "activo".
-    MqttField(s.CHARGE_COVER_OPEN, ("chargeCoverStatus",), c.to_bool),
+    # --- Extras (2.1.0). Probados con el coche el 05-10-2026 -----------------
+    # NO se usan (el S05 los manda siempre a 0): frontFoglamp (no tiene
+    # antiniebla delantera) y chargeCoverStatus (no cambia al abrir la tapa).
     MqttField(s.KEY_BATTERY_LOW, ("keyLowPower",), c.to_bool),
     MqttField(s.AIR_RECIRCULATION, ("airRecycleStatus",), c.to_bool),
     # "Anterior" = delantera.

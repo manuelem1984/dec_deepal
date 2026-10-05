@@ -108,15 +108,24 @@ archivo acepta, y cualquiera puede ponerle icono sin programar.
 
 | Entidad | Archivos | Origen |
 | --- | --- | --- |
-| Luces de cruce, carretera y testigo | `low_beam.svg`, `high_beam.svg`, `position_lamp.svg` | Propios |
+| Luces de cruce, carretera y posición | `low_beam.svg`, `high_beam.svg`, `position_lamp.svg` | Propios |
 | Intermitentes | `indicator_left_on/off.svg`, `indicator_right_on/off.svg` | Propios |
 | Volante calefactado | `steering_wheel_heat.svg` | Propio |
 | Puertas (4) | `door_<pos>_closed.svg`, `door_<pos>_open.svg` | Derivados de `mdi:car-door` (2.1.0b2) |
 | Capó | `hood_closed.svg`, `hood_open.svg` | Derivados de `mdi:car-hatchback` (2.1.0b2) |
 | Maletero | `trunk_closed.svg`, `trunk_open.svg` | Derivados de `mdi:car-hatchback` (2.1.0b2) |
-| Tapa de carga | `charge_cover_closed.svg`, `charge_cover_open.svg` | Propios (2.1.0b2) |
 
 `<pos>` = `front_left`, `front_right`, `rear_left`, `rear_right`.
+
+### Iconos en reserva
+
+`icons/reserva/` guarda iconos ya dibujados que hoy no usa ninguna entidad.
+No se cargan ni se publican en el navegador. Para usar uno, moverlo a
+`icons/svg/` con el nombre de la entidad.
+
+| Archivos | Para qué eran |
+| --- | --- |
+| `charge_cover_closed.svg`, `charge_cover_open.svg` | Tapa de carga (con el puerto CCS2). La entidad se retiró en la 2.1.0 porque el S05 no informa de la tapa |
 
 **Para dibujar uno nuevo con el mismo estilo:** lienzo `viewBox="0 0 24 24"`,
 un único `<path fill="currentColor">`, formas rellenas con "trazo" de unas 2

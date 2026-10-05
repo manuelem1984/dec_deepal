@@ -68,12 +68,19 @@ def _pressure(key: str, signal: str) -> DecSensorDescription:
 
 
 def _window_opening(key: str, signal: str) -> DecSensorDescription:
-    """Cuánto está bajada una ventanilla (0 = cerrada)."""
+    """Apertura de una ventanilla. ⚠️ Desactivada: la escala no está clara.
+
+    Prueba con el coche (05-10-2026): modo ventilación → 19-20; bajada a la
+    mitad → 92; bajada del todo → 97; cerrada → 0 en los diagnósticos, pero
+    en pantalla se llegó a ver 100. No es un porcentaje lineal fiable, así
+    que se crea desactivada hasta entenderla.
+    """
     return DecSensorDescription(
         key=key,
         signal=signal,
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
+        entity_registry_enabled_default=False,
     )
 
 
@@ -209,7 +216,7 @@ SENSORS: tuple[DecSensorDescription, ...] = (
     _pressure("tire_pressure_front_right", s.TIRE_PRESSURE_FRONT_RIGHT),
     _pressure("tire_pressure_rear_left", s.TIRE_PRESSURE_REAR_LEFT),
     _pressure("tire_pressure_rear_right", s.TIRE_PRESSURE_REAR_RIGHT),
-    # --- Apertura de ventanillas (⚠️ sin verificar: se supone 0-100 %) ---------
+    # --- Apertura de ventanillas (⚠️ escala dudosa: desactivadas) -------------
     _window_opening("window_opening_front_left", s.WINDOW_OPENING_FRONT_LEFT),
     _window_opening("window_opening_front_right", s.WINDOW_OPENING_FRONT_RIGHT),
     _window_opening("window_opening_rear_left", s.WINDOW_OPENING_REAR_LEFT),

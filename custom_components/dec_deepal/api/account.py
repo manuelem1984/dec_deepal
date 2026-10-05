@@ -38,6 +38,12 @@ _LOGGER = logging.getLogger(__name__)
 #: Ventana mínima entre renovaciones "rutinarias" (la app usa 30 min).
 REFRESH_THROTTLE_SECONDS: Final = 1800.0
 
+#: Espera mínima tras una renovación que NO cambió el token. Cerca de la
+#: caducidad el servidor devuelve el mismo token hasta que de verdad lo
+#: rota; sin esta espera se pedía una renovación en cada lectura (visto el
+#: 05-10-2026: 7 renovaciones en 2 minutos).
+UNCHANGED_RETRY_SECONDS: Final = 60.0
+
 T = TypeVar("T")
 
 
@@ -109,6 +115,11 @@ class DeepalAccount:
         if not force and not self.session.expires_soon() and self._throttled():
             _LOGGER.debug("Renovación omitida: dentro de la ventana de 30 min")
             return False
+        if not force and not self._last_changed and self._attempted_within(
+            UNCHANGED_RETRY_SECONDS
+        ):
+            _LOGGER.debug("Renovación omitida: la anterior no cambió el token")
+            return False
 
         previous_token = self.session.access_token
         self._last_attempt = time.monotonic()
@@ -138,9 +149,13 @@ class DeepalAccount:
 
     def _throttled(self) -> bool:
         """``True`` si el último intento fue hace menos de 30 min."""
+        return self._attempted_within(REFRESH_THROTTLE_SECONDS)
+
+    def _attempted_within(self, seconds: float) -> bool:
+        """``True`` si hubo un intento de renovación hace menos de ``seconds``."""
         return (
             self._last_attempt is not None
-            and time.monotonic() - self._last_attempt < REFRESH_THROTTLE_SECONDS
+            and time.monotonic() - self._last_attempt < seconds
         )
 
     async def ensure_fresh(self) -> None:

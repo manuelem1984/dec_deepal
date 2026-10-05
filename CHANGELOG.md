@@ -3,6 +3,54 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.1.0] — 2026-10-05
+
+Versión estable. Reúne las betas `2.1.0b1` y `2.1.0b2`, ajustadas con las
+pruebas en el coche del 05-10-2026.
+
+### Añadido
+
+- **Antiniebla trasera** ✅ y **Recirculación de aire** ✅ (probadas).
+- **Testigos del cuadro** (11) como avisos de problema, en "Diagnóstico":
+  batería de 12 V, presión de neumáticos, ABS, airbag, líquido de frenos,
+  frenos, dirección asistida, potencia limitada, sistema de propulsión,
+  batería baja y temperatura del refrigerante. Sin falsas alarmas en las
+  pruebas; el encendido real no se puede provocar.
+- **Pila del mando baja** (misma situación que los testigos).
+- **Apertura de cada ventanilla** (4 sensores), **desactivados por defecto**:
+  la escala no está clara (ventilación 19-20, a la mitad 92, del todo 97).
+- **12 iconos propios** al estilo de Home Assistant, distintos para abierto y
+  cerrado: las 4 puertas, capó y maletero.
+
+### Cambiado
+
+- **"Luces encendidas (testigo)" pasa a llamarse "Luces de posición":**
+  comprobado con el coche que es eso lo que indica. La entidad es la misma
+  (no cambia su identificador).
+
+### Corregido
+
+- **Renovación de sesión repetida:** cerca de la caducidad se pedía una
+  renovación en cada lectura (7 en 2 minutos) porque el servidor devolvía el
+  mismo token. Ahora se espera 1 minuto antes de volver a intentarlo.
+
+### Eliminado (respecto a las betas 2.1.0)
+
+- **Tapa de carga:** el S05 no informa de ella (el dato vale siempre 0). Los
+  dos iconos se conservan en `icons/reserva/` por si en el futuro hay datos.
+- **Antiniebla delantera:** el S05 no tiene.
+- Quien instaló una beta: las dos entidades se borran solas al actualizar.
+
+### Verificado con el coche (05-10-2026)
+
+Bloquear / desbloquear, maletero y cerrar ventanillas desde Home Assistant;
+luz de cruce en las vistas; botón de luces y claxon a la vez; "Encendido" en
+marcha. Detalle en `docs/roadmap.md`.
+
+### Sigue sin verificar
+
+Despertar el coche dormido, vista de carga y corrientes de carga.
+
 ## [2.1.0b2] — 2026-10-05
 
 Beta. Solo iconos: 14 iconos propios nuevos, con el estilo de los de Home

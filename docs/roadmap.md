@@ -1,25 +1,10 @@
 # Hoja de ruta
 
-## Publicada la 2.0.0 (03-10-2026) — pendiente de probar con el coche
+## Publicada la 2.1.0 (05-10-2026) — pendiente de probar con el coche
 
-La 2.0.0 salió con esto **sin verificar** (no rompe nada si falla; ver el
-motivo en cada punto). Quien lo pruebe, que lo cuente en Telegram o en un
-*issue* y se marca en
+Lo que la 2.1.0 lleva **sin verificar**. Quien lo pruebe, que lo cuente en
+Telegram o en un *issue* y se marca en
 [correlacion_endpoints_entidades.csv](correlacion_endpoints_entidades.csv).
-
-### Entidades nuevas de la 2.1.0b1 (todas sin verificar)
-
-Solo se han visto a 0. Para cada una: provocar el estado, pulsar *Actualizar*
-y mirar si la entidad cambia (si no, mandar el diagnóstico).
-
-- [ ] **Tapa de carga:** abrir la tapa → "Abierta".
-- [ ] **Antinieblas:** encender la delantera y la trasera.
-- [ ] **Recirculación de aire:** activarla en el climatizador.
-- [ ] **Apertura de ventanillas:** bajar una a la mitad y otra del todo y
-      apuntar qué número sale (¿0-100?). Mirar también el modo ventilación.
-- [ ] **Pila del mando baja** y **testigos del cuadro:** no se pueden provocar;
-      se verificarán cuando a alguien se le encienda uno de verdad. Vigilar
-      que ninguno aparezca en "Problema" con el coche sano.
 
 ### Coche dormido (lo más importante)
 
@@ -35,33 +20,31 @@ Si el despertar no funcionara, la integración se comporta como antes de la
 rc4 (datos sin refrescar hasta que el coche se despierte solo) y se puede
 desactivar en Configurar → Avanzado.
 
-### Órdenes con PIN
-
-- [ ] Bloquear / desbloquear desde HA y lectura de cerraduras con el coche
-      **abierto** (con el coche cerrado vale 0: ✅).
-- [ ] Cerrar las ventanillas desde HA con el coche apagado (entreabrir para
-      ventilar: ✅ aceptado por el coche en la rc3).
-- [ ] Maletero desde HA: abrir y, si el coche lo permite, cerrar.
-
-### Luces
-
-- [ ] Luz de cruce encendida en las vistas de planta e isométrica (el sensor
-      de cruce ya está ✅).
-- [ ] Botón *Luces y claxon* a la vez (los otros dos botones: ✅).
-
 ### Carga
 
 - [ ] Vista de carga: enchufado sin cargar (cable gris) y cargando (cable
       verde), en AC y, si se puede, en DC.
 - [ ] Corriente de carga AC / DC y conector DC.
+- [ ] **Segundo coche de la cuenta de pruebas ("Changuito"):** su informe MQTT
+      trae menos datos que el otro S05 Max (05-10-2026): no manda
+      `acChargeGunConnectionState`, ni los testigos del cuadro. Sin conector
+      AC, su "Estado de carga" queda en desconocido. Comprobar enchufándolo;
+      el REST trae `charge.chargeConStatus`, candidato a respaldo.
+
+### Entidades sin poder provocar
+
+- [ ] **Pila del mando baja** y **testigos del cuadro** (11): sin falsas
+      alarmas parado ni en marcha (05-10-2026); falta ver uno encendido de
+      verdad.
+- [ ] **Apertura de ventanillas** (desactivadas por defecto): entender la
+      escala. Lecturas del 05-10-2026: ventilación 19-20; a la mitad 92; del
+      todo 97; cerrada 0 en los diagnósticos, pero en pantalla se vio 100.
 
 ### Otros
 
-- [x] **Desempañado delantero:** el S05 no es compatible (02-10-2026).
-      Retirado del modelo en la 2.0.1 (`desempanado: false`).
-- [ ] "Encendido" con el coche en marcha (verificado en la rc2; repetir).
-- [ ] Velocidad, km del trayecto, km de ayer y temperatura exterior (entidades
-      desactivadas: el S05 no parece enviarlas).
+- [ ] Velocidad, km del trayecto, km de ayer y temperatura exterior:
+      activadas a mano el 05-10-2026, **no traen ningún dato** en el S05.
+      Siguen desactivadas por defecto.
 - [ ] Login por **SMS**: el servidor responde éxito completo
       (`success: true, code: 00000, data: "SUC"`) pero el SMS no llega. La
       petición es idéntica a la de v1 y a la de Deepal Alternative → el fallo
@@ -73,6 +56,27 @@ desactivar en Configurar → Avanzado.
       tras reiniciar sin tocar código.
 - [ ] `powerStatusFeedBack`: nombres legibles por valor.
 - [ ] Servicio de captura y comparación.
+
+## Verificado con el coche el 05-10-2026 (2.1.0b2)
+
+- [x] Bloquear y desbloquear desde HA, y lectura de las cerraduras y del
+      cierre centralizado.
+- [x] Maletero desde HA (abrir y cerrar) y su lectura.
+- [x] Ventanillas: entreabrir (modo ventilación) y **cerrar** desde HA con el
+      coche apagado; los 4 sensores de abierta.
+- [x] Luz de cruce en las vistas de planta e isométrica.
+- [x] Botón *Luces y claxon* a la vez.
+- [x] **Luces de posición:** `positionLamp` son las luces de posición
+      (entidad renombrada; antes "Luces encendidas (testigo)").
+- [x] Antiniebla trasera.
+- [x] Recirculación de aire.
+- [x] "Encendido" con el coche arrancado, parado y en marcha.
+- [x] Iconos propios de puertas, capó y maletero (abierto / cerrado).
+- [x] Testigos del cuadro y pila del mando: ninguna falsa alarma.
+- [x] **Desempañado delantero:** el S05 no es compatible. Retirado en la 2.0.1.
+- [x] **Tapa de carga:** el S05 no informa (`chargeCoverStatus` siempre 0).
+      Entidad retirada en la 2.1.0; iconos guardados en `icons/reserva/`.
+- [x] **Antiniebla delantera:** el S05 no tiene. Entidad retirada en la 2.1.0.
 
 ## Verificado con coches reales antes de la 2.0.0
 

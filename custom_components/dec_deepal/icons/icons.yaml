@@ -304,7 +304,7 @@ low_beam:
     "off": {mdi: mdi:car-light-dimmed}
 position_lamp:
   plataforma: binary_sensor
-  descripcion: Testigo de luces encendidas (no es la luz de posición en sí)
+  descripcion: Luces de posición (comprobado con el coche, 05-10-2026)
   estados:
     "on": {mdi: mdi:car-parking-lights}
     "off": {mdi: mdi:car-parking-lights}
@@ -452,12 +452,8 @@ charging_view:
     (verde)
 
 # ---------------------------------------------------------------------------
-# EXTRAS 2.1.0 (⚠️ sin verificar con el coche)
+# EXTRAS 2.1.0
 # ---------------------------------------------------------------------------
-front_fog_lamp:
-  plataforma: binary_sensor
-  descripcion: Luz antiniebla delantera
-  defecto: mdi:car-light-fog
 rear_fog_lamp:
   plataforma: binary_sensor
   descripcion: Luz antiniebla trasera
@@ -466,12 +462,6 @@ air_recirculation:
   plataforma: binary_sensor
   descripcion: Recirculación de aire del climatizador
   defecto: mdi:sync
-charge_cover:
-  plataforma: binary_sensor
-  descripcion: Tapa de carga (iconos propios charge_cover_open / charge_cover_closed)
-  estados:
-    "on": {archivo: open, mdi: mdi:ev-plug-type2}
-    "off": {archivo: closed, mdi: mdi:ev-plug-type2}
 key_battery_low:
   plataforma: binary_sensor
   descripcion: Pila del mando baja

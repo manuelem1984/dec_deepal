@@ -88,8 +88,9 @@ def test_icon_resolution(registries) -> None:  # noqa: ANN001
     assert icons.resolve("door_rear_right", "off") == "dec:door_rear_right_closed"
     assert icons.resolve("hood", "on") == "dec:hood_open"
     assert icons.resolve("trunk", "off") == "dec:trunk_closed"
-    assert icons.resolve("charge_cover", "on") == "dec:charge_cover_open"
-    assert icons.resolve("charge_cover", "off") == "dec:charge_cover_closed"
+    # Retiradas en la 2.1.0: sin icono propio ni entrada en el registro.
+    assert icons.resolve("charge_cover", "on") is None
+    assert icons.resolve("front_fog_lamp", "on") is None
     assert icons.resolve("battery_level") is None
     assert icons.warnings == []
 
