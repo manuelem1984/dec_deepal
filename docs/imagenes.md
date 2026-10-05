@@ -219,6 +219,6 @@ La versión no solo cambia la foto: también decide qué entidades existen.
 | `asientos_calefaccion` | Calefacción de asientos (conductor, acompañante) |
 | `asientos_ventilacion` | Ventilación de asientos (en el S05, solo Max) |
 | `volante_calefactado` | Volante calefactado |
-| `desempanado` | Desempañado delantero |
+| `desempanado` | Desempañado delantero (**desactivado en el S05**: no es compatible) |
 | `comandos_pin` | Puertas, ventanillas, maletero (si además el PIN está activo) |
 | `combustible` | Reservado para híbridos (aún sin entidades) |

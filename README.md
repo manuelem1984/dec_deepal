@@ -63,7 +63,7 @@ En **Configurar**:
 Un dispositivo por coche con: batería, autonomía, estado de carga, corrientes,
 tiempo restante, kilometraje, puertas, ventanillas, cerraduras, capó,
 maletero, presión y avisos de neumáticos, luces, temperatura y humedad
-interior, climatización, asientos, volante, desempañado, botones de luces y
+interior, climatización, asientos, volante, botones de luces y
 claxon, y seis imágenes (oficial, imagen DEC, vista de planta y vista
 isométrica con puertas, capó, maletero, ventanillas y luces según su estado, y
 vista interior con volante y asientos calefactados o ventilados, y vista de

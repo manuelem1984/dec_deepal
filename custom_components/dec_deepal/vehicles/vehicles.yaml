@@ -92,7 +92,7 @@ modelos:
       asientos_calefaccion: true     # calefacción asientos delanteros 0-3
       asientos_ventilacion: true     # ventilación asientos delanteros 0-3 (solo Max)
       volante_calefactado: true
-      desempanado: true
+      desempanado: false             # el S05 no es compatible (probado 02-10-2026)
       comandos_pin: true             # puertas, ventanillas y maletero (con PIN)
       combustible: false             # solo híbridos enchufables / autonomía extendida
     carpeta_fotos: s05_2024

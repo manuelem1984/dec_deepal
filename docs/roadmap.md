@@ -43,9 +43,8 @@ desactivar en Configurar → Avanzado.
 
 ### Otros
 
-- [ ] **Desempañado delantero:** en la prueba del 02-10-2026 el S05 lo dio
-      como **no compatible**. Decidir si se retira del modelo
-      (`desempanado: false` en `vehicles.yaml`).
+- [x] **Desempañado delantero:** el S05 no es compatible (02-10-2026).
+      Retirado del modelo en la 2.0.1 (`desempanado: false`).
 - [ ] "Encendido" con el coche en marcha (verificado en la rc2; repetir).
 - [ ] Velocidad, km del trayecto, km de ayer y temperatura exterior (entidades
       desactivadas: el S05 no parece enviarlas).

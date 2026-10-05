@@ -154,7 +154,7 @@ Un error con `TBOX_` suele indicar coche dormido u ocupado.
 | Asientos calefacción | `control/seats/heat` | `command: seats_heat, masterSwitch/masterLevel` o `copilotSwitch/copilotLevel` | ⚠️ |
 | Asientos ventilación | `control/seats/wind` | `command: seats_wind, …` | ⚠️ |
 | Volante | `control/steering-wheel/heat` | `command: steering_wheel_heating, open` | ⚠️ |
-| Desempañado | `control/defrost` | `command: defrost, enabled` | ⚠️ |
+| Desempañado | `control/defrost` | `command: defrost, enabled` | ❌ no compatible con el S05 (02-10-2026) |
 | Puertas (PIN) | `control/doors` | `command: lock, open` (`open: true` = desbloquear) | ⚠️ |
 | Ventanillas (PIN) | `control/windows` | `command: window, open, openType: 10` → **entreabrir** (ventilar) o cerrar todas | ✅ (cerrar exige coche apagado: 1032) |
 | Maletero (PIN) | `control/trunk` | `command: trunk, open` | ⚠️ |

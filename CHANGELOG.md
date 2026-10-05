@@ -3,6 +3,15 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.0.1] — 2026-10-05
+
+### Eliminado
+
+- **Desempañado delantero** en el S05: el coche no es compatible (el
+  interruptor no hacía nada). Ya no se crea, y la entidad que dejaron las
+  versiones anteriores se borra sola al actualizar. Si la usabas en una
+  tarjeta o automatización, quítala de ahí.
+
 ## [2.0.0] — 2026-10-03
 
 Primera versión estable de la reescritura. Mismo código que la 2.0.0rc10;

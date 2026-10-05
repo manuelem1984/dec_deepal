@@ -44,6 +44,19 @@ def test_trim_features_and_photos(registries) -> None:  # noqa: ANN001
     assert model.display_name(None) == "Deepal S05 (2024-25)"
 
 
+def test_s05_has_no_front_defrost(registries) -> None:  # noqa: ANN001
+    """El S05 no es compatible con el desempañado delantero (02-10-2026)."""
+    from custom_components.dec_deepal.registries.vehicles import (
+        FEATURE_DEFROST,
+        FEATURE_WHEEL_HEAT,
+    )
+
+    model = registries.vehicles.get("s05_2024")
+    for trim in ("pro", "max", "max_awd"):
+        assert not model.has(FEATURE_DEFROST, trim)
+        assert model.has(FEATURE_WHEEL_HEAT, trim)
+
+
 def test_capabilities_spanish_max_codes() -> None:
     """Códigos reales de un S05 Max de España (diagnóstico 30-09-2026)."""
     from custom_components.dec_deepal.api.models import Capabilities
