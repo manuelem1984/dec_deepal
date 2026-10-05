@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.1.0b2] — 2026-10-05
+
+Beta. Solo iconos: 14 iconos propios nuevos, con el estilo de los de Home
+Assistant (Material Design Icons) y distintos para abierto y cerrado.
+
+### Añadido
+
+- **Puertas (4):** delantera y trasera, izquierda y derecha. Cerrada de
+  frente; abierta en perspectiva, girada sobre su bisagra. Las traseras
+  tienen forma de puerta trasera (caída del techo y paso de rueda).
+- **Capó** y **Maletero:** el coche de lado con la tapa o el portón
+  levantados; cerrados, con su junta marcada.
+- **Tapa de carga:** cerrada (con el rayo) y abierta hacia la derecha, con
+  el puerto CCS2 a la vista.
+
+Los iconos están en `icons/svg/` y se pueden sustituir por otros con el
+mismo nombre. Derivados de Material Design Icons: ver `NOTICE.md`.
+
 ## [2.1.0b1] — 2026-10-05
 
 Beta. Entidades nuevas a partir de datos que el coche ya enviaba y nadie

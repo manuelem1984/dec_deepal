@@ -83,7 +83,13 @@ def test_icon_resolution(registries) -> None:  # noqa: ANN001
     # Ventanillas: estado de HA invertido ("open" = cerradas de verdad).
     assert icons.resolve("windows", "open") == "mdi:window-closed-variant"
     assert icons.resolve("windows", "closed") == "mdi:window-open-variant"
-    assert icons.resolve("door_front_left", "on") == "mdi:car-door"
+    # Iconos propios de la 2.1.0b2 (derivados de Material Design Icons).
+    assert icons.resolve("door_front_left", "on") == "dec:door_front_left_open"
+    assert icons.resolve("door_rear_right", "off") == "dec:door_rear_right_closed"
+    assert icons.resolve("hood", "on") == "dec:hood_open"
+    assert icons.resolve("trunk", "off") == "dec:trunk_closed"
+    assert icons.resolve("charge_cover", "on") == "dec:charge_cover_open"
+    assert icons.resolve("charge_cover", "off") == "dec:charge_cover_closed"
     assert icons.resolve("battery_level") is None
     assert icons.warnings == []
 

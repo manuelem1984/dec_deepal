@@ -103,3 +103,24 @@ archivo acepta, y cualquiera puede ponerle icono sin programar.
   `dec-icons.js`, que descarga cada SVG cuando el navegador lo necesita.
 - El selector de iconos de HA muestra también los `dec:` (lista en
   `/api/dec_deepal/icons`).
+
+## Iconos propios incluidos
+
+| Entidad | Archivos | Origen |
+| --- | --- | --- |
+| Luces de cruce, carretera y testigo | `low_beam.svg`, `high_beam.svg`, `position_lamp.svg` | Propios |
+| Intermitentes | `indicator_left_on/off.svg`, `indicator_right_on/off.svg` | Propios |
+| Volante calefactado | `steering_wheel_heat.svg` | Propio |
+| Puertas (4) | `door_<pos>_closed.svg`, `door_<pos>_open.svg` | Derivados de `mdi:car-door` (2.1.0b2) |
+| Capó | `hood_closed.svg`, `hood_open.svg` | Derivados de `mdi:car-hatchback` (2.1.0b2) |
+| Maletero | `trunk_closed.svg`, `trunk_open.svg` | Derivados de `mdi:car-hatchback` (2.1.0b2) |
+| Tapa de carga | `charge_cover_closed.svg`, `charge_cover_open.svg` | Propios (2.1.0b2) |
+
+`<pos>` = `front_left`, `front_right`, `rear_left`, `rear_right`.
+
+**Para dibujar uno nuevo con el mismo estilo:** lienzo `viewBox="0 0 24 24"`,
+un único `<path fill="currentColor">`, formas rellenas con "trazo" de unas 2
+unidades. Home Assistant rellena con la regla *nonzero*: los huecos
+(ventanillas, juntas) deben ir en sentido contrario al de la forma que los
+contiene.
+

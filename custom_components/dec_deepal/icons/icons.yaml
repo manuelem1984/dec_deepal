@@ -468,8 +468,10 @@ air_recirculation:
   defecto: mdi:sync
 charge_cover:
   plataforma: binary_sensor
-  descripcion: Tapa de carga abierta
-  defecto: mdi:ev-plug-type2
+  descripcion: Tapa de carga (iconos propios charge_cover_open / charge_cover_closed)
+  estados:
+    "on": {archivo: open, mdi: mdi:ev-plug-type2}
+    "off": {archivo: closed, mdi: mdi:ev-plug-type2}
 key_battery_low:
   plataforma: binary_sensor
   descripcion: Pila del mando baja

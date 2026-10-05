@@ -67,3 +67,19 @@ Los iconos incluidos en `custom_components/dec_deepal/icons/svg/` proceden de
 Material Symbols (Google, Apache 2.0) y Material Design Icons (Pictogrammers,
 Apache 2.0), vía Iconify. Detalle por icono en
 `custom_components/dec_deepal/icons/README.md`.
+
+## Material Design Icons (Pictogrammers)
+
+- Web: <https://pictogrammers.com/library/mdi/> · paquete `@mdi/svg`
+- Licencia: Pictogrammers Free License (libre, compatible con GPL; permite
+  usar, modificar y redistribuir los iconos).
+- Qué se reutiliza: los iconos propios de `icons/svg/` de puertas, capó y
+  maletero están **derivados** de `mdi:car-door` y `mdi:car-hatchback`:
+  - `door_front_left_closed.svg` es `mdi:car-door` sin cambios;
+    `door_front_right_*` es su espejo; las `*_open` son la misma puerta en
+    perspectiva oblicua; las `door_rear_*` son un dibujo propio con el mismo
+    lenguaje.
+  - `hood_*.svg` y `trunk_*.svg` usan la silueta de `mdi:car-hatchback` con la
+    tapa del capó o el portón levantados (o su junta, cerrados).
+- `charge_cover_*.svg` (tapa de carga con el puerto CCS2) es un dibujo propio.
+
