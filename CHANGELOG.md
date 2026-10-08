@@ -3,6 +3,16 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.1.1] — 2026-10-08
+
+### Cambiado
+
+- Los 4 **avisos de neumático** pasan al apartado **Diagnóstico** del
+  dispositivo (antes estaban en Sensores).
+- Nombres: **Luces de Carretera** (antes "Luz de carretera"), **Luces de
+  Cruce** (antes "Luz de cruce") y **Luces Antiniebla** (antes "Antiniebla
+  trasera"). Son las mismas entidades: no cambian sus identificadores.
+
 ## [2.1.0] — 2026-10-05
 
 Versión estable. Reúne las betas `2.1.0b1` y `2.1.0b2`, ajustadas con las

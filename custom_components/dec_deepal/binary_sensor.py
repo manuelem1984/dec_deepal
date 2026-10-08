@@ -52,7 +52,13 @@ def _window(key: str, signal: str) -> DecBinaryDescription:
 
 
 def _tire(key: str, signal: str) -> DecBinaryDescription:
-    return DecBinaryDescription(key=key, signal=signal, device_class=BinarySensorDeviceClass.PROBLEM)
+    """Aviso de un neumático: problema, en "Diagnóstico" (desde la 2.1.1)."""
+    return DecBinaryDescription(
+        key=key,
+        signal=signal,
+        device_class=BinarySensorDeviceClass.PROBLEM,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    )
 
 
 def _light(key: str, signal: str) -> DecBinaryDescription:

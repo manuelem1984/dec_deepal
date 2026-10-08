@@ -292,13 +292,13 @@ tire_alarm_rear_right:
   defecto: mdi:tire
 high_beam:
   plataforma: binary_sensor
-  descripcion: Luz de carretera
+  descripcion: Luces de Carretera
   estados:
     "on": {mdi: mdi:car-light-high}
     "off": {mdi: mdi:car-light-high}
 low_beam:
   plataforma: binary_sensor
-  descripcion: Luz de cruce
+  descripcion: Luces de Cruce
   estados:
     "on": {mdi: mdi:car-light-dimmed}
     "off": {mdi: mdi:car-light-dimmed}
@@ -456,7 +456,7 @@ charging_view:
 # ---------------------------------------------------------------------------
 rear_fog_lamp:
   plataforma: binary_sensor
-  descripcion: Luz antiniebla trasera
+  descripcion: Luces Antiniebla (trasera; el S05 no tiene delantera)
   defecto: mdi:car-light-fog
 air_recirculation:
   plataforma: binary_sensor
