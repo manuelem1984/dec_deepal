@@ -9,7 +9,9 @@ se copia un `.svg` con el nombre correcto y se reinicia Home Assistant.
 custom_components/dec_deepal/icons/
 ├── icons.yaml      Registro: cada entidad, sus estados e iconos de respaldo
 ├── svg/            Tus iconos (.svg)
-└── dec-icons.js    Script del navegador (no hace falta tocarlo)
+├── reserva/        Iconos guardados que hoy no usa ninguna entidad
+├── dec-icons.js    Script del navegador (no hace falta tocarlo)
+└── dec-icons-loader.js  Cargador temprano (se copia solo a www/)
 ```
 
 ## Cómo se elige el icono
@@ -106,18 +108,46 @@ archivo acepta, y cualquiera puede ponerle icono sin programar.
   cuando llega. Un icono que no esté en el paquete se pide suelto.
 - El selector de iconos de HA muestra también los `dec:`.
 
-### Iconos que no salen tras reiniciar
+### Iconos que no salían tras reiniciar (2.1.2 y 2.1.3)
 
 Tras reiniciar Home Assistant, la app recarga la página antes de que la
-integración termine de arrancar. Hay dos casos:
+integración termine de arrancar. Pasaban tres cosas, analizadas sobre el
+código de Home Assistant 2026.9.4 (frontend 20260826.7):
 
-- **El script está, pero los iconos aún no se sirven.** Corregido en la
-  2.1.2: el script reintenta y los iconos aparecen solos.
-- **La página se cargó sin el script** (Home Assistant decide qué scripts
-  incluye al servir la página, y el nuestro se registra al arrancar la
-  integración). No se puede corregir desde la integración: hay que
-  recargar una vez. Para saber si es este caso, en la consola del
-  navegador: si `window.customIcons.dec` no existe, lo es.
+1. **La página salía sin nuestro script.** Home Assistant decide qué
+   scripts incluye al servir la página y una integración de HACS se
+   registra unos segundos más tarde.
+2. **Los iconos se pintaban antes de tiempo.** Durante el arranque las
+   entidades conservan su icono (`dec:...`) y la página lo dibuja; como
+   nadie conoce aún el prefijo `dec`, `<ha-icon>` lo marca como
+   desconocido (`_legacy`) y **no lo reintenta**, aunque el script llegue
+   después.
+3. **Las descargas que fallaban se recordaban** (corregido en la 2.1.2).
+
+Solución, sin que el usuario toque nada:
+
+- **Cargador temprano** (`icons/dec-icons-loader.js`). Al arrancar, la
+  integración lo copia a `<config>/www/dec_deepal/` y lo registra como
+  **recurso de los paneles** (`/local/dec_deepal/dec-icons-loader.js`):
+  esas dos cosas existen desde el primer instante. El cargador reintenta
+  cargar `dec-icons.js` (unos 2 minutos) hasta que la integración lo
+  publica. Su contenido no cambia entre versiones: se registra una vez.
+- **Repintado.** Al llegar, `dec-icons.js` busca los `<ha-icon>` con icono
+  `dec:` que quedaron marcados, les quita la marca y les hace recargar.
+- Al desinstalar la integración se quitan el recurso y la copia de `www`.
+
+Límites conocidos:
+
+- Home Assistant solo carga los recursos **al abrir un panel**. Si la app
+  recarga estando en Ajustes (p. ej. la ficha del dispositivo) sin haber
+  pasado por un panel, los iconos siguen sin verse hasta abrir un panel o
+  recargar.
+- Si los recursos de los paneles están en **modo YAML**, no se pueden
+  registrar desde una integración: queda como antes.
+- `/local/` solo existe si la carpeta `www` ya estaba al arrancar Home
+  Assistant. Si la crea la integración, funciona desde el siguiente
+  reinicio.
+- El resultado se ve en los diagnósticos: `catalogos → cargador_iconos`.
 
 ## Iconos propios incluidos
 

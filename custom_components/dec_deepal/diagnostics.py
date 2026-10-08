@@ -24,9 +24,10 @@ from typing import Any
 
 from homeassistant.core import HomeAssistant
 
-from .const import OPT_APPEARANCE, OPT_PIN, VERSION
+from .const import DOMAIN, OPT_APPEARANCE, OPT_PIN, VERSION
 from .debug.capture import build_snapshot
 from .debug.redact import redact
+from .frontend import LOADER_STATUS_KEY
 from .runtime import DecDeepalConfigEntry
 
 
@@ -82,6 +83,8 @@ async def async_get_config_entry_diagnostics(
                 "modelos": sorted(runtime.registries.vehicles.models),
                 "iconos_svg": sorted(runtime.registries.icons.available),
                 "avisos_iconos": runtime.registries.icons.warnings,
+                # Cargador temprano de iconos (www + recurso de paneles).
+                "cargador_iconos": hass.data.get(DOMAIN, {}).get(LOADER_STATUS_KEY),
             },
             "vehiculos": vehicles,
             "registro_depuracion": runtime.recorder.events(),

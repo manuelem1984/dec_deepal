@@ -18,6 +18,12 @@
 // Antes (hasta la 2.1.1) se pedía cada SVG por separado y un fallo se
 // guardaba para siempre: tras un reinicio los iconos no salían hasta recargar.
 //
+// Desde la 2.1.3, además:
+//   - puede llegar tarde, traído por el cargador temprano
+//     (dec-icons-loader.js, ver frontend.py);
+//   - al llegar, REPINTA los iconos "dec:" que la página dibujó antes de
+//     que él existiera (ver repaintStuckIcons más abajo).
+//
 // Por eso NO hay que tocar este archivo para añadir iconos: basta con dejar el
 // .svg en custom_components/dec_deepal/icons/svg/ (ver docs/iconos.md).
 //
@@ -31,6 +37,11 @@
 // =============================================================================
 
 (() => {
+  // Este script puede llegar por dos caminos (la página de Home Assistant y
+  // el cargador temprano dec-icons-loader.js): solo se ejecuta una vez.
+  if (window.__decDeepalIcons) return;
+  window.__decDeepalIcons = true;
+
   const PREFIX = "dec";
   const SVG_BASE_URL = "/dec_deepal/icons";
   const BUNDLE_URL = "/api/dec_deepal/icons_bundle";
@@ -130,6 +141,36 @@
       .map((name) => ({ name }));
   }
 
+  // Repinta los iconos "dec:" que se pintaron ANTES de que este script
+  // existiera. Pasa tras reiniciar Home Assistant: las entidades recuerdan su
+  // icono "dec:..." y la página lo dibuja durante el arranque; como entonces
+  // nadie conocía el prefijo "dec", el elemento <ha-icon> lo marca como
+  // desconocido (_legacy) y no vuelve a intentarlo aunque el script llegue
+  // después. Aquí se le quita la marca y se le hace recargar su icono.
+  // Recorre también los "shadow DOM" (la interfaz de HA está hecha de ellos).
+  function repaintStuckIcons() {
+    const pending = [document];
+    while (pending.length) {
+      const root = pending.pop();
+      for (const element of root.querySelectorAll("*")) {
+        if (element.shadowRoot) pending.push(element.shadowRoot);
+        if (element.localName !== "ha-icon") continue;
+        const icon = element.icon;
+        if (typeof icon !== "string" || !icon.startsWith(`${PREFIX}:`)) continue;
+        if (element._path && !element._legacy) continue; // ya está pintado
+        try {
+          element._legacy = false;
+          // Cambiar y restaurar la propiedad en el mismo instante hace que el
+          // elemento vuelva a cargar su icono sin parpadeo.
+          element.icon = "";
+          element.icon = icon;
+        } catch (error) {
+          // Un elemento raro no debe impedir repintar los demás.
+        }
+      }
+    }
+  }
+
   window.customIcons = window.customIcons || {};
   window.customIcons[PREFIX] = { getIcon, getIconList };
 
@@ -138,4 +179,9 @@
 
   // Empieza a cargar ya, sin esperar a que alguien pida un icono.
   ensureBundle();
+
+  // Si este script ha llegado tarde, arregla lo que ya estaba pintado: ahora,
+  // y un par de veces más por si la página seguía dibujándose.
+  repaintStuckIcons();
+  for (const seconds of [1, 3, 8]) setTimeout(repaintStuckIcons, seconds * 1000);
 })();

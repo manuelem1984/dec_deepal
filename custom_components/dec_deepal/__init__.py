@@ -59,7 +59,7 @@ from .const import (
 )
 from .coordinator import VehicleCoordinator
 from .debug.recorder import DebugRecorder
-from .frontend import async_register_frontend
+from .frontend import async_register_frontend, async_remove_early_loader
 from .registries import RegistryError
 from .registries.vehicles import FEATURE_MQTT
 from .runtime import (
@@ -227,9 +227,16 @@ async def async_unload_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -> None:
-    """Al borrar la cuenta, borra también sus avisos de Reparaciones."""
+    """Al borrar la cuenta, borra sus avisos de Reparaciones.
+
+    Si era la última cuenta, quita también el cargador temprano de iconos
+    (recurso de los paneles y copia en ``www``): no debe quedar nada en
+    Home Assistant tras desinstalar.
+    """
     for raw_vehicle in entry.data.get(CONF_VEHICLES, []):
         ir.async_delete_issue(hass, DOMAIN, issue_id(str(raw_vehicle.get("vehicle_id"))))
+    if not hass.config_entries.async_entries(DOMAIN):
+        await async_remove_early_loader(hass)
 
 
 async def _refresh_vehicle_list(

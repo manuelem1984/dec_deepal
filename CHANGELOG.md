@@ -3,6 +3,30 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.1.3b1] — 2026-10-08
+
+Beta. Segundo intento con los iconos propios que no aparecían tras reiniciar
+Home Assistant hasta recargar la app. La 2.1.2 no bastó: la página se cargaba
+sin nuestro script y, además, los iconos pintados antes de tiempo quedaban
+marcados como desconocidos y la interfaz no los reintentaba.
+
+### Corregido
+
+- **Cargador temprano de iconos**, automático: la integración copia un
+  pequeño script a `www/dec_deepal/` y lo registra como recurso de los
+  paneles, que Home Assistant sirve desde el primer instante. Reintenta
+  cargar los iconos hasta que la integración termina de arrancar.
+- **Repintado:** cuando el script de iconos llega tarde, arregla los iconos
+  que la página ya había dibujado en blanco.
+- Al desinstalar la integración se quitan el recurso y la copia de `www`.
+
+### Límites conocidos
+
+- Home Assistant solo carga los recursos al abrir un panel: si la app recarga
+  estando en Ajustes, los iconos aparecen al abrir un panel o recargar.
+- No se registra si los recursos de los paneles están en modo YAML.
+- Si la carpeta `www` no existía, funciona desde el siguiente reinicio.
+
 ## [2.1.2] — 2026-10-08
 
 ### Corregido

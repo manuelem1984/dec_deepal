@@ -19,6 +19,28 @@ URL                                    Contenido
 
 Nada de esto es información privada: son solo dibujos.
 
+Cargador temprano (2.1.3)
+-------------------------
+Home Assistant decide qué scripts lleva la página al servirla, y una
+integración de HACS arranca unos segundos después de que la web ya
+responda. Tras un reinicio, la app recarga en ese hueco: la página sale sin
+``dec-icons.js`` y los iconos ``dec:`` quedan en blanco hasta recargar.
+
+Lo único que está disponible desde el primer instante y que una integración
+puede preparar sola es la carpeta ``www`` (``/local/``) y los **recursos de
+los paneles** (guardados en disco). Por eso, al arrancar:
+
+1. se copia ``dec-icons-loader.js`` a ``<config>/www/dec_deepal/``;
+2. se registra ``/local/dec_deepal/dec-icons-loader.js`` como recurso
+   (una sola vez; su contenido no cambia entre versiones).
+
+El cargador reintenta cargar ``dec-icons.js`` hasta que la integración lo
+publica, y este repinta los iconos que ya estaban dibujados. Límites: los
+recursos solo se cargan al abrir un panel (no en Ajustes), no se pueden
+registrar si los recursos están en modo YAML, y ``/local/`` solo existe si
+la carpeta ``www`` ya estaba al arrancar (la primera vez, tras otro
+reinicio). Nada de esto puede impedir que la integración arranque.
+
 Por qué un paquete único (2.1.2): tras reiniciar Home Assistant, la app
 vuelve a cargar la página antes de que esta integración termine de
 arrancar. Con una petición por icono, las que caían en ese hueco fallaban
@@ -30,6 +52,8 @@ está lista (ver ``icons/dec-icons.js``).
 from __future__ import annotations
 
 import logging
+import shutil
+from pathlib import Path
 
 from aiohttp import web
 from homeassistant.components.frontend import add_extra_js_url
@@ -42,6 +66,9 @@ from .const import (
     ICONS_BUNDLE_API,
     ICONS_JS_URL,
     ICONS_LIST_API,
+    ICONS_LOADER_FILE,
+    ICONS_LOADER_URL,
+    ICONS_LOADER_WWW_DIR,
     ICONS_SVG_URL,
     INTEGRATION_DIR,
     VERSION,
@@ -51,6 +78,8 @@ from .registries.icons import IconRegistry
 _LOGGER = logging.getLogger(__name__)
 
 _REGISTERED_KEY = "frontend_registered"
+#: Resultado de preparar el cargador temprano (lo muestran los diagnósticos).
+LOADER_STATUS_KEY = "icon_loader_status"
 
 
 class IconListView(HomeAssistantView):
@@ -113,3 +142,91 @@ async def async_register_frontend(hass: HomeAssistant, icons: IconRegistry) -> N
     # ?v=<versión> evita que el navegador use un script viejo tras actualizar.
     add_extra_js_url(hass, f"{ICONS_JS_URL}/{ICONS_JS_FILE}?v={VERSION}")
     domain_data[_REGISTERED_KEY] = True
+    domain_data[LOADER_STATUS_KEY] = await async_install_early_loader(hass)
+
+
+# ---------------------------------------------------------------------------
+# Cargador temprano (ver el docstring del módulo)
+# ---------------------------------------------------------------------------
+
+
+def _copy_loader(www_dir: Path) -> bool:
+    """Copia el cargador a ``www/dec_deepal/`` si falta o ha cambiado. Bloqueante.
+
+    Returns:
+        ``True`` si la carpeta ``www`` ya existía (y por tanto ``/local/`` se
+        está sirviendo); ``False`` si se acaba de crear: hará falta otro
+        reinicio de Home Assistant para que ``/local/`` exista.
+    """
+    www_existed = www_dir.is_dir()
+    source = INTEGRATION_DIR / "icons" / ICONS_LOADER_FILE
+    target = www_dir / ICONS_LOADER_WWW_DIR / ICONS_LOADER_FILE
+    data = source.read_bytes()
+    if not target.is_file() or target.read_bytes() != data:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+    return www_existed
+
+
+def _resource_collection(hass: HomeAssistant):  # noqa: ANN202 - tipo interno de HA
+    """Colección de recursos de los paneles, o ``None`` si no se puede escribir."""
+    try:
+        from homeassistant.components.lovelace.const import LOVELACE_DATA  # noqa: PLC0415
+    except ImportError:
+        return None
+    data = hass.data.get(LOVELACE_DATA)
+    resources = getattr(data, "resources", None)
+    # En modo YAML la colección no tiene ``async_create_item``.
+    if resources is None or not hasattr(resources, "async_create_item"):
+        return None
+    return resources
+
+
+async def _loader_resources(resources) -> list[dict]:  # noqa: ANN001
+    """Recursos ya registrados que apuntan a nuestro cargador."""
+    await resources.async_get_info()  # asegura que están leídos del disco
+    return [
+        item
+        for item in resources.async_items()
+        if str(item.get("url", "")).split("?")[0] == ICONS_LOADER_URL
+    ]
+
+
+async def async_install_early_loader(hass: HomeAssistant) -> str:
+    """Copia el cargador a ``www`` y lo registra como recurso. Nunca falla.
+
+    Returns:
+        Texto corto con el resultado, para los diagnósticos.
+    """
+    try:
+        www_existed = await hass.async_add_executor_job(
+            _copy_loader, Path(hass.config.path("www"))
+        )
+        resources = _resource_collection(hass)
+        if resources is None:
+            return "recursos en modo YAML o no disponibles: no se registra"
+        if not await _loader_resources(resources):
+            await resources.async_create_item({"res_type": "module", "url": ICONS_LOADER_URL})
+            status = "recurso registrado"
+        else:
+            status = "recurso ya registrado"
+        if not www_existed:
+            status += "; carpeta www recién creada (activo tras el próximo reinicio)"
+    except Exception as err:  # noqa: BLE001 - los iconos nunca deben impedir arrancar
+        _LOGGER.warning("No se pudo preparar el cargador temprano de iconos: %s", err)
+        return f"error: {err}"
+    _LOGGER.debug("Cargador temprano de iconos: %s", status)
+    return status
+
+
+async def async_remove_early_loader(hass: HomeAssistant) -> None:
+    """Quita el recurso y la copia de ``www`` (al desinstalar). Nunca falla."""
+    try:
+        resources = _resource_collection(hass)
+        if resources is not None:
+            for item in await _loader_resources(resources):
+                await resources.async_delete_item(item["id"])
+        target = Path(hass.config.path("www")) / ICONS_LOADER_WWW_DIR
+        await hass.async_add_executor_job(shutil.rmtree, target, True)
+    except Exception as err:  # noqa: BLE001
+        _LOGGER.debug("No se pudo quitar el cargador temprano de iconos: %s", err)

@@ -132,6 +132,11 @@ ICONS_SVG_URL: Final = "/dec_deepal/icons"
 #: URL del script que registra el prefijo "dec:" en el navegador.
 ICONS_JS_URL: Final = "/dec_deepal/frontend"
 ICONS_JS_FILE: Final = "dec-icons.js"
+#: Cargador temprano: se copia a <config>/www/dec_deepal/ y se registra como
+#: recurso de los paneles (ver frontend.py).
+ICONS_LOADER_FILE: Final = "dec-icons-loader.js"
+ICONS_LOADER_WWW_DIR: Final = "dec_deepal"
+ICONS_LOADER_URL: Final = "/local/dec_deepal/dec-icons-loader.js"
 #: API que devuelve la lista de iconos disponibles (para el selector de iconos).
 ICONS_LIST_API: Final = "/api/dec_deepal/icons"
 #: Todos los SVG en una sola respuesta JSON (lo usa dec-icons.js).
