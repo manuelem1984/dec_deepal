@@ -1,6 +1,7 @@
 {
   "domain": "dec_deepal",
   "name": "DEC Deepal",
+  "after_dependencies": ["lovelace"],
   "codeowners": ["@manuelem1984"],
   "config_flow": true,
   "dependencies": ["frontend", "http", "persistent_notification"],
