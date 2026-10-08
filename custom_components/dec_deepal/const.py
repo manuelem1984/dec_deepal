@@ -134,6 +134,8 @@ ICONS_JS_URL: Final = "/dec_deepal/frontend"
 ICONS_JS_FILE: Final = "dec-icons.js"
 #: API que devuelve la lista de iconos disponibles (para el selector de iconos).
 ICONS_LIST_API: Final = "/api/dec_deepal/icons"
+#: Todos los SVG en una sola respuesta JSON (lo usa dec-icons.js).
+ICONS_BUNDLE_API: Final = "/api/dec_deepal/icons_bundle"
 
 # ---------------------------------------------------------------------------
 # Depuración (ver docs/depuracion.md)

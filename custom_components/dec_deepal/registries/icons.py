@@ -91,6 +91,21 @@ class IconRegistry:
             return entry.default
         return None
 
+    def bundle(self) -> dict[str, str]:
+        """Todos los SVG disponibles: ``{nombre: texto del SVG}``.
+
+        Lo sirve ``frontend.py`` en una sola respuesta para que el navegador
+        no tenga que pedir cada icono por separado. Lee del disco (operación
+        bloqueante): un SVG cambiado se ve al recargar la página.
+        """
+        result: dict[str, str] = {}
+        for name in sorted(self.available):
+            try:
+                result[name] = (self.svg_dir / f"{name}.svg").read_text(encoding="utf-8")
+            except OSError:
+                continue  # borrado después de arrancar: se omite
+        return result
+
 
 def _svg_warnings(path: Path) -> list[str]:
     """Comprueba que un SVG es compatible y devuelve avisos si no lo es."""

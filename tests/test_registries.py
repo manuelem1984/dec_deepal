@@ -95,6 +95,15 @@ def test_icon_resolution(registries) -> None:  # noqa: ANN001
     assert icons.warnings == []
 
 
+def test_icon_bundle(registries) -> None:  # noqa: ANN001
+    """El paquete que pide el navegador trae todos los SVG, con su dibujo."""
+    bundle = registries.icons.bundle()
+    assert set(bundle) == set(registries.icons.available)
+    assert "door_front_left_open" in bundle and "hood_open" in bundle
+    assert all("<path" in text and "viewBox" in text for text in bundle.values())
+    assert "charge_cover_open" not in bundle  # está en icons/reserva/
+
+
 def test_countries_validation(tmp_path: Path) -> None:
     bad = tmp_path / "countries.yaml"
     bad.write_text("entornos: {}\npaises:\n  es: {nombre: X, entorno: nada}\n", encoding="utf-8")

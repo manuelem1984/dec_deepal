@@ -99,10 +99,25 @@ archivo acepta, y cualquiera puede ponerle icono sin programar.
 - `registries/icons.py` lee `icons.yaml`, descubre los `.svg` y resuelve el
   icono (`IconRegistry.resolve`).
 - `entity.py` pregunta a ese registro en la propiedad `icon`.
-- `frontend.py` publica `icons/svg/` en `/dec_deepal/icons/` y carga
-  `dec-icons.js`, que descarga cada SVG cuando el navegador lo necesita.
-- El selector de iconos de HA muestra también los `dec:` (lista en
-  `/api/dec_deepal/icons`).
+- `frontend.py` publica `icons/svg/` en `/dec_deepal/icons/`, un paquete con
+  todos los SVG en `/api/dec_deepal/icons_bundle` y carga `dec-icons.js`.
+- `dec-icons.js` pide ese paquete **una sola vez** y, si falla, lo
+  **reintenta** durante un minuto; el icono queda pendiente y aparece solo
+  cuando llega. Un icono que no esté en el paquete se pide suelto.
+- El selector de iconos de HA muestra también los `dec:`.
+
+### Iconos que no salen tras reiniciar
+
+Tras reiniciar Home Assistant, la app recarga la página antes de que la
+integración termine de arrancar. Hay dos casos:
+
+- **El script está, pero los iconos aún no se sirven.** Corregido en la
+  2.1.2: el script reintenta y los iconos aparecen solos.
+- **La página se cargó sin el script** (Home Assistant decide qué scripts
+  incluye al servir la página, y el nuestro se registra al arrancar la
+  integración). No se puede corregir desde la integración: hay que
+  recargar una vez. Para saber si es este caso, en la consola del
+  navegador: si `window.customIcons.dec` no existe, lo es.
 
 ## Iconos propios incluidos
 

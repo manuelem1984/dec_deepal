@@ -3,9 +3,20 @@
 // =============================================================================
 //
 // Este script lo carga Home Assistant automáticamente en el navegador (lo
-// registra frontend.py). Enseña al frontend a entender iconos "dec:<nombre>":
-// cuando una entidad pide "dec:windows_open", este script descarga
-// /dec_deepal/icons/windows_open.svg, extrae su dibujo y se lo entrega a HA.
+// registra frontend.py). Enseña al frontend a entender iconos "dec:<nombre>".
+//
+// Cómo consigue los dibujos (desde la 2.1.2):
+//   1. Pide UNA sola vez /api/dec_deepal/icons_bundle, un JSON con todos los
+//      SVG de icons/svg/ ({nombre: "<svg ...>"}).
+//   2. Si esa petición falla (típico justo tras reiniciar Home Assistant: la
+//      página carga antes de que la integración termine de arrancar), NO se da
+//      por perdida: se reintenta durante un rato. Mientras tanto el icono
+//      queda "pendiente" y aparece solo en cuanto llega, sin recargar.
+//   3. Si un icono no está en el paquete (SVG añadido sin reiniciar), se pide
+//      suelto a /dec_deepal/icons/<nombre>.svg. Un fallo ahí no se recuerda.
+//
+// Antes (hasta la 2.1.1) se pedía cada SVG por separado y un fallo se
+// guardaba para siempre: tras un reinicio los iconos no salían hasta recargar.
 //
 // Por eso NO hay que tocar este archivo para añadir iconos: basta con dejar el
 // .svg en custom_components/dec_deepal/icons/svg/ (ver docs/iconos.md).
@@ -22,11 +33,18 @@
 (() => {
   const PREFIX = "dec";
   const SVG_BASE_URL = "/dec_deepal/icons";
-  const LIST_URL = "/api/dec_deepal/icons";
+  const BUNDLE_URL = "/api/dec_deepal/icons_bundle";
 
-  // Caché en memoria: nombre → Promise<{path, viewBox} | undefined>.
-  const cache = new Map();
-  let listPromise = null;
+  // Esperas entre reintentos del paquete (segundos). En total, ~1 minuto:
+  // de sobra para que la integración termine de arrancar tras un reinicio.
+  const RETRY_DELAYS = [1, 2, 3, 5, 5, 5, 10, 10, 10, 10];
+
+  // Iconos ya convertidos: nombre → {path, viewBox}.
+  const icons = new Map();
+  // Carga del paquete en curso (o terminada con éxito). null = hay que pedirlo.
+  let bundlePromise = null;
+
+  const sleep = (seconds) => new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 
   // Convierte el texto de un SVG en el formato que espera Home Assistant.
   function parseSvg(text) {
@@ -42,33 +60,74 @@
     return path ? { path, viewBox } : undefined;
   }
 
-  // Descarga (una sola vez) y devuelve el icono pedido.
-  function getIcon(name) {
-    if (!cache.has(name)) {
-      const url = `${SVG_BASE_URL}/${encodeURIComponent(name)}.svg`;
-      cache.set(
-        name,
-        fetch(url)
-          .then((response) => (response.ok ? response.text() : undefined))
-          .then((text) => (text ? parseSvg(text) : undefined))
-          .catch((error) => {
-            console.warn(`[DEC Deepal] No se pudo cargar el icono ${name}:`, error);
-            return undefined;
-          })
-      );
+  // Un intento de descargar el paquete. true = conseguido.
+  async function fetchBundle() {
+    try {
+      const response = await fetch(BUNDLE_URL, { cache: "no-store" });
+      if (!response.ok) return false;
+      const bundle = await response.json();
+      for (const [name, text] of Object.entries(bundle)) {
+        const icon = parseSvg(text);
+        if (icon) icons.set(name, icon);
+      }
+      return true;
+    } catch (error) {
+      return false;
     }
-    return cache.get(name);
+  }
+
+  // Descarga el paquete, reintentando si falla. Devuelve true si se consiguió.
+  async function loadBundleWithRetries() {
+    if (await fetchBundle()) return true;
+    for (const delay of RETRY_DELAYS) {
+      await sleep(delay);
+      if (await fetchBundle()) return true;
+    }
+    console.warn("[DEC Deepal] No se pudo cargar el paquete de iconos; se reintentará.");
+    return false;
+  }
+
+  // Paquete cargado (una sola carga a la vez). Si acaba en fallo, la siguiente
+  // petición de un icono vuelve a intentarlo: un fallo nunca se recuerda.
+  function ensureBundle() {
+    if (!bundlePromise) {
+      bundlePromise = loadBundleWithRetries().then((ok) => {
+        if (!ok) bundlePromise = null;
+        return ok;
+      });
+    }
+    return bundlePromise;
+  }
+
+  // Icono suelto (no estaba en el paquete). No se guarda si falla.
+  async function fetchSingle(name) {
+    try {
+      const url = `${SVG_BASE_URL}/${encodeURIComponent(name)}.svg`;
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) return undefined;
+      const icon = parseSvg(await response.text());
+      if (icon) icons.set(name, icon);
+      return icon;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
+  // Devuelve el icono pedido. La promesa queda pendiente mientras el paquete
+  // se reintenta, así Home Assistant pinta el icono en cuanto está disponible.
+  async function getIcon(name) {
+    if (icons.has(name)) return icons.get(name);
+    await ensureBundle();
+    if (icons.has(name)) return icons.get(name);
+    return fetchSingle(name);
   }
 
   // Lista de iconos disponibles, para el selector de iconos de HA.
-  function getIconList() {
-    if (!listPromise) {
-      listPromise = fetch(LIST_URL)
-        .then((response) => (response.ok ? response.json() : []))
-        .then((names) => names.map((name) => ({ name })))
-        .catch(() => []);
-    }
-    return listPromise;
+  async function getIconList() {
+    await ensureBundle();
+    return Array.from(icons.keys())
+      .sort()
+      .map((name) => ({ name }));
   }
 
   window.customIcons = window.customIcons || {};
@@ -76,4 +135,7 @@
 
   window.customIconsets = window.customIconsets || {};
   window.customIconsets[PREFIX] = getIcon;
+
+  // Empieza a cargar ya, sin esperar a que alguien pida un icono.
+  ensureBundle();
 })();

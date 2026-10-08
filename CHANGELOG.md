@@ -3,6 +3,19 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.1.2] — 2026-10-08
+
+### Corregido
+
+- **Iconos propios que no aparecían tras reiniciar** hasta recargar la app.
+  El navegador pedía cada icono por separado y, si la petición caía antes de
+  que la integración terminara de arrancar, recordaba el fallo para siempre.
+  Ahora pide **un solo paquete** con todos los iconos y lo **reintenta**
+  durante un minuto: los iconos aparecen solos, sin recargar.
+- Limitación que queda: si la página se cargó antes de que Home Assistant
+  conociera el script de iconos, sigue haciendo falta recargar una vez (no
+  depende de la integración). Ver `docs/iconos.md`.
+
 ## [2.1.1] — 2026-10-08
 
 ### Cambiado
