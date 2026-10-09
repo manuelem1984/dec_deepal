@@ -9,6 +9,8 @@ Además de leer el catálogo, este módulo:
 - Busca la **foto** que corresponde a versión + color (:meth:`VehicleModel.photo_for`).
 - Carga las capas de las **vistas** del modelo ("Vista de planta", "Vista
   isométrica"...), si tiene (``vistas:``; ver :mod:`.views`).
+- Lee el **plan de mantenimiento** del modelo (``mantenimiento:``): cada
+  cuánto toca la revisión y qué operaciones lleva cada una.
 """
 
 from __future__ import annotations
@@ -18,6 +20,12 @@ from pathlib import Path
 from typing import Final
 
 from ..api.models import VehicleInfo
+from ..maintenance import (
+    DEFAULT_INTERVAL_KM,
+    DEFAULT_INTERVAL_MONTHS,
+    MaintenancePlan,
+    Operation,
+)
 from .errors import RegistryError, as_dict, as_str_list, read_yaml, require
 from .views import ViewLayers, load_view
 
@@ -104,6 +112,8 @@ class VehicleModel:
     colors: dict[str, Color]
     #: Vistas por capas del modelo: ``{clave de vista: capas}``.
     views: dict[str, ViewLayers] = field(default_factory=dict)
+    #: Plan de mantenimiento (intervalo y operaciones de cada revisión).
+    maintenance: MaintenancePlan = field(default_factory=MaintenancePlan)
 
     def display_name(self, trim_id: str | None) -> str:
         """Nombre para mostrar, con la versión si se conoce.
@@ -234,6 +244,32 @@ def _views(vehicles_dir: Path, raw: dict, where: str) -> dict[str, ViewLayers]:
     }
 
 
+def _maintenance(raw: object, trims: dict[str, Trim], where: str) -> MaintenancePlan:
+    """Lee el bloque ``mantenimiento`` (sin él, el intervalo habitual y sin operaciones)."""
+    block = as_dict(raw, where)
+    operations: list[Operation] = []
+    for index, item in enumerate(block.get("operaciones") or []):
+        item_where = f"{where}.operaciones[{index}]"
+        item = as_dict(item, item_where)
+        every = int(item.get("cada") or 1)
+        if every < 1:
+            raise RegistryError(f"{item_where}: 'cada' debe ser 1 o más")
+        only = as_str_list(item.get("versiones"), f"{item_where}.versiones")
+        unknown = set(only) - set(trims)
+        if unknown:
+            raise RegistryError(
+                f"{item_where}: versiones desconocidas {sorted(unknown)}; válidas: {sorted(trims)}"
+            )
+        operations.append(
+            Operation(name=str(require(item, "nombre", item_where)), every=every, trims=only)
+        )
+    return MaintenancePlan(
+        interval_km=int(block.get("intervalo_km") or DEFAULT_INTERVAL_KM),
+        interval_months=int(block.get("intervalo_meses") or DEFAULT_INTERVAL_MONTHS),
+        operations=tuple(operations),
+    )
+
+
 def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
     """Lee y valida ``vehicles/vehicles.yaml``."""
     path = vehicles_dir / "vehicles.yaml"
@@ -280,6 +316,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
             trims=trims,
             colors=colors,
             views=_views(vehicles_dir, raw, where),
+            maintenance=_maintenance(raw.get("mantenimiento"), trims, f"{where}.mantenimiento"),
         )
 
     if GENERIC_MODEL_ID not in models:

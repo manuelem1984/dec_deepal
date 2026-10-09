@@ -1,5 +1,34 @@
 # Hoja de ruta
 
+## Beta 2.3.0b1 (09-10-2026) — pendiente de probar
+
+- [ ] **Avisos de carga**: iniciada, terminada e interrumpida. Sobre todo,
+      que al terminar con un límite de carga (p. ej. 80 %) diga "terminada" y
+      no "interrumpida", y que desenchufar a media carga diga "interrumpida".
+- [ ] **Avisos de testigos, neumáticos y pila del mando**: no se pueden
+      provocar; falta ver uno real.
+- [ ] **Mantenimiento**: configurar un coche, ver el testigo en la tarjeta,
+      registrar una revisión desde la tarjeta y desde Configurar.
+- [ ] Aviso de mantenimiento al entrar en un escalón (se puede forzar
+      poniendo una fecha de última revisión de hace casi un año).
+
+## Pendiente de diseño
+
+- [ ] **Adaptación de funciones para modelo Pro.** Hoy la única diferencia
+      con el Max es la ventilación de asientos, y es una suposición: no hay
+      diagnóstico de ningún Pro. Idea: crear las entidades según las
+      capacidades que declara cada coche (`function-config`), con la versión
+      elegida a mano como respaldo. Hace falta el diagnóstico de un Pro real.
+      En la tarjeta: centrar el botón de calefacción cuando no hay
+      ventilación, y ocultar los botones de órdenes que el coche no admita.
+- [ ] **Entidades cuyo dato el coche nunca envía** (el segundo coche de
+      pruebas no manda testigos ni conector AC): decidir si se crean
+      desactivadas, no se crean o se dejan. En la tarjeta, no mostrar el tic
+      verde si el coche no informa de los testigos.
+- [ ] **Control con PIN por coche.** El PIN es de la cuenta de Deepal (la
+      comprobación no lleva el identificador del coche), pero activarlo y
+      elegir el modo sí podría ser por coche.
+
 ## Publicada la 2.1.0 (05-10-2026) — pendiente de probar con el coche
 
 Lo que la 2.1.0 lleva **sin verificar**. Quien lo pruebe, que lo cuente en
@@ -112,7 +141,12 @@ desactivar en Configurar → Avanzado.
 - [x] Tarjeta propia para los paneles (2.2.0, validada en una instalación
       real). Pendiente: opciones (qué botones mostrar), elegir vista, otros
       idiomas y comprobar el tema oscuro.
-- [ ] Automatizaciones listas para usar (coche abierto, carga terminada,
-      presión baja...).
+- [x] Avisos al móvil desde la integración: carga, testigos, neumáticos,
+      pila del mando y mantenimiento (2.3.0b1). Pendiente: descuidos (coche
+      sin bloquear, ventanillas o maletero abiertos) y coche sin informar.
+- [x] Mantenimiento periódico por coche, con testigo en la tarjeta (2.3.0b1).
+- [ ] Plan de mantenimiento: confirmar con la comunidad las operaciones de
+      cada revisión (el manual y la tabla de la comunidad difieren en algún
+      detalle; se ha seguido el manual).
 - [ ] Carga inteligente: iniciar / parar y horario (hace falta capturar lo
       que envía la app oficial).

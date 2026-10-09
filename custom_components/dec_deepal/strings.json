@@ -70,7 +70,58 @@
         "menu_options": {
           "appearance": "Apariencia del vehículo (modelo, versión, color)",
           "pin": "Control remoto con PIN",
+          "alerts": "Avisos al móvil",
+          "maintenance": "Mantenimiento",
           "advanced": "Avanzado (intervalo, depuración)"
+        }
+      },
+      "alerts": {
+        "title": "Avisos al móvil",
+        "description": "La integración te avisa cuando pasa algo en el coche. Cada aviso lleva el nombre del coche en el título (\"DEC Deepal Mi coche\"). Son notificaciones normales, no críticas.",
+        "data": {
+          "targets": "Avisar a",
+          "types": "Avisos activados",
+          "persistent": "Mostrar también en las notificaciones de Home Assistant"
+        },
+        "data_description": {
+          "targets": "Cada móvil con la app de Home Assistant aparece como notify.mobile_app_<nombre>.",
+          "types": "Los de mantenimiento necesitan activar antes el mantenimiento del coche (Configurar → Mantenimiento) y solo se envían entre las 8:00 y las 22:00."
+        }
+      },
+      "maintenance": {
+        "title": "Mantenimiento — vehículo",
+        "description": "Elige el coche.",
+        "data": { "vehicle": "Vehículo" }
+      },
+      "maintenance_menu": {
+        "title": "Mantenimiento de {vehicle}",
+        "description": "{summary}",
+        "menu_options": {
+          "maintenance_register": "Registrar un mantenimiento hecho",
+          "maintenance_setup": "Corregir los datos o desactivar"
+        }
+      },
+      "maintenance_setup": {
+        "title": "Mantenimiento de {vehicle}",
+        "description": "La próxima revisión se cuenta desde la última hecha. Si el coche aún no ha pasado ninguna, pon 0 revisiones, la fecha de matriculación y 0 km.\n\nSe crean el testigo de mantenimiento y los sensores de días y kilómetros que faltan. El testigo se enciende cuando quedan 2 meses o 3.000 km.",
+        "data": {
+          "maintenance_enabled": "Activar el mantenimiento de este coche",
+          "services_done": "Revisiones ya pasadas",
+          "last_date": "Fecha de la última revisión (o de matriculación)",
+          "last_km": "Kilómetros en la última revisión",
+          "interval_km": "Revisión cada (km)",
+          "interval_months": "Revisión cada (meses)"
+        },
+        "data_description": {
+          "interval_km": "El manual del S05 indica 20.000 km o 12 meses, lo que llegue antes. Redúcelo si haces muchos trayectos cortos o circulas con polvo, barro, frío extremo o sal."
+        }
+      },
+      "maintenance_register": {
+        "title": "Registrar mantenimiento de {vehicle}",
+        "description": "{summary}\n\nAl guardar, la revisión queda anotada en el historial y se empieza a contar para la siguiente.",
+        "data": {
+          "service_date": "Fecha de la revisión",
+          "service_km": "Kilómetros en la revisión"
         }
       },
       "appearance": {
@@ -152,6 +203,17 @@
     },
     "arm_seconds": {
       "options": { "10": "10 segundos", "20": "20 segundos", "30": "30 segundos", "60": "60 segundos" }
+    },
+    "alert_type": {
+      "options": {
+        "charge_started": "Carga iniciada",
+        "charge_interrupted": "Carga interrumpida",
+        "charge_finished": "Carga terminada",
+        "warnings": "Testigos del cuadro",
+        "tires": "Neumáticos (cuando el coche enciende el aviso)",
+        "key_battery": "Pila del mando baja",
+        "maintenance": "Mantenimiento (quedan 2 meses, 1 mes, 15 días; 3.000, 2.000, 1.000 km; vencido)"
+      }
     }
   },
   "entity": {
@@ -192,7 +254,10 @@
       "window_opening_front_left": { "name": "Apertura ventanilla delantera izquierda" },
       "window_opening_front_right": { "name": "Apertura ventanilla delantera derecha" },
       "window_opening_rear_left": { "name": "Apertura ventanilla trasera izquierda" },
-      "window_opening_rear_right": { "name": "Apertura ventanilla trasera derecha" }
+      "window_opening_rear_right": { "name": "Apertura ventanilla trasera derecha" },
+      "maintenance_days": { "name": "Días hasta el mantenimiento" },
+      "maintenance_km": { "name": "Kilómetros hasta el mantenimiento" },
+      "maintenance_date": { "name": "Próximo mantenimiento" }
     },
     "binary_sensor": {
       "cloud_connected": { "name": "Conexión con la nube" },
@@ -237,7 +302,8 @@
       "warning_power_limit": { "name": "Testigo potencia limitada" },
       "warning_power_system": { "name": "Testigo sistema de propulsión" },
       "warning_traction_battery_low": { "name": "Testigo batería baja" },
-      "warning_coolant_temperature": { "name": "Testigo temperatura del refrigerante" }
+      "warning_coolant_temperature": { "name": "Testigo temperatura del refrigerante" },
+      "maintenance_due": { "name": "Testigo mantenimiento" }
     },
     "button": {
       "refresh": { "name": "Actualizar datos del vehículo" },
@@ -297,7 +363,9 @@
     "command_busy": { "message": "Hay otro comando en curso para este coche desde hace demasiado tiempo. Inténtalo en unos segundos." },
     "command_cooldown": { "message": "El coche aún está terminando el comando anterior. Espera {seconds} s." },
     "pin_not_armed": { "message": "Primero desbloquea \"Desbloqueo acciones con PIN\"." },
-    "unknown_device": { "message": "Ese dispositivo no es un vehículo de DEC Deepal." }
+    "unknown_device": { "message": "Ese dispositivo no es un vehículo de DEC Deepal." },
+    "maintenance_not_configured": { "message": "Activa antes el mantenimiento de este coche en Configurar → Mantenimiento (integración DEC Deepal)." },
+    "maintenance_no_odometer": { "message": "No se conoce el kilometraje del coche. Indica los kilómetros o registra la revisión desde Configurar → Mantenimiento." }
   },
   "services": {
     "capture_snapshot": {
@@ -307,6 +375,15 @@
         "device_id": { "name": "Vehículo", "description": "El coche a capturar." },
         "label": { "name": "Etiqueta", "description": "Nombre para reconocer la captura (p. ej. \"A - reposo\")." },
         "refresh": { "name": "Leer antes", "description": "Leer el coche justo antes de capturar." }
+      }
+    },
+    "register_maintenance": {
+      "name": "Registrar mantenimiento",
+      "description": "Anota que el coche ha pasado la revisión y empieza a contar para la siguiente. Hace falta haber activado el mantenimiento del coche en Configurar → Mantenimiento.",
+      "fields": {
+        "device_id": { "name": "Vehículo", "description": "El coche que ha pasado la revisión." },
+        "date": { "name": "Fecha", "description": "Fecha de la revisión. Si se deja vacío, hoy." },
+        "km": { "name": "Kilómetros", "description": "Kilómetros en la revisión. Si se deja vacío, los que marca ahora el coche." }
       }
     }
   }

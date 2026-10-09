@@ -40,6 +40,17 @@ Con dos coches, una tarjeta por coche.
 | **Ventilar** | Entreabre las ventanillas, o las cierra | Sí |
 | **Localizar vehículo** | Abre un menú: Luces, Claxon, o Luces y claxon | No |
 
+### Testigo de mantenimiento
+
+Si el coche tiene el mantenimiento activado (*Configurar → Mantenimiento*), en
+la línea de estado aparece una **llave inglesa** cuando quedan 2 meses o
+3.000 km para la revisión: ámbar, o roja si está vencida. Es el único testigo
+que se puede pulsar. Abre una ventana con los días y kilómetros que quedan, la
+fecha prevista, lo que incluye la revisión, el historial y el botón
+**Registrar mantenimiento**, que pide confirmación y anota la revisión con la
+fecha de hoy y los kilómetros actuales. Ver
+[avisos-y-mantenimiento.md](avisos-y-mantenimiento.md).
+
 ### Ventana de Confort
 
 La vista interior con los botones encima de la foto:

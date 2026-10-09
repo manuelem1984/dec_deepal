@@ -13,6 +13,11 @@
 //     < 15 %; con rayo si carga), autonomía y estado de carga, más la barra.
 //   - Línea de estado (encima de la batería, a la derecha): un tic verde si
 //     no hay avisos; si los hay, el icono de cada testigo encendido.
+//   - Testigo de mantenimiento (una llave inglesa en la línea de estado):
+//     ámbar cuando se acerca la revisión, rojo si está vencida. Es el único
+//     testigo que se puede pulsar: abre una ventana con los días y kilómetros
+//     que quedan, lo que incluye la revisión, el historial y el botón para
+//     registrarla (con confirmación).
 //   - Cinco botones: Confort, Bloqueo, Maletero, Ventilar y Localizar
 //     vehículo (este abre un menú con luces, claxon y las dos cosas).
 //   - "Confort" abre una ventana con la vista interior y, encima de la foto,
@@ -80,6 +85,9 @@
     { keys: ["binary_sensor.key_battery_low"], icon: "dec:key_battery_low_on", color: AMBER },
   ];
 
+  // Testigo de mantenimiento (solo existe si el usuario lo activó en Configurar).
+  const MAINTENANCE = "binary_sensor.maintenance_due";
+
   const PIN_NOTE = "con tu PIN guardado. El coche puede tardar unos segundos en responder.";
   const NO_PIN = "Activa el control con PIN en Configurar (integración DEC Deepal) para usar este botón.";
 
@@ -118,6 +126,7 @@
     .bar i { display: block; height: 100%; border-radius: 4px; transition: width .4s; }
     .status { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 0 16px 10px; min-height: 22px; --mdc-icon-size: 22px; }
     .status .ok { color: var(--success-color, #43a047); }
+    .status button { padding: 0; display: flex; }
     /* 5 botones: 3 arriba y 2 centrados abajo (rejilla de 6 columnas). */
     .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
     .tiles .tile { grid-column: span 2; }
@@ -176,6 +185,15 @@
     .btns { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 16px 16px; }
     .tb { font-size: 14px; font-weight: 500; color: var(--primary-color); padding: 10px 14px; border-radius: 20px; }
     .tb.fill { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .mt { padding: 0 20px 4px; }
+    .mt .next { font-size: 15px; font-weight: 500; margin: 4px 0 10px; display: flex; align-items: center; gap: 8px; --mdc-icon-size: 22px; }
+    .mt .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .mt .stat { background: ${TILE_BG}; border-radius: 12px; padding: 10px 12px; }
+    .mt .stat b { display: block; font-size: 24px; font-weight: 400; }
+    .mt .stat small, .mt .due { font-size: 12px; color: var(--secondary-text-color); }
+    .mt .due { margin: 8px 0 0; }
+    .mt h3 { font-size: 13px; font-weight: 500; margin: 16px 0 6px; }
+    .mt ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--secondary-text-color); }
   `;
 
   // ---------------------------------------------------------------------------
@@ -381,13 +399,18 @@
       $(".charge").hidden = !chargeText;
 
       // Línea de estado: tic verde, o el icono de cada testigo encendido.
+      // El de mantenimiento va el último y se puede pulsar.
       const active = WARNINGS.filter((warning) => warning.keys.some((key) => this._value(key) === "on"));
-      const signature = active.map((warning) => warning.icon).join("|");
+      const maintenance = this._value(MAINTENANCE) === "on" ? this._state(MAINTENANCE).attributes.nivel || "soon" : "";
+      const signature = `${active.map((warning) => warning.icon).join("|")}#${maintenance}`;
       if (this._statusSignature !== signature) {
         this._statusSignature = signature;
-        $(".status").innerHTML = active.length
-          ? active.map((warning) => `<ha-icon icon="${warning.icon}" style="color:${warning.color}"></ha-icon>`).join("")
-          : '<ha-icon class="ok" icon="mdi:check-circle"></ha-icon>';
+        const icons = active.map((warning) => `<ha-icon icon="${warning.icon}" style="color:${warning.color}"></ha-icon>`);
+        if (maintenance)
+          icons.push(
+            `<button data-action="maintenance" aria-label="Mantenimiento"><ha-icon icon="mdi:wrench" style="color:${maintenance === "overdue" ? RED : AMBER}"></ha-icon></button>`
+          );
+        $(".status").innerHTML = icons.length ? icons.join("") : '<ha-icon class="ok" icon="mdi:check-circle"></ha-icon>';
       }
 
       // Los cinco botones.
@@ -541,6 +564,9 @@
         case "locate":
           this._openLocate();
           break;
+        case "maintenance":
+          this._openMaintenance();
+          break;
         default:
       }
     }
@@ -563,6 +589,63 @@
         if (action !== "go") return;
         dialog.close();
         this._call("locate", "button", "press", target.dataset.key);
+      });
+    }
+
+    // --- Ventana de Mantenimiento ---------------------------------------------------
+
+    _openMaintenance() {
+      const state = this._state(MAINTENANCE);
+      if (!state) return;
+      const data = state.attributes;
+      const language = (this._hass.locale && this._hass.locale.language) || "es";
+      const number = (value) => Math.abs(Number(value)).toLocaleString(language, { useGrouping: "always" });
+      const day = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString(language, { day: "numeric", month: "short", year: "numeric" });
+      const overdue = data.nivel === "overdue";
+      const stat = (value, unit) =>
+        value == null
+          ? `<div class="stat"><b>—</b><small>${unit}</small></div>`
+          : `<div class="stat"><b>${number(value)}</b><small>${unit} ${Number(value) < 0 ? "de retraso" : "restantes"}</small></div>`;
+      const list = (title, items) => (items.length ? `<h3>${title}</h3><ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : "");
+      const history = (data.historial || [])
+        .slice()
+        .reverse()
+        .map((item) => `${item.number}ª revisión · ${day(item.date)} · ${number(item.km)} km`);
+      const html = `
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Mantenimiento</h2></div>
+        <div class="mt">
+          <div class="next"><ha-icon icon="mdi:wrench" style="color:${overdue ? RED : AMBER}"></ha-icon>${data.revision}ª revisión${overdue ? " · vencida" : ""}</div>
+          <div class="two">${stat(data.dias_restantes, "días")}${stat(data.km_restantes, "km")}</div>
+          <p class="due">Prevista el ${day(data.fecha_prevista)} o a los ${number(data.km_previstos)} km, lo que llegue antes.</p>
+          ${list("Qué incluye", data.operaciones || [])}
+          ${list("Historial", history)}
+        </div>
+        <div class="btns"><button class="tb fill" data-action="register">Registrar mantenimiento</button></div>`;
+      openDialog(html, (action, _target, dialog) => {
+        if (action !== "register") return;
+        dialog.close();
+        this._confirmMaintenance(data.revision);
+      });
+    }
+
+    /** Confirmación antes de anotar la revisión (hoy, con los km actuales). */
+    _confirmMaintenance(revision) {
+      const odometer = this._format("sensor.odometer");
+      const html = `
+        <div class="confirm"><h2>¿Registrar la ${revision}ª revisión?</h2>
+          <p>Se anotará que <b style="font-weight:500;color:var(--primary-text-color)">${escapeHtml(this._name())}</b> ha pasado la revisión hoy${
+            odometer ? `, con ${escapeHtml(odometer)}` : ""
+          }, y se empezará a contar para la siguiente. Si la pasó otro día, regístrala desde Configurar → Mantenimiento.</p></div>
+        <div class="btns"><button class="tb" data-action="close">Cancelar</button><button class="tb fill" data-action="ok">Registrar</button></div>`;
+      openDialog(html, async (action, _target, dialog) => {
+        if (action !== "ok") return;
+        dialog.close();
+        try {
+          await this._hass.callService(DOMAIN, "register_maintenance", { device_id: this._deviceId() });
+          this._toast("Mantenimiento registrado.");
+        } catch (error) {
+          this._toast((error && error.message) || "No se pudo registrar el mantenimiento.");
+        }
       });
     }
 

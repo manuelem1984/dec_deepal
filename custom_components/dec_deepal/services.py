@@ -11,6 +11,12 @@
     - Además la escribe en ``/config/dec_deepal_capturas/`` como JSON.
     - Los datos personales salen ocultos.
 
+``dec_deepal.register_maintenance`` — Registrar un mantenimiento hecho
+    Anota que el coche ha pasado la revisión (por defecto, hoy y con el
+    cuentakilómetros actual) y empieza a contar para la siguiente. Lo usa la
+    tarjeta, tras pedir confirmación. Hace falta haber activado antes el
+    mantenimiento del coche en Configurar → Mantenimiento.
+
 Guía: ``docs/depuracion.md``.
 """
 
@@ -27,6 +33,7 @@ from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, Supp
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
+from homeassistant.util import dt as dt_util
 
 from .const import CAPTURES_DIR, DOMAIN
 from .debug.capture import build_snapshot, diff_snapshots
@@ -41,6 +48,18 @@ ATTR_REFRESH = "refresh"
 
 #: Capturas que se guardan en memoria por coche (para comparar).
 MAX_CAPTURES_PER_VEHICLE = 10
+
+SERVICE_REGISTER_MAINTENANCE = "register_maintenance"
+ATTR_DATE = "date"
+ATTR_KM = "km"
+
+REGISTER_MAINTENANCE_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_DEVICE_ID): cv.string,
+        vol.Optional(ATTR_DATE): cv.date,
+        vol.Optional(ATTR_KM): vol.All(vol.Coerce(int), vol.Range(min=0)),
+    }
+)
 
 CAPTURE_SCHEMA = vol.Schema(
     {
@@ -107,6 +126,27 @@ async def _async_capture(call: ServiceCall) -> ServiceResponse:
     return {"archivo": saved_to, "captura": snapshot, "diferencias_con_anterior": diff}
 
 
+async def _async_register_maintenance(call: ServiceCall) -> None:
+    """Implementación de ``register_maintenance``."""
+    runtime, vehicle = _find_vehicle(call.hass, call.data[ATTR_DEVICE_ID])
+    vehicle_id = vehicle.info.vehicle_id
+    alerts = runtime.alerts
+    if alerts is None or alerts.record(vehicle_id) is None:
+        raise ServiceValidationError(
+            translation_domain=DOMAIN, translation_key="maintenance_not_configured"
+        )
+    km = call.data.get(ATTR_KM)
+    if km is None:
+        odometer = alerts.odometer(vehicle_id)
+        if odometer is None:
+            raise ServiceValidationError(
+                translation_domain=DOMAIN, translation_key="maintenance_no_odometer"
+            )
+        km = round(odometer)
+    when = call.data.get(ATTR_DATE) or dt_util.now().date()
+    await alerts.async_register_service(vehicle_id, when, km)
+
+
 def async_register_services(hass: HomeAssistant) -> None:
     """Registra los servicios (una vez por arranque, desde ``async_setup``)."""
     if hass.services.has_service(DOMAIN, SERVICE_CAPTURE):
@@ -117,4 +157,10 @@ def async_register_services(hass: HomeAssistant) -> None:
         _async_capture,
         schema=CAPTURE_SCHEMA,
         supports_response=SupportsResponse.OPTIONAL,
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_REGISTER_MAINTENANCE,
+        _async_register_maintenance,
+        schema=REGISTER_MAINTENANCE_SCHEMA,
     )

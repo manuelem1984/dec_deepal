@@ -18,3 +18,23 @@ capture_snapshot:
       default: true
       selector:
         boolean:
+
+register_maintenance:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: dec_deepal
+    date:
+      required: false
+      selector:
+        date:
+    km:
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 2000000
+          unit_of_measurement: km
+          mode: box

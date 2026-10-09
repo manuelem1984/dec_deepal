@@ -3,6 +3,45 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b1] — 2026-10-09
+
+Beta. Avisos al móvil y mantenimiento, sin crear automatizaciones: todo se
+configura desde *Configurar*. Guía: [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md).
+
+### Añadido
+
+- **Avisos al móvil** (*Configurar → Avisos al móvil*): se eligen los móviles
+  con la app de Home Assistant y qué avisos se quieren. Carga iniciada,
+  interrumpida y terminada; testigos del cuadro; neumáticos (cuando el coche
+  enciende el aviso); pila del mando baja (CR2032) y mantenimiento. Ninguno
+  es crítico y todos llevan el nombre del coche en el título
+  ("DEC Deepal Changote"). Un testigo no se repite hasta que se apague y
+  vuelva a encenderse.
+- **Mantenimiento por coche** (*Configurar → Mantenimiento*): se indica la
+  última revisión (o la matriculación) y la integración cuenta desde ahí
+  20.000 km o 12 meses, el intervalo del manual del S05 (se puede cambiar).
+  Entidades nuevas: **Testigo mantenimiento**, **Días hasta el
+  mantenimiento**, **Kilómetros hasta el mantenimiento** y **Próximo
+  mantenimiento**. Solo se crean en los coches que lo activan.
+- **Avisos de mantenimiento**: quedan 2 meses, 1 mes, 15 días, 3.000 km,
+  2.000 km, 1.000 km y vencido. Cada uno, una vez por revisión y entre las
+  8:00 y las 22:00.
+- **Plan de mantenimiento del S05** (del manual de usuario) en
+  `vehicles/vehicles.yaml`: qué operaciones lleva cada revisión, con el
+  aceite del reductor delantero solo en el Max AWD.
+- **Tarjeta**: testigo de mantenimiento (llave inglesa, ámbar o rojo si está
+  vencido). Al pulsarlo se ven los días y kilómetros que quedan, lo que
+  incluye la revisión, el historial y el botón *Registrar mantenimiento*,
+  con confirmación.
+- Acción `dec_deepal.register_maintenance` y registro de revisiones también
+  desde *Configurar → Mantenimiento* (con otra fecha u otros kilómetros).
+
+### Sin verificar
+
+- Distinguir carga "terminada" de "interrumpida": el coche no dice por qué
+  dejó de cargar y se deduce. Falta probarlo cargando.
+- Avisos de testigos y de pila del mando: no se pueden provocar.
+
 ## [2.2.1] — 2026-10-09
 
 ### Cambiado

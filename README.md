@@ -74,6 +74,13 @@ Qué está comprobado con el coche real y qué no:
 [docs/correlacion_endpoints_entidades.csv](docs/correlacion_endpoints_entidades.csv)
 (columna *Verificado*).
 
+## 🔔 Avisos y mantenimiento
+
+Desde *Configurar*, sin crear automatizaciones: avisos al móvil (carga,
+testigos, neumáticos, pila del mando) y el mantenimiento de cada coche, con
+testigo, días y kilómetros que faltan y avisos al acercarse la revisión.
+Detalles en [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md).
+
 ## 🃏 Tarjeta para los paneles
 
 La integración trae su propia tarjeta, **DEC Deepal**: vista del coche,
@@ -115,6 +122,7 @@ Deepal*. Detalles en [docs/tarjeta.md](docs/tarjeta.md).
 | [docs/iconos.md](docs/iconos.md) | Sistema de iconos |
 | [docs/imagenes.md](docs/imagenes.md) | Imágenes, modelos, versiones y colores |
 | [docs/tarjeta.md](docs/tarjeta.md) | La tarjeta para los paneles |
+| [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md) | Avisos al móvil y mantenimiento periódico |
 | [docs/depuracion.md](docs/depuracion.md) | Modo depuración, diagnósticos y capturas |
 | [docs/anadir-pais-vehiculo-idioma.md](docs/anadir-pais-vehiculo-idioma.md) | Ampliar países, coches e idiomas |
 | [docs/comparativa-alternativo.md](docs/comparativa-alternativo.md) | Qué se tomó de Deepal Alternative |

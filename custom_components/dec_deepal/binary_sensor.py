@@ -23,11 +23,10 @@ from homeassistant.components.binary_sensor import (
 )
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import DOMAIN
-from .entity import DecDeepalEntity
+from .entity import DecDeepalEntity, DecMaintenanceEntity, remove_entities
+from .maintenance import LEVEL_OK
 from .registries.vehicles import FEATURE_CLIMATE
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
@@ -74,6 +73,9 @@ def _warning(key: str, signal: str) -> DecBinaryDescription:
         entity_category=EntityCategory.DIAGNOSTIC,
     )
 
+
+#: Clave del testigo de mantenimiento (la tarjeta lo busca por ella).
+MAINTENANCE_KEY: Final = "maintenance_due"
 
 #: Sensores que existieron en alguna beta y se retiraron: se borran del
 #: registro al arrancar para que no queden como "no disponible".
@@ -172,18 +174,23 @@ async def async_setup_entry(
 ) -> None:
     """Crea los sensores binarios de cada coche."""
     runtime = entry.runtime_data
-    registry = er.async_get(hass)
+    entities: list[BinarySensorEntity] = []
     for vehicle in runtime.vehicles.values():
-        for key in REMOVED_KEYS:
-            unique_id = f"{vehicle.info.vehicle_id}_binary_sensor_{key}"
-            if entity_id := registry.async_get_entity_id("binary_sensor", DOMAIN, unique_id):
-                registry.async_remove(entity_id)
-    async_add_entities(
+        vehicle_id = vehicle.info.vehicle_id
+        remove_entities(hass, "binary_sensor", vehicle_id, REMOVED_KEYS)
+        # Testigo de mantenimiento: solo en los coches que lo tienen activado
+        # (Configurar → Mantenimiento).
+        if runtime.alerts.record(vehicle_id) is None:
+            remove_entities(hass, "binary_sensor", vehicle_id, (MAINTENANCE_KEY,))
+        else:
+            entities.append(DecMaintenanceDue(runtime, vehicle))
+    entities.extend(
         DecBinarySensor(runtime, vehicle, description)
         for vehicle in runtime.vehicles.values()
         for description in BINARY_SENSORS
         if description.feature is None or vehicle.has(description.feature)
     )
+    async_add_entities(entities)
 
 
 class DecBinarySensor(DecDeepalEntity, BinarySensorEntity):
@@ -207,6 +214,51 @@ class DecBinarySensor(DecDeepalEntity, BinarySensorEntity):
         if value is None:
             return None
         return not value if self.entity_description.invert else bool(value)
+
+    def icon_state(self) -> str | None:
+        """``"on"`` / ``"off"`` para elegir el icono."""
+        is_on = self.is_on
+        return None if is_on is None else ("on" if is_on else "off")
+
+
+class DecMaintenanceDue(DecMaintenanceEntity, BinarySensorEntity):
+    """Testigo de mantenimiento: encendido al entrar en el margen de aviso.
+
+    Se enciende cuando quedan 2 meses o 3.000 km para la próxima revisión, y
+    sigue encendido si se pasa la fecha. Los atributos llevan todo lo que
+    enseña la tarjeta al pulsar el testigo.
+    """
+
+    _attr_device_class = BinarySensorDeviceClass.PROBLEM
+
+    def __init__(self, runtime: DecDeepalRuntime, vehicle: VehicleContext) -> None:
+        super().__init__(runtime, vehicle, "binary_sensor", MAINTENANCE_KEY)
+
+    @property
+    def is_on(self) -> bool | None:
+        """Encendido = revisión próxima o vencida."""
+        current = self.maintenance
+        return None if current is None else current.level != LEVEL_OK
+
+    @property
+    def extra_state_attributes(self) -> dict[str, object] | None:
+        """Datos de la próxima revisión y el historial."""
+        current = self.maintenance
+        if current is None:
+            return None
+        alerts = self.runtime.alerts
+        vehicle_id = self.vehicle.info.vehicle_id
+        record = alerts.record(vehicle_id)
+        return {
+            "nivel": current.level,
+            "revision": current.number,
+            "fecha_prevista": current.due_date.isoformat(),
+            "km_previstos": current.due_km,
+            "dias_restantes": current.days_left,
+            "km_restantes": current.km_left,
+            "operaciones": alerts.operations(vehicle_id),
+            "historial": list(record.history) if record else [],
+        }
 
     def icon_state(self) -> str | None:
         """``"on"`` / ``"off"`` para elegir el icono."""

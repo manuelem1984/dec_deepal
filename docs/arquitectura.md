@@ -36,7 +36,10 @@ custom_components/dec_deepal/
 ├── view_renderer.py       Monta las vistas por capas (planta, isométrica, interior, carga; Pillow)
 ├── frontend.py            Publica los iconos "dec:" y la tarjeta en el navegador
 ├── frontend_card/         Tarjeta para los paneles (custom:dec-deepal-card)
-├── services.py/.yaml      Servicio de captura de depuración
+├── services.py/.yaml      Servicios: captura de depuración y registrar mantenimiento
+├── alerts.py              Avisos al móvil y fichas de mantenimiento (almacén y envío)
+├── alert_rules.py         Qué cambios del coche avisan y sus textos (sin HA)
+├── maintenance.py         Cuánto falta para la revisión y escalones de aviso (sin HA)
 ├── diagnostics.py         "Descargar diagnósticos"
 ├── strings.json           Textos (idioma base)
 ├── translations/          Un JSON por idioma

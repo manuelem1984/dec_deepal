@@ -24,7 +24,7 @@ from typing import Any
 
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, OPT_APPEARANCE, OPT_PIN, VERSION
+from .const import DOMAIN, OPT_ALERTS, OPT_APPEARANCE, OPT_PIN, VERSION
 from .debug.capture import build_snapshot
 from .debug.redact import redact
 from .frontend import LOADER_STATUS_KEY
@@ -42,8 +42,11 @@ async def async_get_config_entry_diagnostics(
     options = {
         key: value
         for key, value in entry.options.items()
-        if key not in (OPT_PIN, OPT_APPEARANCE)
+        if key not in (OPT_PIN, OPT_APPEARANCE, OPT_ALERTS)
     }
+    # De los avisos, solo el resumen: los destinos llevan el nombre del móvil.
+    if runtime.alerts is not None:
+        options["avisos"] = runtime.alerts.config_summary()
 
     vehicles: dict[str, Any] = {}
     for vehicle in runtime.vehicles.values():
@@ -69,6 +72,7 @@ async def async_get_config_entry_diagnostics(
             "usa_mqtt": vehicle.coordinator.use_mqtt,
             "ultima_lectura_ok": vehicle.coordinator.last_update_success,
             "armado": vehicle.runner.is_armed,
+            **(runtime.alerts.diagnostics(vehicle.info.vehicle_id) if runtime.alerts else {}),
             **snapshot,
         }
 

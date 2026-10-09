@@ -13,6 +13,7 @@ destruye al descargar la integración:
     ├── commands      comandos firmados (api/commands.py)
     ├── recorder      registro de depuración (debug/recorder.py)
     ├── registries    catálogos: países, vehículos, iconos
+    ├── alerts        avisos al móvil y fichas de mantenimiento (alerts.py)
     └── vehicles      {vehicle_id: VehicleContext}
         └── VehicleContext  (un coche)
             ├── info         datos del servidor (VIN, modelo...)
@@ -45,6 +46,7 @@ from .registries.countries import Country
 from .registries.vehicles import VehicleModel
 
 if TYPE_CHECKING:
+    from .alerts import AlertManager
     from .command_runner import CommandRunner
     from .coordinator import VehicleCoordinator
 
@@ -91,6 +93,8 @@ class DecDeepalRuntime:
     recorder: DebugRecorder
     registries: Registries
     vehicles: dict[str, VehicleContext] = field(default_factory=dict)
+    #: Avisos y mantenimiento (se crea al arrancar la cuenta).
+    alerts: AlertManager | None = None
     #: Últimas capturas por vehículo (servicio capture_snapshot).
     captures: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
 

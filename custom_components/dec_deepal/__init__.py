@@ -9,6 +9,9 @@ Punto de entrada. Home Assistant llama a estas funciones:
   entidades.
 - :func:`async_unload_entry` — al quitar o recargar una cuenta.
 
+Al final del arranque de cada cuenta se pone en marcha el gestor de avisos y
+mantenimiento (``alerts.py``).
+
 Mapa de la integración: ``docs/arquitectura.md``.
 """
 
@@ -21,6 +24,7 @@ from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import ConfigType
 
 from .api.account import DeepalAccount
@@ -31,6 +35,7 @@ from .api.models import Capabilities, VehicleInfo
 from .api.session import DeepalSession
 from .appearance import issue_id
 from .api.transport import DeepalTransport
+from .alerts import AlertManager, storage_key
 from .command_runner import CommandRunner
 from .const import (
     CONF_COUNTRY,
@@ -202,7 +207,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     for vehicle in runtime.vehicles.values():
         await vehicle.coordinator.async_config_entry_first_refresh()
 
+    # Avisos y mantenimiento: se lee lo guardado antes de crear las entidades
+    # (las de mantenimiento solo existen en los coches que lo tienen activado)
+    # y se empieza a vigilar después.
+    runtime.alerts = AlertManager(hass, entry.entry_id, dict(options), runtime.vehicles)
+    await runtime.alerts.async_load()
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    runtime.alerts.async_start()
 
     # Recargar SOLO si cambian las opciones. Guardar tokens nuevos también
     # "actualiza" la entrada, y eso no debe provocar una recarga.
@@ -222,6 +234,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     if unloaded:
         for vehicle in entry.runtime_data.vehicles.values():
             vehicle.runner.async_shutdown()
+        if entry.runtime_data.alerts is not None:
+            await entry.runtime_data.alerts.async_stop()
         _set_debug_logging(hass, entry.entry_id, False)
     return unloaded
 
@@ -235,6 +249,8 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     """
     for raw_vehicle in entry.data.get(CONF_VEHICLES, []):
         ir.async_delete_issue(hass, DOMAIN, issue_id(str(raw_vehicle.get("vehicle_id"))))
+    # Fichas de mantenimiento y avisos ya enviados de esta cuenta.
+    await Store(hass, 1, storage_key(entry.entry_id)).async_remove()
     if not hass.config_entries.async_entries(DOMAIN):
         await async_remove_early_loader(hass)
 

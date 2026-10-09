@@ -64,6 +64,18 @@ range:
   plataforma: sensor
   descripcion: Autonomía estimada (km)
   defecto: mdi:map-marker-distance
+maintenance_days:
+  plataforma: sensor
+  descripcion: Días que quedan para la próxima revisión (negativo = vencida)
+  defecto: mdi:calendar-clock
+maintenance_km:
+  plataforma: sensor
+  descripcion: Kilómetros que quedan para la próxima revisión (negativo = vencida)
+  defecto: mdi:road-variant
+maintenance_date:
+  plataforma: sensor
+  descripcion: Fecha prevista de la próxima revisión
+  defecto: mdi:calendar-check
 odometer:
   plataforma: sensor
   descripcion: Kilometraje total
@@ -462,6 +474,10 @@ air_recirculation:
   plataforma: binary_sensor
   descripcion: Recirculación de aire del climatizador
   defecto: mdi:sync
+maintenance_due:
+  plataforma: binary_sensor
+  descripcion: Testigo de mantenimiento (encendido = revisión próxima o vencida)
+  defecto: mdi:wrench
 key_battery_low:
   plataforma: binary_sensor
   descripcion: Pila del mando baja (icono propio con la llave del S05; con exclamación si está baja)

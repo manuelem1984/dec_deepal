@@ -81,6 +81,16 @@ OPT_PIN_MODE: Final = "pin_mode"
 OPT_ARM_SECONDS: Final = "arm_seconds"
 OPT_ARM_NOTIFY: Final = "arm_notify"
 
+#: Avisos al móvil (Configurar → Avisos): {"targets": [...], "types": [...],
+#: "persistent": bool}. Los tipos están en alert_rules.py.
+OPT_ALERTS: Final = "alerts"
+#: Servicios de notificación elegidos (sin el "notify."): p. ej. "mobile_app_x".
+OPT_ALERT_TARGETS: Final = "targets"
+OPT_ALERT_TYPES: Final = "types"
+#: Mostrar también cada aviso en el panel de notificaciones de Home Assistant.
+OPT_ALERT_PERSISTENT: Final = "persistent"
+DEFAULT_ALERT_PERSISTENT: Final = False
+
 #: Opciones avanzadas.
 OPT_SCAN_MINUTES: Final = "scan_minutes"
 OPT_DEBUG: Final = "debug"

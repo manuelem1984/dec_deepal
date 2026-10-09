@@ -14,7 +14,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from datetime import date
+from typing import Any, Final
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -36,7 +37,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .api.models import VehicleInfo
-from .entity import DecDeepalEntity
+from .entity import DecDeepalEntity, DecMaintenanceEntity, remove_entities
+from .maintenance import MaintenanceStatus
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
 from .telemetry.derived import CHARGE_STATUS_OPTIONS
@@ -232,6 +234,38 @@ SENSORS: tuple[DecSensorDescription, ...] = (
 )
 
 
+@dataclass(frozen=True, kw_only=True)
+class DecMaintenanceDescription(SensorEntityDescription):
+    """Sensor de mantenimiento: un dato de la próxima revisión."""
+
+    value: Callable[[MaintenanceStatus], int | date | None]
+
+
+#: Días y kilómetros que quedan (negativos si la revisión está vencida) y
+#: fecha prevista. Ver ``maintenance.py``.
+MAINTENANCE_SENSORS: Final[tuple[DecMaintenanceDescription, ...]] = (
+    DecMaintenanceDescription(
+        key="maintenance_days",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.DAYS,
+        suggested_display_precision=0,
+        value=lambda current: current.days_left,
+    ),
+    DecMaintenanceDescription(
+        key="maintenance_km",
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        suggested_display_precision=0,
+        value=lambda current: current.km_left,
+    ),
+    DecMaintenanceDescription(
+        key="maintenance_date",
+        device_class=SensorDeviceClass.DATE,
+        value=lambda current: current.due_date,
+    ),
+)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: DecDeepalConfigEntry,
@@ -239,12 +273,23 @@ async def async_setup_entry(
 ) -> None:
     """Crea los sensores de cada coche de la cuenta."""
     runtime = entry.runtime_data
-    async_add_entities(
+    entities: list[SensorEntity] = [
         DecSensor(runtime, vehicle, description)
         for vehicle in runtime.vehicles.values()
         for description in SENSORS
         if description.feature is None or vehicle.has(description.feature)
-    )
+    ]
+    # Mantenimiento: solo en los coches que lo tienen activado.
+    keys = tuple(description.key for description in MAINTENANCE_SENSORS)
+    for vehicle in runtime.vehicles.values():
+        if runtime.alerts.record(vehicle.info.vehicle_id) is None:
+            remove_entities(hass, "sensor", vehicle.info.vehicle_id, keys)
+            continue
+        entities.extend(
+            DecMaintenanceSensor(runtime, vehicle, description)
+            for description in MAINTENANCE_SENSORS
+        )
+    async_add_entities(entities)
 
 
 class DecSensor(DecDeepalEntity, SensorEntity):
@@ -274,3 +319,24 @@ class DecSensor(DecDeepalEntity, SensorEntity):
             value = self.native_value
             return None if value is None else str(value)
         return None
+
+
+class DecMaintenanceSensor(DecMaintenanceEntity, SensorEntity):
+    """Un dato de la próxima revisión (días, kilómetros o fecha)."""
+
+    entity_description: DecMaintenanceDescription
+
+    def __init__(
+        self,
+        runtime: DecDeepalRuntime,
+        vehicle: VehicleContext,
+        description: DecMaintenanceDescription,
+    ) -> None:
+        super().__init__(runtime, vehicle, "sensor", description.key)
+        self.entity_description = description
+
+    @property
+    def native_value(self) -> int | date | None:
+        """Valor actual (``None`` si falta el cuentakilómetros, en los km)."""
+        current = self.maintenance
+        return None if current is None else self.entity_description.value(current)

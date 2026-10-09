@@ -44,6 +44,16 @@
 #                     charging_view   "Vista de carga" (lateral con el cable
 #                                     enchufado / cargando)
 #                   Sin este campo, el modelo no tiene vistas.
+#   mantenimiento   (opcional) Plan de mantenimiento del manual del coche.
+#                     intervalo_km / intervalo_meses
+#                                   Cada cuánto toca la revisión (lo que llegue
+#                                   antes). Por defecto, 20000 km y 12 meses.
+#                     operaciones   Lista de lo que se hace en las revisiones:
+#                       nombre      Texto que ve el usuario.
+#                       cada        (opcional) Cada cuántas revisiones toca:
+#                                   1 = en todas (por defecto), 2 = en la 2.ª,
+#                                   4.ª, 6.ª..., 3 = en la 3.ª, 6.ª, 9.ª...
+#                       versiones   (opcional) Solo en estas versiones.
 #   versiones       Acabados. Clave = id interno (minúsculas, sin espacios).
 #                     nombre        Texto que ve el usuario.
 #                     descripcion   Texto libre.
@@ -102,6 +112,28 @@ modelos:
       isometric_view: vista_isometrica/s05_2024
       interior_view: vista_interior/s05_2024
       charging_view: vista_carga/s05_2024
+    # Manual de usuario del S05 (España), "Tabla de Mantenimiento Periódico":
+    # revisión cada 20.000 km o 12 meses. Las operaciones con intervalo propio
+    # se colocan en la revisión en la que se cumple su plazo en años.
+    mantenimiento:
+      intervalo_km: 20000
+      intervalo_meses: 12
+      operaciones:
+        - nombre: Inspección general (propulsión, batería, alta tensión, frenos y dirección)
+        - nombre: Neumáticos (inspección y ajuste)
+        - nombre: Filtro del aire acondicionado (revisar o cambiar)
+        - nombre: Limpieza del condensador y del evaporador
+        - nombre: Inspección de electricidad, aire acondicionado y mangueras de refrigeración
+          cada: 2
+        - nombre: Cambio del líquido de frenos (cada 2 años o 40.000 km)
+          cada: 2
+        - nombre: Cambio del líquido refrigerante (cada 3 años u 80.000 km)
+          cada: 3
+        - nombre: Cambio del aceite del reductor delantero (cada 3 años o 60.000 km)
+          cada: 3
+          versiones: [max_awd]
+        - nombre: Cambio del aceite del reductor trasero (cada 5 años o 100.000 km)
+          cada: 5
     versiones:
       pro:
         nombre: Pro
