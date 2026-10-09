@@ -8,9 +8,13 @@
 // Qué muestra (diseño cerrado con bocetos, 09-10-2026):
 //   - Cabecera: nombre del coche, "Actualizado: ..." y botón de actualizar.
 //   - Vista isométrica del coche (la entidad de imagen de la integración).
+//     Tocarla no hace nada (a propósito).
 //   - Batería: icono según el nivel (verde ≥ 50 %, amarillo < 50 %, rojo
 //     < 15 %; con rayo si carga), autonomía y estado de carga, más la barra.
-//   - Seis botones: Confort, Bloqueo, Maletero, Ventilar, Luces y Claxon.
+//   - Línea de estado (encima de la batería, a la derecha): un tic verde si
+//     no hay avisos; si los hay, el icono de cada testigo encendido.
+//   - Cinco botones: Confort, Bloqueo, Maletero, Ventilar y Localizar
+//     vehículo (este abre un menú con luces, claxon y las dos cosas).
 //   - "Confort" abre una ventana con la vista interior y, encima de la foto,
 //     los botones de volante y asientos (sin color: blanco = encendido,
 //     atenuado = apagado, con el nivel 1-3), la temperatura y el climatizador.
@@ -48,6 +52,34 @@
     { key: "number.seat_heat_passenger", icon: "mdi:heat-wave", x: 76.5, y: 57.5, label: "Calefacción asiento acompañante" },
   ];
 
+  // Testigos de la línea de estado. "red" = grave; el resto, ámbar.
+  const AMBER = "var(--warning-color, #f9a825)";
+  const RED = "var(--error-color, #db4437)";
+  const WARNINGS = [
+    { keys: ["binary_sensor.warning_brake"], icon: "mdi:car-brake-alert", color: RED },
+    { keys: ["binary_sensor.warning_brake_fluid"], icon: "mdi:car-brake-fluid-level", color: RED },
+    { keys: ["binary_sensor.warning_airbag"], icon: "mdi:airbag", color: RED },
+    { keys: ["binary_sensor.warning_12v_battery"], icon: "mdi:car-battery", color: RED },
+    { keys: ["binary_sensor.warning_coolant_temperature"], icon: "mdi:coolant-temperature", color: RED },
+    { keys: ["binary_sensor.warning_power_system"], icon: "mdi:engine", color: RED },
+    { keys: ["binary_sensor.warning_abs"], icon: "mdi:car-brake-abs", color: AMBER },
+    { keys: ["binary_sensor.warning_eps"], icon: "mdi:steering", color: AMBER },
+    {
+      keys: [
+        "binary_sensor.warning_tpms",
+        "binary_sensor.tire_alarm_front_left",
+        "binary_sensor.tire_alarm_front_right",
+        "binary_sensor.tire_alarm_rear_left",
+        "binary_sensor.tire_alarm_rear_right",
+      ],
+      icon: "mdi:car-tire-alert",
+      color: AMBER,
+    },
+    { keys: ["binary_sensor.warning_power_limit"], icon: "mdi:speedometer-slow", color: AMBER },
+    { keys: ["binary_sensor.warning_traction_battery_low"], icon: "mdi:battery-alert", color: AMBER },
+    { keys: ["binary_sensor.key_battery_low"], icon: "dec:key_battery_low_on", color: AMBER },
+  ];
+
   const PIN_NOTE = "con tu PIN guardado. El coche puede tardar unos segundos en responder.";
   const NO_PIN = "Activa el control con PIN en Configurar (integración DEC Deepal) para usar este botón.";
 
@@ -70,7 +102,7 @@
     .icon-btn:hover { background: ${TILE_BG}; }
     .spin ha-icon { animation: dec-spin 1s linear infinite; }
     @keyframes dec-spin { to { transform: rotate(360deg); } }
-    .carbox { position: relative; overflow: hidden; cursor: pointer; aspect-ratio: ${ISOMETRIC.crop.w} / ${ISOMETRIC.crop.h}; }
+    .carbox { position: relative; overflow: hidden; aspect-ratio: ${ISOMETRIC.crop.w} / ${ISOMETRIC.crop.h}; }
     .carbox[hidden] { display: none; }
     .carbox.plain { aspect-ratio: auto; }
     .carbox.plain .car { position: static; width: 100%; }
@@ -84,7 +116,13 @@
     .range .charge { font-size: 14px; color: var(--secondary-text-color); display: flex; align-items: center; gap: 4px; --mdc-icon-size: 18px; }
     .bar { height: 8px; border-radius: 4px; background: ${TILE_BG}; margin: 6px 16px 14px; overflow: hidden; }
     .bar i { display: block; height: 100%; border-radius: 4px; transition: width .4s; }
-    .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
+    .status { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 0 16px 10px; min-height: 22px; --mdc-icon-size: 22px; }
+    .status .ok { color: var(--success-color, #43a047); }
+    /* 5 botones: 3 arriba y 2 centrados abajo (rejilla de 6 columnas). */
+    .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
+    .tiles .tile { grid-column: span 2; }
+    .tiles .tile:nth-child(4) { grid-column: 2 / span 2; }
+    .tiles .tile:nth-child(5) { grid-column: 4 / span 2; }
     .tile { background: ${TILE_BG}; border-radius: 12px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; min-height: 84px; color: var(--secondary-text-color); transition: opacity .2s, transform .1s; }
     .tile:active { transform: scale(.97); }
     .tile.on { color: var(--state-active-color, #ffc107); }
@@ -126,6 +164,12 @@
     .power.on ha-icon { color: var(--primary-color); }
     .power.busy { opacity: .5; pointer-events: none; }
     .info { font-size: 12px; color: var(--secondary-text-color); text-align: center; margin: 12px 12px 16px; }
+    .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 12px 16px; }
+    .tile { background: ${TILE_BG}; border-radius: 12px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      text-align: center; min-height: 84px; color: var(--secondary-text-color); }
+    .tile:active { transform: scale(.97); }
+    .tile b { font-size: 12px; font-weight: 500; color: var(--primary-text-color); }
+    .tile small { font-size: 11px; color: var(--secondary-text-color); }
     .confirm { padding: 20px 24px 8px; }
     .confirm h2 { margin: 0 0 10px; font-size: 22px; font-weight: 400; }
     .confirm p { margin: 0; font-size: 14px; color: var(--secondary-text-color); line-height: 1.5; }
@@ -276,6 +320,7 @@
 
     _build() {
       this._built = true;
+      this._statusSignature = undefined;
       const tile = (action, label) =>
         `<button class="tile" data-action="${action}"><ha-icon></ha-icon><b>${label}</b><small></small></button>`;
       this.shadowRoot.innerHTML = `
@@ -285,8 +330,9 @@
             <div class="grow"><div class="name"></div><div class="upd"></div></div>
             <button class="icon-btn" data-action="refresh" aria-label="Actualizar datos del vehículo"><ha-icon icon="mdi:refresh"></ha-icon></button>
           </div>
-          <div class="carbox" data-action="image" hidden><img class="car" alt=""></div>
+          <div class="carbox" hidden><img class="car" alt=""></div>
           <div class="msg" hidden></div>
+          <div class="status"></div>
           <div class="range">
             <ha-icon class="batt"></ha-icon><span class="km"></span><span class="grow"></span>
             <span class="charge"><ha-icon></ha-icon><span></span></span>
@@ -294,7 +340,7 @@
           <div class="bar"><i></i></div>
           <div class="tiles">
             ${tile("comfort", "Confort")}${tile("lock", "Bloqueo")}${tile("trunk", "Maletero")}
-            ${tile("vent", "Ventilar")}${tile("lights", "Luces")}${tile("horn", "Claxon")}
+            ${tile("vent", "Ventilar")}${tile("locate", "Localizar vehículo")}
           </div>
         </ha-card>`;
     }
@@ -334,7 +380,17 @@
       $(".charge span").textContent = chargeText;
       $(".charge").hidden = !chargeText;
 
-      // Los seis botones.
+      // Línea de estado: tic verde, o el icono de cada testigo encendido.
+      const active = WARNINGS.filter((warning) => warning.keys.some((key) => this._value(key) === "on"));
+      const signature = active.map((warning) => warning.icon).join("|");
+      if (this._statusSignature !== signature) {
+        this._statusSignature = signature;
+        $(".status").innerHTML = active.length
+          ? active.map((warning) => `<ha-icon icon="${warning.icon}" style="color:${warning.color}"></ha-icon>`).join("")
+          : '<ha-icon class="ok" icon="mdi:check-circle"></ha-icon>';
+      }
+
+      // Los cinco botones.
       const tiles = this._tiles();
       for (const [action, data] of Object.entries(tiles)) {
         const element = $(`.tile[data-action="${action}"]`);
@@ -377,8 +433,7 @@
         },
         trunk: { icon: trunkOpen ? "dec:trunk_open" : "dec:trunk_closed", text: trunkOpen ? "Abierto" : "Cerrado", on: trunkOpen },
         vent: { icon: "mdi:weather-windy", text: venting ? "Ventilando" : anyWindow ? "Abiertas" : "Cerradas", on: venting || anyWindow },
-        lights: { icon: "mdi:alarm-light-outline", text: "Parpadear" },
-        horn: { icon: "mdi:bullhorn", text: "Tocar" },
+        locate: { icon: "mdi:car-search", text: "Luces y claxon" },
       };
     }
 
@@ -418,11 +473,6 @@
 
     _toast(message) {
       this.dispatchEvent(new CustomEvent("hass-notification", { detail: { message }, bubbles: true, composed: true }));
-    }
-
-    _moreInfo(key) {
-      const entityId = this._ids[key];
-      if (entityId) this.dispatchEvent(new CustomEvent("hass-more-info", { detail: { entityId }, bubbles: true, composed: true }));
     }
 
     async _call(busyKey, domain, service, key, data) {
@@ -472,9 +522,6 @@
         case "refresh":
           this._call("refresh", "button", "press", "button.refresh");
           break;
-        case "image":
-          this._moreInfo(this._ids["image.isometric_view"] ? "image.isometric_view" : "image.dec_photo");
-          break;
         case "comfort":
           this._openComfort();
           break;
@@ -491,14 +538,32 @@
           if (tiles.vent.on) this._pinCommand("vent", "¿Cerrar las ventanillas?", "Cerrar", "cover", "open_cover", "cover.windows");
           else this._pinCommand("vent", "¿Entreabrir las ventanillas para ventilar?", "Ventilar", "cover", "close_cover", "cover.windows");
           break;
-        case "lights":
-          this._call("lights", "button", "press", "button.flash_lights");
-          break;
-        case "horn":
-          this._call("horn", "button", "press", "button.honk_horn");
+        case "locate":
+          this._openLocate();
           break;
         default:
       }
+    }
+
+    // --- Menú "Localizar vehículo" ------------------------------------------------
+
+    _openLocate() {
+      const option = (key, icon, label, text) =>
+        this._ids[key]
+          ? `<button class="tile" data-action="go" data-key="${key}"><ha-icon icon="${icon}"></ha-icon><b>${label}</b><small>${text}</small></button>`
+          : "";
+      const html = `
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Localizar vehículo</h2></div>
+        <div class="three">
+          ${option("button.flash_lights", "mdi:alarm-light-outline", "Luces", "Parpadear")}
+          ${option("button.honk_horn", "mdi:bullhorn", "Claxon", "Tocar")}
+          ${option("button.flash_and_honk", "mdi:alarm-light", "Luces y claxon", "Las dos cosas")}
+        </div>`;
+      openDialog(html, (action, target, dialog) => {
+        if (action !== "go") return;
+        dialog.close();
+        this._call("locate", "button", "press", target.dataset.key);
+      });
     }
 
     // --- Ventana de Confort ----------------------------------------------------

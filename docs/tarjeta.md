@@ -20,11 +20,17 @@ Con dos coches, una tarjeta por coche.
 - **Cabecera:** nombre del coche, "Actualizado: hoy, 14:11" (el último informe
   del coche) y el botón de actualizar.
 - **Vista isométrica**, que cambia sola con puertas, capó, maletero,
-  ventanillas y luces. Al tocarla se abre la imagen.
+  ventanillas y luces. Tocarla no hace nada.
+- **Línea de estado** (encima de la batería, a la derecha): un tic verde si
+  no hay avisos. Si los hay, el icono de cada testigo encendido: en rojo
+  los graves (frenos, líquido de frenos, airbag, batería de 12 V,
+  refrigerante y sistema de propulsión) y en ámbar el resto (ABS,
+  dirección asistida, neumáticos, potencia limitada, batería baja y pila
+  del mando).
 - **Batería:** icono según el nivel (verde con el 50 % o más, amarillo por
   debajo del 50 %, rojo por debajo del 15 %; con un rayo si está cargando),
   autonomía, estado de carga y la barra.
-- **Seis botones:**
+- **Cinco botones** (tres arriba y dos centrados abajo):
 
 | Botón | Qué hace | PIN |
 | --- | --- | --- |
@@ -32,8 +38,7 @@ Con dos coches, una tarjeta por coche.
 | **Bloqueo** | Bloquea o desbloquea las puertas | Sí |
 | **Maletero** | Abre o cierra el maletero | Sí |
 | **Ventilar** | Entreabre las ventanillas, o las cierra | Sí |
-| **Luces** | Parpadea las luces | No |
-| **Claxon** | Toca el claxon | No |
+| **Localizar vehículo** | Abre un menú: Luces, Claxon, o Luces y claxon | No |
 
 ### Ventana de Confort
 

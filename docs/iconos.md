@@ -159,6 +159,7 @@ Límites conocidos:
 | Puertas (4) | `door_<pos>_closed.svg`, `door_<pos>_open.svg` | Derivados de `mdi:car-door` (2.1.0b2) |
 | Capó | `hood_closed.svg`, `hood_open.svg` | Derivados de `mdi:car-hatchback` (2.1.0b2) |
 | Maletero | `trunk_closed.svg`, `trunk_open.svg` | Derivados de `mdi:car-hatchback` (2.1.0b2) |
+| Pila del mando baja | `key_battery_low_off.svg` (llave), `key_battery_low_on.svg` (llave con exclamación) | Propios: la llave del Deepal S05 (2.2.0b2) |
 
 `<pos>` = `front_left`, `front_right`, `rear_left`, `rear_right`.
 

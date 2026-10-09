@@ -464,7 +464,7 @@ air_recirculation:
   defecto: mdi:sync
 key_battery_low:
   plataforma: binary_sensor
-  descripcion: Pila del mando baja
+  descripcion: Pila del mando baja (icono propio con la llave del S05; con exclamación si está baja)
   estados:
     "on": {mdi: mdi:key-alert}
     "off": {mdi: mdi:key}

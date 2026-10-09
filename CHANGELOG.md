@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.2.0b2] — 2026-10-09
+
+Beta. Ajustes de la tarjeta tras la primera prueba.
+
+### Añadido
+
+- **Línea de estado** en la tarjeta, encima de la batería: un tic verde si no
+  hay avisos; si los hay, el icono de cada testigo encendido (rojo los
+  graves, ámbar el resto), incluida la pila del mando.
+- **Icono propio de la llave del Deepal S05** para "Pila del mando baja":
+  la llave cuando está bien y la llave con una exclamación cuando está baja.
+
+### Cambiado
+
+- La tarjeta pasa a **cinco botones**: Luces y Claxon se unen en **Localizar
+  vehículo**, que abre un menú con Luces, Claxon y Luces y claxon.
+- Tocar la foto del coche ya no abre nada.
+
 ## [2.2.0b1] — 2026-10-09
 
 Beta. Incluye la 2.1.3b1 (iconos tras reiniciar), ya validada.
