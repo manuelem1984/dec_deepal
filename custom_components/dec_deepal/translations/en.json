@@ -84,7 +84,7 @@
           "persistent": "Mostrar también en las notificaciones de Home Assistant"
         },
         "data_description": {
-          "targets": "Cada móvil con la app de Home Assistant aparece como notify.mobile_app_<nombre>.",
+          "targets": "Cada móvil con la app de Home Assistant aparece como notify.mobile_app_ seguido del nombre del móvil.",
           "types": "Los de mantenimiento necesitan activar antes el mantenimiento del coche (Configurar → Mantenimiento) y solo se envían entre las 8:00 y las 22:00."
         }
       },
