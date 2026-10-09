@@ -83,16 +83,16 @@ _NOT_A_TARGET = frozenset({"send_message", "persistent_notification", "notify"})
 
 
 def _number(minimum: float, maximum: float, step: float, unit: str | None = None):  # noqa: ANN202
-    """Casilla numérica."""
-    return selector.NumberSelector(
-        selector.NumberSelectorConfig(
-            min=minimum,
-            max=maximum,
-            step=step,
-            unit_of_measurement=unit,
-            mode=selector.NumberSelectorMode.BOX,
-        )
+    """Casilla numérica.
+
+    La unidad solo se pasa si la hay: Home Assistant rechaza ``None``.
+    """
+    config = selector.NumberSelectorConfig(
+        min=minimum, max=maximum, step=step, mode=selector.NumberSelectorMode.BOX
     )
+    if unit:
+        config["unit_of_measurement"] = unit
+    return selector.NumberSelector(config)
 
 
 def _select(options: list[selector.SelectOptionDict]) -> selector.SelectSelector:

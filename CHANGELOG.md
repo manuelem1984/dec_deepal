@@ -3,6 +3,14 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b2] — 2026-10-09
+
+### Corregido
+
+- *Configurar → Mantenimiento* daba "Unknown error occurred" al abrir la
+  ficha del coche: una casilla numérica sin unidad ("Revisiones ya pasadas"
+  y "Revisión cada (meses)") hacía fallar el formulario.
+
 ## [2.3.0b1] — 2026-10-09
 
 Beta. Avisos al móvil y mantenimiento, sin crear automatizaciones: todo se
