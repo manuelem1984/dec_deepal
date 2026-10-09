@@ -174,12 +174,39 @@ vehicles/<vista>/<modelo>/
   valor conocido; si nunca se ha conocido, se dibuja cerrado / apagado.
 - **Atributos:** `activo` (señales abiertas / encendidas) y `sin_dato`
   (señales sin dato en la última lectura). Sirven para automatizaciones.
-- **Colores:** hoy solo hay el juego plata (en la raíz de la carpeta). Para
-  otro color basta con una subcarpeta con el id del color (p. ej.
-  `deep_space_black/`) con las capas que cambien, con el mismo nombre; las que
-  falten se toman de la raíz.
+- **Colores:** la raíz de la carpeta es el juego por defecto (el que se ve si
+  el coche no tiene color elegido). Un color es una subcarpeta con su id
+  (p. ej. `deep_space_black/`) con las capas que cambien, con el mismo nombre;
+  las que falten se toman de la raíz. La vista isométrica tiene los cinco
+  colores del S05 (ver más abajo); las demás vistas, solo el juego por defecto.
+- **Opciones del coche (llantas):** una capa puede depender de una opción en
+  vez de una señal. `senal: wheels_pro` vale "sí" si el coche lleva la llanta
+  `pro`: porque su versión la fija (`llanta: pro` en `vehicles.yaml`) o porque
+  el usuario la eligió en Apariencia entre las `llantas:` del modelo.
 - **Modelo sin configurar:** mientras el coche es "genérico" se usan las capas
   del modelo reconocido por el nombre (p. ej. el S05).
+
+### Colores de la vista isométrica
+
+Las capas de cada color se generaron a partir del juego por defecto, no son
+fotos distintas:
+
+- De cada píxel de **pintura** se conserva su luz (sombras y brillos) y se
+  vuelve a pintar con el color nuevo; los brillos van hacia un tono claro del
+  mismo color, no hacia blanco. Los tonos se tomaron de las fotos oficiales
+  de cada color (`vehicles/photos/`).
+- **No se pinta** lo que no es carrocería: cristales, plásticos negros,
+  ruedas, faros (tiras de luz y ópticas), matrícula y rejilla. Se reconoce por
+  su tono y, donde el tono engaña, con zonas trazadas a mano.
+- Solo se guardan las capas que llevan pintura (base, puertas, capó y
+  portón): 13 por color, en formato de paleta. El resto es común.
+- La **matrícula** (`plate_dec.png`) y las **llantas** (`wheels_pro.png`,
+  `wheels_open.png`) son capas aparte, iguales para todos los colores. Las
+  llantas salen de dos fotos de frente, enderezadas y proyectadas a la elipse
+  de cada rueda; la del Pro (18") incluye su flanco de neumático, más alto.
+
+Para añadir un color nuevo hay que generar su subcarpeta con el mismo método
+(o dibujar las capas a mano) y añadirlo a `colores:` en `vehicles.yaml`.
 - El montaje usa Pillow, que ya viene con Home Assistant.
 
 ## Elegir modelo, versión y color

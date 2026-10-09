@@ -3,6 +3,31 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b5] — 2026-10-09
+
+### Añadido
+
+- **Vista isométrica con el color de tu coche.** Se dibuja con el color
+  elegido en *Configurar → Apariencia*: Andromeda Blue, Deep Space Black,
+  Ganymade Grey, Mercury Silver o Moonlight White, también con puertas, capó
+  y portón abiertos. Sin color elegido se ve la de siempre. Como la tarjeta
+  usa esta vista, cambia sola.
+- **Llantas en la vista isométrica.** El Pro lleva su llanta de 18" con
+  tapacubos. En el Max se elige en *Configurar → Apariencia*: 20" con
+  tapacubos (la de siempre) o 20" sin tapacubos.
+- **Matrícula "DEC Deepal"** en la vista isométrica.
+
+### Cambiado
+
+- El plata de la vista isométrica es ahora el Mercury Silver oficial (más
+  cálido y oscuro), para distinguirlo del blanco.
+
+### Notas
+
+- Las vistas de planta, interior y de carga no cambian.
+- Los colores se han obtenido repintando las capas originales; las llantas
+  salen de una foto oficial (Pro) y de una foto de un socio (Max).
+
 ## [2.3.0b4] — 2026-10-09
 
 ### Cambiado

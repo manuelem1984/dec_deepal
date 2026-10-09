@@ -62,10 +62,13 @@ async def test_vehicle_setup_fix_flow(hass: HomeAssistant) -> None:
     assert result["type"] == "form" and result["step_id"] == "details", result
     _serialize(result)
 
-    result = await flow.async_step_details({"trim": "max", "color": "ganymade_grey"})
+    result = await flow.async_step_details(
+        {"trim": "max", "color": "ganymade_grey", "wheels": "open"}
+    )
     assert result["type"] == "create_entry", result
     assert entry.options[OPT_APPEARANCE]["car1"] == {
         "model": "s05_2024",
         "trim": "max",
         "color": "ganymade_grey",
+        "wheels": "open",
     }

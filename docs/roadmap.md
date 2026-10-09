@@ -12,6 +12,15 @@
 - [ ] Aviso de mantenimiento al entrar en un escalón (se puede forzar
       poniendo una fecha de última revisión de hace casi un año).
 
+## Beta 2.3.0b5 (09-10-2026) — pendiente de probar
+
+- [ ] **Vista isométrica por colores:** elegir cada color en Apariencia y
+      comprobar la tarjeta en tema claro y oscuro, con puertas, capó y portón
+      abiertos y con las luces encendidas.
+- [ ] **Llantas:** Pro (18") y, en el Max, con y sin tapacubos.
+- [ ] Pendiente: los mismos colores en la **vista de planta** (las vistas
+      interior y de carga no se tocan).
+
 ## Beta 2.3.0b3 (09-10-2026) — pendiente de probar
 
 - [x] **Otros → Manual** incrustado en una ventana: en el iPhone no se

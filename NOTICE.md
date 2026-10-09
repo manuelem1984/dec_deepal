@@ -86,3 +86,9 @@ Apache 2.0), vía Iconify. Detalle por icono en
 - `icons/reserva/charge_cover_*.svg` (tapa de carga con el puerto CCS2) es un
   dibujo propio.
 
+## Vista isométrica: colores y llantas
+
+Las capas de color de la vista isométrica son las capas originales
+repintadas por el proyecto. La llanta del Pro procede de una imagen oficial
+de Deepal; la del Max sin tapacubos, de una fotografía cedida por un miembro
+de la Comunidad Deepal España.

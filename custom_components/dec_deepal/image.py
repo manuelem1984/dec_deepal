@@ -40,7 +40,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .entity import DecDeepalEntity
-from .registries.views import Selection, ViewLayers
+from .registries.views import WHEEL_OPTION_PREFIX, Selection, ViewLayers, is_option
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .view_renderer import ViewRenderer
 
@@ -256,6 +256,9 @@ class DecLayeredView(DecDeepalEntity, ImageEntity):
         values: dict[str, bool | None] = {}
         unknown: list[str] = []
         for name in self._layers.signals:
+            if is_option(name):  # no es telemetría: sale de la configuración
+                values[name] = self._option(name)
+                continue
             raw = self.signal(name)
             if raw is None:
                 unknown.append(name)
@@ -264,6 +267,10 @@ class DecLayeredView(DecDeepalEntity, ImageEntity):
                 values[name] = self._last_known[name] = bool(raw)
         self._unknown = tuple(unknown)
         return self._layers.select(values.get)
+
+    def _option(self, name: str) -> bool:
+        """Valor de una opción del coche (``wheels_pro``: ¿lleva la llanta ``pro``?)."""
+        return name == f"{WHEEL_OPTION_PREFIX}{self.vehicle.wheel}"
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -278,7 +285,7 @@ class DecLayeredView(DecDeepalEntity, ImageEntity):
     def extra_state_attributes(self) -> dict[str, Any]:
         """Qué está abierto / encendido y qué señales no tienen dato."""
         return {
-            "activo": list(self._selection.active),
+            "activo": [name for name in self._selection.active if not is_option(name)],
             "sin_dato": list(self._unknown),
         }
 

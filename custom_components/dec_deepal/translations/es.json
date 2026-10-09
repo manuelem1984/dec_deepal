@@ -131,8 +131,9 @@
       },
       "appearance_details": {
         "title": "Apariencia — versión y color",
-        "description": "Versión y color de tu {model}. Sirven para la \"Imagen DEC\" y para crear solo las entidades que tiene tu versión.",
-        "data": { "trim": "Versión", "color": "Color" }
+        "description": "Versión y color de tu {model}. Sirven para la \"Imagen DEC\", para la vista isométrica (que se dibuja con tu color y tus llantas) y para crear solo las entidades que tiene tu versión.",
+        "data": { "trim": "Versión", "color": "Color", "wheels": "Llantas (solo Max)" },
+        "data_description": { "wheels": "El Pro lleva siempre su llanta de 18\"." }
       },
       "pin": {
         "title": "Control remoto con PIN",
@@ -185,7 +186,8 @@
           "details": {
             "title": "Versión y color",
             "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Imagen DEC\".",
-            "data": { "trim": "Versión", "color": "Color" }
+            "data": { "trim": "Versión", "color": "Color", "wheels": "Llantas (solo Max)" },
+            "data_description": { "wheels": "El Pro lleva siempre su llanta de 18\"." }
           }
         },
         "abort": {
@@ -206,6 +208,9 @@
     },
     "arm_seconds": {
       "options": { "10": "10 segundos", "20": "20 segundos", "30": "30 segundos", "60": "60 segundos" }
+    },
+    "wheels": {
+      "options": { "cover": "20\" con tapacubos", "open": "20\" sin tapacubos" }
     },
     "alert_type": {
       "options": {

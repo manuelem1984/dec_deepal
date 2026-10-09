@@ -48,9 +48,27 @@
 # -----------------------------------------------------------------------------
 # COLORES
 # -----------------------------------------------------------------------------
-#   Las imágenes de esta carpeta son el juego por defecto (plata). Para otro
-#   color, crear una subcarpeta con el id del color de vehicles.yaml (p. ej.
-#   "deep_space_black/") con las imágenes que cambien, con el MISMO nombre.
+#   Las imágenes de esta carpeta son el juego por defecto: el que se usa
+#   cuando el coche aún no tiene color elegido. Cada color de vehicles.yaml
+#   tiene una subcarpeta con su id ("andromeda_blue/", "deep_space_black/"...)
+#   con las capas que llevan pintura (carrocería, puertas, capó y portón),
+#   con el MISMO nombre. Lo que no cambia con el color (cristales, luz,
+#   matrícula, llantas) se toma de esta carpeta.
+#   Los colores se hicieron repintando el juego por defecto (ver
+#   docs/imagenes.md, "Colores de la vista isométrica").
+#
+# -----------------------------------------------------------------------------
+# MATRÍCULA Y LLANTAS
+# -----------------------------------------------------------------------------
+#   plate_dec.png   Matrícula "DEC Deepal". Capa fija.
+#   wheels_<id>.png Llantas. No dependen de una señal sino de una OPCIÓN del
+#                   coche: "senal: wheels_<id>" vale "sí" si el coche lleva esa
+#                   llanta (versión con llanta fija, o la elegida en Configurar
+#                   → Apariencia; ver "llantas" en vehicles.yaml). La llanta de
+#                   la base (20" con tapacubos) no necesita capa.
+#                     wheels_pro.png    Pro: 18" con tapacubos
+#                     wheels_open.png   Max: 20" sin tapacubos
+#   Van justo después de la base: así las puertas abiertas quedan por delante.
 #
 # -----------------------------------------------------------------------------
 # NOMBRE DE LAS IMÁGENES
@@ -90,6 +108,11 @@ capas:
 
   # === CARROCERÍA ===============================================================
   - imagen: base.png
+  - imagen: plate_dec.png
+  - senal: wheels_pro
+    si_activo: wheels_pro.png
+  - senal: wheels_open
+    si_activo: wheels_open.png
 
   # === DELANTE DE LA CARROCERÍA =================================================
   # --- Portón abierto y capó ---------------------------------------------------

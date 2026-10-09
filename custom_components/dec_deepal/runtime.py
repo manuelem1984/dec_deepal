@@ -69,6 +69,8 @@ class VehicleContext:
     suggested_model: VehicleModel | None = None
     #: ``True`` si el usuario ya eligió el modelo (si no, funciona como genérico).
     configured: bool = False
+    #: Llanta elegida en Configurar (la efectiva la da :attr:`wheel`).
+    wheels: str | None = None
     #: Capacidades del servidor, solo para diagnóstico.
     capabilities: Capabilities | None = None
     #: Resultado de la última descarga de la imagen oficial (diagnóstico).
@@ -76,6 +78,11 @@ class VehicleContext:
     #: Imagen oficial ya descargada ``(bytes, content_type)``; la comparten
     #: "Imagen oficial" e "Imagen DEC" (cuando no hay foto del catálogo).
     official_image_cache: tuple[bytes, str] | None = None
+
+    @property
+    def wheel(self) -> str | None:
+        """Llanta que lleva el coche (la fija de la versión, la elegida o la de por defecto)."""
+        return self.model.wheel_for(self.trim, self.wheels)
 
     def has(self, feature: str) -> bool:
         """¿El coche tiene esta función? (según modelo y versión)."""

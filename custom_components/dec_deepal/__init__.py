@@ -60,6 +60,7 @@ from .const import (
     OPT_PIN_MODE,
     OPT_SCAN_MINUTES,
     OPT_TRIM,
+    OPT_WHEELS,
     PLATFORMS,
 )
 from .coordinator import VehicleCoordinator
@@ -183,6 +184,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             model=model,
             trim=trim,
             color=appearance.get(OPT_COLOR),
+            wheels=appearance.get(OPT_WHEELS),
             coordinator=coordinator,
             runner=runner,
             suggested_model=suggested,

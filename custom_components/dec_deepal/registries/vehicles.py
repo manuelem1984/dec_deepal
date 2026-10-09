@@ -80,6 +80,8 @@ class Trim:
     description: str
     photo_group: str
     features: dict[str, bool] = field(default_factory=dict)
+    #: Llanta fija de la versión ("" = la que elija el usuario).
+    wheel: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,6 +114,8 @@ class VehicleModel:
     colors: dict[str, Color]
     #: Vistas por capas del modelo: ``{clave de vista: capas}``.
     views: dict[str, ViewLayers] = field(default_factory=dict)
+    #: Llantas que se pueden elegir; la primera es la de por defecto.
+    wheel_options: tuple[str, ...] = ()
     #: Enlace al manual de usuario en PDF ("" = no tiene).
     manual_url: str = ""
     #: Plan de mantenimiento (intervalo y operaciones de cada revisión).
@@ -129,6 +133,15 @@ class VehicleModel:
         if self.name_with_trim:
             return self.name_with_trim.replace("{version}", trim.name)
         return f"{self.name} {trim.name}"
+
+    def wheel_for(self, trim_id: str | None, chosen: str | None) -> str | None:
+        """Llanta que lleva el coche: la fija de la versión, la elegida o la de por defecto."""
+        trim = self.trims.get(trim_id or "")
+        if trim is not None and trim.wheel:
+            return trim.wheel
+        if chosen in self.wheel_options:
+            return chosen
+        return self.wheel_options[0] if self.wheel_options else None
 
     def features_for(self, trim_id: str | None) -> dict[str, bool]:
         """Funciones efectivas: las del modelo, cambiadas por las de la versión.
@@ -293,6 +306,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
                 description=str(trim_raw.get("descripcion") or ""),
                 photo_group=str(trim_raw.get("grupo_foto") or trim_id),
                 features=_features(trim_raw.get("funciones"), f"{trim_where}.funciones"),
+                wheel=str(trim_raw.get("llanta") or ""),
             )
         colors: dict[str, Color] = {}
         for color_id, color_raw in as_dict(raw.get("colores"), f"{where}.colores").items():
@@ -318,6 +332,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
             trims=trims,
             colors=colors,
             views=_views(vehicles_dir, raw, where),
+            wheel_options=as_str_list(raw.get("llantas"), f"{where}.llantas"),
             manual_url=str(raw.get("manual") or "").strip(),
             maintenance=_maintenance(raw.get("mantenimiento"), trims, f"{where}.mantenimiento"),
         )

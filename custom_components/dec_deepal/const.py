@@ -73,6 +73,8 @@ OPT_APPEARANCE: Final = "appearance"
 OPT_MODEL: Final = "model"
 OPT_TRIM: Final = "trim"
 OPT_COLOR: Final = "color"
+#: Llanta elegida (de las "llantas" del modelo; solo si la versión no la fija).
+OPT_WHEELS: Final = "wheels"
 
 #: Bloque de control remoto con PIN (puertas, ventanillas, maletero).
 OPT_PIN_ENABLED: Final = "pin_enabled"

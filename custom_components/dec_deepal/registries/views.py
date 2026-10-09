@@ -26,6 +26,16 @@ from .errors import RegistryError, as_dict, read_yaml
 #: Nombre del fichero de capas dentro de la carpeta de cada modelo.
 LAYERS_FILE: Final = "capas.yaml"
 
+#: Una "señal" que empieza así no es telemetría: es una OPCIÓN del coche (hoy,
+#: las llantas). ``wheels_pro`` vale "sí" si el coche lleva la llanta ``pro``.
+#: Quien dibuja (``image.py``) le da el valor a partir de la configuración.
+WHEEL_OPTION_PREFIX: Final = "wheels_"
+
+
+def is_option(signal: str) -> bool:
+    """¿Es una opción del coche (no una señal de telemetría)?"""
+    return signal.startswith(WHEEL_OPTION_PREFIX)
+
 
 @dataclass(frozen=True, slots=True)
 class Layer:

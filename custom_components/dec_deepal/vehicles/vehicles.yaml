@@ -44,6 +44,11 @@
 #                     charging_view   "Vista de carga" (lateral con el cable
 #                                     enchufado / cargando)
 #                   Sin este campo, el modelo no tiene vistas.
+#   llantas         (opcional) Llantas que el usuario puede elegir en
+#                   Configurar → Apariencia. La primera es la de por defecto
+#                   (la que ya está dibujada en la base de las vistas). Cada
+#                   una, salvo la primera, necesita su capa wheels_<id>.png.
+#                   El nombre visible está en translations (selector "wheels").
 #   manual          (opcional) Enlace al manual de usuario en PDF. La tarjeta
 #                   lo abre en el navegador desde "Otros → Manual". El usuario puede cambiarlo
 #                   en Configurar → Avanzado.
@@ -64,6 +69,8 @@
 #                                   son iguales por fuera comparten grupo.
 #                     funciones     (opcional) cambia funciones del modelo solo
 #                                   para esta versión.
+#                     llanta        (opcional) Llanta fija de esta versión (no
+#                                   se puede elegir otra).
 #   colores         Colores oficiales. Clave = id interno.
 #                     nombre        Nombre comercial.
 #                     descripcion   Texto libre.
@@ -110,6 +117,8 @@ modelos:
       combustible: false             # solo híbridos enchufables / autonomía extendida
     carpeta_fotos: s05_2024
     foto_defecto: default.png
+    # Max: 20" con tapacubos (cover) o sin él (open). El Pro lleva 18" (abajo).
+    llantas: [cover, open]
     vistas:
       top_view: vista_planta/s05_2024
       isometric_view: vista_isometrica/s05_2024
@@ -144,6 +153,7 @@ modelos:
         nombre: Pro
         descripcion: Versión de acceso. Sin ventilación de asientos.
         grupo_foto: pro
+        llanta: pro                  # 18" con su tapacubos
         funciones:
           asientos_ventilacion: false
       max:

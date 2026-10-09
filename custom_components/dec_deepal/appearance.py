@@ -21,7 +21,14 @@ from typing import Any, Final
 import voluptuous as vol
 from homeassistant.helpers import selector
 
-from .const import OPT_APPEARANCE, OPT_COLOR, OPT_MODEL, OPT_TRIM, VEHICLE_ISSUE_PREFIX
+from .const import (
+    OPT_APPEARANCE,
+    OPT_COLOR,
+    OPT_MODEL,
+    OPT_TRIM,
+    OPT_WHEELS,
+    VEHICLE_ISSUE_PREFIX,
+)
 from .registries.vehicles import VehicleModel
 
 #: Valor de "sin elegir" en los desplegables de versión/color.
@@ -68,6 +75,22 @@ def details_schema(
     trim = stored.get(OPT_TRIM) if stored.get(OPT_MODEL) == model.id else None
     trim = trim or suggested_trim
     color = stored.get(OPT_COLOR) if stored.get(OPT_MODEL) == model.id else None
+    wheels = stored.get(OPT_WHEELS) if stored.get(OPT_MODEL) == model.id else None
+    wheel_field: dict[Any, Any] = {}
+    if len(model.wheel_options) > 1:
+        # Solo cuenta en las versiones sin llanta fija (lo dice el texto de ayuda).
+        wheel_field[
+            vol.Required(
+                OPT_WHEELS,
+                default=wheels if wheels in model.wheel_options else model.wheel_options[0],
+            )
+        ] = selector.SelectSelector(
+            selector.SelectSelectorConfig(
+                options=list(model.wheel_options),
+                translation_key="wheels",
+                mode=selector.SelectSelectorMode.DROPDOWN,
+            )
+        )
     return vol.Schema(
         {
             vol.Required(OPT_TRIM, default=trim if trim in model.trims else NONE_CHOICE): _dropdown(
@@ -86,6 +109,7 @@ def details_schema(
                     for item in model.colors.values()
                 ]
             ),
+            **wheel_field,
         }
     )
 
@@ -105,10 +129,13 @@ def updated_options(
     details = details or {}
     trim = details.get(OPT_TRIM)
     color = details.get(OPT_COLOR)
+    wheels = details.get(OPT_WHEELS)
     appearance = dict(options.get(OPT_APPEARANCE, {}))
     appearance[vehicle_id] = {
         OPT_MODEL: model.id,
         OPT_TRIM: None if trim in (None, NONE_CHOICE) else trim,
         OPT_COLOR: None if color in (None, NONE_CHOICE) else color,
     }
+    if wheels in model.wheel_options:
+        appearance[vehicle_id][OPT_WHEELS] = wheels
     return {**options, OPT_APPEARANCE: appearance}

@@ -9,7 +9,7 @@ import pytest
 
 from custom_components.dec_deepal.registries import RegistryError, load_all
 from custom_components.dec_deepal.registries.vehicles import load_vehicles
-from custom_components.dec_deepal.registries.views import load_view
+from custom_components.dec_deepal.registries.views import is_option, load_view
 from custom_components.dec_deepal.telemetry import signals as s
 
 INTEGRATION = Path(__file__).parents[1] / "custom_components" / "dec_deepal"
@@ -35,6 +35,7 @@ ISO_CLOSED = (
     "door_front_right_closed.png",
     "trunk_closed.png",
     "base.png",
+    "plate_dec.png",
     "hood_closed.png",
     "window_rear_left_closed.png",
     "door_rear_left_closed.png",
@@ -62,14 +63,49 @@ def test_catalogue_links_models(views) -> None:  # noqa: ANN001
     registries = load_all(INTEGRATION)
     assert list(views) == ["top_view", "isometric_view", "interior_view", "charging_view"]
     assert registries.vehicles.get("generico").views == {}
-    # Todas las señales existen en el vocabulario de telemetría.
+    # Todas las señales existen en el vocabulario de telemetría (salvo las
+    # que son opciones del coche, como las llantas).
     known = {value for name, value in vars(s).items() if name.isupper()}
     for view in views.values():
-        assert set(view.signals) <= known
+        assert {name for name in view.signals if not is_option(name)} <= known
+    assert [name for name in views["isometric_view"].signals if is_option(name)] == [
+        "wheels_pro",
+        "wheels_open",
+    ]
 
 
 def test_isometric_all_closed(iso) -> None:  # noqa: ANN001
     assert iso.select(lambda _name: None).images == ISO_CLOSED
+
+
+def test_isometric_wheels_and_colours(iso) -> None:  # noqa: ANN001
+    """Llantas según la versión o la opción elegida, y un juego de capas por color."""
+    model = load_all(INTEGRATION).vehicles.get("s05_2024")
+    # Pro: siempre su llanta de 18". Max: la elegida, o con tapacubos por defecto.
+    assert model.wheel_for("pro", "open") == "pro"
+    assert model.wheel_for("max", "open") == "open"
+    assert model.wheel_for("max_awd", None) == "cover"
+    assert model.wheel_for(None, "no_existe") == "cover"
+    assert load_all(INTEGRATION).vehicles.generic.wheel_for(None, None) is None
+
+    def images(wheel: str) -> tuple[str, ...]:
+        return iso.select(lambda name: name == f"wheels_{wheel}").images
+
+    assert "wheels_pro.png" in images("pro") and "wheels_open.png" not in images("pro")
+    assert "wheels_open.png" in images("open")
+    assert not any(name.startswith("wheels_") for name in images("cover"))
+    # La llanta va justo encima de la base y por debajo de las puertas de delante.
+    assert images("pro").index("wheels_pro.png") < images("pro").index("door_front_left_closed.png")
+
+    # Cada color tiene sus capas de pintura; cristales, luz, matrícula y
+    # llantas son comunes (se toman de la carpeta por defecto).
+    for color in model.colors:
+        assert iso.image_path("base.png", color).parent.name == color, color
+        assert iso.image_path("door_front_left_open.png", color).parent.name == color
+        assert iso.image_path("hood_open.png", color).parent.name == color
+        for common in ("window_front_left_closed.png", "low_beam_on.png", "plate_dec.png", "wheels_pro.png"):
+            assert iso.image_path(common, color).parent == iso.directory, (color, common)
+    assert iso.image_path("base.png", None).parent == iso.directory
 
 
 def test_isometric_open_parts(iso) -> None:  # noqa: ANN001
