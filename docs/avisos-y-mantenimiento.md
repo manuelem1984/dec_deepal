@@ -8,9 +8,9 @@ en Home Assistant.
 
 **Configurar → Avisos al móvil.** Se elige:
 
-- **Avisar a:** los móviles con la app de Home Assistant (cada uno aparece
-  como `notify.mobile_app_<nombre>`). También vale cualquier otro servicio
-  `notify`.
+- **Avisar a:** los móviles y tabletas con la app de Home Assistant, con el
+  nombre que tienen en *Ajustes → Aplicación móvil*. También vale cualquier
+  otro servicio `notify` (aparece como `notify.nombre`).
 - **Avisos activados:** los que se quieran de la lista.
 - **Mostrar también en las notificaciones de Home Assistant** (la campana).
 

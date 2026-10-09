@@ -49,6 +49,11 @@ def _vehicle(model, vehicle_id: str, name: str):  # noqa: ANN001, ANN202
 async def test_alerts_and_maintenance_steps(hass: HomeAssistant, freezer) -> None:  # noqa: ANN001
     freezer.move_to("2027-01-22 20:00:00+00:00")
     async_mock_service(hass, "notify", "mobile_app_test")
+    # Un móvil con la app: su servicio sale del nombre con que se registró.
+    async_mock_service(hass, "notify", "mobile_app_iphone_de_manuel")
+    MockConfigEntry(
+        domain="mobile_app", title="iPhone de Manuel", data={"device_name": "iPhone de Manuel"}
+    ).add_to_hass(hass)
     model = load_all(INTEGRATION).vehicles.get("s05_2024")
     vehicles = {"car1": _vehicle(model, "car1", "Changote"), "car2": _vehicle(model, "car2", "Changuito")}
     entry = MockConfigEntry(domain=DOMAIN, data={}, options={})
@@ -70,6 +75,12 @@ async def test_alerts_and_maintenance_steps(hass: HomeAssistant, freezer) -> Non
     result = await flow.async_step_alerts()
     assert result["type"] == "form" and result["step_id"] == "alerts", result
     _serialize(result)
+    # Se enseña el nombre del dispositivo; lo que se guarda sigue siendo el servicio.
+    targets = next(v for k, v in result["data_schema"].schema.items() if str(k) == "targets")
+    assert {option["value"]: option["label"] for option in targets.config["options"]} == {
+        "mobile_app_iphone_de_manuel": "iPhone de Manuel",
+        "mobile_app_test": "notify.mobile_app_test",
+    }
     result = await flow.async_step_alerts(
         {"targets": ["mobile_app_test"], "types": ["charge_finished"], "persistent": False}
     )

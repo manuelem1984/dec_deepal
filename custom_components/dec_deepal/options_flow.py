@@ -30,6 +30,7 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntryState, ConfigFlowResult, OptionsFlow
 from homeassistant.helpers import selector
 from homeassistant.util import dt as dt_util
+from homeassistant.util import slugify
 
 from .api.errors import DeepalConnectionError, DeepalError, DeepalPinError, DeepalRateLimitError
 from .alert_rules import ALERT_TYPES, maintenance_text
@@ -306,7 +307,9 @@ class DecDeepalOptionsFlow(OptionsFlow):
         """A qué móviles avisar y de qué.
 
         Los destinos son los servicios ``notify.*`` de Home Assistant (cada
-        móvil con la app tiene el suyo, ``notify.mobile_app_<nombre>``).
+        móvil con la app tiene el suyo, ``notify.mobile_app_<nombre>``). Se
+        guarda el nombre del servicio, pero se enseña el del dispositivo
+        ("iPhone de Manuel"), como en Ajustes → Aplicación móvil.
         """
         stored = self.config_entry.options.get(OPT_ALERTS, {})
         if user_input is not None:
@@ -326,12 +329,15 @@ class DecDeepalOptionsFlow(OptionsFlow):
         targets = sorted(
             available | set(chosen), key=lambda name: (not name.startswith("mobile_app_"), name)
         )
+        device_names = self._mobile_device_names()
         schema: dict[Any, Any] = {}
         if targets:
             schema[vol.Optional(OPT_ALERT_TARGETS, default=chosen)] = selector.SelectSelector(
                 selector.SelectSelectorConfig(
                     options=[
-                        selector.SelectOptionDict(value=name, label=f"notify.{name}")
+                        selector.SelectOptionDict(
+                            value=name, label=device_names.get(name, f"notify.{name}")
+                        )
                         for name in targets
                     ],
                     multiple=True,
@@ -355,6 +361,20 @@ class DecDeepalOptionsFlow(OptionsFlow):
             )
         ] = selector.BooleanSelector()
         return self.async_show_form(step_id="alerts", data_schema=vol.Schema(schema))
+
+    def _mobile_device_names(self) -> dict[str, str]:
+        """Nombre visible de cada móvil: ``{"mobile_app_iphone_de_x": "iPhone de X"}``.
+
+        La app móvil llama a su servicio ``mobile_app_`` + el nombre con que se
+        registró el dispositivo, en minúsculas y con guiones bajos. Ese nombre
+        es el título de su entrada en Ajustes → Aplicación móvil.
+        """
+        names: dict[str, str] = {}
+        for entry in self.hass.config_entries.async_entries("mobile_app"):
+            registered = entry.data.get("device_name") or entry.title
+            if registered:
+                names[slugify(f"mobile_app_{registered}")] = entry.title or registered
+        return names
 
     # ------------------------------------------------------------------
     # Mantenimiento

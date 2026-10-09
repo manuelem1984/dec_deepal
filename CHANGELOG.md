@@ -3,6 +3,15 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b6] — 2026-10-09
+
+### Cambiado
+
+- *Configurar → Avisos al móvil*: en "Avisar a" se ve el **nombre del
+  dispositivo** ("iPhone de Manuel"), como en *Ajustes → Aplicación móvil*, en
+  lugar del nombre interno (`notify.mobile_app_iphone_de_manuel`). Lo que ya
+  estuviera elegido se conserva.
+
 ## [2.3.0b5] — 2026-10-09
 
 ### Añadido
