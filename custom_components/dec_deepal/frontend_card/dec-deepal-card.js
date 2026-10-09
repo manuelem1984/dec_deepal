@@ -17,9 +17,13 @@
 //     ámbar cuando se acerca la revisión, rojo si está vencida. Es el único
 //     testigo que se puede pulsar: abre una ventana con los días y kilómetros
 //     que quedan, lo que incluye la revisión, el historial y el botón para
-//     registrarla (con confirmación).
-//   - Cinco botones: Confort, Bloqueo, Maletero, Ventilar y Localizar
-//     vehículo (este abre un menú con luces, claxon y las dos cosas).
+//     registrarla (con confirmación). La misma ventana se abre siempre desde
+//     "Otros → Mantenimiento".
+//   - Seis botones: Confort, Bloqueo, Maletero, Ventilar, Localizar vehículo
+//     (abre un menú con luces, claxon y las dos cosas) y Otros (abre un menú
+//     con el manual del coche y el mantenimiento).
+//   - "Otros → Manual" enseña el PDF del manual en una ventana. Lo sirve la
+//     integración (manual.py), que lo lee del enlace del fabricante.
 //   - "Confort" abre una ventana con la vista interior y, encima de la foto,
 //     los botones de volante y asientos (sin color: blanco = encendido,
 //     atenuado = apagado, con el nivel 1-3), la temperatura y el climatizador.
@@ -88,6 +92,11 @@
   // Testigo de mantenimiento (solo existe si el usuario lo activó en Configurar).
   const MAINTENANCE = "binary_sensor.maintenance_due";
 
+  const NO_MAINTENANCE =
+    "El mantenimiento de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Mantenimiento.";
+  // La dirección firmada del manual vale estas horas (para leerlo con calma).
+  const MANUAL_HOURS = 4;
+
   const PIN_NOTE = "con tu PIN guardado. El coche puede tardar unos segundos en responder.";
   const NO_PIN = "Activa el control con PIN en Configurar (integración DEC Deepal) para usar este botón.";
 
@@ -127,11 +136,8 @@
     .status { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 0 16px 10px; min-height: 22px; --mdc-icon-size: 22px; }
     .status .ok { color: var(--success-color, #43a047); }
     .status button { padding: 0; display: flex; }
-    /* 5 botones: 3 arriba y 2 centrados abajo (rejilla de 6 columnas). */
-    .tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
-    .tiles .tile { grid-column: span 2; }
-    .tiles .tile:nth-child(4) { grid-column: 2 / span 2; }
-    .tiles .tile:nth-child(5) { grid-column: 4 / span 2; }
+    /* 6 botones en dos filas de 3. */
+    .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
     .tile { background: ${TILE_BG}; border-radius: 12px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; min-height: 84px; color: var(--secondary-text-color); transition: opacity .2s, transform .1s; }
     .tile:active { transform: scale(.97); }
     .tile.on { color: var(--state-active-color, #ffc107); }
@@ -174,6 +180,9 @@
     .power.busy { opacity: .5; pointer-events: none; }
     .info { font-size: 12px; color: var(--secondary-text-color); text-align: center; margin: 12px 12px 16px; }
     .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 12px 16px; }
+    /* Menú con menos de tres opciones: centradas, con el mismo ancho que en una fila de tres. */
+    .three.center { display: flex; justify-content: center; }
+    .three.center .tile { flex: 0 1 calc((100% - 16px) / 3); }
     .tile { background: ${TILE_BG}; border-radius: 12px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px;
       text-align: center; min-height: 84px; color: var(--secondary-text-color); }
     .tile:active { transform: scale(.97); }
@@ -185,6 +194,10 @@
     .btns { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 16px 16px; }
     .tb { font-size: 14px; font-weight: 500; color: var(--primary-color); padding: 10px 14px; border-radius: 20px; }
     .tb.fill { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .dlg.wide { max-width: 960px; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+    .pdf { flex: 1; min-height: 0; margin: 0 8px 8px; border: 0; border-radius: 12px; background: ${TILE_BG}; }
+    .note { font-size: 12px; color: var(--secondary-text-color); margin: 0 16px 10px; }
+    .note a { color: var(--primary-color); }
     .mt { padding: 0 20px 4px; }
     .mt .next { font-size: 15px; font-weight: 500; margin: 4px 0 10px; display: flex; align-items: center; gap: 8px; --mdc-icon-size: 22px; }
     .mt .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -199,10 +212,10 @@
   // ---------------------------------------------------------------------------
   // Ventana emergente mínima (se cuelga de <body> para quedar por encima)
   // ---------------------------------------------------------------------------
-  function openDialog(html, onAction) {
+  function openDialog(html, onAction, extraClass = "") {
     const host = document.createElement("div");
     const root = host.attachShadow({ mode: "open" });
-    root.innerHTML = `<style>${DIALOG_CSS}</style><div class="dlg" role="dialog" aria-modal="true">${html}</div>`;
+    root.innerHTML = `<style>${DIALOG_CSS}</style><div class="dlg ${extraClass}" role="dialog" aria-modal="true">${html}</div>`;
     const close = () => {
       document.removeEventListener("keydown", onKey);
       host.remove();
@@ -293,6 +306,20 @@
       }
       this._ids = ids;
       this._registry = this._hass.entities;
+      this._checkManual(deviceId);
+    }
+
+    /** Pregunta a la integración (una vez por coche) si este coche tiene manual. */
+    async _checkManual(deviceId) {
+      if (!deviceId || this._manualDevice === deviceId || !this._hass.callApi) return;
+      this._manualDevice = deviceId;
+      this._hasManual = false;
+      try {
+        const info = await this._hass.callApi("GET", `dec_deepal/manual_info/${deviceId}`);
+        this._hasManual = Boolean(info && info.available) && this._manualDevice === deviceId;
+      } catch (_error) {
+        this._manualDevice = undefined; // se volverá a intentar
+      }
     }
 
     _state(key) {
@@ -358,7 +385,7 @@
           <div class="bar"><i></i></div>
           <div class="tiles">
             ${tile("comfort", "Confort")}${tile("lock", "Bloqueo")}${tile("trunk", "Maletero")}
-            ${tile("vent", "Ventilar")}${tile("locate", "Localizar vehículo")}
+            ${tile("vent", "Ventilar")}${tile("locate", "Localizar vehículo")}${tile("others", "Otros")}
           </div>
         </ha-card>`;
     }
@@ -457,7 +484,20 @@
         trunk: { icon: trunkOpen ? "dec:trunk_open" : "dec:trunk_closed", text: trunkOpen ? "Abierto" : "Cerrado", on: trunkOpen },
         vent: { icon: "mdi:weather-windy", text: venting ? "Ventilando" : anyWindow ? "Abiertas" : "Cerradas", on: venting || anyWindow },
         locate: { icon: "mdi:car-search", text: "Luces y claxon" },
+        others: { icon: "mdi:dots-horizontal", text: this._maintenanceShort() || "Manual y revisión" },
       };
+    }
+
+    /** Resumen corto del mantenimiento, solo si la revisión está próxima o vencida. */
+    _maintenanceShort() {
+      if (this._value(MAINTENANCE) !== "on") return "";
+      const data = this._state(MAINTENANCE).attributes;
+      if (data.nivel === "overdue") return "Revisión vencida";
+      const days = Number(data.dias_restantes);
+      const km = data.km_restantes;
+      // Se enseña lo que antes llegue a los escalones de aviso.
+      if (km != null && Number(km) <= 3000 && days > 60) return `Revisión en ${Number(km).toLocaleString("es", { useGrouping: "always" })} km`;
+      return `Revisión en ${days} ${days === 1 ? "día" : "días"}`;
     }
 
     _batteryIcon(level, charging) {
@@ -567,6 +607,9 @@
         case "maintenance":
           this._openMaintenance();
           break;
+        case "others":
+          this._openOthers();
+          break;
         default:
       }
     }
@@ -592,6 +635,67 @@
       });
     }
 
+    // --- Menú "Otros" ---------------------------------------------------------------
+
+    _openOthers() {
+      const maintenance = this._state(MAINTENANCE);
+      const known = maintenance && maintenance.attributes.revision != null;
+      const manual = this._hasManual
+        ? '<button class="tile" data-action="manual"><ha-icon icon="mdi:book-open-variant"></ha-icon><b>Manual</b><small>Abrir</small></button>'
+        : "";
+      const html = `
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Otros</h2></div>
+        <div class="three center">
+          ${manual}
+          <button class="tile" data-action="maintenance"><ha-icon icon="mdi:wrench"></ha-icon><b>Mantenimiento</b><small>${
+            known ? `${maintenance.attributes.revision}ª revisión` : "Sin activar"
+          }</small></button>
+        </div>`;
+      openDialog(html, (action, _target, dialog) => {
+        if (action !== "manual" && action !== "maintenance") return;
+        dialog.close();
+        if (action === "manual") this._openManual();
+        else if (known) this._openMaintenance();
+        else this._message("Mantenimiento", NO_MAINTENANCE);
+      });
+    }
+
+    /** Ventana con un texto y un único botón. */
+    _message(title, text) {
+      const html = `
+        <div class="confirm"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div>
+        <div class="btns"><button class="tb fill" data-action="close">Entendido</button></div>`;
+      openDialog(html, () => undefined);
+    }
+
+    // --- Ventana del Manual -----------------------------------------------------------
+
+    /**
+     * El PDF se pide a la integración con una dirección firmada (un <iframe> no
+     * puede enviar la sesión). Hay navegadores, sobre todo en el móvil, que no
+     * enseñan bien un PDF incrustado: por eso está el enlace de pantalla completa.
+     */
+    async _openManual() {
+      let url;
+      try {
+        const signed = await this._hass.callWS({
+          type: "auth/sign_path",
+          path: `/api/dec_deepal/manual/${this._deviceId()}`,
+          expires: MANUAL_HOURS * 3600,
+        });
+        url = this._hass.hassUrl ? this._hass.hassUrl(signed.path) : signed.path;
+      } catch (error) {
+        this._toast((error && error.message) || "No se pudo abrir el manual.");
+        return;
+      }
+      const html = `
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Manual</h2>
+          <a class="icon-btn" href="${escapeHtml(url)}" target="_blank" rel="noopener" aria-label="Abrir a pantalla completa" title="Abrir a pantalla completa"><ha-icon icon="mdi:open-in-new"></ha-icon></a></div>
+        <p class="note">Si no se ve bien aquí, <a href="${escapeHtml(url)}" target="_blank" rel="noopener">ábrelo a pantalla completa</a>. Puede tardar unos segundos en cargar.</p>
+        <iframe class="pdf" src="${escapeHtml(url)}" title="Manual de ${escapeHtml(this._name())}"></iframe>`;
+      openDialog(html, () => undefined, "wide");
+    }
+
     // --- Ventana de Mantenimiento ---------------------------------------------------
 
     _openMaintenance() {
@@ -602,6 +706,8 @@
       const number = (value) => Math.abs(Number(value)).toLocaleString(language, { useGrouping: "always" });
       const day = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString(language, { day: "numeric", month: "short", year: "numeric" });
       const overdue = data.nivel === "overdue";
+      // Sin aviso todavía, la llave va en gris; ámbar si se acerca y roja si está vencida.
+      const tone = overdue ? RED : data.nivel === "soon" ? AMBER : "var(--secondary-text-color)";
       const stat = (value, unit) =>
         value == null
           ? `<div class="stat"><b>—</b><small>${unit}</small></div>`
@@ -614,7 +720,7 @@
       const html = `
         <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Mantenimiento</h2></div>
         <div class="mt">
-          <div class="next"><ha-icon icon="mdi:wrench" style="color:${overdue ? RED : AMBER}"></ha-icon>${data.revision}ª revisión${overdue ? " · vencida" : ""}</div>
+          <div class="next"><ha-icon icon="mdi:wrench" style="color:${tone}"></ha-icon>${data.revision}ª revisión${overdue ? " · vencida" : ""}</div>
           <div class="two">${stat(data.dias_restantes, "días")}${stat(data.km_restantes, "km")}</div>
           <p class="due">Prevista el ${day(data.fecha_prevista)} o a los ${number(data.km_previstos)} km, lo que llegue antes.</p>
           ${list("Qué incluye", data.operaciones || [])}

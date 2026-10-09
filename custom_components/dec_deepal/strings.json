@@ -72,7 +72,7 @@
           "pin": "Control remoto con PIN",
           "alerts": "Avisos al móvil",
           "maintenance": "Mantenimiento",
-          "advanced": "Avanzado (intervalo, depuración)"
+          "advanced": "Avanzado (intervalo, depuración, manual)"
         }
       },
       "alerts": {
@@ -150,9 +150,11 @@
         "data": {
           "scan_minutes": "Intervalo de lectura",
           "wake": "Despertar el coche cuando haga falta",
-          "debug": "Modo depuración"
+          "debug": "Modo depuración",
+          "manual_url": "Enlace del manual"
         },
         "data_description": {
+          "manual_url": "Dirección del manual de usuario en PDF que abre la tarjeta (Otros → Manual). Viene con el oficial del modelo; si lo dejas vacío, se vuelve a usar ese.",
           "scan_minutes": "Cada cuánto se leen los datos del coche. Valores muy bajos pueden hacer que Deepal limite la cuenta.",
           "wake": "Al pulsar \"Actualizar datos del vehículo\" y antes de puertas/ventanillas/maletero, si los datos tienen más de 2 minutos, se despierta el coche y se espera su informe. Como mucho una vez cada 5 minutos, y nunca en las lecturas automáticas, para cuidar la batería de 12 V.",
           "debug": "Guarda peticiones y respuestas completas (sin datos personales) en los diagnósticos y activa los mensajes DEBUG en el registro."
@@ -163,6 +165,7 @@
       "pin_required": "Escribe el PIN para activar el control remoto.",
       "pin_invalid": "PIN incorrecto o creado con otra cuenta.",
       "pin_rate_limited": "Demasiados intentos de PIN. Espera o restablécelo en la app oficial.",
+      "invalid_url": "Escribe una dirección web completa (que empiece por https://).",
       "cannot_connect": "No se pudo conectar con el servidor de Deepal."
     },
     "abort": {

@@ -44,6 +44,9 @@
 #                     charging_view   "Vista de carga" (lateral con el cable
 #                                     enchufado / cargando)
 #                   Sin este campo, el modelo no tiene vistas.
+#   manual          (opcional) Enlace al manual de usuario en PDF. La tarjeta
+#                   lo enseña en "Otros → Manual". El usuario puede cambiarlo
+#                   en Configurar → Avanzado.
 #   mantenimiento   (opcional) Plan de mantenimiento del manual del coche.
 #                     intervalo_km / intervalo_meses
 #                                   Cada cuánto toca la revisión (lo que llegue
@@ -112,6 +115,8 @@ modelos:
       isometric_view: vista_isometrica/s05_2024
       interior_view: vista_interior/s05_2024
       charging_view: vista_carga/s05_2024
+    # Manual del S05 eléctrico (BEV) para España, en la web de Changan Europe.
+    manual: "https://www.changaneurope.com/Portals/8/adam/ContentBlocks/GYOzlGfAJk-2eKURqlUQ8g/Path/Manual%20de%20usuario%20S05.pdf"
     # Manual de usuario del S05 (España), "Tabla de Mantenimiento Periódico":
     # revisión cada 20.000 km o 12 meses. Las operaciones con intervalo propio
     # se colocan en la revisión en la que se cumple su plazo en años.

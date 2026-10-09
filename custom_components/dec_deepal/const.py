@@ -91,6 +91,10 @@ OPT_ALERT_TYPES: Final = "types"
 OPT_ALERT_PERSISTENT: Final = "persistent"
 DEFAULT_ALERT_PERSISTENT: Final = False
 
+#: Enlace del manual cambiado por el usuario, por modelo: {id del modelo: url}.
+#: Sin entrada, se usa el del catálogo (vehicles.yaml).
+OPT_MANUAL_URLS: Final = "manual_urls"
+
 #: Opciones avanzadas.
 OPT_SCAN_MINUTES: Final = "scan_minutes"
 OPT_DEBUG: Final = "debug"
@@ -154,6 +158,10 @@ ICONS_LOADER_URL: Final = "/local/dec_deepal/dec-icons-loader.js"
 ICONS_LIST_API: Final = "/api/dec_deepal/icons"
 #: Todos los SVG en una sola respuesta JSON (lo usa dec-icons.js).
 ICONS_BUNDLE_API: Final = "/api/dec_deepal/icons_bundle"
+
+#: Manual de usuario visto desde la tarjeta (ver manual.py).
+MANUAL_API: Final = "/api/dec_deepal/manual/{device_id}"
+MANUAL_INFO_API: Final = "/api/dec_deepal/manual_info/{device_id}"
 
 # ---------------------------------------------------------------------------
 # Depuración (ver docs/depuracion.md)

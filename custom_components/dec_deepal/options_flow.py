@@ -52,6 +52,7 @@ from .const import (
     OPT_DEBUG,
     OPT_WAKE,
     DEFAULT_WAKE,
+    OPT_MANUAL_URLS,
     OPT_MODEL,
     OPT_PIN,
     OPT_PIN_ENABLED,
@@ -62,11 +63,14 @@ from .const import (
 )
 from .appearance import details_schema, model_schema, needs_details, updated_options
 from .maintenance import MaintenanceRecord
+from .manual import is_valid_url
 from .runtime import DecDeepalRuntime
 
 _LOGGER = logging.getLogger(__name__)
 
 _VEHICLE = "vehicle"
+#: Campo "Enlace del manual" de Avanzado (se guarda en OPT_MANUAL_URLS).
+_MANUAL_URL = "manual_url"
 
 # Campos de los formularios de mantenimiento (no son opciones guardadas).
 _MT_ENABLED = "maintenance_enabled"
@@ -513,15 +517,48 @@ class DecDeepalOptionsFlow(OptionsFlow):
     async def async_step_advanced(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Intervalo de lectura y modo depuración."""
+        """Intervalo de lectura, modo depuración y enlace del manual.
+
+        El enlace del manual es por modelo de coche. Solo se ofrece si todos
+        los coches de la cuenta son del mismo modelo (lo normal); se guarda
+        únicamente si es distinto del que trae el catálogo.
+        """
         options = self.config_entry.options
+        models = {
+            vehicle.model.id: vehicle.model
+            for vehicle in self._runtime.vehicles.values()
+            if vehicle.configured
+        }
+        model = next(iter(models.values())) if len(models) == 1 else None
+        manual_urls: dict[str, str] = dict(options.get(OPT_MANUAL_URLS, {}))
+        errors: dict[str, str] = {}
+
         if user_input is not None:
-            return self._save(
-                {
-                    OPT_SCAN_MINUTES: int(user_input[OPT_SCAN_MINUTES]),
-                    OPT_DEBUG: bool(user_input[OPT_DEBUG]),
-                    OPT_WAKE: bool(user_input[OPT_WAKE]),
-                }
+            url = str(user_input.get(_MANUAL_URL) or "").strip()
+            if url and not is_valid_url(url):
+                errors[_MANUAL_URL] = "invalid_url"
+            else:
+                if model is not None:
+                    if url and url != model.manual_url:
+                        manual_urls[model.id] = url
+                    else:
+                        manual_urls.pop(model.id, None)
+                return self._save(
+                    {
+                        OPT_SCAN_MINUTES: int(user_input[OPT_SCAN_MINUTES]),
+                        OPT_DEBUG: bool(user_input[OPT_DEBUG]),
+                        OPT_WAKE: bool(user_input[OPT_WAKE]),
+                        OPT_MANUAL_URLS: manual_urls,
+                    }
+                )
+
+        manual_field: dict[Any, Any] = {}
+        if model is not None:
+            current = manual_urls.get(model.id) or model.manual_url
+            manual_field[
+                vol.Optional(_MANUAL_URL, description={"suggested_value": current})
+            ] = selector.TextSelector(
+                selector.TextSelectorConfig(type=selector.TextSelectorType.URL)
             )
         schema = vol.Schema(
             {
@@ -542,6 +579,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
                 vol.Required(
                     OPT_DEBUG, default=bool(options.get(OPT_DEBUG, False))
                 ): selector.BooleanSelector(),
+                **manual_field,
             }
         )
-        return self.async_show_form(step_id="advanced", data_schema=schema)
+        return self.async_show_form(step_id="advanced", data_schema=schema, errors=errors)

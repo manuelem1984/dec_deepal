@@ -112,6 +112,8 @@ class VehicleModel:
     colors: dict[str, Color]
     #: Vistas por capas del modelo: ``{clave de vista: capas}``.
     views: dict[str, ViewLayers] = field(default_factory=dict)
+    #: Enlace al manual de usuario en PDF ("" = no tiene).
+    manual_url: str = ""
     #: Plan de mantenimiento (intervalo y operaciones de cada revisión).
     maintenance: MaintenancePlan = field(default_factory=MaintenancePlan)
 
@@ -316,6 +318,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
             trims=trims,
             colors=colors,
             views=_views(vehicles_dir, raw, where),
+            manual_url=str(raw.get("manual") or "").strip(),
             maintenance=_maintenance(raw.get("mantenimiento"), trims, f"{where}.mantenimiento"),
         )
 

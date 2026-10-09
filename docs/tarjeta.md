@@ -30,7 +30,7 @@ Con dos coches, una tarjeta por coche.
 - **Batería:** icono según el nivel (verde con el 50 % o más, amarillo por
   debajo del 50 %, rojo por debajo del 15 %; con un rayo si está cargando),
   autonomía, estado de carga y la barra.
-- **Cinco botones** (tres arriba y dos centrados abajo):
+- **Seis botones** (dos filas de tres):
 
 | Botón | Qué hace | PIN |
 | --- | --- | --- |
@@ -39,6 +39,24 @@ Con dos coches, una tarjeta por coche.
 | **Maletero** | Abre o cierra el maletero | Sí |
 | **Ventilar** | Entreabre las ventanillas, o las cierra | Sí |
 | **Localizar vehículo** | Abre un menú: Luces, Claxon, o Luces y claxon | No |
+| **Otros** | Abre un menú: Manual y Mantenimiento | No |
+
+### Botón "Otros"
+
+Abre un menú con dos opciones:
+
+- **Manual** (libro abierto): enseña el manual de usuario en PDF dentro de
+  una ventana. Arriba a la derecha hay un botón para abrirlo a pantalla
+  completa, útil si el dispositivo no muestra bien un PDF incrustado (pasa en
+  algunos móviles). El manual no viene dentro de la integración: Home
+  Assistant lo lee de su enlace cada vez (ver `manual.py`). El enlace sale del
+  catálogo según el modelo y se puede cambiar en *Configurar → Avanzado*. Si
+  el modelo no tiene manual, la opción no aparece.
+- **Mantenimiento** (llave inglesa): la ventana de mantenimiento, disponible
+  siempre. Si el coche no lo tiene activado, explica cómo hacerlo.
+
+Cuando la revisión está próxima o vencida, el texto del botón cambia a
+"Revisión en 47 días" o "Revisión vencida".
 
 ### Testigo de mantenimiento
 

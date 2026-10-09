@@ -3,6 +3,30 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b3] — 2026-10-09
+
+### Añadido
+
+- **Tarjeta: sexto botón "Otros"**, con un menú como el de "Localizar
+  vehículo". Los seis botones quedan en dos filas de tres.
+- **Otros → Manual**: enseña el manual de usuario del coche (PDF) en una
+  ventana, con un enlace para abrirlo a pantalla completa. Home Assistant lo
+  lee del enlace del fabricante en ese momento (su web no deja mostrarlo
+  incrustado directamente); no se guarda ninguna copia.
+- **Otros → Mantenimiento**: la ventana de mantenimiento, ahora accesible
+  siempre (antes, solo con el testigo encendido). Si el coche no lo tiene
+  activado, explica cómo activarlo.
+- **Enlace del manual configurable** en *Configurar → Avanzado*. Viene con el
+  del S05 eléctrico para España (está en el catálogo, `manual:` en
+  `vehicles.yaml`); si se deja vacío, se vuelve a usar ese.
+- Cuando la revisión está próxima o vencida, el botón "Otros" lo indica
+  ("Revisión en 47 días").
+
+### Sin verificar
+
+- Cómo se ve el PDF incrustado en cada dispositivo, sobre todo en la app del
+  móvil. Si no se ve bien, usar el enlace de pantalla completa.
+
 ## [2.3.0b2] — 2026-10-09
 
 ### Corregido

@@ -18,7 +18,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry, async_
 
 from custom_components.dec_deepal.alerts import AlertManager
 from custom_components.dec_deepal.api.models import VehicleInfo
-from custom_components.dec_deepal.const import DOMAIN, OPT_ALERTS
+from custom_components.dec_deepal.const import DOMAIN, OPT_ALERTS, OPT_MANUAL_URLS
 from custom_components.dec_deepal.options_flow import DecDeepalOptionsFlow
 from custom_components.dec_deepal.registries import load_all
 from custom_components.dec_deepal.telemetry import signals as s
@@ -41,6 +41,7 @@ def _vehicle(model, vehicle_id: str, name: str):  # noqa: ANN001, ANN202
         ),
         model=model,
         trim="max",
+        configured=True,
     )
 
 
@@ -78,6 +79,22 @@ async def test_alerts_and_maintenance_steps(hass: HomeAssistant, freezer) -> Non
         "types": ["charge_finished"],
         "persistent": False,
     }
+
+    # --- Avanzado: enlace del manual ------------------------------------------------
+    advanced = {"scan_minutes": 5, "wake": True, "debug": False}
+    flow = new_flow()
+    result = await flow.async_step_advanced()
+    assert result["type"] == "form" and result["step_id"] == "advanced", result
+    _serialize(result)
+    result = await flow.async_step_advanced({**advanced, "manual_url": "sin-protocolo.pdf"})
+    assert result["errors"] == {"manual_url": "invalid_url"}
+    result = await flow.async_step_advanced({**advanced, "manual_url": "https://example.com/m.pdf"})
+    assert result["data"][OPT_MANUAL_URLS] == {"s05_2024": "https://example.com/m.pdf"}
+    # El del catálogo, o vacío, no se guarda (se sigue el catálogo).
+    result = await new_flow().async_step_advanced({**advanced, "manual_url": model.manual_url})
+    assert result["data"][OPT_MANUAL_URLS] == {}
+    result = await new_flow().async_step_advanced(advanced)
+    assert result["data"][OPT_MANUAL_URLS] == {}
 
     # --- Mantenimiento: elegir coche → ficha (aún sin configurar) --------------------
     flow = new_flow()

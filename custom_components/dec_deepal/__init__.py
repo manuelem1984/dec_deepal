@@ -65,6 +65,7 @@ from .const import (
 from .coordinator import VehicleCoordinator
 from .debug.recorder import DebugRecorder
 from .frontend import async_register_frontend, async_remove_early_loader
+from .manual import async_register_manual
 from .registries import RegistryError
 from .registries.vehicles import FEATURE_MQTT
 from .runtime import (
@@ -94,6 +95,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         _LOGGER.error("Catálogo con errores, la integración no puede arrancar: %s", err)
         return False
     await async_register_frontend(hass, registries.icons)
+    async_register_manual(hass)
     async_register_services(hass)
     return True
 
