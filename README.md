@@ -74,6 +74,13 @@ Qué está comprobado con el coche real y qué no:
 [docs/correlacion_endpoints_entidades.csv](docs/correlacion_endpoints_entidades.csv)
 (columna *Verificado*).
 
+## 🃏 Tarjeta para los paneles
+
+La integración trae su propia tarjeta, **DEC Deepal**: vista del coche,
+batería y autonomía, y botones de confort, bloqueo, maletero, ventilar,
+luces y claxon. Se instala sola: Panel → Editar → Añadir tarjeta → *DEC
+Deepal*. Detalles en [docs/tarjeta.md](docs/tarjeta.md).
+
 ## 🎨 Personalizar sin programar
 
 | Qué | Dónde | Guía |
@@ -107,6 +114,7 @@ Qué está comprobado con el coche real y qué no:
 | [docs/correlacion_endpoints_entidades.csv](docs/correlacion_endpoints_entidades.csv) | Qué endpoint alimenta cada entidad y si está verificado |
 | [docs/iconos.md](docs/iconos.md) | Sistema de iconos |
 | [docs/imagenes.md](docs/imagenes.md) | Imágenes, modelos, versiones y colores |
+| [docs/tarjeta.md](docs/tarjeta.md) | La tarjeta para los paneles |
 | [docs/depuracion.md](docs/depuracion.md) | Modo depuración, diagnósticos y capturas |
 | [docs/anadir-pais-vehiculo-idioma.md](docs/anadir-pais-vehiculo-idioma.md) | Ampliar países, coches e idiomas |
 | [docs/comparativa-alternativo.md](docs/comparativa-alternativo.md) | Qué se tomó de Deepal Alternative |

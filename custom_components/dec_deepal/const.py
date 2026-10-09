@@ -132,6 +132,9 @@ ICONS_SVG_URL: Final = "/dec_deepal/icons"
 #: URL del script que registra el prefijo "dec:" en el navegador.
 ICONS_JS_URL: Final = "/dec_deepal/frontend"
 ICONS_JS_FILE: Final = "dec-icons.js"
+#: Tarjeta para los paneles (custom:dec-deepal-card). La carga dec-icons.js.
+CARD_JS_FILE: Final = "dec-deepal-card.js"
+CARD_JS_DIR: Final = "frontend_card"
 #: Cargador temprano: se copia a <config>/www/dec_deepal/ y se registra como
 #: recurso de los paneles (ver frontend.py).
 ICONS_LOADER_FILE: Final = "dec-icons-loader.js"

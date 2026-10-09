@@ -34,7 +34,8 @@ custom_components/dec_deepal/
 ├── entity.py              Entidad base (dispositivo, nombre, icono)
 ├── sensor.py … image.py   Una plataforma de HA por fichero
 ├── view_renderer.py       Monta las vistas por capas (planta, isométrica, interior, carga; Pillow)
-├── frontend.py            Publica los iconos "dec:" en el navegador
+├── frontend.py            Publica los iconos "dec:" y la tarjeta en el navegador
+├── frontend_card/         Tarjeta para los paneles (custom:dec-deepal-card)
 ├── services.py/.yaml      Servicio de captura de depuración
 ├── diagnostics.py         "Descargar diagnósticos"
 ├── strings.json           Textos (idioma base)

@@ -18,6 +18,8 @@
 // Antes (hasta la 2.1.1) se pedía cada SVG por separado y un fallo se
 // guardaba para siempre: tras un reinicio los iconos no salían hasta recargar.
 //
+// Desde la 2.2.0 carga también la tarjeta de los paneles (dec-deepal-card.js).
+//
 // Desde la 2.1.3, además:
 //   - puede llegar tarde, traído por el cargador temprano
 //     (dec-icons-loader.js, ver frontend.py);
@@ -179,6 +181,13 @@
 
   // Empieza a cargar ya, sin esperar a que alguien pida un icono.
   ensureBundle();
+
+  // Tarjeta para los paneles (custom:dec-deepal-card): se carga desde aquí
+  // para que llegue por los mismos caminos que los iconos. El parámetro
+  // cambia cada hora, así una versión nueva no se queda en la caché.
+  import(`/dec_deepal/frontend/dec-deepal-card.js?h=${Math.floor(Date.now() / 3600000)}`).catch((error) => {
+    console.warn("[DEC Deepal] No se pudo cargar la tarjeta:", error);
+  });
 
   // Si este script ha llegado tarde, arregla lo que ya estaba pintado: ahora,
   // y un par de veces más por si la página seguía dibujándose.

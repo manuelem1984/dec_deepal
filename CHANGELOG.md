@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.2.0b1] — 2026-10-09
+
+Beta. Incluye la 2.1.3b1 (iconos tras reiniciar), ya validada.
+
+### Añadido
+
+- **Tarjeta DEC Deepal** para los paneles (`custom:dec-deepal-card`). Se
+  instala sola con la integración y encuentra las entidades del coche sin
+  configurarlas.
+  - Cabecera con "Actualizado: ...", vista isométrica, batería (icono por
+    nivel y color), autonomía y estado de carga.
+  - Seis botones: Confort, Bloqueo, Maletero, Ventilar, Luces y Claxon.
+  - **Ventana de Confort:** vista interior con los botones de volante y
+    asientos sobre la foto, temperatura y climatizador.
+  - Bloqueo, Maletero y Ventilar piden confirmación y, con el modo de
+    desbloqueo previo, la tarjeta lo hace sola.
+- Documentación: `docs/tarjeta.md`.
+
 ## [2.1.3b1] — 2026-10-08
 
 Beta. Segundo intento con los iconos propios que no aparecían tras reiniciar

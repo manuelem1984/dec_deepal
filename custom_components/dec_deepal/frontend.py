@@ -12,12 +12,22 @@ URL                                    Contenido
 ``/dec_deepal/icons/<nombre>.svg``     Cada archivo de ``icons/svg/``.
 ``/dec_deepal/frontend/dec-icons.js``  Script que enseña al navegador el
                                        prefijo ``dec:`` (se carga solo).
+``/dec_deepal/frontend/dec-deepal-card.js``  Tarjeta para los paneles
+                                       (``custom:dec-deepal-card``, 2.2.0).
 ``/api/dec_deepal/icons``              Lista JSON de iconos disponibles.
 ``/api/dec_deepal/icons_bundle``       Todos los SVG en un solo JSON
                                        (``{nombre: svg}``); lo usa el script.
 =====================================  ========================================
 
 Nada de esto es información privada: son solo dibujos.
+
+La tarjeta (2.2.0)
+------------------
+``frontend_card/dec-deepal-card.js`` es la tarjeta ``custom:dec-deepal-card``.
+No se registra aparte: la carga ``dec-icons.js`` al terminar, así llega por
+los mismos dos caminos que los iconos (la página de Home Assistant y el
+cargador temprano). Si llega tarde tras un reinicio, Home Assistant vuelve a
+pintar la tarjeta en cuanto queda definida.
 
 Cargador temprano (2.1.3)
 -------------------------
@@ -61,6 +71,8 @@ from homeassistant.components.http import HomeAssistantView, StaticPathConfig
 from homeassistant.core import HomeAssistant
 
 from .const import (
+    CARD_JS_DIR,
+    CARD_JS_FILE,
     DOMAIN,
     ICONS_JS_FILE,
     ICONS_BUNDLE_API,
@@ -130,6 +142,11 @@ async def async_register_frontend(hass: HomeAssistant, icons: IconRegistry) -> N
                 StaticPathConfig(
                     f"{ICONS_JS_URL}/{ICONS_JS_FILE}",
                     str(INTEGRATION_DIR / "icons" / ICONS_JS_FILE),
+                    False,
+                ),
+                StaticPathConfig(
+                    f"{ICONS_JS_URL}/{CARD_JS_FILE}",
+                    str(INTEGRATION_DIR / CARD_JS_DIR / CARD_JS_FILE),
                     False,
                 ),
             ]

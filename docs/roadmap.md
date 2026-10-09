@@ -109,4 +109,5 @@ desactivar en Configurar → Avanzado.
 - [x] Testigos del cuadro como sensores de problema (2.1.0b1, sin verificar).
 - [ ] Traducción al inglés (`en.json`) y portugués.
 - [ ] Segundo país (Portugal) cuando alguien lo pruebe.
-- [ ] Tarjeta Lovelace propia con foto + datos + comandos.
+- [x] Tarjeta propia para los paneles (2.2.0b1). Pendiente: opciones (qué
+      botones mostrar), elegir vista y otros idiomas.

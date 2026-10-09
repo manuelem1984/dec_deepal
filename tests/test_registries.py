@@ -109,3 +109,22 @@ def test_countries_validation(tmp_path: Path) -> None:
     bad.write_text("entornos: {}\npaises:\n  es: {nombre: X, entorno: nada}\n", encoding="utf-8")
     with pytest.raises(RegistryError, match="entorno"):
         load_countries(bad)
+
+
+def test_card_file_is_shipped() -> None:
+    """La tarjeta existe, se define con su nombre y usa las claves reales de las entidades."""
+    import json
+    import re
+
+    from custom_components.dec_deepal.const import CARD_JS_DIR, CARD_JS_FILE
+
+    source = (INTEGRATION / CARD_JS_DIR / CARD_JS_FILE).read_text(encoding="utf-8")
+    assert 'const TAG = "dec-deepal-card"' in source and "customElements.define(TAG" in source
+    assert CARD_JS_FILE in (INTEGRATION / "icons" / "dec-icons.js").read_text(encoding="utf-8")
+    # Cada "dominio.clave" que usa la tarjeta debe existir en las traducciones.
+    names = json.loads((INTEGRATION / "translations" / "es.json").read_text(encoding="utf-8"))["entity"]
+    used = set(re.findall(r'"((?:sensor|binary_sensor|image|climate|lock|cover|button|switch|number)\.[a-z_]+)"', source))
+    assert len(used) > 20
+    missing = sorted(key for key in used if key.split(".")[1] not in names.get(key.split(".")[0], {}))
+    assert missing == [], missing
+
