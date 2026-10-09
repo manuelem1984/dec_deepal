@@ -3,6 +3,29 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.2.0] — 2026-10-09
+
+Versión estable. Reúne las betas `2.1.3b1`, `2.2.0b1` y `2.2.0b2`, validadas
+en una instalación real.
+
+### Añadido
+
+- **Tarjeta DEC Deepal** para los paneles (`custom:dec-deepal-card`). Se
+  instala sola y encuentra las entidades del coche sin configurarlas:
+  cabecera con "Actualizado", vista isométrica, línea de estado (tic verde o
+  testigos encendidos), batería con icono por nivel y color, autonomía,
+  estado de carga y cinco botones (Confort, Bloqueo, Maletero, Ventilar y
+  Localizar vehículo). Ventana de Confort con la vista interior y los
+  controles de volante, asientos, temperatura y climatizador. Ver
+  `docs/tarjeta.md`.
+- **Icono propio de la llave del Deepal S05** para "Pila del mando baja".
+
+### Corregido
+
+- **Iconos propios que no aparecían tras reiniciar** Home Assistant hasta
+  recargar la app: cargador temprano automático (copia en `www/dec_deepal/`
+  y recurso de paneles) y repintado de los iconos dibujados antes de tiempo.
+
 ## [2.2.0b2] — 2026-10-09
 
 Beta. Ajustes de la tarjeta tras la primera prueba.

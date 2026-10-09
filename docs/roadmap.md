@@ -109,5 +109,10 @@ desactivar en Configurar → Avanzado.
 - [x] Testigos del cuadro como sensores de problema (2.1.0b1, sin verificar).
 - [ ] Traducción al inglés (`en.json`) y portugués.
 - [ ] Segundo país (Portugal) cuando alguien lo pruebe.
-- [x] Tarjeta propia para los paneles (2.2.0b1). Pendiente: opciones (qué
-      botones mostrar), elegir vista y otros idiomas.
+- [x] Tarjeta propia para los paneles (2.2.0, validada en una instalación
+      real). Pendiente: opciones (qué botones mostrar), elegir vista, otros
+      idiomas y comprobar el tema oscuro.
+- [ ] Automatizaciones listas para usar (coche abierto, carga terminada,
+      presión baja...).
+- [ ] Carga inteligente: iniciar / parar y horario (hace falta capturar lo
+      que envía la app oficial).
