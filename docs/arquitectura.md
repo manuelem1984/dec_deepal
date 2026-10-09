@@ -80,7 +80,8 @@ custom_components/dec_deepal/
 ├── icons/icons.yaml             ← DATOS: iconos por entidad
 ├── icons/svg/                   ← DATOS: iconos propios
 ├── icons/dec-icons.js           Script del navegador (no se toca)
-└── brand/                       Icono de la integración
+└── brand/                       Logo de la integración: icon*.png (tema claro) y
+                                 dark_icon*.png (tema oscuro), sin fondo
 ```
 
 ## Flujo de una lectura

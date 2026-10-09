@@ -3,6 +3,17 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.2.1] — 2026-10-09
+
+### Cambiado
+
+- **Logo de la integración redibujado sin fondo**, con el mismo diseño: azul
+  marino para el tema claro (`icon.png`) y plata para el tema oscuro
+  (`dark_icon.png`), como recomiendan las normas de Home Assistant. Antes era
+  un cuadrado oscuro con mucho margen.
+- Los archivos del logo pesan ahora 110 KB en total (antes, más de 1 MB), así
+  que la integración se descarga más rápido.
+
 ## [2.2.0] — 2026-10-09
 
 Versión estable. Reúne las betas `2.1.3b1`, `2.2.0b1` y `2.2.0b2`, validadas
