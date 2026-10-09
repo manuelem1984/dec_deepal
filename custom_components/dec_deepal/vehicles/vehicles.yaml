@@ -45,7 +45,7 @@
 #                                     enchufado / cargando)
 #                   Sin este campo, el modelo no tiene vistas.
 #   manual          (opcional) Enlace al manual de usuario en PDF. La tarjeta
-#                   lo enseña en "Otros → Manual". El usuario puede cambiarlo
+#                   lo abre en el navegador desde "Otros → Manual". El usuario puede cambiarlo
 #                   en Configurar → Avanzado.
 #   mantenimiento   (opcional) Plan de mantenimiento del manual del coche.
 #                     intervalo_km / intervalo_meses

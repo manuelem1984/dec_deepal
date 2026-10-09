@@ -151,10 +151,10 @@
           "scan_minutes": "Intervalo de lectura",
           "wake": "Despertar el coche cuando haga falta",
           "debug": "Modo depuración",
-          "manual_url": "Enlace del manual"
+          "manual_url": "Manual BEV"
         },
         "data_description": {
-          "manual_url": "Dirección del manual de usuario en PDF que abre la tarjeta (Otros → Manual). Viene con el oficial del modelo; si lo dejas vacío, se vuelve a usar ese.",
+          "manual_url": "Enlace al manual de usuario (PDF) del coche eléctrico (BEV). La tarjeta lo abre en el navegador desde Otros → Manual. Viene con el oficial; si lo dejas vacío, se vuelve a usar ese.",
           "scan_minutes": "Cada cuánto se leen los datos del coche. Valores muy bajos pueden hacer que Deepal limite la cuenta.",
           "wake": "Al pulsar \"Actualizar datos del vehículo\" y antes de puertas/ventanillas/maletero, si los datos tienen más de 2 minutos, se despierta el coche y se espera su informe. Como mucho una vez cada 5 minutos, y nunca en las lecturas automáticas, para cuidar la batería de 12 V.",
           "debug": "Guarda peticiones y respuestas completas (sin datos personales) en los diagnósticos y activa los mensajes DEBUG en el registro."

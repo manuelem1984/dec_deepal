@@ -159,8 +159,7 @@ ICONS_LIST_API: Final = "/api/dec_deepal/icons"
 #: Todos los SVG en una sola respuesta JSON (lo usa dec-icons.js).
 ICONS_BUNDLE_API: Final = "/api/dec_deepal/icons_bundle"
 
-#: Manual de usuario visto desde la tarjeta (ver manual.py).
-MANUAL_API: Final = "/api/dec_deepal/manual/{device_id}"
+#: Enlace del manual de usuario que abre la tarjeta (ver manual.py).
 MANUAL_INFO_API: Final = "/api/dec_deepal/manual_info/{device_id}"
 
 # ---------------------------------------------------------------------------

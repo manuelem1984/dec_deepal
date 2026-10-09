@@ -45,13 +45,11 @@ Con dos coches, una tarjeta por coche.
 
 Abre un menú con dos opciones:
 
-- **Manual** (libro abierto): enseña el manual de usuario en PDF dentro de
-  una ventana. Arriba a la derecha hay un botón para abrirlo a pantalla
-  completa, útil si el dispositivo no muestra bien un PDF incrustado (pasa en
-  algunos móviles). El manual no viene dentro de la integración: Home
-  Assistant lo lee de su enlace cada vez (ver `manual.py`). El enlace sale del
-  catálogo según el modelo y se puede cambiar en *Configurar → Avanzado*. Si
-  el modelo no tiene manual, la opción no aparece.
+- **Manual** (libro abierto): abre el manual de usuario (PDF) en el
+  navegador, en una pestaña nueva. El manual no viene dentro de la
+  integración: es un enlace a la web del fabricante. Sale del catálogo según
+  el modelo y se puede cambiar en *Configurar → Avanzado → Manual BEV*. Si el
+  modelo no tiene manual, la opción no aparece.
 - **Mantenimiento** (llave inglesa): la ventana de mantenimiento, disponible
   siempre. Si el coche no lo tiene activado, explica cómo hacerlo.
 

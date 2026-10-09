@@ -14,9 +14,10 @@
 
 ## Beta 2.3.0b3 (09-10-2026) — pendiente de probar
 
-- [ ] **Otros → Manual**: que el PDF se vea en la ventana en el ordenador y
-      en la app del móvil (iPhone y Android), dentro y fuera de casa. Si en
-      algún dispositivo no se ve incrustado, anotar cuál.
+- [x] **Otros → Manual** incrustado en una ventana: en el iPhone no se
+      podían pasar las páginas. Desde la 2.3.0b4 se abre en el navegador.
+- [ ] Otros → Manual (2.3.0b4): que abra el PDF en el navegador desde el
+      ordenador y desde la app del móvil.
 - [ ] Cambiar el enlace del manual en Configurar → Avanzado y comprobar que
       se abre el nuevo.
 - [ ] Manual del PHEV: cuando se añada ese modelo al catálogo, con su enlace.

@@ -40,7 +40,7 @@ custom_components/dec_deepal/
 ├── alerts.py              Avisos al móvil y fichas de mantenimiento (almacén y envío)
 ├── alert_rules.py         Qué cambios del coche avisan y sus textos (sin HA)
 ├── maintenance.py         Cuánto falta para la revisión y escalones de aviso (sin HA)
-├── manual.py              Manual del coche para la tarjeta (lo lee de su enlace y lo sirve)
+├── manual.py              Enlace del manual del coche que abre la tarjeta
 ├── diagnostics.py         "Descargar diagnósticos"
 ├── strings.json           Textos (idioma base)
 ├── translations/          Un JSON por idioma

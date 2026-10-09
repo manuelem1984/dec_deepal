@@ -22,8 +22,8 @@
 //   - Seis botones: Confort, Bloqueo, Maletero, Ventilar, Localizar vehículo
 //     (abre un menú con luces, claxon y las dos cosas) y Otros (abre un menú
 //     con el manual del coche y el mantenimiento).
-//   - "Otros → Manual" enseña el PDF del manual en una ventana. Lo sirve la
-//     integración (manual.py), que lo lee del enlace del fabricante.
+//   - "Otros → Manual" abre el PDF del manual en el navegador (pestaña
+//     nueva). El enlace lo da la integración (manual.py).
 //   - "Confort" abre una ventana con la vista interior y, encima de la foto,
 //     los botones de volante y asientos (sin color: blanco = encendido,
 //     atenuado = apagado, con el nivel 1-3), la temperatura y el climatizador.
@@ -94,8 +94,6 @@
 
   const NO_MAINTENANCE =
     "El mantenimiento de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Mantenimiento.";
-  // La dirección firmada del manual vale estas horas (para leerlo con calma).
-  const MANUAL_HOURS = 4;
 
   const PIN_NOTE = "con tu PIN guardado. El coche puede tardar unos segundos en responder.";
   const NO_PIN = "Activa el control con PIN en Configurar (integración DEC Deepal) para usar este botón.";
@@ -194,10 +192,7 @@
     .btns { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 16px 16px; }
     .tb { font-size: 14px; font-weight: 500; color: var(--primary-color); padding: 10px 14px; border-radius: 20px; }
     .tb.fill { background: var(--primary-color); color: var(--text-primary-color, #fff); }
-    .dlg.wide { max-width: 960px; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
-    .pdf { flex: 1; min-height: 0; margin: 0 8px 8px; border: 0; border-radius: 12px; background: ${TILE_BG}; }
-    .note { font-size: 12px; color: var(--secondary-text-color); margin: 0 16px 10px; }
-    .note a { color: var(--primary-color); }
+    a.tile { text-decoration: none; box-sizing: border-box; }
     .mt { padding: 0 20px 4px; }
     .mt .next { font-size: 15px; font-weight: 500; margin: 4px 0 10px; display: flex; align-items: center; gap: 8px; --mdc-icon-size: 22px; }
     .mt .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
@@ -212,10 +207,10 @@
   // ---------------------------------------------------------------------------
   // Ventana emergente mínima (se cuelga de <body> para quedar por encima)
   // ---------------------------------------------------------------------------
-  function openDialog(html, onAction, extraClass = "") {
+  function openDialog(html, onAction) {
     const host = document.createElement("div");
     const root = host.attachShadow({ mode: "open" });
-    root.innerHTML = `<style>${DIALOG_CSS}</style><div class="dlg ${extraClass}" role="dialog" aria-modal="true">${html}</div>`;
+    root.innerHTML = `<style>${DIALOG_CSS}</style><div class="dlg" role="dialog" aria-modal="true">${html}</div>`;
     const close = () => {
       document.removeEventListener("keydown", onKey);
       host.remove();
@@ -309,14 +304,15 @@
       this._checkManual(deviceId);
     }
 
-    /** Pregunta a la integración (una vez por coche) si este coche tiene manual. */
+    /** Pregunta a la integración (una vez por coche) el enlace del manual. */
     async _checkManual(deviceId) {
       if (!deviceId || this._manualDevice === deviceId || !this._hass.callApi) return;
       this._manualDevice = deviceId;
-      this._hasManual = false;
+      this._manualUrl = "";
       try {
         const info = await this._hass.callApi("GET", `dec_deepal/manual_info/${deviceId}`);
-        this._hasManual = Boolean(info && info.available) && this._manualDevice === deviceId;
+        const url = (info && info.url) || "";
+        if (this._manualDevice === deviceId && /^https?:\/\//.test(url)) this._manualUrl = url;
       } catch (_error) {
         this._manualDevice = undefined; // se volverá a intentar
       }
@@ -640,8 +636,10 @@
     _openOthers() {
       const maintenance = this._state(MAINTENANCE);
       const known = maintenance && maintenance.attributes.revision != null;
-      const manual = this._hasManual
-        ? '<button class="tile" data-action="manual"><ha-icon icon="mdi:book-open-variant"></ha-icon><b>Manual</b><small>Abrir</small></button>'
+      // Un enlace de verdad (no un botón): así el navegador y la app del móvil
+      // lo abren fuera, en una pestaña nueva, sin bloquearlo como ventana emergente.
+      const manual = this._manualUrl
+        ? `<a class="tile" data-action="manual" href="${escapeHtml(this._manualUrl)}" target="_blank" rel="noopener noreferrer"><ha-icon icon="mdi:book-open-variant"></ha-icon><b>Manual</b><small>Abrir PDF</small></a>`
         : "";
       const html = `
         <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Otros</h2></div>
@@ -652,10 +650,14 @@
           }</small></button>
         </div>`;
       openDialog(html, (action, _target, dialog) => {
-        if (action !== "manual" && action !== "maintenance") return;
+        if (action === "manual") {
+          // El enlace se abre solo; el menú se cierra un instante después.
+          setTimeout(() => dialog.close(), 300);
+          return;
+        }
+        if (action !== "maintenance") return;
         dialog.close();
-        if (action === "manual") this._openManual();
-        else if (known) this._openMaintenance();
+        if (known) this._openMaintenance();
         else this._message("Mantenimiento", NO_MAINTENANCE);
       });
     }
@@ -666,34 +668,6 @@
         <div class="confirm"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div>
         <div class="btns"><button class="tb fill" data-action="close">Entendido</button></div>`;
       openDialog(html, () => undefined);
-    }
-
-    // --- Ventana del Manual -----------------------------------------------------------
-
-    /**
-     * El PDF se pide a la integración con una dirección firmada (un <iframe> no
-     * puede enviar la sesión). Hay navegadores, sobre todo en el móvil, que no
-     * enseñan bien un PDF incrustado: por eso está el enlace de pantalla completa.
-     */
-    async _openManual() {
-      let url;
-      try {
-        const signed = await this._hass.callWS({
-          type: "auth/sign_path",
-          path: `/api/dec_deepal/manual/${this._deviceId()}`,
-          expires: MANUAL_HOURS * 3600,
-        });
-        url = this._hass.hassUrl ? this._hass.hassUrl(signed.path) : signed.path;
-      } catch (error) {
-        this._toast((error && error.message) || "No se pudo abrir el manual.");
-        return;
-      }
-      const html = `
-        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Manual</h2>
-          <a class="icon-btn" href="${escapeHtml(url)}" target="_blank" rel="noopener" aria-label="Abrir a pantalla completa" title="Abrir a pantalla completa"><ha-icon icon="mdi:open-in-new"></ha-icon></a></div>
-        <p class="note">Si no se ve bien aquí, <a href="${escapeHtml(url)}" target="_blank" rel="noopener">ábrelo a pantalla completa</a>. Puede tardar unos segundos en cargar.</p>
-        <iframe class="pdf" src="${escapeHtml(url)}" title="Manual de ${escapeHtml(this._name())}"></iframe>`;
-      openDialog(html, () => undefined, "wide");
     }
 
     // --- Ventana de Mantenimiento ---------------------------------------------------

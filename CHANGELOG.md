@@ -3,6 +3,17 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b4] — 2026-10-09
+
+### Cambiado
+
+- **Otros → Manual abre el PDF en el navegador** (pestaña nueva), en vez de
+  enseñarlo dentro de una ventana de la tarjeta: incrustado no se podían
+  pasar las páginas. Se abre directamente el enlace del fabricante; Home
+  Assistant ya no hace de intermediario.
+- En *Configurar → Avanzado*, el campo del enlace se llama **Manual BEV**
+  (el del PHEV llegará con ese modelo).
+
 ## [2.3.0b3] — 2026-10-09
 
 ### Añadido
