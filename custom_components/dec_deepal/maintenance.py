@@ -52,11 +52,19 @@ MAX_HISTORY: Final = 30
 class Operation:
     """Una operación del plan de mantenimiento."""
 
-    name: str
+    #: Nombre por idioma (``{"es": ..., "en": ..., "pt": ...}``).
+    names: dict[str, str]
     #: Cada cuántas revisiones toca (1 = en todas, 2 = en las pares...).
     every: int = 1
     #: Versiones a las que afecta (vacío = todas).
     trims: tuple[str, ...] = ()
+
+    def name(self, language: str = "es") -> str:
+        """Nombre en el idioma pedido; si falta, en inglés o en el primero que haya."""
+        base = language.replace("_", "-").split("-")[0].lower()
+        if base in ("ca", "gl", "eu"):  # sin traducción propia: en español
+            base = "es"
+        return self.names.get(base) or self.names.get("en") or next(iter(self.names.values()))
 
     def applies(self, number: int, trim: str | None) -> bool:
         """¿Toca en la revisión ``number`` de un coche de esta versión?"""
@@ -73,9 +81,9 @@ class MaintenancePlan:
     interval_months: int = DEFAULT_INTERVAL_MONTHS
     operations: tuple[Operation, ...] = ()
 
-    def operations_for(self, number: int, trim: str | None) -> list[str]:
-        """Operaciones de la revisión ``number`` (1 = la primera)."""
-        return [op.name for op in self.operations if op.applies(number, trim)]
+    def operations_for(self, number: int, trim: str | None, language: str = "es") -> list[str]:
+        """Operaciones de la revisión ``number`` (1 = la primera), en un idioma."""
+        return [op.name(language) for op in self.operations if op.applies(number, trim)]
 
 
 @dataclass(slots=True)

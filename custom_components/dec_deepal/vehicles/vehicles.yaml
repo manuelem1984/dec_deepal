@@ -57,7 +57,8 @@
 #                                   Cada cuánto toca la revisión (lo que llegue
 #                                   antes). Por defecto, 20000 km y 12 meses.
 #                     operaciones   Lista de lo que se hace en las revisiones:
-#                       nombre      Texto que ve el usuario.
+#                       nombre      Texto que ve el usuario. Uno solo (español)
+#                                   o uno por idioma: {es: ..., en: ..., pt: ...}.
 #                       cada        (opcional) Cada cuántas revisiones toca:
 #                                   1 = en todas (por defecto), 2 = en la 2.ª,
 #                                   4.ª, 6.ª..., 3 = en la 3.ª, 6.ª, 9.ª...
@@ -133,20 +134,47 @@ modelos:
       intervalo_km: 20000
       intervalo_meses: 12
       operaciones:
-        - nombre: Inspección general (propulsión, batería, alta tensión, frenos y dirección)
-        - nombre: Neumáticos (inspección y ajuste)
-        - nombre: Filtro del aire acondicionado (revisar o cambiar)
-        - nombre: Limpieza del condensador y del evaporador
-        - nombre: Inspección de electricidad, aire acondicionado y mangueras de refrigeración
+        - nombre:
+            es: Inspección general (propulsión, batería, alta tensión, frenos y dirección)
+            en: General inspection (drive unit, battery, high voltage, brakes and steering)
+            pt: Inspeção geral (propulsão, bateria, alta tensão, travões e direção)
+        - nombre:
+            es: Neumáticos (inspección y ajuste)
+            en: Tyres (inspection and adjustment)
+            pt: Pneus (inspeção e ajuste)
+        - nombre:
+            es: Filtro del aire acondicionado (revisar o cambiar)
+            en: Cabin air filter (check or replace)
+            pt: Filtro do ar condicionado (verificar ou substituir)
+        - nombre:
+            es: Limpieza del condensador y del evaporador
+            en: Condenser and evaporator cleaning
+            pt: Limpeza do condensador e do evaporador
+        - nombre:
+            es: Inspección de electricidad, aire acondicionado y mangueras de refrigeración
+            en: Inspection of electrics, air conditioning and coolant hoses
+            pt: Inspeção da parte elétrica, do ar condicionado e das mangueiras de refrigeração
           cada: 2
-        - nombre: Cambio del líquido de frenos (cada 2 años o 40.000 km)
+        - nombre:
+            es: Cambio del líquido de frenos (cada 2 años o 40.000 km)
+            en: Brake fluid change (every 2 years or 40,000 km)
+            pt: Substituição do líquido dos travões (a cada 2 anos ou 40.000 km)
           cada: 2
-        - nombre: Cambio del líquido refrigerante (cada 3 años u 80.000 km)
+        - nombre:
+            es: Cambio del líquido refrigerante (cada 3 años u 80.000 km)
+            en: Coolant change (every 3 years or 80,000 km)
+            pt: Substituição do líquido de refrigeração (a cada 3 anos ou 80.000 km)
           cada: 3
-        - nombre: Cambio del aceite del reductor delantero (cada 3 años o 60.000 km)
+        - nombre:
+            es: Cambio del aceite del reductor delantero (cada 3 años o 60.000 km)
+            en: Front reduction gear oil change (every 3 years or 60,000 km)
+            pt: Substituição do óleo do redutor dianteiro (a cada 3 anos ou 60.000 km)
           cada: 3
           versiones: [max_awd]
-        - nombre: Cambio del aceite del reductor trasero (cada 5 años o 100.000 km)
+        - nombre:
+            es: Cambio del aceite del reductor trasero (cada 5 años o 100.000 km)
+            en: Rear reduction gear oil change (every 5 years or 100,000 km)
+            pt: Substituição do óleo do redutor traseiro (a cada 5 anos ou 100.000 km)
           cada: 5
     versiones:
       pro:

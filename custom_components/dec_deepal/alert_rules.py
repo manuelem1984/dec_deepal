@@ -164,6 +164,29 @@ TEXTS: Final[dict[str, dict[str, str]]] = {
         "or": " o ",
         "and": " y ",
     },
+    "pt": {
+        ALERT_CHARGE_STARTED: "Carregamento iniciado{battery}.",
+        ALERT_CHARGE_INTERRUPTED: "Carregamento interrompido{battery}.",
+        ALERT_CHARGE_FINISHED: "Carregamento terminado{battery}.",
+        "battery": " (bateria a {level} %)",
+        ALERT_WARNINGS: "Luz de aviso acesa: {names}.",
+        ALERT_TIRES: "Aviso dos pneus: {names}.",
+        ALERT_KEY_BATTERY: "Pilha da chave fraca. Substitua-a por uma CR2032.",
+        "maintenance_remaining": "Faltam {parts} para a {ordinal} revisão.",
+        "maintenance_overdue": "Manutenção vencida: a {ordinal} revisão devia ter sido feita a {date} ou aos {km} km.",
+        "itv_remaining": "Faltam {days} para a ITV (limite: {date}).",
+        "itv_today": "Hoje é o último dia para fazer a ITV.",
+        "itv_overdue": "ITV vencida desde {date}.",
+        "insurance_cancel": "Seguro: faltam {days} para poder cancelar (até {deadline}). Renova a {renewal}.",
+        "insurance_last_day": "Seguro: hoje é o último dia para avisar {company} se não quiser renovar.",
+        "insurance_renewed": "Seguro renovado hoje. Próxima renovação: {renewal}.",
+        "your_insurer": "a sua seguradora",
+        "km": "{value} km",
+        "days": "{value} dias",
+        "day": "1 dia",
+        "or": " ou ",
+        "and": " e ",
+    },
     "en": {
         ALERT_CHARGE_STARTED: "Charging started{battery}.",
         ALERT_CHARGE_INTERRUPTED: "Charging interrupted{battery}.",
@@ -193,20 +216,37 @@ TEXTS: Final[dict[str, dict[str, str]]] = {
 ENGLISH_SUFFIXES: Final = {1: "st", 2: "nd", 3: "rd"}
 
 
+#: Idiomas que se muestran en español mientras no tengan traducción propia
+#: (catalán, gallego y euskera): sus usuarios lo prefieren al inglés.
+SPANISH_FALLBACK: Final = frozenset({"ca", "gl", "eu"})
+
+
+def language_base(language: str) -> str:
+    """``"pt-BR"`` → ``"pt"``; catalán, gallego y euskera → ``"es"``."""
+    base = language.replace("_", "-").split("-")[0].lower()
+    return "es" if base in SPANISH_FALLBACK else base
+
+
 def _texts(language: str) -> dict[str, str]:
-    return TEXTS.get(language.split("-")[0].lower(), TEXTS["es"])
+    """Textos del idioma; si no está, en inglés (como hace Home Assistant).
+
+    Catalán, gallego y euskera usan el español (ver :data:`SPANISH_FALLBACK`).
+    """
+    return TEXTS.get(language_base(language), TEXTS["en"])
 
 
 def format_number(value: float, language: str) -> str:
     """Entero con separador de miles: ``2.000`` en español, ``2,000`` en inglés."""
     text = f"{round(value):,}"
-    return text if language.lower().startswith("en") else text.replace(",", ".")
+    return text.replace(",", ".") if language_base(language) in ("es", "pt") else text
 
 
 def ordinal(number: int, language: str) -> str:
-    """``2ª`` en español; ``2nd`` en inglés."""
-    if not language.lower().startswith("en"):
+    """``2ª`` en español, ``2.ª`` en portugués y ``2nd`` en inglés (y demás)."""
+    if language_base(language) == "es":
         return f"{number}ª"
+    if language_base(language) == "pt":
+        return f"{number}.ª"
     if 10 <= number % 100 <= 20:
         return f"{number}th"
     return f"{number}{ENGLISH_SUFFIXES.get(number % 10, 'th')}"

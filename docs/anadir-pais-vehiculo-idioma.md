@@ -88,9 +88,32 @@ Notas:
 - `en.json` es el idioma de **respaldo**: Home Assistant lo usa si no existe
   el del usuario. Hoy contiene el texto en español; cuando se traduzca al
   inglés, los usuarios con otros idiomas verán inglés.
-- `strings.json` es el idioma base del código; mantenlo igual que `es.json`.
+- `strings.json` es el idioma base de Home Assistant: **inglés**. Debe ser
+  idéntico a `translations/en.json` (lo comprueba `tests/test_translations.py`).
 - Los nombres de modelos, versiones y colores vienen de `vehicles.yaml` (son
   nombres comerciales, no se traducen). Sus descripciones sí se podrían
   traducir en el futuro añadiendo campos por idioma.
 - Los catálogos YAML y la documentación están en español por decisión del
   proyecto (comunidad española).
+
+## Dónde hay texto (los cuatro sitios)
+
+Hoy hay tres idiomas: español (`es`), inglés (`en`) y portugués de Portugal
+(`pt`). Para añadir otro hay que traducir en los cuatro sitios; la prueba
+`tests/test_translations.py` falla si a un idioma le falta algún texto o
+algún marcador (`{vehicle}`, `{days}`...).
+
+| Dónde | Qué contiene | Qué idioma se usa |
+|---|---|---|
+| `translations/<idioma>.json` | Configurar, entidades, errores, acciones | El del usuario |
+| `alert_rules.py` → `TEXTS` | Avisos al móvil | El general de Home Assistant |
+| `frontend_card/dec-deepal-card.js` → `TEXTS` | La tarjeta | El del usuario |
+| `vehicles/vehicles.yaml` → `nombre: {es, en, pt}` | Operaciones de mantenimiento | El general de Home Assistant |
+
+Si falta el idioma de alguien, se usa el inglés (igual que hace Home
+Assistant con sus propios textos). **Excepción:** catalán (`ca`), gallego
+(`gl`) y euskera (`eu`) se muestran en español. Para eso `translations/`
+lleva `ca.json`, `gl.json` y `eu.json`, que son **copias exactas** de
+`es.json` (al cambiar un texto en español hay que volver a copiarlos; la
+prueba lo comprueba), y el código de los avisos, del catálogo y de la tarjeta
+trata esos tres idiomas como español.

@@ -3,6 +3,32 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b8] — 2026-10-10
+
+### Añadido
+
+- **Idiomas: inglés y portugués (de Portugal)**, además del español. Se usa
+  el idioma que cada usuario tenga en Home Assistant. Está traducido todo:
+  los menús de Configurar, los nombres de las entidades, los errores, los
+  avisos al móvil, la tarjeta y las operaciones del plan de mantenimiento.
+- La tarjeta elige el idioma por usuario: dos personas con idiomas distintos
+  ven cada una el suyo en el mismo panel.
+
+### Cambiado
+
+- Hasta ahora el "inglés" de la integración era el mismo texto en español.
+  Con Home Assistant en **catalán, gallego o euskera** la integración se
+  sigue viendo en español. En cualquier otro idioma sin traducción pasa a
+  verse en inglés (antes, en español).
+- Los avisos al móvil y las operaciones de mantenimiento salen en el idioma
+  general de Home Assistant (*Ajustes → Sistema → General*), no en el de cada
+  usuario.
+
+### Pendiente de revisar
+
+- El portugués y el inglés los ha traducido el proyecto; conviene que alguien
+  nativo revise los términos del coche y del seguro.
+
 ## [2.3.0b7] — 2026-10-10
 
 ### Añadido

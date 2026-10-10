@@ -42,6 +42,10 @@
 // el usuario renombre la entidad. La tarjeta busca, entre las entidades del
 // dispositivo elegido, la de cada clave (hass.entities).
 //
+// Idiomas: español, inglés y portugués (tabla TEXTS, más abajo). Se usa el
+// idioma del usuario en Home Assistant; catalán, gallego y euskera se ven en
+// español; cualquier otro, en inglés.
+//
 // Sin herramientas de compilación: JavaScript plano en un solo archivo, sin
 // dependencias. Lo carga dec-icons.js (ver frontend.py).
 // =============================================================================
@@ -52,6 +56,7 @@
 
   const DOMAIN = "dec_deepal";
 
+  // (En HOTSPOTS y DUE, "label" es la clave del texto en TEXTS.)
   // Recorte de la vista interior (1125×1500) que se enseña en "Confort" y
   // posición de cada botón sobre ese recorte, en % (Deepal S05).
   const INTERIOR = { width: 1125, height: 1500, crop: { x: 190, y: 300, w: 745, h: 560 } };
@@ -59,11 +64,11 @@
   // de abajo, dejando sitio arriba para el capó y el portón abiertos.
   const ISOMETRIC = { width: 750, height: 500, crop: { x: 10, y: 40, w: 730, h: 405 } };
   const HOTSPOTS = [
-    { key: "switch.steering_wheel_heat", icon: "mdi:steering", x: 27.4, y: 16, label: "Volante calefactado" },
-    { key: "number.seat_vent_driver", icon: "mdi:fan", x: 21.3, y: 57.5, label: "Ventilación asiento conductor" },
-    { key: "number.seat_heat_driver", icon: "mdi:heat-wave", x: 30.8, y: 57.5, label: "Calefacción asiento conductor" },
-    { key: "number.seat_vent_passenger", icon: "mdi:fan", x: 67, y: 57.5, label: "Ventilación asiento acompañante" },
-    { key: "number.seat_heat_passenger", icon: "mdi:heat-wave", x: 76.5, y: 57.5, label: "Calefacción asiento acompañante" },
+    { key: "switch.steering_wheel_heat", icon: "mdi:steering", x: 27.4, y: 16, label: "wheel_heat" },
+    { key: "number.seat_vent_driver", icon: "mdi:fan", x: 21.3, y: 57.5, label: "seat_vent_driver" },
+    { key: "number.seat_heat_driver", icon: "mdi:heat-wave", x: 30.8, y: 57.5, label: "seat_heat_driver" },
+    { key: "number.seat_vent_passenger", icon: "mdi:fan", x: 67, y: 57.5, label: "seat_vent_passenger" },
+    { key: "number.seat_heat_passenger", icon: "mdi:heat-wave", x: 76.5, y: 57.5, label: "seat_heat_passenger" },
   ];
 
   // Testigos de la línea de estado. "red" = grave; el resto, ámbar.
@@ -100,25 +105,417 @@
   const INSURANCE = "binary_sensor.insurance_due";
   // Testigos de vencimiento, en el orden en que salen. Todos se pueden pulsar.
   const DUE = [
-    { key: MAINTENANCE, action: "maintenance", icon: "mdi:wrench", label: "Mantenimiento" },
-    { key: ITV, action: "itv", icon: "mdi:clipboard-check-outline", label: "ITV" },
-    { key: INSURANCE, action: "insurance", icon: "mdi:shield-car", label: "Seguro" },
+    { key: MAINTENANCE, action: "maintenance", icon: "mdi:wrench", label: "maintenance" },
+    { key: ITV, action: "itv", icon: "mdi:clipboard-check-outline", label: "itv" },
+    { key: INSURANCE, action: "insurance", icon: "mdi:shield-car", label: "insurance" },
   ];
-  const INSURANCE_KINDS = {
-    third_party: "Terceros",
-    third_party_plus: "Terceros ampliado",
-    comprehensive_excess: "Todo riesgo con franquicia",
-    comprehensive: "Todo riesgo sin franquicia",
+  // ---------------------------------------------------------------------------
+  // Textos por idioma
+  // ---------------------------------------------------------------------------
+  // Se usa el idioma del usuario en Home Assistant. Si no está aquí, inglés
+  // (como hace Home Assistant con el resto de la integración).
+  // Para añadir un idioma: copiar un bloque entero y traducir los textos; las
+  // claves y lo que va entre llaves ({name}, {days}...) no se tocan.
+  const TEXTS = {
+    es: {
+      card_description: "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",
+      car: "Coche",
+      not_found: "No encuentro el coche. Elige uno en la configuración de la tarjeta.",
+      refresh: "Actualizar datos del vehículo",
+      updated: "Actualizado: {when}",
+      today: "hoy, {time}",
+      yesterday: "ayer, {time}",
+      comfort: "Confort",
+      lock: "Bloqueo",
+      trunk: "Maletero",
+      vent: "Ventilar",
+      locate: "Localizar vehículo",
+      others: "Otros",
+      on: "Encendido",
+      off: "Apagado",
+      seats: "Asientos",
+      unlocked: "Desbloqueado",
+      locked: "Bloqueado",
+      trunk_open: "Abierto",
+      trunk_closed: "Cerrado",
+      venting: "Ventilando",
+      windows_open: "Abiertas",
+      windows_closed: "Cerradas",
+      lights_horn: "Luces y claxon",
+      others_default: "Manual y documentos",
+      day: "1 día",
+      days: "{count} días",
+      close: "Cerrar",
+      cancel: "Cancelar",
+      understood: "Entendido",
+      command_failed: "No se pudo enviar la orden al coche.",
+      no_pin: "Activa el control con PIN en Configurar (integración DEC Deepal) para usar este botón.",
+      pin_confirm: "Se enviará la orden a {name} con tu PIN guardado. El coche puede tardar unos segundos en responder.",
+      lock_q: "¿Bloquear las puertas?",
+      lock_do: "Bloquear",
+      unlock_q: "¿Desbloquear las puertas?",
+      unlock_do: "Desbloquear",
+      trunk_close_q: "¿Cerrar el maletero?",
+      trunk_open_q: "¿Abrir el maletero?",
+      open_do: "Abrir",
+      windows_close_q: "¿Cerrar las ventanillas?",
+      vent_q: "¿Entreabrir las ventanillas para ventilar?",
+      lights: "Luces",
+      flash: "Parpadear",
+      horn: "Claxon",
+      honk: "Tocar",
+      both: "Las dos cosas",
+      manual: "Manual",
+      open_pdf: "Abrir PDF",
+      not_enabled: "Sin activar",
+      maintenance: "Mantenimiento",
+      itv: "ITV",
+      insurance: "Seguro",
+      no_maintenance:
+        "El mantenimiento de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Mantenimiento.",
+      no_itv: "La ITV de este coche no está activada. Actívala en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → ITV.",
+      no_insurance: "El seguro de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Seguro.",
+      ordinal: "{number}ª",
+      nth_service: "{ordinal} revisión",
+      overdue_mark: " · vencida",
+      service_overdue: "Revisión vencida",
+      service_in: "Revisión en {value}",
+      days_left: "días restantes",
+      days_late: "días de retraso",
+      km_left: "km restantes",
+      km_late: "km de retraso",
+      service_planned: "Prevista el {date} o a los {km} km, lo que llegue antes.",
+      includes: "Qué incluye",
+      history: "Historial",
+      history_item: "{ordinal} revisión · {date} · {km} km",
+      register_service: "Registrar mantenimiento",
+      register_service_q: "¿Registrar la {ordinal} revisión?",
+      register_service_text:
+        "Se anotará que {name} ha pasado la revisión hoy{odometer}, y se empezará a contar para la siguiente. Si la pasó otro día, regístrala desde Configurar → Mantenimiento.",
+      with_odometer: ", con {value}",
+      register: "Registrar",
+      service_registered: "Mantenimiento registrado.",
+      service_failed: "No se pudo registrar el mantenimiento.",
+      itv_overdue: "ITV vencida",
+      itv_last_day: "ITV: último día",
+      itv_in: "ITV en {days}",
+      left: "Quedan {days}",
+      overdue: "Vencida",
+      last_day: "Último día",
+      next_itv: "Próxima ITV",
+      due_date: "fecha límite",
+      itv_rule: "Primera ITV a los 4 años de la matriculación. Después, cada 2 años hasta los 10 y cada año a partir de entonces.",
+      details: "Datos",
+      registration: "Matriculación",
+      last_itv: "Última ITV",
+      none_yet: "Aún no ha pasado ninguna",
+      register_itv: "Registrar ITV pasada",
+      register_itv_q: "¿Registrar la ITV?",
+      register_itv_text: "Se anotará que {name} ha pasado la ITV hoy y se calculará la siguiente. Si la pasó otro día, ponlo en Configurar → ITV.",
+      itv_registered: "ITV registrada.",
+      itv_failed: "No se pudo registrar la ITV.",
+      insurance_last_day: "Seguro: último día",
+      insurance_cancel: "Seguro: {days} para desistir",
+      to_cancel: "{days} para desistir",
+      renews_on: "Renueva el {date}",
+      days_to_renewal: "días para la renovación",
+      days_to_cancel: "días para desistir",
+      cancel_passed: "plazo para desistir pasado",
+      renewal_text: "Renovación el {renewal}. Para no renovar hay que avisar antes del {deadline} ({days} días antes).",
+      policy: "Póliza",
+      company: "Compañía",
+      policy_number: "Nº de póliza",
+      kind: "Tipo",
+      assistance: "Asistencia",
+      kind_third_party: "Terceros",
+      kind_third_party_plus: "Terceros ampliado",
+      kind_comprehensive_excess: "Todo riesgo con franquicia",
+      kind_comprehensive: "Todo riesgo sin franquicia",
+      wheel_heat: "Volante calefactado",
+      seat_vent_driver: "Ventilación asiento conductor",
+      seat_heat_driver: "Calefacción asiento conductor",
+      seat_vent_passenger: "Ventilación asiento acompañante",
+      seat_heat_passenger: "Calefacción asiento acompañante",
+      temp_down: "Bajar temperatura",
+      temp_up: "Subir temperatura",
+      climate_on: "Climatizador encendido",
+      climate_off: "Climatizador apagado",
+      inside: "Interior {value}",
+      humidity: "Humedad {value}",
+      fan: "Ventilador {value}",
+      recirculating: "Recirculando",
+      outside_air: "Aire exterior",
+    },
+    en: {
+      card_description: "Your Deepal at a glance: car view, battery, comfort and quick actions.",
+      car: "Car",
+      not_found: "I cannot find the car. Choose one in the card settings.",
+      refresh: "Refresh vehicle data",
+      updated: "Updated: {when}",
+      today: "today, {time}",
+      yesterday: "yesterday, {time}",
+      comfort: "Comfort",
+      lock: "Lock",
+      trunk: "Boot",
+      vent: "Vent",
+      locate: "Find vehicle",
+      others: "More",
+      on: "On",
+      off: "Off",
+      seats: "Seats",
+      unlocked: "Unlocked",
+      locked: "Locked",
+      trunk_open: "Open",
+      trunk_closed: "Closed",
+      venting: "Venting",
+      windows_open: "Open",
+      windows_closed: "Closed",
+      lights_horn: "Lights and horn",
+      others_default: "Manual and documents",
+      day: "1 day",
+      days: "{count} days",
+      close: "Close",
+      cancel: "Cancel",
+      understood: "Got it",
+      command_failed: "The command could not be sent to the car.",
+      no_pin: "Enable PIN control in Configure (DEC Deepal integration) to use this button.",
+      pin_confirm: "The command will be sent to {name} with your saved PIN. The car may take a few seconds to respond.",
+      lock_q: "Lock the doors?",
+      lock_do: "Lock",
+      unlock_q: "Unlock the doors?",
+      unlock_do: "Unlock",
+      trunk_close_q: "Close the boot?",
+      trunk_open_q: "Open the boot?",
+      open_do: "Open",
+      windows_close_q: "Close the windows?",
+      vent_q: "Open the windows slightly to vent?",
+      lights: "Lights",
+      flash: "Flash",
+      horn: "Horn",
+      honk: "Sound",
+      both: "Both",
+      manual: "Manual",
+      open_pdf: "Open PDF",
+      not_enabled: "Not enabled",
+      maintenance: "Servicing",
+      itv: "ITV",
+      insurance: "Insurance",
+      no_maintenance: "Servicing is not enabled for this car. Enable it in Settings → Devices & services → DEC Deepal → Configure → Servicing.",
+      no_itv: "ITV is not enabled for this car. Enable it in Settings → Devices & services → DEC Deepal → Configure → ITV.",
+      no_insurance: "Insurance is not enabled for this car. Enable it in Settings → Devices & services → DEC Deepal → Configure → Insurance.",
+      ordinal: "No. {number}",
+      nth_service: "Service {ordinal}",
+      overdue_mark: " · overdue",
+      service_overdue: "Service overdue",
+      service_in: "Service in {value}",
+      days_left: "days left",
+      days_late: "days overdue",
+      km_left: "km left",
+      km_late: "km overdue",
+      service_planned: "Due on {date} or at {km} km, whichever comes first.",
+      includes: "What it includes",
+      history: "History",
+      history_item: "Service {ordinal} · {date} · {km} km",
+      register_service: "Register service",
+      register_service_q: "Register service {ordinal}?",
+      register_service_text:
+        "It will be recorded that {name} was serviced today{odometer}, and the count for the next one will start. If it was done on another day, register it from Configure → Servicing.",
+      with_odometer: ", at {value}",
+      register: "Register",
+      service_registered: "Service registered.",
+      service_failed: "The service could not be registered.",
+      itv_overdue: "ITV overdue",
+      itv_last_day: "ITV: last day",
+      itv_in: "ITV in {days}",
+      left: "{days} left",
+      overdue: "Overdue",
+      last_day: "Last day",
+      next_itv: "Next ITV",
+      due_date: "due date",
+      itv_rule: "First ITV (roadworthiness test) 4 years after registration. Then every 2 years until the car is 10, and every year from then on.",
+      details: "Details",
+      registration: "Registration",
+      last_itv: "Last ITV",
+      none_yet: "None yet",
+      register_itv: "Register ITV passed",
+      register_itv_q: "Register the ITV?",
+      register_itv_text: "It will be recorded that {name} passed the ITV today and the next one will be calculated. If it was on another day, set it in Configure → ITV.",
+      itv_registered: "ITV registered.",
+      itv_failed: "The ITV could not be registered.",
+      insurance_last_day: "Insurance: last day",
+      insurance_cancel: "Insurance: {days} to cancel",
+      to_cancel: "{days} to cancel",
+      renews_on: "Renews on {date}",
+      days_to_renewal: "days until renewal",
+      days_to_cancel: "days to cancel",
+      cancel_passed: "cancellation deadline passed",
+      renewal_text: "Renewal on {renewal}. To not renew, you must give notice before {deadline} ({days} days earlier).",
+      policy: "Policy",
+      company: "Company",
+      policy_number: "Policy number",
+      kind: "Type",
+      assistance: "Assistance",
+      kind_third_party: "Third party",
+      kind_third_party_plus: "Third party, fire and theft",
+      kind_comprehensive_excess: "Comprehensive with excess",
+      kind_comprehensive: "Comprehensive without excess",
+      wheel_heat: "Heated steering wheel",
+      seat_vent_driver: "Driver seat ventilation",
+      seat_heat_driver: "Driver seat heating",
+      seat_vent_passenger: "Passenger seat ventilation",
+      seat_heat_passenger: "Passenger seat heating",
+      temp_down: "Lower temperature",
+      temp_up: "Raise temperature",
+      climate_on: "Climate control on",
+      climate_off: "Climate control off",
+      inside: "Inside {value}",
+      humidity: "Humidity {value}",
+      fan: "Fan {value}",
+      recirculating: "Recirculating",
+      outside_air: "Outside air",
+    },
+    pt: {
+      card_description: "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
+      car: "Carro",
+      not_found: "Não encontro o carro. Escolha um na configuração do cartão.",
+      refresh: "Atualizar dados do veículo",
+      updated: "Atualizado: {when}",
+      today: "hoje, {time}",
+      yesterday: "ontem, {time}",
+      comfort: "Conforto",
+      lock: "Bloqueio",
+      trunk: "Mala",
+      vent: "Ventilar",
+      locate: "Localizar veículo",
+      others: "Outros",
+      on: "Ligado",
+      off: "Desligado",
+      seats: "Bancos",
+      unlocked: "Desbloqueado",
+      locked: "Bloqueado",
+      trunk_open: "Aberta",
+      trunk_closed: "Fechada",
+      venting: "A ventilar",
+      windows_open: "Abertas",
+      windows_closed: "Fechadas",
+      lights_horn: "Luzes e buzina",
+      others_default: "Manual e documentos",
+      day: "1 dia",
+      days: "{count} dias",
+      close: "Fechar",
+      cancel: "Cancelar",
+      understood: "Entendido",
+      command_failed: "Não foi possível enviar o comando para o carro.",
+      no_pin: "Ative o controlo com PIN em Configurar (integração DEC Deepal) para usar este botão.",
+      pin_confirm: "O comando será enviado para {name} com o seu PIN guardado. O carro pode demorar alguns segundos a responder.",
+      lock_q: "Bloquear as portas?",
+      lock_do: "Bloquear",
+      unlock_q: "Desbloquear as portas?",
+      unlock_do: "Desbloquear",
+      trunk_close_q: "Fechar a mala?",
+      trunk_open_q: "Abrir a mala?",
+      open_do: "Abrir",
+      windows_close_q: "Fechar as janelas?",
+      vent_q: "Entreabrir as janelas para ventilar?",
+      lights: "Luzes",
+      flash: "Piscar",
+      horn: "Buzina",
+      honk: "Tocar",
+      both: "As duas coisas",
+      manual: "Manual",
+      open_pdf: "Abrir PDF",
+      not_enabled: "Não ativado",
+      maintenance: "Manutenção",
+      itv: "ITV",
+      insurance: "Seguro",
+      no_maintenance: "A manutenção deste carro não está ativada. Ative-a em Definições → Dispositivos e serviços → DEC Deepal → Configurar → Manutenção.",
+      no_itv: "A ITV deste carro não está ativada. Ative-a em Definições → Dispositivos e serviços → DEC Deepal → Configurar → ITV.",
+      no_insurance: "O seguro deste carro não está ativado. Ative-o em Definições → Dispositivos e serviços → DEC Deepal → Configurar → Seguro.",
+      ordinal: "{number}.ª",
+      nth_service: "{ordinal} revisão",
+      overdue_mark: " · vencida",
+      service_overdue: "Revisão vencida",
+      service_in: "Revisão em {value}",
+      days_left: "dias restantes",
+      days_late: "dias de atraso",
+      km_left: "km restantes",
+      km_late: "km de atraso",
+      service_planned: "Prevista para {date} ou aos {km} km, o que ocorrer primeiro.",
+      includes: "O que inclui",
+      history: "Histórico",
+      history_item: "{ordinal} revisão · {date} · {km} km",
+      register_service: "Registar manutenção",
+      register_service_q: "Registar a {ordinal} revisão?",
+      register_service_text:
+        "Ficará anotado que {name} fez a revisão hoje{odometer}, e começa a contagem para a seguinte. Se foi noutro dia, registe-a em Configurar → Manutenção.",
+      with_odometer: ", com {value}",
+      register: "Registar",
+      service_registered: "Manutenção registada.",
+      service_failed: "Não foi possível registar a manutenção.",
+      itv_overdue: "ITV vencida",
+      itv_last_day: "ITV: último dia",
+      itv_in: "ITV em {days}",
+      left: "Faltam {days}",
+      overdue: "Vencida",
+      last_day: "Último dia",
+      next_itv: "Próxima ITV",
+      due_date: "data limite",
+      itv_rule: "Primeira ITV (inspeção periódica) 4 anos após a matrícula. Depois, de 2 em 2 anos até aos 10 e todos os anos a partir daí.",
+      details: "Dados",
+      registration: "Matrícula",
+      last_itv: "Última ITV",
+      none_yet: "Ainda não fez nenhuma",
+      register_itv: "Registar ITV feita",
+      register_itv_q: "Registar a ITV?",
+      register_itv_text: "Ficará anotado que {name} passou na ITV hoje e será calculada a seguinte. Se foi noutro dia, indique-o em Configurar → ITV.",
+      itv_registered: "ITV registada.",
+      itv_failed: "Não foi possível registar a ITV.",
+      insurance_last_day: "Seguro: último dia",
+      insurance_cancel: "Seguro: {days} para cancelar",
+      to_cancel: "{days} para cancelar",
+      renews_on: "Renova a {date}",
+      days_to_renewal: "dias até à renovação",
+      days_to_cancel: "dias para cancelar",
+      cancel_passed: "prazo para cancelar ultrapassado",
+      renewal_text: "Renovação a {renewal}. Para não renovar é preciso avisar antes de {deadline} ({days} dias antes).",
+      policy: "Apólice",
+      company: "Seguradora",
+      policy_number: "N.º da apólice",
+      kind: "Tipo",
+      assistance: "Assistência",
+      kind_third_party: "Terceiros",
+      kind_third_party_plus: "Terceiros alargado",
+      kind_comprehensive_excess: "Danos próprios com franquia",
+      kind_comprehensive: "Danos próprios sem franquia",
+      wheel_heat: "Volante aquecido",
+      seat_vent_driver: "Ventilação do banco do condutor",
+      seat_heat_driver: "Aquecimento do banco do condutor",
+      seat_vent_passenger: "Ventilação do banco do passageiro",
+      seat_heat_passenger: "Aquecimento do banco do passageiro",
+      temp_down: "Baixar a temperatura",
+      temp_up: "Subir a temperatura",
+      climate_on: "Climatização ligada",
+      climate_off: "Climatização desligada",
+      inside: "Interior {value}",
+      humidity: "Humidade {value}",
+      fan: "Ventilador {value}",
+      recirculating: "A recircular",
+      outside_air: "Ar exterior",
+    },
   };
 
-  const NO_ITV = "La ITV de este coche no está activada. Actívala en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → ITV.";
-  const NO_INSURANCE =
-    "El seguro de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Seguro.";
-  const NO_MAINTENANCE =
-    "El mantenimiento de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Mantenimiento.";
+  // Catalán, gallego y euskera se muestran en español mientras no tengan
+  // traducción propia (igual que el resto de la integración).
+  const SPANISH_FALLBACK = ["ca", "gl", "eu"];
 
-  const PIN_NOTE = "con tu PIN guardado. El coche puede tardar unos segundos en responder.";
-  const NO_PIN = "Activa el control con PIN en Configurar (integración DEC Deepal) para usar este botón.";
+  /** Texto en el idioma pedido ("pt-BR" → "pt"); si falta, inglés. */
+  const translate = (language, key, values) => {
+    const base = String(language || "en").toLowerCase().split("-")[0];
+    const table = TEXTS[SPANISH_FALLBACK.includes(base) ? "es" : base] || TEXTS.en;
+    let text = key in table ? table[key] : TEXTS.en[key] !== undefined ? TEXTS.en[key] : key;
+    for (const [name, value] of Object.entries(values || {})) text = text.split(`{${name}}`).join(String(value));
+    return text;
+  };
 
   const escapeHtml = (text) =>
     String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -290,7 +687,7 @@
     static getConfigForm() {
       return {
         schema: [{ name: "device_id", selector: { device: { filter: [{ integration: DOMAIN }] } } }],
-        computeLabel: () => "Coche",
+        computeLabel: () => translate(document.documentElement.lang, "car"),
       };
     }
 
@@ -371,6 +768,36 @@
       return this._hass.formatEntityState ? this._hass.formatEntityState(state) : state.state;
     }
 
+    _language() {
+      return (this._hass && this._hass.locale && this._hass.locale.language) || "en";
+    }
+
+    /**
+     * Idioma para escribir fechas con nombre de mes: el del usuario si la
+     * tarjeta está traducida a él; si no, el del texto que se enseña (así no
+     * sale "Renueva el 14 de març" con el texto en español).
+     */
+    _dateLanguage() {
+      const language = this._language();
+      const base = language.toLowerCase().split("-")[0];
+      if (TEXTS[base]) return language;
+      return SPANISH_FALLBACK.includes(base) ? "es" : "en";
+    }
+
+    /** Texto traducido. Las claves están en la tabla TEXTS. */
+    _t(key, values) {
+      return translate(this._language(), key, values);
+    }
+
+    _ordinal(number) {
+      return this._t("ordinal", { number });
+    }
+
+    /** Nombre del coche en negrita, para meterlo en una frase. */
+    _boldName() {
+      return `<b style="font-weight:500;color:var(--primary-text-color)">${escapeHtml(this._name())}</b>`;
+    }
+
     _name() {
       const device = (this._hass.devices || {})[this._deviceId()];
       return (device && (device.name_by_user || device.name)) || "Deepal";
@@ -383,6 +810,7 @@
       if (this._registry !== this._hass.entities) this._discover();
       const tracked = Object.values(this._ids).map((entityId) => this._hass.states[entityId]);
       const changed = tracked.length !== this._seen.length || tracked.some((state, index) => state !== this._seen[index]);
+      if (this._builtLanguage !== this._language()) this._built = false; // cambió el idioma
       if (!this._built) this._build();
       else if (!changed && !this._dirty) return;
       this._seen = tracked;
@@ -394,14 +822,15 @@
     _build() {
       this._built = true;
       this._statusSignature = undefined;
-      const tile = (action, label) =>
-        `<button class="tile" data-action="${action}"><ha-icon></ha-icon><b>${label}</b><small></small></button>`;
+      this._builtLanguage = this._language();
+      const tile = (action) =>
+        `<button class="tile" data-action="${action}"><ha-icon></ha-icon><b>${this._t(action)}</b><small></small></button>`;
       this.shadowRoot.innerHTML = `
         <style>${CARD_CSS}</style>
         <ha-card>
           <div class="hdr">
             <div class="grow"><div class="name"></div><div class="upd"></div></div>
-            <button class="icon-btn" data-action="refresh" aria-label="Actualizar datos del vehículo"><ha-icon icon="mdi:refresh"></ha-icon></button>
+            <button class="icon-btn" data-action="refresh" aria-label="${this._t("refresh")}"><ha-icon icon="mdi:refresh"></ha-icon></button>
           </div>
           <div class="carbox" hidden><img class="car" alt=""></div>
           <div class="msg" hidden></div>
@@ -412,8 +841,8 @@
           </div>
           <div class="bar"><i></i></div>
           <div class="tiles">
-            ${tile("comfort", "Confort")}${tile("lock", "Bloqueo")}${tile("trunk", "Maletero")}
-            ${tile("vent", "Ventilar")}${tile("locate", "Localizar vehículo")}${tile("others", "Otros")}
+            ${tile("comfort")}${tile("lock")}${tile("trunk")}
+            ${tile("vent")}${tile("locate")}${tile("others")}
           </div>
         </ha-card>`;
     }
@@ -422,9 +851,9 @@
       const $ = (selector) => this.shadowRoot.querySelector(selector);
       const found = Object.keys(this._ids).length > 0;
       $(".msg").hidden = found;
-      $(".msg").textContent = found ? "" : "No encuentro el coche. Elige uno en la configuración de la tarjeta.";
+      $(".msg").textContent = found ? "" : this._t("not_found");
       $(".name").textContent = this._name();
-      $(".upd").textContent = `Actualizado: ${this._updatedText()}`;
+      $(".upd").textContent = this._t("updated", { when: this._updatedText() });
       $('[data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
 
       // Imagen: vista isométrica (o, si no existe, la imagen DEC).
@@ -463,7 +892,7 @@
         const icons = active.map((warning) => `<ha-icon icon="${warning.icon}" style="color:${warning.color}"></ha-icon>`);
         for (const item of due)
           icons.push(
-            `<button data-action="${item.action}" aria-label="${item.label}"><ha-icon icon="${item.icon}" style="color:${item.level === "overdue" ? RED : AMBER}"></ha-icon></button>`
+            `<button data-action="${item.action}" aria-label="${this._t(item.label)}"><ha-icon icon="${item.icon}" style="color:${item.level === "overdue" ? RED : AMBER}"></ha-icon></button>`
           );
         $(".status").innerHTML = icons.length ? icons.join("") : '<ha-icon class="ok" icon="mdi:check-circle"></ha-icon>';
       }
@@ -487,8 +916,8 @@
       const target = climate && climate.attributes.temperature;
       const inside = this._format("sensor.inside_temperature");
       const comfortText = climateOn
-        ? `Encendido${target != null ? ` · ${this._temp(target)} °C` : ""}`
-        : `${comfortOn ? "Asientos" : "Apagado"}${inside ? ` · ${inside}` : ""}`;
+        ? `${this._t("on")}${target != null ? ` · ${this._temp(target)} °C` : ""}`
+        : `${this._t(comfortOn ? "seats" : "off")}${inside ? ` · ${inside}` : ""}`;
 
       const lock = this._value("lock.doors");
       const central = this._value("binary_sensor.central_locking"); // on = desbloqueado
@@ -506,13 +935,13 @@
         comfort: { icon: "mdi:sun-snowflake-variant", text: comfortText, primary: true },
         lock: {
           icon: unlocked ? "mdi:lock-open-variant" : "mdi:lock",
-          text: lockKnown ? (unlocked ? "Desbloqueado" : "Bloqueado") : "—",
+          text: lockKnown ? this._t(unlocked ? "unlocked" : "locked") : "—",
           on: lockKnown && unlocked,
         },
-        trunk: { icon: trunkOpen ? "dec:trunk_open" : "dec:trunk_closed", text: trunkOpen ? "Abierto" : "Cerrado", on: trunkOpen },
-        vent: { icon: "mdi:weather-windy", text: venting ? "Ventilando" : anyWindow ? "Abiertas" : "Cerradas", on: venting || anyWindow },
-        locate: { icon: "mdi:car-search", text: "Luces y claxon" },
-        others: { icon: "mdi:dots-horizontal", text: this._othersShort() || "Manual y documentos" },
+        trunk: { icon: trunkOpen ? "dec:trunk_open" : "dec:trunk_closed", text: this._t(trunkOpen ? "trunk_open" : "trunk_closed"), on: trunkOpen },
+        vent: { icon: "mdi:weather-windy", text: this._t(venting ? "venting" : anyWindow ? "windows_open" : "windows_closed"), on: venting || anyWindow },
+        locate: { icon: "mdi:car-search", text: this._t("lights_horn") },
+        others: { icon: "mdi:dots-horizontal", text: this._othersShort() || this._t("others_default") },
       };
     }
 
@@ -533,41 +962,49 @@
     }
 
     _days(count) {
-      return `${count} ${Math.abs(count) === 1 ? "día" : "días"}`;
+      return Math.abs(count) === 1 ? this._t("day") : this._t("days", { count: Math.abs(count) });
     }
 
-    _itvShort() {
+    /** ITV en una línea. Con ``named`` lleva delante "ITV" (para el botón "Otros"). */
+    _itvShort(named = true) {
       const data = (this._state(ITV) || { attributes: {} }).attributes;
       if (data.dias_restantes == null) return "";
-      if (data.dias_restantes < 0) return "ITV vencida";
-      return data.dias_restantes === 0 ? "ITV: último día" : `ITV en ${this._days(data.dias_restantes)}`;
+      if (data.dias_restantes < 0) return this._t(named ? "itv_overdue" : "overdue");
+      if (data.dias_restantes === 0) return this._t(named ? "itv_last_day" : "last_day");
+      return this._t(named ? "itv_in" : "left", { days: this._days(data.dias_restantes) });
     }
 
-    _insuranceShort() {
+    /** Seguro en una línea. Con ``named`` lleva delante "Seguro". */
+    _insuranceShort(named = true) {
       const data = (this._state(INSURANCE) || { attributes: {} }).attributes;
       if (data.dias_desistimiento == null) return "";
-      if (data.dias_desistimiento === 0) return "Seguro: último día";
-      if (data.dias_desistimiento > 0 && data.nivel !== "ok") return `Seguro: ${this._days(data.dias_desistimiento)} para desistir`;
-      return `Renueva el ${this._day(data.renovacion)}`;
+      if (data.dias_desistimiento === 0) return this._t(named ? "insurance_last_day" : "last_day");
+      if (data.dias_desistimiento > 0 && data.nivel !== "ok")
+        return this._t(named ? "insurance_cancel" : "to_cancel", { days: this._days(data.dias_desistimiento) });
+      return this._t("renews_on", { date: this._day(data.renovacion) });
     }
 
     /** Fecha ISO ("2027-03-14") como "14 mar 2027". */
     _day(iso) {
       if (!iso) return "—";
-      const language = (this._hass.locale && this._hass.locale.language) || "es";
-      return new Date(`${iso}T00:00:00`).toLocaleDateString(language, { day: "numeric", month: "short", year: "numeric" });
+      return new Date(`${iso}T00:00:00`).toLocaleDateString(this._dateLanguage(), { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    /** Número entero con separador de miles, según el idioma. */
+    _thousands(value) {
+      return Math.abs(Number(value)).toLocaleString(this._language(), { useGrouping: "always" });
     }
 
     /** Resumen corto del mantenimiento, solo si la revisión está próxima o vencida. */
     _maintenanceShort() {
       if (this._value(MAINTENANCE) !== "on") return "";
       const data = this._state(MAINTENANCE).attributes;
-      if (data.nivel === "overdue") return "Revisión vencida";
+      if (data.nivel === "overdue") return this._t("service_overdue");
       const days = Number(data.dias_restantes);
       const km = data.km_restantes;
       // Se enseña lo que antes llegue a los escalones de aviso.
-      if (km != null && Number(km) <= 3000 && days > 60) return `Revisión en ${Number(km).toLocaleString("es", { useGrouping: "always" })} km`;
-      return `Revisión en ${days} ${days === 1 ? "día" : "días"}`;
+      if (km != null && Number(km) <= 3000 && days > 60) return this._t("service_in", { value: `${this._thousands(km)} km` });
+      return this._t("service_in", { value: this._days(days) });
     }
 
     _batteryIcon(level, charging) {
@@ -585,20 +1022,19 @@
     }
 
     _temp(value) {
-      const language = (this._hass.locale && this._hass.locale.language) || "es";
-      return Number(value).toLocaleString(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      return Number(value).toLocaleString(this._language(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     }
 
     _updatedText() {
       const raw = this._value("sensor.last_update");
       const date = raw ? new Date(raw) : undefined;
       if (!date || Number.isNaN(date.getTime())) return "—";
-      const language = (this._hass.locale && this._hass.locale.language) || "es";
+      const language = this._dateLanguage();
       const time = date.toLocaleTimeString(language, { hour: "numeric", minute: "2-digit" });
       const startOfDay = (value) => new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
       const days = Math.round((startOfDay(new Date()) - startOfDay(date)) / 86400000);
-      if (days === 0) return `hoy, ${time}`;
-      if (days === 1) return `ayer, ${time}`;
+      if (days === 0) return this._t("today", { time });
+      if (days === 1) return this._t("yesterday", { time });
       return `${date.toLocaleDateString(language, { day: "numeric", month: "short" })}, ${time}`;
     }
 
@@ -617,7 +1053,7 @@
         await this._hass.callService(domain, service, { entity_id: entityId, ...(data || {}) });
         return true;
       } catch (error) {
-        this._toast((error && error.message) || "No se pudo enviar la orden al coche.");
+        this._toast((error && error.message) || this._t("command_failed"));
         return false;
       } finally {
         this._busy.delete(busyKey);
@@ -632,11 +1068,11 @@
 
     /** Orden con PIN: confirmación y, si hace falta, el desbloqueo previo. */
     _pinCommand(busyKey, title, button, domain, service, key) {
-      if (!this._ids[key]) return this._toast(NO_PIN);
+      if (!this._ids[key]) return this._toast(this._t("no_pin"));
       const html = `
         <div class="confirm"><h2>${escapeHtml(title)}</h2>
-          <p>Se enviará la orden a <b style="font-weight:500;color:var(--primary-text-color)">${escapeHtml(this._name())}</b> ${PIN_NOTE}</p></div>
-        <div class="btns"><button class="tb" data-action="close">Cancelar</button><button class="tb fill" data-action="ok">${escapeHtml(button)}</button></div>`;
+          <p>${this._t("pin_confirm", { name: this._boldName() })}</p></div>
+        <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${escapeHtml(button)}</button></div>`;
       openDialog(html, async (action, _target, dialog) => {
         if (action !== "ok") return;
         dialog.close();
@@ -659,17 +1095,17 @@
           this._openComfort();
           break;
         case "lock":
-          if (tiles.lock.on) this._pinCommand("lock", "¿Bloquear las puertas?", "Bloquear", "lock", "lock", "lock.doors");
-          else this._pinCommand("lock", "¿Desbloquear las puertas?", "Desbloquear", "lock", "unlock", "lock.doors");
+          if (tiles.lock.on) this._pinCommand("lock", this._t("lock_q"), this._t("lock_do"), "lock", "lock", "lock.doors");
+          else this._pinCommand("lock", this._t("unlock_q"), this._t("unlock_do"), "lock", "unlock", "lock.doors");
           break;
         case "trunk":
-          if (tiles.trunk.on) this._pinCommand("trunk", "¿Cerrar el maletero?", "Cerrar", "cover", "close_cover", "cover.trunk_control");
-          else this._pinCommand("trunk", "¿Abrir el maletero?", "Abrir", "cover", "open_cover", "cover.trunk_control");
+          if (tiles.trunk.on) this._pinCommand("trunk", this._t("trunk_close_q"), this._t("close"), "cover", "close_cover", "cover.trunk_control");
+          else this._pinCommand("trunk", this._t("trunk_open_q"), this._t("open_do"), "cover", "open_cover", "cover.trunk_control");
           break;
         case "vent":
           // Persiana invertida: open_cover SUBE los cristales; close_cover los entreabre.
-          if (tiles.vent.on) this._pinCommand("vent", "¿Cerrar las ventanillas?", "Cerrar", "cover", "open_cover", "cover.windows");
-          else this._pinCommand("vent", "¿Entreabrir las ventanillas para ventilar?", "Ventilar", "cover", "close_cover", "cover.windows");
+          if (tiles.vent.on) this._pinCommand("vent", this._t("windows_close_q"), this._t("close"), "cover", "open_cover", "cover.windows");
+          else this._pinCommand("vent", this._t("vent_q"), this._t("vent"), "cover", "close_cover", "cover.windows");
           break;
         case "locate":
           this._openLocate();
@@ -698,11 +1134,11 @@
           ? `<button class="tile" data-action="go" data-key="${key}"><ha-icon icon="${icon}"></ha-icon><b>${label}</b><small>${text}</small></button>`
           : "";
       const html = `
-        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Localizar vehículo</h2></div>
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button><h2>${this._t("locate")}</h2></div>
         <div class="three">
-          ${option("button.flash_lights", "mdi:alarm-light-outline", "Luces", "Parpadear")}
-          ${option("button.honk_horn", "mdi:bullhorn", "Claxon", "Tocar")}
-          ${option("button.flash_and_honk", "mdi:alarm-light", "Luces y claxon", "Las dos cosas")}
+          ${option("button.flash_lights", "mdi:alarm-light-outline", this._t("lights"), this._t("flash"))}
+          ${option("button.honk_horn", "mdi:bullhorn", this._t("horn"), this._t("honk"))}
+          ${option("button.flash_and_honk", "mdi:alarm-light", this._t("lights_horn"), this._t("both"))}
         </div>`;
       openDialog(html, (action, target, dialog) => {
         if (action !== "go") return;
@@ -725,22 +1161,18 @@
       // Un enlace de verdad (no un botón): así el navegador y la app del móvil
       // lo abren fuera, en una pestaña nueva, sin bloquearlo como ventana emergente.
       const manual = this._manualUrl
-        ? `<a class="tile" data-action="manual" href="${escapeHtml(this._manualUrl)}" target="_blank" rel="noopener noreferrer"><ha-icon icon="mdi:book-open-variant"></ha-icon><b>Manual</b><small>Abrir PDF</small></a>`
+        ? `<a class="tile" data-action="manual" href="${escapeHtml(this._manualUrl)}" target="_blank" rel="noopener noreferrer"><ha-icon icon="mdi:book-open-variant"></ha-icon><b>${this._t("manual")}</b><small>${this._t("open_pdf")}</small></a>`
         : "";
-      // "ITV en 47 días" → "Quedan 47 días"; "Seguro: último día" → "Último día".
-      const plain = (text, name) => {
-        const short = text.replace(`${name} en `, "Quedan ").replace(new RegExp(`^${name}:? `), "");
-        return short ? short.charAt(0).toUpperCase() + short.slice(1) : "—";
-      };
+      const off = this._t("not_enabled");
       const option = (action, key, icon, label, text) =>
         `<button class="tile" data-action="${action}"><ha-icon icon="${icon}"${tone(key)}></ha-icon><b>${label}</b><small>${escapeHtml(text)}</small></button>`;
       const html = `
-        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Otros</h2></div>
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button><h2>${this._t("others")}</h2></div>
         <div class="three pairs">
           ${manual}
-          ${option("maintenance", MAINTENANCE, "mdi:wrench", "Mantenimiento", known ? `${maintenance.attributes.revision}ª revisión` : "Sin activar")}
-          ${option("itv", ITV, "mdi:clipboard-check-outline", "ITV", itv ? plain(this._itvShort(), "ITV") : "Sin activar")}
-          ${option("insurance", INSURANCE, "mdi:shield-car", "Seguro", insurance ? plain(this._insuranceShort(), "Seguro") : "Sin activar")}
+          ${option("maintenance", MAINTENANCE, "mdi:wrench", this._t("maintenance"), known ? this._t("nth_service", { ordinal: this._ordinal(maintenance.attributes.revision) }) : off)}
+          ${option("itv", ITV, "mdi:clipboard-check-outline", this._t("itv"), itv ? this._itvShort(false) || "—" : off)}
+          ${option("insurance", INSURANCE, "mdi:shield-car", this._t("insurance"), insurance ? this._insuranceShort(false) || "—" : off)}
         </div>`;
       openDialog(html, (action, _target, dialog) => {
         if (action === "manual") {
@@ -750,7 +1182,7 @@
         }
         if (!["maintenance", "itv", "insurance"].includes(action)) return;
         dialog.close();
-        if (action === "maintenance") known ? this._openMaintenance() : this._message("Mantenimiento", NO_MAINTENANCE);
+        if (action === "maintenance") known ? this._openMaintenance() : this._message(this._t("maintenance"), this._t("no_maintenance"));
         else if (action === "itv") this._openItv();
         else this._openInsurance();
       });
@@ -760,26 +1192,26 @@
 
     _openItv() {
       const state = this._state(ITV);
-      if (!state || state.attributes.fecha_limite == null) return this._message("ITV", NO_ITV);
+      if (!state || state.attributes.fecha_limite == null) return this._message(this._t("itv"), this._t("no_itv"));
       const data = state.attributes;
       const overdue = data.dias_restantes < 0;
       const tone = overdue ? RED : data.nivel === "soon" ? AMBER : "var(--secondary-text-color)";
       const history = (data.historial || []).slice().reverse();
       const html = `
-        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>ITV</h2></div>
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button><h2>${this._t("itv")}</h2></div>
         <div class="mt">
-          <div class="next"><ha-icon icon="mdi:clipboard-check-outline" style="color:${tone}"></ha-icon>Próxima ITV${overdue ? " · vencida" : ""}</div>
+          <div class="next"><ha-icon icon="mdi:clipboard-check-outline" style="color:${tone}"></ha-icon>${this._t("next_itv")}${overdue ? this._t("overdue_mark") : ""}</div>
           <div class="two">
-            <div class="stat"><b>${Math.abs(data.dias_restantes)}</b><small>días ${overdue ? "de retraso" : "restantes"}</small></div>
-            <div class="stat"><b>${this._day(data.fecha_limite)}</b><small>fecha límite</small></div>
+            <div class="stat"><b>${Math.abs(data.dias_restantes)}</b><small>${this._t(overdue ? "days_late" : "days_left")}</small></div>
+            <div class="stat"><b>${this._day(data.fecha_limite)}</b><small>${this._t("due_date")}</small></div>
           </div>
-          <p class="due">Primera ITV a los 4 años de la matriculación. Después, cada 2 años hasta los 10 y cada año a partir de entonces.</p>
-          <h3>Datos</h3>
-          <dl><dt>Matriculación</dt><dd>${this._day(data.matriculacion)}</dd>
-            <dt>Última ITV</dt><dd>${data.ultima_itv ? this._day(data.ultima_itv) : "Aún no ha pasado ninguna"}</dd></dl>
-          ${history.length ? `<h3>Historial</h3><ul>${history.map((item) => `<li>${this._day(item)}</li>`).join("")}</ul>` : ""}
+          <p class="due">${this._t("itv_rule")}</p>
+          <h3>${this._t("details")}</h3>
+          <dl><dt>${this._t("registration")}</dt><dd>${this._day(data.matriculacion)}</dd>
+            <dt>${this._t("last_itv")}</dt><dd>${data.ultima_itv ? this._day(data.ultima_itv) : this._t("none_yet")}</dd></dl>
+          ${history.length ? `<h3>${this._t("history")}</h3><ul>${history.map((item) => `<li>${this._day(item)}</li>`).join("")}</ul>` : ""}
         </div>
-        <div class="btns"><button class="tb fill" data-action="register">Registrar ITV pasada</button></div>`;
+        <div class="btns"><button class="tb fill" data-action="register">${this._t("register_itv")}</button></div>`;
       openDialog(html, (action, _target, dialog) => {
         if (action !== "register") return;
         dialog.close();
@@ -790,17 +1222,17 @@
 
     _confirmItv() {
       const html = `
-        <div class="confirm"><h2>¿Registrar la ITV?</h2>
-          <p>Se anotará que <b style="font-weight:500;color:var(--primary-text-color)">${escapeHtml(this._name())}</b> ha pasado la ITV hoy y se calculará la siguiente. Si la pasó otro día, ponlo en Configurar → ITV.</p></div>
-        <div class="btns"><button class="tb" data-action="close">Cancelar</button><button class="tb fill" data-action="ok">Registrar</button></div>`;
+        <div class="confirm"><h2>${this._t("register_itv_q")}</h2>
+          <p>${this._t("register_itv_text", { name: this._boldName() })}</p></div>
+        <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`;
       openDialog(html, async (action, _target, dialog) => {
         if (action !== "ok") return;
         dialog.close();
         try {
           await this._hass.callService(DOMAIN, "register_itv", { device_id: this._deviceId() });
-          this._toast("ITV registrada.");
+          this._toast(this._t("itv_registered"));
         } catch (error) {
-          this._toast((error && error.message) || "No se pudo registrar la ITV.");
+          this._toast((error && error.message) || this._t("itv_failed"));
         }
       });
     }
@@ -809,7 +1241,7 @@
 
     async _openInsurance() {
       const state = this._state(INSURANCE);
-      if (!state || state.attributes.renovacion == null) return this._message("Seguro", NO_INSURANCE);
+      if (!state || state.attributes.renovacion == null) return this._message(this._t("insurance"), this._t("no_insurance"));
       const data = state.attributes;
       // Póliza y teléfonos: no están en la entidad, se piden a la integración.
       let extra = {};
@@ -820,25 +1252,25 @@
       }
       const lastDay = data.dias_desistimiento === 0;
       const tone = lastDay ? RED : data.nivel === "soon" ? AMBER : "var(--secondary-text-color)";
-      const kind = INSURANCE_KINDS[data.tipo] || "";
-      const title = [data.compania, kind].filter(Boolean).join(" · ") || "Seguro";
+      const kind = data.tipo ? this._t(`kind_${data.tipo}`) : "";
+      const title = [data.compania, kind].filter(Boolean).join(" · ") || this._t("insurance");
       const cancel =
         data.dias_desistimiento >= 0
-          ? `<div class="stat"><b>${data.dias_desistimiento}</b><small>días para desistir</small></div>`
-          : '<div class="stat"><b>—</b><small>plazo para desistir pasado</small></div>';
+          ? `<div class="stat"><b>${data.dias_desistimiento}</b><small>${this._t("days_to_cancel")}</small></div>`
+          : `<div class="stat"><b>—</b><small>${this._t("cancel_passed")}</small></div>`;
       const phone = (number, icon, label) =>
         number ? `<a class="call" href="tel:${escapeHtml(String(number).replace(/[^0-9+]/g, ""))}"><ha-icon icon="${icon}"></ha-icon>${label}</a>` : "";
       const html = `
-        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Seguro</h2></div>
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button><h2>${this._t("insurance")}</h2></div>
         <div class="mt">
           <div class="next"><ha-icon icon="mdi:shield-car" style="color:${tone}"></ha-icon>${escapeHtml(title)}</div>
-          <div class="two"><div class="stat"><b>${data.dias_renovacion}</b><small>días para la renovación</small></div>${cancel}</div>
-          <p class="due">Renovación el ${this._day(data.renovacion)}. Para no renovar hay que avisar antes del ${this._day(data.limite_desistimiento)} (${data.dias_aviso} días antes).</p>
-          <h3>Póliza</h3>
-          <dl><dt>Compañía</dt><dd>${escapeHtml(data.compania || "—")}</dd>
-            <dt>Nº de póliza</dt><dd>${escapeHtml(extra.policy || "—")}</dd>
-            <dt>Tipo</dt><dd>${escapeHtml(kind || "—")}</dd></dl>
-          <div class="calls">${phone(extra.phone_assistance, "mdi:tow-truck", "Asistencia")}${phone(extra.phone_company, "mdi:phone", "Compañía")}</div>
+          <div class="two"><div class="stat"><b>${data.dias_renovacion}</b><small>${this._t("days_to_renewal")}</small></div>${cancel}</div>
+          <p class="due">${this._t("renewal_text", { renewal: this._day(data.renovacion), deadline: this._day(data.limite_desistimiento), days: data.dias_aviso })}</p>
+          <h3>${this._t("policy")}</h3>
+          <dl><dt>${this._t("company")}</dt><dd>${escapeHtml(data.compania || "—")}</dd>
+            <dt>${this._t("policy_number")}</dt><dd>${escapeHtml(extra.policy || "—")}</dd>
+            <dt>${this._t("kind")}</dt><dd>${escapeHtml(kind || "—")}</dd></dl>
+          <div class="calls">${phone(extra.phone_assistance, "mdi:tow-truck", this._t("assistance"))}${phone(extra.phone_company, "mdi:phone", this._t("company"))}</div>
         </div>
         <div class="btns"></div>`;
       openDialog(html, () => undefined);
@@ -849,7 +1281,7 @@
     _message(title, text) {
       const html = `
         <div class="confirm"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div>
-        <div class="btns"><button class="tb fill" data-action="close">Entendido</button></div>`;
+        <div class="btns"><button class="tb fill" data-action="close">${this._t("understood")}</button></div>`;
       openDialog(html, () => undefined);
     }
 
@@ -859,31 +1291,28 @@
       const state = this._state(MAINTENANCE);
       if (!state) return;
       const data = state.attributes;
-      const language = (this._hass.locale && this._hass.locale.language) || "es";
-      const number = (value) => Math.abs(Number(value)).toLocaleString(language, { useGrouping: "always" });
-      const day = (iso) => new Date(`${iso}T00:00:00`).toLocaleDateString(language, { day: "numeric", month: "short", year: "numeric" });
       const overdue = data.nivel === "overdue";
       // Sin aviso todavía, la llave va en gris; ámbar si se acerca y roja si está vencida.
       const tone = overdue ? RED : data.nivel === "soon" ? AMBER : "var(--secondary-text-color)";
-      const stat = (value, unit) =>
+      const stat = (value, left, late) =>
         value == null
-          ? `<div class="stat"><b>—</b><small>${unit}</small></div>`
-          : `<div class="stat"><b>${number(value)}</b><small>${unit} ${Number(value) < 0 ? "de retraso" : "restantes"}</small></div>`;
+          ? `<div class="stat"><b>—</b><small>${this._t(left)}</small></div>`
+          : `<div class="stat"><b>${this._thousands(value)}</b><small>${this._t(Number(value) < 0 ? late : left)}</small></div>`;
       const list = (title, items) => (items.length ? `<h3>${title}</h3><ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : "");
       const history = (data.historial || [])
         .slice()
         .reverse()
-        .map((item) => `${item.number}ª revisión · ${day(item.date)} · ${number(item.km)} km`);
+        .map((item) => this._t("history_item", { ordinal: this._ordinal(item.number), date: this._day(item.date), km: this._thousands(item.km) }));
       const html = `
-        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Mantenimiento</h2></div>
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button><h2>${this._t("maintenance")}</h2></div>
         <div class="mt">
-          <div class="next"><ha-icon icon="mdi:wrench" style="color:${tone}"></ha-icon>${data.revision}ª revisión${overdue ? " · vencida" : ""}</div>
-          <div class="two">${stat(data.dias_restantes, "días")}${stat(data.km_restantes, "km")}</div>
-          <p class="due">Prevista el ${day(data.fecha_prevista)} o a los ${number(data.km_previstos)} km, lo que llegue antes.</p>
-          ${list("Qué incluye", data.operaciones || [])}
-          ${list("Historial", history)}
+          <div class="next"><ha-icon icon="mdi:wrench" style="color:${tone}"></ha-icon>${this._t("nth_service", { ordinal: this._ordinal(data.revision) })}${overdue ? this._t("overdue_mark") : ""}</div>
+          <div class="two">${stat(data.dias_restantes, "days_left", "days_late")}${stat(data.km_restantes, "km_left", "km_late")}</div>
+          <p class="due">${this._t("service_planned", { date: this._day(data.fecha_prevista), km: this._thousands(data.km_previstos) })}</p>
+          ${list(this._t("includes"), data.operaciones || [])}
+          ${list(this._t("history"), history)}
         </div>
-        <div class="btns"><button class="tb fill" data-action="register">Registrar mantenimiento</button></div>`;
+        <div class="btns"><button class="tb fill" data-action="register">${this._t("register_service")}</button></div>`;
       openDialog(html, (action, _target, dialog) => {
         if (action !== "register") return;
         dialog.close();
@@ -893,21 +1322,20 @@
 
     /** Confirmación antes de anotar la revisión (hoy, con los km actuales). */
     _confirmMaintenance(revision) {
-      const odometer = this._format("sensor.odometer");
+      const reading = this._format("sensor.odometer");
+      const odometer = reading ? this._t("with_odometer", { value: escapeHtml(reading) }) : "";
       const html = `
-        <div class="confirm"><h2>¿Registrar la ${revision}ª revisión?</h2>
-          <p>Se anotará que <b style="font-weight:500;color:var(--primary-text-color)">${escapeHtml(this._name())}</b> ha pasado la revisión hoy${
-            odometer ? `, con ${escapeHtml(odometer)}` : ""
-          }, y se empezará a contar para la siguiente. Si la pasó otro día, regístrala desde Configurar → Mantenimiento.</p></div>
-        <div class="btns"><button class="tb" data-action="close">Cancelar</button><button class="tb fill" data-action="ok">Registrar</button></div>`;
+        <div class="confirm"><h2>${this._t("register_service_q", { ordinal: this._ordinal(revision) })}</h2>
+          <p>${this._t("register_service_text", { name: this._boldName(), odometer })}</p></div>
+        <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`;
       openDialog(html, async (action, _target, dialog) => {
         if (action !== "ok") return;
         dialog.close();
         try {
           await this._hass.callService(DOMAIN, "register_maintenance", { device_id: this._deviceId() });
-          this._toast("Mantenimiento registrado.");
+          this._toast(this._t("service_registered"));
         } catch (error) {
-          this._toast((error && error.message) || "No se pudo registrar el mantenimiento.");
+          this._toast((error && error.message) || this._t("service_failed"));
         }
       });
     }
@@ -924,17 +1352,17 @@
       const spots = HOTSPOTS.filter((spot) => this._ids[spot.key])
         .map(
           (spot) =>
-            `<button class="hot" data-action="spot" data-key="${spot.key}" aria-label="${escapeHtml(spot.label)}"
+            `<button class="hot" data-action="spot" data-key="${spot.key}" aria-label="${escapeHtml(this._t(spot.label))}"
                style="left:${spot.x}%;top:${spot.y}%"><ha-icon icon="${spot.icon}"></ha-icon><u></u></button>`
         )
         .join("");
       const html = `
-        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Confort</h2></div>
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button><h2>${this._t("comfort")}</h2></div>
         <div class="stage"><img alt="">${spots}</div>
         <div class="temp">
-          <button class="round" data-action="temp" data-step="-0.5" aria-label="Bajar temperatura"><ha-icon icon="mdi:minus"></ha-icon></button>
+          <button class="round" data-action="temp" data-step="-0.5" aria-label="${this._t("temp_down")}"><ha-icon icon="mdi:minus"></ha-icon></button>
           <b><span class="target"></span><sup> °C</sup></b>
-          <button class="round" data-action="temp" data-step="0.5" aria-label="Subir temperatura"><ha-icon icon="mdi:plus"></ha-icon></button>
+          <button class="round" data-action="temp" data-step="0.5" aria-label="${this._t("temp_up")}"><ha-icon icon="mdi:plus"></ha-icon></button>
         </div>
         <button class="power" data-action="power"><ha-icon icon="mdi:power"></ha-icon><span></span></button>
         <p class="info"></p>`;
@@ -969,17 +1397,17 @@
       power.hidden = !climate;
       power.classList.toggle("on", climateOn);
       power.classList.toggle("busy", this._busy.has("power"));
-      power.querySelector("span").textContent = climateOn ? "Climatizador encendido" : "Climatizador apagado";
+      power.querySelector("span").textContent = this._t(climateOn ? "climate_on" : "climate_off");
 
       const parts = [];
       const inside = this._format("sensor.inside_temperature");
       const humidity = this._format("sensor.cabin_humidity");
       const fan = this._value("sensor.fan_level");
       const recirculation = this._value("binary_sensor.air_recirculation");
-      if (inside) parts.push(`Interior ${inside}`);
-      if (humidity) parts.push(`Humedad ${humidity}`);
-      if (climateOn && fan) parts.push(`Ventilador ${fan}`);
-      if (climateOn && recirculation) parts.push(recirculation === "on" ? "Recirculando" : "Aire exterior");
+      if (inside) parts.push(this._t("inside", { value: inside }));
+      if (humidity) parts.push(this._t("humidity", { value: humidity }));
+      if (climateOn && fan) parts.push(this._t("fan", { value: fan }));
+      if (climateOn && recirculation) parts.push(this._t(recirculation === "on" ? "recirculating" : "outside_air"));
       root.querySelector(".info").textContent = parts.join(" · ");
     }
 
@@ -1017,7 +1445,7 @@
   window.customCards.push({
     type: TAG,
     name: "DEC Deepal",
-    description: "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",
+    description: translate(document.documentElement.lang || navigator.language, "card_description"),
     preview: true,
     documentationURL: "https://github.com/manuelem1984/dec_deepal",
   });

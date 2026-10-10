@@ -114,6 +114,13 @@ solo muestran el estado y avisan de cómo activarlo.
   imágenes están al principio del archivo (`HOTSPOTS`, `INTERIOR`,
   `ISOMETRIC`), hoy para el Deepal S05.
 
+## Idiomas
+
+La tarjeta está en español, inglés y portugués, según el idioma de cada
+usuario en Home Assistant (catalán, gallego y euskera se ven en español; cualquier
+otro, en inglés). Los textos están en la tabla
+`TEXTS`, al principio de `dec-deepal-card.js`.
+
 ## Límites conocidos
 
 - Hoy solo en español y con las vistas del Deepal S05.

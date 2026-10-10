@@ -1,0 +1,786 @@
+{
+  "title": "DEC Deepal",
+  "config": {
+    "step": {
+      "user": {
+        "title": "DEC Deepal — País",
+        "description": "Escolha o país da sua conta Deepal.",
+        "data": {
+          "country": "País"
+        }
+      },
+      "login_method": {
+        "title": "Como iniciar sessão",
+        "description": "Escolha como quer receber o código de acesso ({country}). Recomendado: uma conta secundária com o carro partilhado, para não terminar a sessão da app no seu telemóvel.\n\n⚠️ **Use o e-mail.** Neste momento a Deepal não está a entregar os SMS de acesso: o servidor diz que o envia, mas não chega.",
+        "data": {
+          "login_method": "Método"
+        }
+      },
+      "email": {
+        "title": "Acesso por e-mail",
+        "description": "Escreva o e-mail da sua conta Deepal. Vai receber um código.",
+        "data": {
+          "email": "Endereço de e-mail"
+        }
+      },
+      "sms": {
+        "title": "Acesso por SMS",
+        "description": "Escreva o seu telemóvel ({digits} dígitos), com ou sem o prefixo {prefix}.\n\n⚠️ Neste momento a Deepal não está a entregar os SMS de acesso. Se não chegar dentro de um par de minutos, no passo seguinte escolha **Usar outro método** e entre com o e-mail.",
+        "data": {
+          "mobile": "Telemóvel"
+        }
+      },
+      "code_menu": {
+        "title": "Código enviado",
+        "description": "A Deepal aceitou enviar o código para {destination}. Pode demorar um par de minutos. Se não chegar, reenvie-o ou experimente outro método.",
+        "menu_options": {
+          "code": "Já tenho o código",
+          "resend_code": "Reenviar o código",
+          "change_method": "Usar outro método ou corrigir o dado"
+        }
+      },
+      "code": {
+        "title": "Código de verificação",
+        "description": "Escreva o código que acabou de receber.",
+        "data": {
+          "auth_code": "Código"
+        }
+      },
+      "vehicles": {
+        "title": "Veículos",
+        "description": "A sua conta tem vários carros. Marque os que quer adicionar.",
+        "data": {
+          "selected_vehicles": "Veículos"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Iniciar sessão novamente",
+        "description": "A sessão da Deepal já não é válida (provavelmente iniciou-se sessão com a mesma conta na app). Vamos pedir um código novo."
+      }
+    },
+    "error": {
+      "invalid_mobile": "O número de telemóvel não tem o formato esperado.",
+      "send_code_failed": "Não foi possível enviar o código. Verifique o dado introduzido.",
+      "too_many_codes": "Foram pedidos demasiados códigos. Aguarde um pouco e tente novamente.",
+      "cannot_connect": "Não foi possível ligar ao servidor da Deepal.",
+      "login_failed": "Não foi possível iniciar sessão. Verifique o código.",
+      "no_vehicles": "Esta conta não tem nenhum veículo.",
+      "no_vehicle_selected": "Marque pelo menos um veículo."
+    },
+    "abort": {
+      "already_configured": "Esta conta já está configurada.",
+      "reauth_successful": "Sessão renovada com sucesso.",
+      "reauth_account_mismatch": "Essa conta não tem os mesmos veículos que a configurada. Entre com a conta correta.",
+      "flow_state_lost": "O processo expirou. Comece de novo.",
+      "catalog_error": "Um catálogo da integração tem erros. Consulte o registo do Home Assistant."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opções do DEC Deepal",
+        "menu_options": {
+          "appearance": "Aparência do veículo (modelo, versão, cor)",
+          "pin": "Controlo remoto com PIN",
+          "alerts": "Avisos no telemóvel",
+          "maintenance": "Manutenção",
+          "itv": "ITV (inspeção periódica)",
+          "insurance": "Seguro",
+          "advanced": "Avançado (intervalo, depuração, manual)"
+        }
+      },
+      "alerts": {
+        "title": "Avisos no telemóvel",
+        "description": "A integração avisa-o quando acontece algo no carro. Cada aviso tem o nome do carro no título (\"DEC Deepal O meu carro\"). São notificações normais, não críticas.",
+        "data": {
+          "targets": "Avisar",
+          "types": "Avisos ativados",
+          "persistent": "Mostrar também nas notificações do Home Assistant"
+        },
+        "data_description": {
+          "targets": "Os telemóveis e tablets com a app do Home Assistant, com o nome que têm em Definições → Aplicação móvel. Outros serviços de notificação aparecem como notify.nome.",
+          "types": "Os de manutenção, ITV e seguro precisam de que cada um seja ativado antes na respetiva secção de Configurar, e só são enviados entre as 8:00 e as 22:00."
+        }
+      },
+      "itv": {
+        "title": "ITV — veículo",
+        "description": "Escolha o carro.",
+        "data": {
+          "vehicle": "Veículo"
+        }
+      },
+      "itv_setup": {
+        "title": "ITV de {vehicle}",
+        "description": "A próxima ITV (inspeção periódica) é calculada automaticamente com a regra dos ligeiros de passageiros em Espanha: a primeira 4 anos após a matrícula, depois de 2 em 2 anos até aos 10 e todos os anos a partir daí.\n\nSão criados o aviso de ITV e os sensores com a data limite e os dias que faltam. Avisos: faltam 2 meses, 1 mês, 15 dias e vencida.",
+        "data": {
+          "enabled": "Ativar a ITV deste carro",
+          "registration_date": "Data da matrícula",
+          "last_itv_date": "Data da última ITV",
+          "next_itv_date": "Próxima ITV"
+        },
+        "data_description": {
+          "last_itv_date": "Deixe vazio se o carro ainda não fez nenhuma.",
+          "next_itv_date": "Deixe vazio para ser calculada. Preencha apenas se a sua data for outra; vale até registar a ITV seguinte."
+        }
+      },
+      "insurance": {
+        "title": "Seguro — veículo",
+        "description": "Escolha o carro.",
+        "data": {
+          "vehicle": "Veículo"
+        }
+      },
+      "insurance_setup": {
+        "title": "Seguro de {vehicle}",
+        "description": "São criados o aviso do seguro e os sensores com a data de renovação e o último dia para cancelar. Avisos: 30 e 15 dias antes desse último dia, no próprio dia e na renovação. Ao chegar a renovação, a data passa automaticamente para o ano seguinte.\n\nO número da apólice e os telefones só se veem no cartão: não é criada nenhuma entidade com eles.",
+        "data": {
+          "enabled": "Ativar o seguro deste carro",
+          "company": "Seguradora",
+          "policy": "Número da apólice",
+          "insurance_kind": "Tipo de seguro",
+          "renewal_date": "Data de renovação",
+          "notice_days": "Cancelamento: dias antes da renovação",
+          "phone_assistance": "Telefone da assistência em viagem",
+          "phone_company": "Telefone da seguradora"
+        },
+        "data_description": {
+          "notice_days": "Até quantos dias antes da renovação pode avisar de que não renova. Em Espanha o habitual é um mês; confirme na sua apólice.",
+          "phone_assistance": "Opcional. Se o indicar, o cartão mostra um botão para ligar.",
+          "phone_company": "Opcional."
+        }
+      },
+      "maintenance": {
+        "title": "Manutenção — veículo",
+        "description": "Escolha o carro.",
+        "data": {
+          "vehicle": "Veículo"
+        }
+      },
+      "maintenance_menu": {
+        "title": "Manutenção de {vehicle}",
+        "description": "{summary}",
+        "menu_options": {
+          "maintenance_register": "Registar uma manutenção feita",
+          "maintenance_setup": "Corrigir os dados ou desativar"
+        }
+      },
+      "maintenance_setup": {
+        "title": "Manutenção de {vehicle}",
+        "description": "A próxima revisão conta-se a partir da última feita. Se o carro ainda não fez nenhuma, indique 0 revisões, a data da matrícula e 0 km.\n\nSão criados o aviso de manutenção e os sensores de dias e quilómetros que faltam. O aviso acende quando faltam 2 meses ou 3.000 km.",
+        "data": {
+          "maintenance_enabled": "Ativar a manutenção deste carro",
+          "services_done": "Revisões já feitas",
+          "last_date": "Data da última revisão (ou da matrícula)",
+          "last_km": "Quilómetros na última revisão",
+          "interval_km": "Revisão a cada (km)",
+          "interval_months": "Revisão a cada (meses)"
+        },
+        "data_description": {
+          "interval_km": "O manual do S05 indica 20.000 km ou 12 meses, o que ocorrer primeiro. Reduza se fizer muitos trajetos curtos ou circular com pó, lama, frio extremo ou sal."
+        }
+      },
+      "maintenance_register": {
+        "title": "Registar manutenção de {vehicle}",
+        "description": "{summary}\n\nAo guardar, a revisão fica anotada no histórico e começa a contagem para a seguinte.",
+        "data": {
+          "service_date": "Data da revisão",
+          "service_km": "Quilómetros na revisão"
+        }
+      },
+      "appearance": {
+        "title": "Aparência — veículo e modelo",
+        "description": "O modelo decide que funções (e entidades) o carro tem. Enquanto não o escolher, o carro funciona em modo genérico.",
+        "data": {
+          "vehicle": "Veículo",
+          "model": "Modelo"
+        }
+      },
+      "appearance_details": {
+        "title": "Aparência — versão e cor",
+        "description": "Versão e cor do seu {model}. Servem para a \"Imagem DEC\", para a vista isométrica (desenhada com a sua cor e as suas jantes) e para criar apenas as entidades que a sua versão tem.",
+        "data": {
+          "trim": "Versão",
+          "color": "Cor",
+          "wheels": "Jantes (só Max)"
+        },
+        "data_description": {
+          "wheels": "O Pro tem sempre a sua jante de 18\"."
+        }
+      },
+      "pin": {
+        "title": "Controlo remoto com PIN",
+        "description": "Permite portas, janelas e mala. O PIN tem de ter sido criado na app oficial com a MESMA conta que o Home Assistant usa. É verificado ao guardar.",
+        "data": {
+          "pin_enabled": "Ativar controlo com PIN",
+          "pin": "PIN de controlo remoto",
+          "pin_mode": "Modo",
+          "arm_seconds": "Duração do desbloqueio (Opção B)",
+          "arm_notify": "Avisar ao desbloquear (Opção B)"
+        }
+      },
+      "advanced": {
+        "title": "Avançado",
+        "data": {
+          "scan_minutes": "Intervalo de leitura",
+          "wake": "Acordar o carro quando for preciso",
+          "debug": "Modo de depuração",
+          "manual_url": "Manual BEV"
+        },
+        "data_description": {
+          "manual_url": "Ligação para o manual do utilizador (PDF) do carro elétrico (BEV). O cartão abre-o no navegador em Outros → Manual. Vem com o oficial; se deixar vazio, volta a usar-se esse.",
+          "scan_minutes": "De quanto em quanto tempo se leem os dados do carro. Valores muito baixos podem levar a Deepal a limitar a conta.",
+          "wake": "Ao carregar em \"Atualizar dados do veículo\" e antes de portas/janelas/mala, se os dados tiverem mais de 2 minutos, o carro é acordado e espera-se pelo seu relatório. No máximo uma vez a cada 5 minutos, e nunca nas leituras automáticas, para poupar a bateria de 12 V.",
+          "debug": "Guarda pedidos e respostas completos (sem dados pessoais) nos diagnósticos e ativa as mensagens DEBUG no registo."
+        }
+      }
+    },
+    "error": {
+      "pin_required": "Escreva o PIN para ativar o controlo remoto.",
+      "pin_invalid": "PIN incorreto ou criado com outra conta.",
+      "pin_rate_limited": "Demasiadas tentativas de PIN. Aguarde ou reponha-o na app oficial.",
+      "invalid_url": "Escreva um endereço web completo (que comece por https://).",
+      "cannot_connect": "Não foi possível ligar ao servidor da Deepal."
+    },
+    "abort": {
+      "not_loaded": "A integração não está carregada. Consulte o registo e tente novamente."
+    }
+  },
+  "issues": {
+    "vehicle_not_configured": {
+      "title": "Configure o seu veículo: {vehicle}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Modelo de {vehicle}",
+            "description": "Até escolher o modelo, o carro funciona em modo genérico (apenas dados básicos, sem bancos, volante nem controlo com PIN). Modelo reconhecido pelo nome: {suggestion}.",
+            "data": {
+              "model": "Modelo"
+            }
+          },
+          "details": {
+            "title": "Versão e cor",
+            "description": "Versão e cor do seu {model}. A versão decide que entidades são criadas (por exemplo, a ventilação dos bancos só existe no Max) e, juntamente com a cor, a \"Imagem DEC\".",
+            "data": {
+              "trim": "Versão",
+              "color": "Cor",
+              "wheels": "Jantes (só Max)"
+            },
+            "data_description": {
+              "wheels": "O Pro tem sempre a sua jante de 18\"."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "A conta já não existe."
+        }
+      }
+    }
+  },
+  "selector": {
+    "login_method": {
+      "options": {
+        "sms": "SMS (neste momento não chega)",
+        "email": "E-mail (recomendado)"
+      }
+    },
+    "pin_mode": {
+      "options": {
+        "direct": "Opção A — comandos diretos",
+        "armed": "Opção B — desbloquear antes (mais seguro)"
+      }
+    },
+    "arm_seconds": {
+      "options": {
+        "10": "10 segundos",
+        "20": "20 segundos",
+        "30": "30 segundos",
+        "60": "60 segundos"
+      }
+    },
+    "wheels": {
+      "options": {
+        "cover": "20\" com tampão",
+        "open": "20\" sem tampão"
+      }
+    },
+    "alert_type": {
+      "options": {
+        "charge_started": "Carregamento iniciado",
+        "charge_interrupted": "Carregamento interrompido",
+        "charge_finished": "Carregamento terminado",
+        "warnings": "Luzes de aviso do painel",
+        "tires": "Pneus (quando o carro acende o aviso)",
+        "key_battery": "Pilha da chave fraca",
+        "maintenance": "Manutenção (faltam 2 meses, 1 mês, 15 dias; 3.000, 2.000, 1.000 km; vencida)",
+        "itv": "ITV (faltam 2 meses, 1 mês, 15 dias; vencida)",
+        "insurance": "Seguro (30 e 15 dias antes do prazo para cancelar, no último dia e na renovação)"
+      }
+    },
+    "insurance_kind": {
+      "options": {
+        "third_party": "Terceiros",
+        "third_party_plus": "Terceiros alargado",
+        "comprehensive_excess": "Danos próprios com franquia",
+        "comprehensive": "Danos próprios sem franquia"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery_level": {
+        "name": "Bateria"
+      },
+      "range": {
+        "name": "Autonomia"
+      },
+      "charge_status": {
+        "name": "Estado do carregamento",
+        "state": {
+          "disconnected": "Desligado",
+          "connected_ac": "Ligado AC",
+          "connected_dc": "Ligado DC",
+          "charging_ac": "A carregar AC",
+          "charging_dc": "A carregar DC"
+        }
+      },
+      "charge_current": {
+        "name": "Corrente de carregamento"
+      },
+      "ac_charge_current": {
+        "name": "Corrente de carregamento AC"
+      },
+      "dc_charge_current": {
+        "name": "Corrente de carregamento DC"
+      },
+      "remaining_charge_time": {
+        "name": "Tempo de carregamento restante"
+      },
+      "remaining_charge_time_hhmm": {
+        "name": "Tempo de carregamento restante (H:MM)"
+      },
+      "odometer": {
+        "name": "Quilometragem total"
+      },
+      "last_update": {
+        "name": "Último relatório do carro"
+      },
+      "power_status": {
+        "name": "Estado da alimentação"
+      },
+      "speed": {
+        "name": "Velocidade"
+      },
+      "trip_mileage": {
+        "name": "Quilómetros do trajeto"
+      },
+      "mileage_yesterday": {
+        "name": "Quilómetros de ontem"
+      },
+      "inside_temperature": {
+        "name": "Temperatura interior"
+      },
+      "outside_temperature": {
+        "name": "Temperatura exterior"
+      },
+      "cabin_humidity": {
+        "name": "Humidade interior"
+      },
+      "climate_target_temperature": {
+        "name": "Temperatura da climatização"
+      },
+      "fan_level": {
+        "name": "Ventilador da climatização"
+      },
+      "tire_pressure_front_left": {
+        "name": "Pressão do pneu dianteiro esquerdo"
+      },
+      "tire_pressure_front_right": {
+        "name": "Pressão do pneu dianteiro direito"
+      },
+      "tire_pressure_rear_left": {
+        "name": "Pressão do pneu traseiro esquerdo"
+      },
+      "tire_pressure_rear_right": {
+        "name": "Pressão do pneu traseiro direito"
+      },
+      "license_plate": {
+        "name": "Matrícula"
+      },
+      "window_opening_front_left": {
+        "name": "Abertura da janela dianteira esquerda"
+      },
+      "window_opening_front_right": {
+        "name": "Abertura da janela dianteira direita"
+      },
+      "window_opening_rear_left": {
+        "name": "Abertura da janela traseira esquerda"
+      },
+      "window_opening_rear_right": {
+        "name": "Abertura da janela traseira direita"
+      },
+      "maintenance_days": {
+        "name": "Dias até à manutenção"
+      },
+      "maintenance_km": {
+        "name": "Quilómetros até à manutenção"
+      },
+      "maintenance_date": {
+        "name": "Próxima manutenção"
+      },
+      "itv_date": {
+        "name": "Próxima ITV"
+      },
+      "itv_days": {
+        "name": "Dias até à ITV"
+      },
+      "insurance_renewal_date": {
+        "name": "Renovação do seguro"
+      },
+      "insurance_days": {
+        "name": "Dias até à renovação do seguro"
+      },
+      "insurance_cancel_date": {
+        "name": "Prazo para cancelar o seguro"
+      }
+    },
+    "binary_sensor": {
+      "cloud_connected": {
+        "name": "Ligação à nuvem"
+      },
+      "engine": {
+        "name": "Ligado"
+      },
+      "charging": {
+        "name": "A carregar"
+      },
+      "ac_connector": {
+        "name": "Conector AC"
+      },
+      "dc_connector": {
+        "name": "Conector DC"
+      },
+      "door_front_left": {
+        "name": "Porta dianteira esquerda"
+      },
+      "door_front_right": {
+        "name": "Porta dianteira direita"
+      },
+      "door_rear_left": {
+        "name": "Porta traseira esquerda"
+      },
+      "door_rear_right": {
+        "name": "Porta traseira direita"
+      },
+      "trunk": {
+        "name": "Mala"
+      },
+      "hood": {
+        "name": "Capô"
+      },
+      "any_door_open": {
+        "name": "Alguma porta aberta"
+      },
+      "window_front_left": {
+        "name": "Janela dianteira esquerda"
+      },
+      "window_front_right": {
+        "name": "Janela dianteira direita"
+      },
+      "window_rear_left": {
+        "name": "Janela traseira esquerda"
+      },
+      "window_rear_right": {
+        "name": "Janela traseira direita"
+      },
+      "lock_driver": {
+        "name": "Fechadura do condutor"
+      },
+      "lock_passenger": {
+        "name": "Fechadura do passageiro"
+      },
+      "central_locking": {
+        "name": "Fecho centralizado"
+      },
+      "tire_alarm_front_left": {
+        "name": "Aviso do pneu dianteiro esquerdo"
+      },
+      "tire_alarm_front_right": {
+        "name": "Aviso do pneu dianteiro direito"
+      },
+      "tire_alarm_rear_left": {
+        "name": "Aviso do pneu traseiro esquerdo"
+      },
+      "tire_alarm_rear_right": {
+        "name": "Aviso do pneu traseiro direito"
+      },
+      "high_beam": {
+        "name": "Máximos"
+      },
+      "low_beam": {
+        "name": "Médios"
+      },
+      "position_lamp": {
+        "name": "Mínimos"
+      },
+      "indicator_left": {
+        "name": "Pisca esquerdo"
+      },
+      "indicator_right": {
+        "name": "Pisca direito"
+      },
+      "climate_on": {
+        "name": "Climatização"
+      },
+      "rear_fog_lamp": {
+        "name": "Luzes de nevoeiro"
+      },
+      "air_recirculation": {
+        "name": "Recirculação de ar"
+      },
+      "key_battery_low": {
+        "name": "Pilha da chave fraca"
+      },
+      "warning_12v_battery": {
+        "name": "Aviso da bateria de 12 V"
+      },
+      "warning_tpms": {
+        "name": "Aviso da pressão dos pneus"
+      },
+      "warning_abs": {
+        "name": "Aviso do ABS"
+      },
+      "warning_airbag": {
+        "name": "Aviso do airbag"
+      },
+      "warning_brake_fluid": {
+        "name": "Aviso do líquido dos travões"
+      },
+      "warning_brake": {
+        "name": "Aviso dos travões"
+      },
+      "warning_eps": {
+        "name": "Aviso da direção assistida"
+      },
+      "warning_power_limit": {
+        "name": "Aviso de potência limitada"
+      },
+      "warning_power_system": {
+        "name": "Aviso do sistema de propulsão"
+      },
+      "warning_traction_battery_low": {
+        "name": "Aviso de bateria fraca"
+      },
+      "warning_coolant_temperature": {
+        "name": "Aviso da temperatura do líquido de refrigeração"
+      },
+      "maintenance_due": {
+        "name": "Aviso de manutenção"
+      },
+      "itv_due": {
+        "name": "Aviso de ITV"
+      },
+      "insurance_due": {
+        "name": "Aviso do seguro"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Atualizar dados do veículo"
+      },
+      "flash_lights": {
+        "name": "Piscar as luzes"
+      },
+      "honk_horn": {
+        "name": "Tocar a buzina"
+      },
+      "flash_and_honk": {
+        "name": "Luzes e buzina"
+      }
+    },
+    "climate": {
+      "cabin_climate": {
+        "name": "Climatização"
+      }
+    },
+    "number": {
+      "seat_heat_driver": {
+        "name": "Aquecimento do banco do condutor"
+      },
+      "seat_heat_passenger": {
+        "name": "Aquecimento do banco do passageiro"
+      },
+      "seat_vent_driver": {
+        "name": "Ventilação do banco do condutor"
+      },
+      "seat_vent_passenger": {
+        "name": "Ventilação do banco do passageiro"
+      }
+    },
+    "switch": {
+      "steering_wheel_heat": {
+        "name": "Volante aquecido"
+      },
+      "front_defrost": {
+        "name": "Desembaciamento dianteiro"
+      }
+    },
+    "lock": {
+      "doors": {
+        "name": "Portas"
+      },
+      "pin_arm": {
+        "name": "Desbloqueio de ações com PIN"
+      }
+    },
+    "cover": {
+      "windows": {
+        "name": "Janelas - Modo ventilação",
+        "state": {
+          "open": "Fechadas",
+          "closed": "A ventilar",
+          "opening": "A fechar",
+          "closing": "A entreabrir"
+        }
+      },
+      "trunk_control": {
+        "name": "Mala (controlo)"
+      }
+    },
+    "device_tracker": {
+      "location": {
+        "name": "Localização"
+      }
+    },
+    "image": {
+      "official_image": {
+        "name": "Imagem oficial"
+      },
+      "dec_photo": {
+        "name": "Imagem DEC"
+      },
+      "top_view": {
+        "name": "Vista de cima"
+      },
+      "isometric_view": {
+        "name": "Vista isométrica"
+      },
+      "interior_view": {
+        "name": "Vista interior"
+      },
+      "charging_view": {
+        "name": "Vista de carregamento"
+      }
+    }
+  },
+  "exceptions": {
+    "session_expired": {
+      "message": "A sessão da Deepal expirou e não foi possível renová-la. Inicie sessão novamente na integração. ({error})"
+    },
+    "rate_limited": {
+      "message": "A Deepal pede para aguardar (demasiados pedidos ou tentativas). ({error})"
+    },
+    "pin_problem": {
+      "message": "Problema com o PIN de controlo remoto: verifique-o em Configurar ou na app oficial. ({error})"
+    },
+    "signing_key_invalid": {
+      "message": "A chave de assinatura de comandos já não é válida. Inicie sessão novamente na integração. ({error})"
+    },
+    "command_not_ready": {
+      "message": "Ainda não é possível enviar o comando: {error}"
+    },
+    "connection_error": {
+      "message": "Não foi possível ligar ao servidor da Deepal. ({error})"
+    },
+    "command_failed": {
+      "message": "O comando falhou: {error}"
+    },
+    "command_rejected": {
+      "message": "O carro rejeitou o comando: {error}"
+    },
+    "command_rejected_asleep": {
+      "message": "O carro rejeitou o comando ({error}). Pode estar a dormir ou ocupado: tente novamente depois de o usar um pouco."
+    },
+    "command_rejected_power_on": {
+      "message": "O carro tem de estar desligado para este comando ({error}). Desligue-o e tente novamente."
+    },
+    "command_vehicle_asleep": {
+      "message": "O carro não aceitou o comando: pode estar a dormir ou sem ligação. Carregue em \"Atualizar dados do veículo\" para o acordar e tente novamente. ({error})"
+    },
+    "wake_no_report": {
+      "message": "Foi pedido ao carro que acordasse, mas não enviou dados novos em 60 segundos. Pode estar sem cobertura; mantêm-se os últimos dados."
+    },
+    "command_busy": {
+      "message": "Há outro comando em curso para este carro há demasiado tempo. Tente dentro de alguns segundos."
+    },
+    "command_cooldown": {
+      "message": "O carro ainda está a terminar o comando anterior. Aguarde {seconds} s."
+    },
+    "pin_not_armed": {
+      "message": "Primeiro desbloqueie \"Desbloqueio de ações com PIN\"."
+    },
+    "unknown_device": {
+      "message": "Esse dispositivo não é um veículo do DEC Deepal."
+    },
+    "maintenance_not_configured": {
+      "message": "Ative primeiro a manutenção deste carro em Configurar → Manutenção (integração DEC Deepal)."
+    },
+    "itv_not_configured": {
+      "message": "Ative primeiro a ITV deste carro em Configurar → ITV (integração DEC Deepal)."
+    },
+    "maintenance_no_odometer": {
+      "message": "Não se conhece a quilometragem do carro. Indique os quilómetros ou registe a revisão em Configurar → Manutenção."
+    }
+  },
+  "services": {
+    "capture_snapshot": {
+      "name": "Captura de depuração",
+      "description": "Guarda uma imagem completa do estado do carro (dados interpretados e em bruto, sem dados pessoais) e compara-a com a captura anterior. Também é guardada em /config/dec_deepal_capturas/.",
+      "fields": {
+        "device_id": {
+          "name": "Veículo",
+          "description": "O carro a capturar."
+        },
+        "label": {
+          "name": "Etiqueta",
+          "description": "Nome para reconhecer a captura (por exemplo \"A - repouso\")."
+        },
+        "refresh": {
+          "name": "Ler antes",
+          "description": "Ler o carro imediatamente antes de capturar."
+        }
+      }
+    },
+    "register_itv": {
+      "name": "Registar ITV",
+      "description": "Anota que o carro passou na ITV (inspeção periódica) e calcula a seguinte. É preciso ter ativado a ITV do carro em Configurar → ITV.",
+      "fields": {
+        "device_id": {
+          "name": "Veículo",
+          "description": "O carro que passou na ITV."
+        },
+        "date": {
+          "name": "Data",
+          "description": "Data da ITV. Se ficar vazio, hoje."
+        }
+      }
+    },
+    "register_maintenance": {
+      "name": "Registar manutenção",
+      "description": "Anota que o carro fez a revisão e começa a contar para a seguinte. É preciso ter ativado a manutenção do carro em Configurar → Manutenção.",
+      "fields": {
+        "device_id": {
+          "name": "Veículo",
+          "description": "O carro que fez a revisão."
+        },
+        "date": {
+          "name": "Data",
+          "description": "Data da revisão. Se ficar vazio, hoje."
+        },
+        "km": {
+          "name": "Quilómetros",
+          "description": "Quilómetros na revisão. Se ficar vazio, os que o carro marca agora."
+        }
+      }
+    }
+  }
+}

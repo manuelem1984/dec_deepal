@@ -18,8 +18,8 @@
       ITV desde la tarjeta.
 - [ ] **Seguro:** configurar, ver la ventana (póliza y botones de llamar) y
       comprobar los avisos poniendo una renovación cercana.
-- [ ] Pendiente: traducciones reales (inglés y portugués de Portugal),
-      incluida la tarjeta.
+- [x] Traducciones reales (inglés y portugués de Portugal), incluida la
+      tarjeta (2.3.0b8). Pendiente: revisión por alguien nativo.
 
 ## Beta 2.3.0b5 (09-10-2026) — pendiente de probar
 
@@ -164,7 +164,7 @@ desactivar en Configurar → Avanzado.
 
 - [ ] Horario de carga (sin verificar en el S05).
 - [x] Testigos del cuadro como sensores de problema (2.1.0b1, sin verificar).
-- [ ] Traducción al inglés (`en.json`) y portugués.
+- [x] Traducción al inglés y al portugués (2.3.0b8).
 - [ ] Segundo país (Portugal) cuando alguien lo pruebe.
 - [x] Tarjeta propia para los paneles (2.2.0, validada en una instalación
       real). Pendiente: opciones (qué botones mostrar), elegir vista, otros

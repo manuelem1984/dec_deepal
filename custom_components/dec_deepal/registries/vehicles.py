@@ -275,9 +275,15 @@ def _maintenance(raw: object, trims: dict[str, Trim], where: str) -> Maintenance
             raise RegistryError(
                 f"{item_where}: versiones desconocidas {sorted(unknown)}; válidas: {sorted(trims)}"
             )
-        operations.append(
-            Operation(name=str(require(item, "nombre", item_where)), every=every, trims=only)
+        raw_name = require(item, "nombre", item_where)
+        names = (
+            {str(lang): str(text) for lang, text in raw_name.items()}
+            if isinstance(raw_name, dict)
+            else {"es": str(raw_name)}
         )
+        if not names:
+            raise RegistryError(f"{item_where}: 'nombre' está vacío")
+        operations.append(Operation(names=names, every=every, trims=only))
     return MaintenancePlan(
         interval_km=int(block.get("intervalo_km") or DEFAULT_INTERVAL_KM),
         interval_months=int(block.get("intervalo_meses") or DEFAULT_INTERVAL_MONTHS),

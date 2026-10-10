@@ -220,7 +220,9 @@ class AlertManager:
         vehicle = self._vehicles.get(vehicle_id)
         if record is None or vehicle is None:
             return []
-        return vehicle.model.maintenance.operations_for(record.services_done + 1, vehicle.trim)
+        return vehicle.model.maintenance.operations_for(
+            record.services_done + 1, vehicle.trim, self.hass.config.language
+        )
 
     async def async_set_record(
         self, vehicle_id: str, record: mt.MaintenanceRecord | None
