@@ -42,6 +42,21 @@
 
 ## Pendiente de diseño
 
+- [ ] **Italiano y polaco.** Los idiomas ya se añaden con un fichero
+      (docs/idiomas.md). Falta decidir si también se aceptan cuentas de Italia
+      y Polonia (países nuevos, con sus normas de inspección) y encontrar un
+      revisor nativo de cada idioma.
+- [ ] **Aceptar solo el S05** al añadir la cuenta (los demás modelos, "no
+      compatible todavía"). Decidir qué pasa con el S05 PHEV.
+- [ ] **No enviar el clima con el coche encendido** (el servidor lo rechaza:
+      1032 "Power is not off") y decirlo claro en la tarjeta.
+- [ ] **Fichas ligadas al coche:** mantenimiento, ITV y seguro se pierden si
+      se quita y se vuelve a añadir la integración.
+- [ ] Revisar la **humedad interior** (3,4 % no es creíble) y el **despertar**
+      (falló dos veces el 10-10-2026).
+- [ ] Guardar la configuración y el permiso de conexión entre lecturas para
+      hacer menos llamadas al servidor.
+
 - [ ] **Adaptación de funciones para modelo Pro.** Hoy la única diferencia
       con el Max es la ventilación de asientos, y es una suposición: no hay
       diagnóstico de ningún Pro. Idea: crear las entidades según las

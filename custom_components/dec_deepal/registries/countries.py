@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Final
 
 from ..api.transport import CountryProfile
+from ..documents import CountryRules
 from .errors import RegistryError, as_dict, as_str_list, read_yaml, require
 
 #: Métodos de login que entiende la integración.
@@ -42,6 +43,8 @@ class Country:
     login_methods: tuple[str, ...]
     verified: bool
     notes: str
+    #: Normas del país (ITV, preaviso del seguro). Por defecto, las de España.
+    rules: CountryRules = CountryRules()
 
     def profile(self) -> CountryProfile:
         """Perfil mínimo que necesita el cliente de la API."""
@@ -105,6 +108,28 @@ class CountryRegistry:
             raise RegistryError(f"País desconocido: {country_id}") from err
 
 
+#: Campo de ``normas`` en el YAML → atributo de :class:`CountryRules`.
+RULE_FIELDS: Final = {
+    "itv_primera_meses": "itv_first_months",
+    "itv_cada_meses": "itv_interval_months",
+    "itv_reducida_desde_meses": "itv_reduced_from_months",
+    "itv_reducida_cada_meses": "itv_reduced_interval_months",
+    "seguro_preaviso_dias": "insurance_notice_days",
+}
+
+
+def _rules(raw: object, where: str) -> CountryRules:
+    """Lee el bloque ``normas`` de un país (lo que falte, como en España)."""
+    block = as_dict(raw, where)
+    unknown = set(block) - set(RULE_FIELDS)
+    if unknown:
+        raise RegistryError(f"{where}: normas desconocidas {sorted(unknown)}; válidas: {sorted(RULE_FIELDS)}")
+    try:
+        return CountryRules(**{RULE_FIELDS[key]: int(value) for key, value in block.items()})
+    except (TypeError, ValueError) as err:
+        raise RegistryError(f"{where}: cada norma debe ser un número entero") from err
+
+
 def load_countries(path: Path) -> CountryRegistry:
     """Lee y valida ``countries.yaml``."""
     data = read_yaml(path)
@@ -146,6 +171,7 @@ def load_countries(path: Path) -> CountryRegistry:
             login_methods=methods,
             verified=bool(raw.get("verificado", False)),
             notes=str(raw.get("notas") or ""),
+            rules=_rules(raw.get("normas"), f"{where}.normas"),
         )
 
     if not any(country.enabled for country in countries.values()):

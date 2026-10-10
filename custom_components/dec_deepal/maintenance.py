@@ -30,6 +30,8 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any, Final
 
+from .textos_generados import BASE_LANGUAGE, BORROWED_LANGUAGES
+
 DEFAULT_INTERVAL_KM: Final = 20000
 DEFAULT_INTERVAL_MONTHS: Final = 12
 
@@ -62,9 +64,12 @@ class Operation:
     def name(self, language: str = "es") -> str:
         """Nombre en el idioma pedido; si falta, en inglés o en el primero que haya."""
         base = language.replace("_", "-").split("-")[0].lower()
-        if base in ("ca", "gl", "eu"):  # sin traducción propia: en español
-            base = "es"
-        return self.names.get(base) or self.names.get("en") or next(iter(self.names.values()))
+        base = BORROWED_LANGUAGES.get(base, base)
+        return (
+            self.names.get(base)
+            or self.names.get(BASE_LANGUAGE)
+            or next(iter(self.names.values()))
+        )
 
     def applies(self, number: int, trim: str | None) -> bool:
         """¿Toca en la revisión ``number`` de un coche de esta versión?"""

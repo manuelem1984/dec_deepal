@@ -6,9 +6,10 @@ Configurar → ITV / Seguro.
 
 ITV
 ---
-La próxima fecha se calcula con la regla de los turismos en España: la primera
-a los 4 años de la matriculación; después, cada 2 años mientras el coche tenga
-menos de 10, y cada año a partir de entonces. El usuario puede fijar otra
+La próxima fecha se calcula con las normas del país de la cuenta
+(:class:`CountryRules`; las de España: la primera a los 4 años de la
+matriculación; después, cada 2 años mientras el coche tenga menos de 10, y
+cada año a partir de entonces). El usuario puede fijar otra
 fecha (``next_override``), que vale hasta que registre la siguiente ITV.
 Avisos: quedan 2 meses, 1 mes, 15 días y vencida.
 
@@ -35,9 +36,31 @@ from .maintenance import LEVEL_OK, LEVEL_OVERDUE, LEVEL_SOON, add_months
 # ITV
 # ---------------------------------------------------------------------------
 
-ITV_FIRST_MONTHS: Final = 48
-ITV_ANNUAL_FROM_MONTHS: Final = 120
 ITV_DAY_STEPS: Final = (60, 30, 15)
+
+
+@dataclass(frozen=True, slots=True)
+class CountryRules:
+    """Normas que dependen del PAÍS (no del idioma): ITV y preaviso del seguro.
+
+    Los valores por defecto son los de España. Cada país puede cambiarlos en
+    ``countries/countries.yaml`` → ``normas``.
+    """
+
+    #: Meses desde la matriculación hasta la primera inspección.
+    itv_first_months: int = 48
+    #: Meses entre inspecciones mientras el coche es "joven".
+    itv_interval_months: int = 24
+    #: Edad del coche (meses) a partir de la cual el intervalo es el reducido.
+    itv_reduced_from_months: int = 120
+    #: Meses entre inspecciones a partir de esa edad.
+    itv_reduced_interval_months: int = 12
+    #: Días antes de la renovación del seguro en que acaba el plazo para no renovar.
+    insurance_notice_days: int = 30
+
+
+#: Normas de España (las de por defecto).
+DEFAULT_RULES: Final = CountryRules()
 STEP_OVERDUE: Final = "overdue"
 MAX_HISTORY: Final = 30
 
@@ -90,23 +113,25 @@ class DueStatus:
     steps: frozenset[str]
 
 
-def itv_calculated(record: ItvRecord) -> date:
-    """Próxima ITV según la regla (sin tener en cuenta la fecha puesta a mano)."""
-    first = add_months(record.registration_date, ITV_FIRST_MONTHS)
+def itv_calculated(record: ItvRecord, rules: CountryRules = DEFAULT_RULES) -> date:
+    """Próxima ITV según las normas del país (sin la fecha puesta a mano)."""
     if record.last_date is None:
-        return first
-    old = record.last_date >= add_months(record.registration_date, ITV_ANNUAL_FROM_MONTHS)
-    return add_months(record.last_date, 12 if old else 24)
+        return add_months(record.registration_date, rules.itv_first_months)
+    old = record.last_date >= add_months(record.registration_date, rules.itv_reduced_from_months)
+    return add_months(
+        record.last_date,
+        rules.itv_reduced_interval_months if old else rules.itv_interval_months,
+    )
 
 
-def itv_due(record: ItvRecord) -> date:
+def itv_due(record: ItvRecord, rules: CountryRules = DEFAULT_RULES) -> date:
     """Próxima ITV: la puesta a mano o la calculada."""
-    return record.next_override or itv_calculated(record)
+    return record.next_override or itv_calculated(record, rules)
 
 
-def itv_status(record: ItvRecord, today: date) -> DueStatus:
+def itv_status(record: ItvRecord, today: date, rules: CountryRules = DEFAULT_RULES) -> DueStatus:
     """Cuánto falta para la próxima ITV."""
-    due = itv_due(record)
+    due = itv_due(record, rules)
     days_left = (due - today).days
     steps = {f"d{days}" for days in ITV_DAY_STEPS if days_left <= days}
     overdue = days_left < 0

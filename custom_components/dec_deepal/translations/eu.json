@@ -5,22 +5,30 @@
       "user": {
         "title": "DEC Deepal — País",
         "description": "Elige el país de tu cuenta de Deepal.",
-        "data": { "country": "País" }
+        "data": {
+          "country": "País"
+        }
       },
       "login_method": {
         "title": "Cómo iniciar sesión",
         "description": "Elige cómo quieres recibir el código de acceso ({country}). Recomendado: una cuenta secundaria con el coche compartido, para no cerrar la sesión de la app en tu móvil.\n\n⚠️ **Usa el correo.** Ahora mismo Deepal no está entregando los SMS de acceso: el servidor dice que lo envía, pero no llega.",
-        "data": { "login_method": "Método" }
+        "data": {
+          "login_method": "Método"
+        }
       },
       "email": {
         "title": "Acceso por correo",
         "description": "Escribe el correo de tu cuenta de Deepal. Recibirás un código.",
-        "data": { "email": "Correo electrónico" }
+        "data": {
+          "email": "Correo electrónico"
+        }
       },
       "sms": {
         "title": "Acceso por SMS",
         "description": "Escribe tu móvil ({digits} cifras). Puedes ponerlo con o sin el prefijo {prefix}.\n\n⚠️ Ahora mismo Deepal no está entregando los SMS de acceso. Si no te llega en un par de minutos, en el paso siguiente elige **Usar otro método** y entra con el correo.",
-        "data": { "mobile": "Móvil" }
+        "data": {
+          "mobile": "Móvil"
+        }
       },
       "code_menu": {
         "title": "Código enviado",
@@ -34,12 +42,16 @@
       "code": {
         "title": "Código de verificación",
         "description": "Escribe el código que acabas de recibir.",
-        "data": { "auth_code": "Código" }
+        "data": {
+          "auth_code": "Código"
+        }
       },
       "vehicles": {
         "title": "Vehículos",
         "description": "Tu cuenta tiene varios coches. Marca los que quieres añadir.",
-        "data": { "selected_vehicles": "Vehículos" }
+        "data": {
+          "selected_vehicles": "Vehículos"
+        }
       },
       "reauth_confirm": {
         "title": "Volver a iniciar sesión",
@@ -93,7 +105,9 @@
       "itv": {
         "title": "ITV — vehículo",
         "description": "Elige el coche.",
-        "data": { "vehicle": "Vehículo" }
+        "data": {
+          "vehicle": "Vehículo"
+        }
       },
       "itv_setup": {
         "title": "ITV de {vehicle}",
@@ -112,7 +126,9 @@
       "insurance": {
         "title": "Seguro — vehículo",
         "description": "Elige el coche.",
-        "data": { "vehicle": "Vehículo" }
+        "data": {
+          "vehicle": "Vehículo"
+        }
       },
       "insurance_setup": {
         "title": "Seguro de {vehicle}",
@@ -136,7 +152,9 @@
       "maintenance": {
         "title": "Mantenimiento — vehículo",
         "description": "Elige el coche.",
-        "data": { "vehicle": "Vehículo" }
+        "data": {
+          "vehicle": "Vehículo"
+        }
       },
       "maintenance_menu": {
         "title": "Mantenimiento de {vehicle}",
@@ -172,13 +190,22 @@
       "appearance": {
         "title": "Apariencia — vehículo y modelo",
         "description": "El modelo decide qué funciones (y entidades) tiene el coche. Mientras no lo elijas, el coche funciona en modo genérico.",
-        "data": { "vehicle": "Vehículo", "model": "Modelo" }
+        "data": {
+          "vehicle": "Vehículo",
+          "model": "Modelo"
+        }
       },
       "appearance_details": {
         "title": "Apariencia — versión y color",
         "description": "Versión y color de tu {model}. Sirven para la \"Imagen DEC\", para la vista isométrica (que se dibuja con tu color y tus llantas) y para crear solo las entidades que tiene tu versión.",
-        "data": { "trim": "Versión", "color": "Color", "wheels": "Llantas (solo Max)" },
-        "data_description": { "wheels": "El Pro lleva siempre su llanta de 18\"." }
+        "data": {
+          "trim": "Versión",
+          "color": "Color",
+          "wheels": "Llantas (solo Max)"
+        },
+        "data_description": {
+          "wheels": "El Pro lleva siempre su llanta de 18\"."
+        }
       },
       "pin": {
         "title": "Control remoto con PIN",
@@ -226,13 +253,21 @@
           "model": {
             "title": "Modelo de {vehicle}",
             "description": "Hasta que elijas el modelo, el coche funciona en modo genérico (solo datos básicos, sin asientos, volante ni control con PIN). Modelo reconocido por el nombre: {suggestion}.",
-            "data": { "model": "Modelo" }
+            "data": {
+              "model": "Modelo"
+            }
           },
           "details": {
             "title": "Versión y color",
             "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Imagen DEC\".",
-            "data": { "trim": "Versión", "color": "Color", "wheels": "Llantas (solo Max)" },
-            "data_description": { "wheels": "El Pro lleva siempre su llanta de 18\"." }
+            "data": {
+              "trim": "Versión",
+              "color": "Color",
+              "wheels": "Llantas (solo Max)"
+            },
+            "data_description": {
+              "wheels": "El Pro lleva siempre su llanta de 18\"."
+            }
           }
         },
         "abort": {
@@ -243,7 +278,10 @@
   },
   "selector": {
     "login_method": {
-      "options": { "sms": "SMS (ahora mismo no llega)", "email": "Correo electrónico (recomendado)" }
+      "options": {
+        "sms": "SMS (ahora mismo no llega)",
+        "email": "Correo electrónico (recomendado)"
+      }
     },
     "pin_mode": {
       "options": {
@@ -252,10 +290,18 @@
       }
     },
     "arm_seconds": {
-      "options": { "10": "10 segundos", "20": "20 segundos", "30": "30 segundos", "60": "60 segundos" }
+      "options": {
+        "10": "10 segundos",
+        "20": "20 segundos",
+        "30": "30 segundos",
+        "60": "60 segundos"
+      }
     },
     "wheels": {
-      "options": { "cover": "20\" con tapacubos", "open": "20\" sin tapacubos" }
+      "options": {
+        "cover": "20\" con tapacubos",
+        "open": "20\" sin tapacubos"
+      }
     },
     "alert_type": {
       "options": {
@@ -281,8 +327,12 @@
   },
   "entity": {
     "sensor": {
-      "battery_level": { "name": "Batería" },
-      "range": { "name": "Autonomía" },
+      "battery_level": {
+        "name": "Batería"
+      },
+      "range": {
+        "name": "Autonomía"
+      },
       "charge_status": {
         "name": "Estado de carga",
         "state": {
@@ -293,176 +343,443 @@
           "charging_dc": "Cargando DC"
         }
       },
-      "charge_current": { "name": "Corriente de carga" },
-      "ac_charge_current": { "name": "Corriente de carga AC" },
-      "dc_charge_current": { "name": "Corriente de carga DC" },
-      "remaining_charge_time": { "name": "Tiempo de carga restante" },
-      "remaining_charge_time_hhmm": { "name": "Tiempo de carga restante (H:MM)" },
-      "odometer": { "name": "Kilometraje total" },
-      "last_update": { "name": "Último informe del coche" },
-      "power_status": { "name": "Estado de alimentación" },
-      "speed": { "name": "Velocidad" },
-      "trip_mileage": { "name": "Kilómetros del trayecto" },
-      "mileage_yesterday": { "name": "Kilómetros de ayer" },
-      "inside_temperature": { "name": "Temperatura interior" },
-      "outside_temperature": { "name": "Temperatura exterior" },
-      "cabin_humidity": { "name": "Humedad interior" },
-      "climate_target_temperature": { "name": "Temperatura del climatizador" },
-      "fan_level": { "name": "Ventilador del climatizador" },
-      "tire_pressure_front_left": { "name": "Presión neumático delantero izquierdo" },
-      "tire_pressure_front_right": { "name": "Presión neumático delantero derecho" },
-      "tire_pressure_rear_left": { "name": "Presión neumático trasero izquierdo" },
-      "tire_pressure_rear_right": { "name": "Presión neumático trasero derecho" },
-      "license_plate": { "name": "Matrícula" },
-      "window_opening_front_left": { "name": "Apertura ventanilla delantera izquierda" },
-      "window_opening_front_right": { "name": "Apertura ventanilla delantera derecha" },
-      "window_opening_rear_left": { "name": "Apertura ventanilla trasera izquierda" },
-      "window_opening_rear_right": { "name": "Apertura ventanilla trasera derecha" },
-      "maintenance_days": { "name": "Días hasta el mantenimiento" },
-      "maintenance_km": { "name": "Kilómetros hasta el mantenimiento" },
-      "maintenance_date": { "name": "Próximo mantenimiento" },
-      "itv_date": { "name": "Próxima ITV" },
-      "itv_days": { "name": "Días hasta la ITV" },
-      "insurance_renewal_date": { "name": "Renovación del seguro" },
-      "insurance_days": { "name": "Días hasta la renovación del seguro" },
-      "insurance_cancel_date": { "name": "Límite para desistir del seguro" }
+      "charge_current": {
+        "name": "Corriente de carga"
+      },
+      "ac_charge_current": {
+        "name": "Corriente de carga AC"
+      },
+      "dc_charge_current": {
+        "name": "Corriente de carga DC"
+      },
+      "remaining_charge_time": {
+        "name": "Tiempo de carga restante"
+      },
+      "remaining_charge_time_hhmm": {
+        "name": "Tiempo de carga restante (H:MM)"
+      },
+      "odometer": {
+        "name": "Kilometraje total"
+      },
+      "last_update": {
+        "name": "Último informe del coche"
+      },
+      "power_status": {
+        "name": "Estado de alimentación"
+      },
+      "speed": {
+        "name": "Velocidad"
+      },
+      "trip_mileage": {
+        "name": "Kilómetros del trayecto"
+      },
+      "mileage_yesterday": {
+        "name": "Kilómetros de ayer"
+      },
+      "inside_temperature": {
+        "name": "Temperatura interior"
+      },
+      "outside_temperature": {
+        "name": "Temperatura exterior"
+      },
+      "cabin_humidity": {
+        "name": "Humedad interior"
+      },
+      "climate_target_temperature": {
+        "name": "Temperatura del climatizador"
+      },
+      "fan_level": {
+        "name": "Ventilador del climatizador"
+      },
+      "tire_pressure_front_left": {
+        "name": "Presión neumático delantero izquierdo"
+      },
+      "tire_pressure_front_right": {
+        "name": "Presión neumático delantero derecho"
+      },
+      "tire_pressure_rear_left": {
+        "name": "Presión neumático trasero izquierdo"
+      },
+      "tire_pressure_rear_right": {
+        "name": "Presión neumático trasero derecho"
+      },
+      "license_plate": {
+        "name": "Matrícula"
+      },
+      "window_opening_front_left": {
+        "name": "Apertura ventanilla delantera izquierda"
+      },
+      "window_opening_front_right": {
+        "name": "Apertura ventanilla delantera derecha"
+      },
+      "window_opening_rear_left": {
+        "name": "Apertura ventanilla trasera izquierda"
+      },
+      "window_opening_rear_right": {
+        "name": "Apertura ventanilla trasera derecha"
+      },
+      "maintenance_days": {
+        "name": "Días hasta el mantenimiento"
+      },
+      "maintenance_km": {
+        "name": "Kilómetros hasta el mantenimiento"
+      },
+      "maintenance_date": {
+        "name": "Próximo mantenimiento"
+      },
+      "itv_date": {
+        "name": "Próxima ITV"
+      },
+      "itv_days": {
+        "name": "Días hasta la ITV"
+      },
+      "insurance_renewal_date": {
+        "name": "Renovación del seguro"
+      },
+      "insurance_days": {
+        "name": "Días hasta la renovación del seguro"
+      },
+      "insurance_cancel_date": {
+        "name": "Límite para desistir del seguro"
+      }
     },
     "binary_sensor": {
-      "cloud_connected": { "name": "Conexión con la nube" },
-      "engine": { "name": "Encendido" },
-      "charging": { "name": "Cargando" },
-      "ac_connector": { "name": "Conector AC" },
-      "dc_connector": { "name": "Conector DC" },
-      "door_front_left": { "name": "Puerta delantera izquierda" },
-      "door_front_right": { "name": "Puerta delantera derecha" },
-      "door_rear_left": { "name": "Puerta trasera izquierda" },
-      "door_rear_right": { "name": "Puerta trasera derecha" },
-      "trunk": { "name": "Maletero" },
-      "hood": { "name": "Capó" },
-      "any_door_open": { "name": "Alguna puerta abierta" },
-      "window_front_left": { "name": "Ventanilla delantera izquierda" },
-      "window_front_right": { "name": "Ventanilla delantera derecha" },
-      "window_rear_left": { "name": "Ventanilla trasera izquierda" },
-      "window_rear_right": { "name": "Ventanilla trasera derecha" },
-      "lock_driver": { "name": "Cerradura del conductor" },
-      "lock_passenger": { "name": "Cerradura del acompañante" },
-      "central_locking": { "name": "Cierre centralizado" },
-      "tire_alarm_front_left": { "name": "Aviso neumático delantero izquierdo" },
-      "tire_alarm_front_right": { "name": "Aviso neumático delantero derecho" },
-      "tire_alarm_rear_left": { "name": "Aviso neumático trasero izquierdo" },
-      "tire_alarm_rear_right": { "name": "Aviso neumático trasero derecho" },
-      "high_beam": { "name": "Luces de Carretera" },
-      "low_beam": { "name": "Luces de Cruce" },
-      "position_lamp": { "name": "Luces de posición" },
-      "indicator_left": { "name": "Intermitente izquierdo" },
-      "indicator_right": { "name": "Intermitente derecho" },
-      "climate_on": { "name": "Climatizador" },
-      "rear_fog_lamp": { "name": "Luces Antiniebla" },
-      "air_recirculation": { "name": "Recirculación de aire" },
-      "key_battery_low": { "name": "Pila del mando baja" },
-      "warning_12v_battery": { "name": "Testigo batería de 12 V" },
-      "warning_tpms": { "name": "Testigo presión de neumáticos" },
-      "warning_abs": { "name": "Testigo ABS" },
-      "warning_airbag": { "name": "Testigo airbag" },
-      "warning_brake_fluid": { "name": "Testigo líquido de frenos" },
-      "warning_brake": { "name": "Testigo frenos" },
-      "warning_eps": { "name": "Testigo dirección asistida" },
-      "warning_power_limit": { "name": "Testigo potencia limitada" },
-      "warning_power_system": { "name": "Testigo sistema de propulsión" },
-      "warning_traction_battery_low": { "name": "Testigo batería baja" },
-      "warning_coolant_temperature": { "name": "Testigo temperatura del refrigerante" },
-      "maintenance_due": { "name": "Testigo mantenimiento" },
-      "itv_due": { "name": "Testigo ITV" },
-      "insurance_due": { "name": "Testigo seguro" }
+      "cloud_connected": {
+        "name": "Conexión con la nube"
+      },
+      "engine": {
+        "name": "Encendido"
+      },
+      "charging": {
+        "name": "Cargando"
+      },
+      "ac_connector": {
+        "name": "Conector AC"
+      },
+      "dc_connector": {
+        "name": "Conector DC"
+      },
+      "door_front_left": {
+        "name": "Puerta delantera izquierda"
+      },
+      "door_front_right": {
+        "name": "Puerta delantera derecha"
+      },
+      "door_rear_left": {
+        "name": "Puerta trasera izquierda"
+      },
+      "door_rear_right": {
+        "name": "Puerta trasera derecha"
+      },
+      "trunk": {
+        "name": "Maletero"
+      },
+      "hood": {
+        "name": "Capó"
+      },
+      "any_door_open": {
+        "name": "Alguna puerta abierta"
+      },
+      "window_front_left": {
+        "name": "Ventanilla delantera izquierda"
+      },
+      "window_front_right": {
+        "name": "Ventanilla delantera derecha"
+      },
+      "window_rear_left": {
+        "name": "Ventanilla trasera izquierda"
+      },
+      "window_rear_right": {
+        "name": "Ventanilla trasera derecha"
+      },
+      "lock_driver": {
+        "name": "Cerradura del conductor"
+      },
+      "lock_passenger": {
+        "name": "Cerradura del acompañante"
+      },
+      "central_locking": {
+        "name": "Cierre centralizado"
+      },
+      "tire_alarm_front_left": {
+        "name": "Aviso neumático delantero izquierdo"
+      },
+      "tire_alarm_front_right": {
+        "name": "Aviso neumático delantero derecho"
+      },
+      "tire_alarm_rear_left": {
+        "name": "Aviso neumático trasero izquierdo"
+      },
+      "tire_alarm_rear_right": {
+        "name": "Aviso neumático trasero derecho"
+      },
+      "high_beam": {
+        "name": "Luces de Carretera"
+      },
+      "low_beam": {
+        "name": "Luces de Cruce"
+      },
+      "position_lamp": {
+        "name": "Luces de posición"
+      },
+      "indicator_left": {
+        "name": "Intermitente izquierdo"
+      },
+      "indicator_right": {
+        "name": "Intermitente derecho"
+      },
+      "climate_on": {
+        "name": "Climatizador"
+      },
+      "rear_fog_lamp": {
+        "name": "Luces Antiniebla"
+      },
+      "air_recirculation": {
+        "name": "Recirculación de aire"
+      },
+      "key_battery_low": {
+        "name": "Pila del mando baja"
+      },
+      "warning_12v_battery": {
+        "name": "Testigo batería de 12 V"
+      },
+      "warning_tpms": {
+        "name": "Testigo presión de neumáticos"
+      },
+      "warning_abs": {
+        "name": "Testigo ABS"
+      },
+      "warning_airbag": {
+        "name": "Testigo airbag"
+      },
+      "warning_brake_fluid": {
+        "name": "Testigo líquido de frenos"
+      },
+      "warning_brake": {
+        "name": "Testigo frenos"
+      },
+      "warning_eps": {
+        "name": "Testigo dirección asistida"
+      },
+      "warning_power_limit": {
+        "name": "Testigo potencia limitada"
+      },
+      "warning_power_system": {
+        "name": "Testigo sistema de propulsión"
+      },
+      "warning_traction_battery_low": {
+        "name": "Testigo batería baja"
+      },
+      "warning_coolant_temperature": {
+        "name": "Testigo temperatura del refrigerante"
+      },
+      "maintenance_due": {
+        "name": "Testigo mantenimiento"
+      },
+      "itv_due": {
+        "name": "Testigo ITV"
+      },
+      "insurance_due": {
+        "name": "Testigo seguro"
+      }
     },
     "button": {
-      "refresh": { "name": "Actualizar datos del vehículo" },
-      "flash_lights": { "name": "Parpadear luces" },
-      "honk_horn": { "name": "Tocar el claxon" },
-      "flash_and_honk": { "name": "Luces y claxon" }
+      "refresh": {
+        "name": "Actualizar datos del vehículo"
+      },
+      "flash_lights": {
+        "name": "Parpadear luces"
+      },
+      "honk_horn": {
+        "name": "Tocar el claxon"
+      },
+      "flash_and_honk": {
+        "name": "Luces y claxon"
+      }
     },
     "climate": {
-      "cabin_climate": { "name": "Climatización" }
+      "cabin_climate": {
+        "name": "Climatización"
+      }
     },
     "number": {
-      "seat_heat_driver": { "name": "Calefacción asiento conductor" },
-      "seat_heat_passenger": { "name": "Calefacción asiento acompañante" },
-      "seat_vent_driver": { "name": "Ventilación asiento conductor" },
-      "seat_vent_passenger": { "name": "Ventilación asiento acompañante" }
+      "seat_heat_driver": {
+        "name": "Calefacción asiento conductor"
+      },
+      "seat_heat_passenger": {
+        "name": "Calefacción asiento acompañante"
+      },
+      "seat_vent_driver": {
+        "name": "Ventilación asiento conductor"
+      },
+      "seat_vent_passenger": {
+        "name": "Ventilación asiento acompañante"
+      }
     },
     "switch": {
-      "steering_wheel_heat": { "name": "Volante calefactado" },
-      "front_defrost": { "name": "Desempañado delantero" }
+      "steering_wheel_heat": {
+        "name": "Volante calefactado"
+      },
+      "front_defrost": {
+        "name": "Desempañado delantero"
+      }
     },
     "lock": {
-      "doors": { "name": "Puertas" },
-      "pin_arm": { "name": "Desbloqueo acciones con PIN" }
+      "doors": {
+        "name": "Puertas"
+      },
+      "pin_arm": {
+        "name": "Desbloqueo acciones con PIN"
+      }
     },
     "cover": {
       "windows": {
         "name": "Ventanillas - Modo Ventilación",
-        "state": { "open": "Cerradas", "closed": "Ventilando", "opening": "Cerrando", "closing": "Entreabriendo" }
+        "state": {
+          "open": "Cerradas",
+          "closed": "Ventilando",
+          "opening": "Cerrando",
+          "closing": "Entreabriendo"
+        }
       },
-      "trunk_control": { "name": "Maletero (control)" }
+      "trunk_control": {
+        "name": "Maletero (control)"
+      }
     },
     "device_tracker": {
-      "location": { "name": "Ubicación" }
+      "location": {
+        "name": "Ubicación"
+      }
     },
     "image": {
-      "official_image": { "name": "Imagen oficial" },
-      "dec_photo": { "name": "Imagen DEC" },
-      "top_view": { "name": "Vista de planta" },
-      "isometric_view": { "name": "Vista isométrica" },
-      "interior_view": { "name": "Vista interior" },
-      "charging_view": { "name": "Vista de carga" }
+      "official_image": {
+        "name": "Imagen oficial"
+      },
+      "dec_photo": {
+        "name": "Imagen DEC"
+      },
+      "top_view": {
+        "name": "Vista de planta"
+      },
+      "isometric_view": {
+        "name": "Vista isométrica"
+      },
+      "interior_view": {
+        "name": "Vista interior"
+      },
+      "charging_view": {
+        "name": "Vista de carga"
+      }
     }
   },
   "exceptions": {
-    "session_expired": { "message": "La sesión de Deepal caducó y no se pudo renovar. Vuelve a iniciar sesión en la integración. ({error})" },
-    "rate_limited": { "message": "Deepal pide esperar (demasiadas peticiones o intentos). ({error})" },
-    "pin_problem": { "message": "Problema con el PIN de control remoto: revísalo en Configurar o en la app oficial. ({error})" },
-    "signing_key_invalid": { "message": "La clave de firma de comandos ya no vale. Vuelve a iniciar sesión en la integración. ({error})" },
-    "command_not_ready": { "message": "No se puede enviar el comando todavía: {error}" },
-    "connection_error": { "message": "No se pudo conectar con el servidor de Deepal. ({error})" },
-    "command_failed": { "message": "El comando falló: {error}" },
-    "command_rejected": { "message": "El coche rechazó el comando: {error}" },
-    "command_rejected_asleep": { "message": "El coche rechazó el comando ({error}). Puede estar dormido u ocupado: vuelve a intentarlo tras usarlo un poco." },
-    "command_rejected_power_on": { "message": "El coche tiene que estar apagado para esta orden ({error}). Apágalo y vuelve a intentarlo." },
-    "command_vehicle_asleep": { "message": "El coche no aceptó la orden: puede que esté dormido o sin conexión. Pulsa \"Actualizar datos del vehículo\" para despertarlo y vuelve a intentarlo. ({error})" },
-    "wake_no_report": { "message": "Se pidió al coche que se despertara, pero no ha enviado datos nuevos en 60 segundos. Puede estar sin cobertura; se mantienen los últimos datos." },
-    "command_busy": { "message": "Hay otro comando en curso para este coche desde hace demasiado tiempo. Inténtalo en unos segundos." },
-    "command_cooldown": { "message": "El coche aún está terminando el comando anterior. Espera {seconds} s." },
-    "pin_not_armed": { "message": "Primero desbloquea \"Desbloqueo acciones con PIN\"." },
-    "unknown_device": { "message": "Ese dispositivo no es un vehículo de DEC Deepal." },
-    "maintenance_not_configured": { "message": "Activa antes el mantenimiento de este coche en Configurar → Mantenimiento (integración DEC Deepal)." },
-    "itv_not_configured": { "message": "Activa antes la ITV de este coche en Configurar → ITV (integración DEC Deepal)." },
-    "maintenance_no_odometer": { "message": "No se conoce el kilometraje del coche. Indica los kilómetros o registra la revisión desde Configurar → Mantenimiento." }
+    "session_expired": {
+      "message": "La sesión de Deepal caducó y no se pudo renovar. Vuelve a iniciar sesión en la integración. ({error})"
+    },
+    "rate_limited": {
+      "message": "Deepal pide esperar (demasiadas peticiones o intentos). ({error})"
+    },
+    "pin_problem": {
+      "message": "Problema con el PIN de control remoto: revísalo en Configurar o en la app oficial. ({error})"
+    },
+    "signing_key_invalid": {
+      "message": "La clave de firma de comandos ya no vale. Vuelve a iniciar sesión en la integración. ({error})"
+    },
+    "command_not_ready": {
+      "message": "No se puede enviar el comando todavía: {error}"
+    },
+    "connection_error": {
+      "message": "No se pudo conectar con el servidor de Deepal. ({error})"
+    },
+    "command_failed": {
+      "message": "El comando falló: {error}"
+    },
+    "command_rejected": {
+      "message": "El coche rechazó el comando: {error}"
+    },
+    "command_rejected_asleep": {
+      "message": "El coche rechazó el comando ({error}). Puede estar dormido u ocupado: vuelve a intentarlo tras usarlo un poco."
+    },
+    "command_rejected_power_on": {
+      "message": "El coche tiene que estar apagado para esta orden ({error}). Apágalo y vuelve a intentarlo."
+    },
+    "command_vehicle_asleep": {
+      "message": "El coche no aceptó la orden: puede que esté dormido o sin conexión. Pulsa \"Actualizar datos del vehículo\" para despertarlo y vuelve a intentarlo. ({error})"
+    },
+    "wake_no_report": {
+      "message": "Se pidió al coche que se despertara, pero no ha enviado datos nuevos en 60 segundos. Puede estar sin cobertura; se mantienen los últimos datos."
+    },
+    "command_busy": {
+      "message": "Hay otro comando en curso para este coche desde hace demasiado tiempo. Inténtalo en unos segundos."
+    },
+    "command_cooldown": {
+      "message": "El coche aún está terminando el comando anterior. Espera {seconds} s."
+    },
+    "pin_not_armed": {
+      "message": "Primero desbloquea \"Desbloqueo acciones con PIN\"."
+    },
+    "unknown_device": {
+      "message": "Ese dispositivo no es un vehículo de DEC Deepal."
+    },
+    "maintenance_not_configured": {
+      "message": "Activa antes el mantenimiento de este coche en Configurar → Mantenimiento (integración DEC Deepal)."
+    },
+    "itv_not_configured": {
+      "message": "Activa antes la ITV de este coche en Configurar → ITV (integración DEC Deepal)."
+    },
+    "maintenance_no_odometer": {
+      "message": "No se conoce el kilometraje del coche. Indica los kilómetros o registra la revisión desde Configurar → Mantenimiento."
+    }
   },
   "services": {
     "capture_snapshot": {
       "name": "Captura de depuración",
       "description": "Guarda una foto completa del estado del coche (datos interpretados y en bruto, sin datos personales) y la compara con la captura anterior. Se guarda también en /config/dec_deepal_capturas/.",
       "fields": {
-        "device_id": { "name": "Vehículo", "description": "El coche a capturar." },
-        "label": { "name": "Etiqueta", "description": "Nombre para reconocer la captura (p. ej. \"A - reposo\")." },
-        "refresh": { "name": "Leer antes", "description": "Leer el coche justo antes de capturar." }
+        "device_id": {
+          "name": "Vehículo",
+          "description": "El coche a capturar."
+        },
+        "label": {
+          "name": "Etiqueta",
+          "description": "Nombre para reconocer la captura (p. ej. \"A - reposo\")."
+        },
+        "refresh": {
+          "name": "Leer antes",
+          "description": "Leer el coche justo antes de capturar."
+        }
       }
     },
     "register_itv": {
       "name": "Registrar ITV",
       "description": "Anota que el coche ha pasado la ITV y calcula la siguiente. Hace falta haber activado la ITV del coche en Configurar → ITV.",
       "fields": {
-        "device_id": { "name": "Vehículo", "description": "El coche que ha pasado la ITV." },
-        "date": { "name": "Fecha", "description": "Fecha de la ITV. Si se deja vacío, hoy." }
+        "device_id": {
+          "name": "Vehículo",
+          "description": "El coche que ha pasado la ITV."
+        },
+        "date": {
+          "name": "Fecha",
+          "description": "Fecha de la ITV. Si se deja vacío, hoy."
+        }
       }
     },
     "register_maintenance": {
       "name": "Registrar mantenimiento",
       "description": "Anota que el coche ha pasado la revisión y empieza a contar para la siguiente. Hace falta haber activado el mantenimiento del coche en Configurar → Mantenimiento.",
       "fields": {
-        "device_id": { "name": "Vehículo", "description": "El coche que ha pasado la revisión." },
-        "date": { "name": "Fecha", "description": "Fecha de la revisión. Si se deja vacío, hoy." },
-        "km": { "name": "Kilómetros", "description": "Kilómetros en la revisión. Si se deja vacío, los que marca ahora el coche." }
+        "device_id": {
+          "name": "Vehículo",
+          "description": "El coche que ha pasado la revisión."
+        },
+        "date": {
+          "name": "Fecha",
+          "description": "Fecha de la revisión. Si se deja vacío, hoy."
+        },
+        "km": {
+          "name": "Kilómetros",
+          "description": "Kilómetros en la revisión. Si se deja vacío, los que marca ahora el coche."
+        }
       }
     }
   }

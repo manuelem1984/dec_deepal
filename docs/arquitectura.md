@@ -42,6 +42,8 @@ custom_components/dec_deepal/
 ├── maintenance.py         Cuánto falta para la revisión y escalones de aviso (sin HA)
 ├── documents.py           ITV y seguro: fechas, niveles y avisos (sin HA)
 ├── manual.py              Enlace del manual del coche que abre la tarjeta
+├── idiomas/               TEXTOS: un fichero por idioma (la única fuente)
+├── textos_generados.py    Avisos y catálogo por idioma (generado desde idiomas/)
 ├── diagnostics.py         "Descargar diagnósticos"
 ├── strings.json           Textos (idioma base)
 ├── translations/          Un JSON por idioma

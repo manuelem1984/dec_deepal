@@ -22,6 +22,7 @@ from collections.abc import Iterable, Mapping
 from typing import Any, Final
 
 from .telemetry import signals as s
+from .textos_generados import ALERT_TEXTS, BASE_LANGUAGE, BORROWED_LANGUAGES
 
 ALERT_CHARGE_STARTED: Final = "charge_started"
 ALERT_CHARGE_INTERRUPTED: Final = "charge_interrupted"
@@ -139,100 +140,27 @@ def new_problems(current: Mapping[str, Any], active: set[str]) -> list[str]:
 # Textos
 # ---------------------------------------------------------------------------
 # El título es siempre "DEC Deepal <nombre del coche>" (lo pone alerts.py).
+# Los mensajes están en idiomas/<idioma>.json → "avisos" (ver docs/idiomas.md).
 
-TEXTS: Final[dict[str, dict[str, str]]] = {
-    "es": {
-        ALERT_CHARGE_STARTED: "Carga iniciada{battery}.",
-        ALERT_CHARGE_INTERRUPTED: "Carga interrumpida{battery}.",
-        ALERT_CHARGE_FINISHED: "Carga terminada{battery}.",
-        "battery": " (batería al {level} %)",
-        ALERT_WARNINGS: "Testigo encendido: {names}.",
-        ALERT_TIRES: "Aviso de neumáticos: {names}.",
-        ALERT_KEY_BATTERY: "Pila del mando baja. Cámbiala por una CR2032.",
-        "maintenance_remaining": "Quedan {parts} para la {ordinal} revisión.",
-        "maintenance_overdue": "Mantenimiento vencido: la {ordinal} revisión tocaba el {date} o a los {km} km.",
-        "itv_remaining": "Quedan {days} para la ITV (límite: {date}).",
-        "itv_today": "Hoy es el último día para pasar la ITV.",
-        "itv_overdue": "ITV vencida desde el {date}.",
-        "insurance_cancel": "Seguro: quedan {days} para poder desistir (hasta el {deadline}). Renueva el {renewal}.",
-        "insurance_last_day": "Seguro: hoy es el último día para avisar a {company} si no quieres renovar.",
-        "insurance_renewed": "Seguro renovado hoy. Próxima renovación: {renewal}.",
-        "your_insurer": "tu aseguradora",
-        "km": "{value} km",
-        "days": "{value} días",
-        "day": "1 día",
-        "or": " o ",
-        "and": " y ",
-    },
-    "pt": {
-        ALERT_CHARGE_STARTED: "Carregamento iniciado{battery}.",
-        ALERT_CHARGE_INTERRUPTED: "Carregamento interrompido{battery}.",
-        ALERT_CHARGE_FINISHED: "Carregamento terminado{battery}.",
-        "battery": " (bateria a {level} %)",
-        ALERT_WARNINGS: "Luz de aviso acesa: {names}.",
-        ALERT_TIRES: "Aviso dos pneus: {names}.",
-        ALERT_KEY_BATTERY: "Pilha da chave fraca. Substitua-a por uma CR2032.",
-        "maintenance_remaining": "Faltam {parts} para a {ordinal} revisão.",
-        "maintenance_overdue": "Manutenção vencida: a {ordinal} revisão devia ter sido feita a {date} ou aos {km} km.",
-        "itv_remaining": "Faltam {days} para a ITV (limite: {date}).",
-        "itv_today": "Hoje é o último dia para fazer a ITV.",
-        "itv_overdue": "ITV vencida desde {date}.",
-        "insurance_cancel": "Seguro: faltam {days} para poder cancelar (até {deadline}). Renova a {renewal}.",
-        "insurance_last_day": "Seguro: hoje é o último dia para avisar {company} se não quiser renovar.",
-        "insurance_renewed": "Seguro renovado hoje. Próxima renovação: {renewal}.",
-        "your_insurer": "a sua seguradora",
-        "km": "{value} km",
-        "days": "{value} dias",
-        "day": "1 dia",
-        "or": " ou ",
-        "and": " e ",
-    },
-    "en": {
-        ALERT_CHARGE_STARTED: "Charging started{battery}.",
-        ALERT_CHARGE_INTERRUPTED: "Charging interrupted{battery}.",
-        ALERT_CHARGE_FINISHED: "Charging finished{battery}.",
-        "battery": " (battery at {level}%)",
-        ALERT_WARNINGS: "Warning light on: {names}.",
-        ALERT_TIRES: "Tyre warning: {names}.",
-        ALERT_KEY_BATTERY: "Key fob battery low. Replace it with a CR2032.",
-        "maintenance_remaining": "{parts} left until the {ordinal} service.",
-        "maintenance_overdue": "Service overdue: the {ordinal} service was due on {date} or at {km} km.",
-        "itv_remaining": "{days} left until the roadworthiness test (ITV), due by {date}.",
-        "itv_today": "Today is the last day to pass the roadworthiness test (ITV).",
-        "itv_overdue": "Roadworthiness test (ITV) overdue since {date}.",
-        "insurance_cancel": "Insurance: {days} left to cancel (until {deadline}). It renews on {renewal}.",
-        "insurance_last_day": "Insurance: today is the last day to tell {company} that you do not want to renew.",
-        "insurance_renewed": "Insurance renewed today. Next renewal: {renewal}.",
-        "your_insurer": "your insurer",
-        "km": "{value} km",
-        "days": "{value} days",
-        "day": "1 day",
-        "or": " or ",
-        "and": " and ",
-    },
-}
+#: ``{idioma: {clave: texto}}``. Sale de ``idiomas/<idioma>.json`` → ``avisos``.
+TEXTS: Final = ALERT_TEXTS
 
 
 ENGLISH_SUFFIXES: Final = {1: "st", 2: "nd", 3: "rd"}
 
 
-#: Idiomas que se muestran en español mientras no tengan traducción propia
-#: (catalán, gallego y euskera): sus usuarios lo prefieren al inglés.
-SPANISH_FALLBACK: Final = frozenset({"ca", "gl", "eu"})
-
-
 def language_base(language: str) -> str:
-    """``"pt-BR"`` → ``"pt"``; catalán, gallego y euskera → ``"es"``."""
+    """Idioma de los textos: ``"pt-BR"`` → ``"pt"``; un idioma prestado → el que le presta.
+
+    Qué idiomas hay y cuáles usan los de otro lo dice ``idiomas/idiomas.json``.
+    """
     base = language.replace("_", "-").split("-")[0].lower()
-    return "es" if base in SPANISH_FALLBACK else base
+    return BORROWED_LANGUAGES.get(base, base)
 
 
 def _texts(language: str) -> dict[str, str]:
-    """Textos del idioma; si no está, en inglés (como hace Home Assistant).
-
-    Catalán, gallego y euskera usan el español (ver :data:`SPANISH_FALLBACK`).
-    """
-    return TEXTS.get(language_base(language), TEXTS["en"])
+    """Textos del idioma; si no está traducido, los del idioma base."""
+    return TEXTS.get(language_base(language), TEXTS[BASE_LANGUAGE])
 
 
 def format_number(value: float, language: str) -> str:

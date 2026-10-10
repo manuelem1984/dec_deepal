@@ -1,0 +1,13 @@
+{
+  "base": "en",
+  "idiomas": {
+    "es": { "nombre": "Español", "revisor": "Comunidad Deepal España" },
+    "en": { "nombre": "English", "revisor": "" },
+    "pt": { "nombre": "Português (Portugal)", "revisor": "" }
+  },
+  "prestados": {
+    "ca": "es",
+    "gl": "es",
+    "eu": "es"
+  }
+}

@@ -3,6 +3,32 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b9] — 2026-10-10
+
+Reorganización interna de los idiomas. **Para quien usa la integración no
+cambia ningún texto.**
+
+### Cambiado
+
+- **Una sola fuente por idioma.** Todos los textos están ahora en
+  `idiomas/<idioma>.json` (integración, avisos, tarjeta y catálogo). Los
+  ficheros de Home Assistant, los textos de los avisos y la tabla de la
+  tarjeta se generan con `tools/generar_idiomas.py`. Guía:
+  [docs/idiomas.md](docs/idiomas.md).
+- **Añadir un idioma es añadir un fichero**, y puede estar a medias: lo que
+  falte se rellena con el inglés.
+- Los idiomas que usan los textos de otro (catalán, gallego y euskera → español)
+  se declaran en `idiomas/idiomas.json`, en vez de mantener copias a mano.
+- **Normas por país:** los plazos de la ITV y el preaviso del seguro salen de
+  `countries/countries.yaml` (`normas`), no del código. Hoy solo España.
+- Las operaciones del plan de mantenimiento se identifican por clave
+  (`clave: brake_fluid`) y su nombre está en los ficheros de idioma.
+
+### Añadido
+
+- Glosario de términos por idioma y revisor de cada idioma, en `docs/idiomas.md`.
+- `python tools/generar_idiomas.py --informe`: qué le falta a cada idioma.
+
 ## [2.3.0b8] — 2026-10-10
 
 ### Añadido

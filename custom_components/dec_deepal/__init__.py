@@ -214,7 +214,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     # Avisos y mantenimiento: se lee lo guardado antes de crear las entidades
     # (las de mantenimiento solo existen en los coches que lo tienen activado)
     # y se empieza a vigilar después.
-    runtime.alerts = AlertManager(hass, entry.entry_id, dict(options), runtime.vehicles)
+    runtime.alerts = AlertManager(
+        hass, entry.entry_id, dict(options), runtime.vehicles, country.rules
+    )
     await runtime.alerts.async_load()
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

@@ -61,6 +61,14 @@ paises:
     # Correo primero: el SMS no llega en septiembre de 2026 (ver notas).
     metodos_login: [email, sms]
     verificado: true
+    # Normas del país (no dependen del idioma). Son las de por defecto; se
+    # escriben para que sirvan de ejemplo al añadir otro país.
+    normas:
+      itv_primera_meses: 48          # primera ITV a los 4 años
+      itv_cada_meses: 24             # después, cada 2 años...
+      itv_reducida_desde_meses: 120  # ...hasta los 10 años del coche
+      itv_reducida_cada_meses: 12    # y desde entonces, cada año
+      seguro_preaviso_dias: 30       # plazo habitual para no renovar el seguro
     notas: >-
       País de referencia del proyecto. Login por correo verificado con cuentas
       reales. Login por SMS: verificado en la v1, pero desde septiembre de

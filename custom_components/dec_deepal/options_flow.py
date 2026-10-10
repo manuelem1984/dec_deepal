@@ -68,7 +68,6 @@ from .const import (
 )
 from .appearance import details_schema, model_schema, needs_details, updated_options
 from .documents import (
-    DEFAULT_NOTICE_DAYS,
     INSURANCE_KINDS,
     InsuranceRecord,
     ItvRecord,
@@ -630,7 +629,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
                 )
                 chosen = user_input.get(_ITV_NEXT)
                 # Solo se guarda como "a mano" si no coincide con la calculada.
-                if chosen and date.fromisoformat(chosen) != itv_calculated(new):
+                if chosen and date.fromisoformat(chosen) != itv_calculated(new, alerts.rules):
                     new.next_override = date.fromisoformat(chosen)
                 await alerts.async_set_itv(self._vehicle_id, new)
             return self._done(record is not None, enabled)
@@ -736,7 +735,8 @@ class DecDeepalOptionsFlow(OptionsFlow):
                 ),
                 renewal: selector.DateSelector(),
                 vol.Required(
-                    _INS_NOTICE, default=record.notice_days if record else DEFAULT_NOTICE_DAYS
+                    _INS_NOTICE,
+                    default=record.notice_days if record else alerts.rules.insurance_notice_days,
                 ): _number(0, 180, 1),
                 **text(_INS_PHONE_ASSISTANCE, record.phone_assistance if record else "", phone),
                 **text(_INS_PHONE_COMPANY, record.phone_company if record else "", phone),

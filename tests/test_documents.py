@@ -29,6 +29,25 @@ def test_itv_rule_for_spanish_cars() -> None:
     assert record.history == ["2026-11-20", "2030-11-18", "2032-11-30"]
 
 
+def test_itv_rules_come_from_the_country() -> None:
+    """Las normas son del país de la cuenta: otro país, otros plazos."""
+    from pathlib import Path
+
+    from custom_components.dec_deepal.registries import load_all
+
+    integration = Path(__file__).parents[1] / "custom_components" / "dec_deepal"
+    spain = load_all(integration).countries.get("es").rules
+    assert spain == doc.DEFAULT_RULES
+    assert (spain.itv_first_months, spain.itv_interval_months, spain.insurance_notice_days) == (48, 24, 30)
+    # Un país con inspección a los 3 años y anual desde entonces.
+    other = doc.CountryRules(itv_first_months=36, itv_interval_months=12)
+    record = doc.ItvRecord(registration_date=REGISTRATION)
+    assert doc.itv_due(record, other) == date(2025, 11, 26)
+    doc.register_itv(record, date(2025, 11, 20))
+    assert doc.itv_due(record, other) == date(2026, 11, 20)
+    assert doc.itv_status(record, date(2026, 11, 21), other).level == LEVEL_OVERDUE
+
+
 def test_itv_manual_date_until_next_registration() -> None:
     record = doc.ItvRecord(registration_date=REGISTRATION, next_override=date(2026, 10, 1))
     assert doc.itv_due(record) == date(2026, 10, 1)

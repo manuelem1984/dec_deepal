@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Final
 
 from ..api.models import VehicleInfo
+from ..textos_generados import CATALOGUE_TEXTS
 from ..maintenance import (
     DEFAULT_INTERVAL_KM,
     DEFAULT_INTERVAL_MONTHS,
@@ -275,14 +276,26 @@ def _maintenance(raw: object, trims: dict[str, Trim], where: str) -> Maintenance
             raise RegistryError(
                 f"{item_where}: versiones desconocidas {sorted(unknown)}; válidas: {sorted(trims)}"
             )
-        raw_name = require(item, "nombre", item_where)
-        names = (
-            {str(lang): str(text) for lang, text in raw_name.items()}
-            if isinstance(raw_name, dict)
-            else {"es": str(raw_name)}
-        )
-        if not names:
-            raise RegistryError(f"{item_where}: 'nombre' está vacío")
+        key = item.get("clave")
+        if key:
+            # Nombre traducido: idiomas/<idioma>.json → catalogo.operacion_<clave>.
+            text_key = f"operacion_{key}"
+            names = {
+                lang: texts[text_key] for lang, texts in CATALOGUE_TEXTS.items() if text_key in texts
+            }
+            if not names:
+                raise RegistryError(
+                    f"{item_where}: no hay texto 'catalogo.{text_key}' en los ficheros de idiomas/"
+                )
+        else:
+            raw_name = require(item, "nombre", item_where)
+            names = (
+                {str(lang): str(text) for lang, text in raw_name.items()}
+                if isinstance(raw_name, dict)
+                else {"es": str(raw_name)}
+            )
+            if not names:
+                raise RegistryError(f"{item_where}: 'nombre' está vacío")
         operations.append(Operation(names=names, every=every, trims=only))
     return MaintenancePlan(
         interval_km=int(block.get("intervalo_km") or DEFAULT_INTERVAL_KM),

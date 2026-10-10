@@ -122,6 +122,7 @@ Deepal*. Detalles en [docs/tarjeta.md](docs/tarjeta.md).
 | [docs/iconos.md](docs/iconos.md) | Sistema de iconos |
 | [docs/imagenes.md](docs/imagenes.md) | Imágenes, modelos, versiones y colores |
 | [docs/tarjeta.md](docs/tarjeta.md) | La tarjeta para los paneles |
+| [docs/idiomas.md](docs/idiomas.md) | Idiomas: cambiar textos y añadir traducciones |
 | [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md) | Avisos al móvil y mantenimiento periódico |
 | [docs/depuracion.md](docs/depuracion.md) | Modo depuración, diagnósticos y capturas |
 | [docs/anadir-pais-vehiculo-idioma.md](docs/anadir-pais-vehiculo-idioma.md) | Ampliar países, coches e idiomas |

@@ -90,9 +90,12 @@ class AlertManager:
         entry_id: str,
         options: dict[str, Any],
         vehicles: dict[str, VehicleContext],
+        rules: doc.CountryRules = doc.DEFAULT_RULES,
     ) -> None:
         self.hass = hass
         self._vehicles = vehicles
+        #: Normas del país de la cuenta (ITV, preaviso del seguro).
+        self.rules = rules
         self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, storage_key(entry_id))
         config = options.get(OPT_ALERTS, {})
         self._targets: list[str] = list(config.get(OPT_ALERT_TARGETS, []))
@@ -274,7 +277,9 @@ class AlertManager:
     def itv_status(self, vehicle_id: str) -> doc.DueStatus | None:
         """Cuánto falta para la próxima ITV (``None`` = sin configurar)."""
         record = self._itv.get(vehicle_id)
-        return None if record is None else doc.itv_status(record, dt_util.now().date())
+        if record is None:
+            return None
+        return doc.itv_status(record, dt_util.now().date(), self.rules)
 
     def insurance_record(self, vehicle_id: str) -> doc.InsuranceRecord | None:
         """Ficha del seguro del coche (``None`` = sin configurar)."""
@@ -325,7 +330,7 @@ class AlertManager:
 
         itv = self._itv.get(vehicle_id)
         if itv is not None and daytime and ALERT_ITV in self._types:
-            current = doc.itv_status(itv, today)
+            current = doc.itv_status(itv, today, self.rules)
             kind = doc.itv_pending_notice(itv, current)
             if kind is not None:
                 self._send(

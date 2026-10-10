@@ -118,8 +118,9 @@ solo muestran el estado y avisan de cómo activarlo.
 
 La tarjeta está en español, inglés y portugués, según el idioma de cada
 usuario en Home Assistant (catalán, gallego y euskera se ven en español; cualquier
-otro, en inglés). Los textos están en la tabla
-`TEXTS`, al principio de `dec-deepal-card.js`.
+otro, en inglés). Los textos se
+escriben en `idiomas/<idioma>.json` (sección `tarjeta`) y la tabla `TEXTS` de
+`dec-deepal-card.js` se genera (ver [idiomas.md](idiomas.md)).
 
 ## Límites conocidos
 

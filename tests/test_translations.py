@@ -1,70 +1,111 @@
-"""Los idiomas (español, inglés, portugués) tienen siempre los mismos textos.
+"""Idiomas: una sola fuente (``idiomas/``) y todo lo demás generado.
 
-Vigila los tres sitios donde hay texto: los ficheros de idioma de Home
-Assistant, los avisos al móvil y la tarjeta.
+Comprueba que los ficheros generados están al día, que el idioma base está
+completo, que los idiomas "prestados" funcionan y que un idioma a medias se
+rellena con el idioma base.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
 from pathlib import Path
 
+import pytest
+
 from custom_components.dec_deepal import alert_rules as ar
+from custom_components.dec_deepal import textos_generados as generated
 from custom_components.dec_deepal.registries import load_all
 
-INTEGRATION = Path(__file__).parents[1] / "custom_components" / "dec_deepal"
-LANGUAGES = ("es", "en", "pt")
-PLACEHOLDER = re.compile(r"\{[a-z_]+\}")
+ROOT = Path(__file__).parents[1]
+INTEGRATION = ROOT / "custom_components" / "dec_deepal"
 
 
-def _flat(obj, prefix: str = ""):  # noqa: ANN001, ANN202
-    if isinstance(obj, dict):
-        for key, value in obj.items():
-            yield from _flat(value, f"{prefix}.{key}" if prefix else key)
-    else:
-        yield prefix, obj
+@pytest.fixture(scope="module")
+def tool():  # noqa: ANN201
+    """El generador (``tools/generar_idiomas.py``), cargado como módulo."""
+    spec = importlib.util.spec_from_file_location("generar_idiomas", ROOT / "tools" / "generar_idiomas.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-def _language_file(language: str) -> dict[str, str]:
-    path = INTEGRATION / "translations" / f"{language}.json"
-    return dict(_flat(json.loads(path.read_text(encoding="utf-8"))))
+def _translations(language: str) -> dict:
+    return json.loads((INTEGRATION / "translations" / f"{language}.json").read_text(encoding="utf-8"))
 
 
-def test_language_files_match() -> None:
-    spanish = _language_file("es")
-    for language in ("en", "pt"):
-        other = _language_file(language)
-        assert set(other) == set(spanish), (language, set(other) ^ set(spanish))
-        for key, text in spanish.items():
-            # Mismos marcadores ({vehicle}, {error}...) y nada que parezca HTML.
-            assert sorted(PLACEHOLDER.findall(text)) == sorted(PLACEHOLDER.findall(other[key])), (language, key)
-            assert "<" not in other[key], (language, key)
-    # strings.json es el idioma base de Home Assistant: inglés.
-    base = dict(_flat(json.loads((INTEGRATION / "strings.json").read_text(encoding="utf-8"))))
-    assert base == _language_file("en")
-    # De verdad traducido (antes los tres ficheros eran el mismo texto en español).
-    assert _language_file("en")["entity.sensor.battery_level.name"] == "Battery"
-    assert _language_file("pt")["entity.binary_sensor.trunk.name"] == "Mala"
-    assert spanish["entity.binary_sensor.trunk.name"] == "Maletero"
-    # Catalán, gallego y euskera: el mismo texto que en español (si no, Home
-    # Assistant les pondría el inglés).
-    for language in ("ca", "gl", "eu"):
-        assert _language_file(language) == spanish, language
+def test_generated_files_are_up_to_date(tool) -> None:  # noqa: ANN001
+    """Si falla: ejecutar ``python tools/generar_idiomas.py`` y subir el resultado."""
+    config, languages = tool.load()
+    stale = [
+        str(path.relative_to(ROOT))
+        for path, content in tool.outputs(config, languages).items()
+        if not path.exists() or path.read_text(encoding="utf-8") != content
+    ]
+    assert stale == []
+    assert tool.main(["--check"]) == 0
 
 
-def test_notification_texts_match() -> None:
-    assert set(ar.TEXTS) == set(LANGUAGES)
-    for language in ("en", "pt"):
-        assert set(ar.TEXTS[language]) == set(ar.TEXTS["es"]), language
-        for key, text in ar.TEXTS["es"].items():
-            assert sorted(PLACEHOLDER.findall(text)) == sorted(PLACEHOLDER.findall(ar.TEXTS[language][key])), (language, key)
+def test_languages_and_fallbacks(tool) -> None:  # noqa: ANN001
+    config, languages = tool.load()
+    assert config["base"] == "en" and set(languages) == {"es", "en", "pt"}
+    # El español (idioma del proyecto) y el base están siempre completos.
+    gaps = tool.missing(config, languages)
+    assert gaps["en"] == [] and gaps["es"] == []
+    # Home Assistant: un fichero por idioma, más los prestados; el base es strings.json.
+    assert json.loads((INTEGRATION / "strings.json").read_text(encoding="utf-8")) == _translations("en")
+    assert _translations("en")["entity"]["sensor"]["battery_level"]["name"] == "Battery"
+    assert _translations("pt")["entity"]["binary_sensor"]["trunk"]["name"] == "Mala"
+    assert generated.BASE_LANGUAGE == "en"
+    assert generated.BORROWED_LANGUAGES == {"ca": "es", "eu": "es", "gl": "es"}
+    for language in generated.BORROWED_LANGUAGES:
+        assert _translations(language) == _translations("es"), language
+
+
+def test_partial_language_is_filled_with_the_base(tool) -> None:  # noqa: ANN001
+    """Un idioma a medias se publica igual: lo que falta sale en el idioma base."""
+    config, languages = tool.load()
+    italian = {"avisos": {"charge_started": "Ricarica avviata{battery}."}, "tarjeta": {"comfort": "Comfort"}}
+    config = {**config, "idiomas": {**config["idiomas"], "it": {"nombre": "Italiano"}}}
+    languages = {**languages, "it": italian}
+    assert len(tool.missing(config, languages)["it"]) > 400
+    files = tool.outputs(config, languages)
+    text = files[INTEGRATION / "textos_generados.py"]
+    assert '"charge_started": "Ricarica avviata{battery}."' in text
+    assert json.loads(files[INTEGRATION / "translations" / "it.json"]) == _translations("en")
+    assert '"it": {' in files[INTEGRATION / "frontend_card" / "dec-deepal-card.js"]
+
+
+def test_mistakes_are_reported(tool, monkeypatch, tmp_path) -> None:  # noqa: ANN001
+    """Clave que no existe o marcador distinto: error claro, no un texto roto."""
+    sources = tmp_path / "idiomas"
+    sources.mkdir()
+    for path in (INTEGRATION / "idiomas").glob("*.json"):
+        (sources / path.name).write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+    monkeypatch.setattr(tool, "SOURCES", sources)
+    monkeypatch.setattr(tool, "CONFIG", sources / "idiomas.json")
+    portuguese = json.loads((sources / "pt.json").read_text(encoding="utf-8"))
+
+    portuguese["avisos"]["charge_started"] = "Carregamento iniciado."  # falta {battery}
+    (sources / "pt.json").write_text(json.dumps(portuguese), encoding="utf-8")
+    with pytest.raises(tool.LanguageError, match="marcadores"):
+        tool.load()
+
+    portuguese["avisos"]["charge_started"] = "Carregamento iniciado{battery}."
+    portuguese["tarjeta"]["no_existe"] = "x"
+    (sources / "pt.json").write_text(json.dumps(portuguese), encoding="utf-8")
+    with pytest.raises(tool.LanguageError, match="no existen"):
+        tool.load()
+
+
+def test_notifications_in_each_language() -> None:
     kwargs = {"number": 2, "days_left": 47, "km_left": 2000, "due_date": "10/03/2027", "due_km": 39500}
     assert ar.maintenance_text("remaining", language="pt", **kwargs) == "Faltam 2.000 km ou 47 dias para a 2.ª revisão."
     assert ar.maintenance_text("remaining", language="en-GB", **kwargs) == "2,000 km or 47 days left until the 2nd service."
-    # Idioma sin traducción: inglés, como el resto de Home Assistant...
+    # Idioma sin traducción: el base (inglés), como el resto de Home Assistant...
     assert ar.charge_text(ar.ALERT_CHARGE_STARTED, None, "fr") == "Charging started."
-    # ...salvo catalán, gallego y euskera, que se muestran en español.
+    # ...salvo los prestados: catalán, gallego y euskera se muestran en español.
     for language in ("ca", "gl", "eu", "ca-ES"):
         assert ar.charge_text(ar.ALERT_CHARGE_STARTED, None, language) == "Carga iniciada."
     assert ar.charge_text(ar.ALERT_CHARGE_STARTED, 46, "pt-BR") == "Carregamento iniciado (bateria a 46 %)."
@@ -73,27 +114,20 @@ def test_notification_texts_match() -> None:
 def test_catalogue_names_in_every_language() -> None:
     plan = load_all(INTEGRATION).vehicles.get("s05_2024").maintenance
     for operation in plan.operations:
-        assert set(operation.names) == set(LANGUAGES), operation.names
+        assert set(operation.names) == {"es", "en", "pt"}, operation.names
     assert plan.operations_for(2, "max", "en")[1] == "Tyres (inspection and adjustment)"
     assert "travões" in " ".join(plan.operations_for(2, "max", "pt"))
     assert plan.operations_for(1, "max", "fr") == plan.operations_for(1, "max", "en")
     assert plan.operations_for(1, "max", "eu") == plan.operations_for(1, "max", "es")
 
 
-def test_card_texts_match() -> None:
+def test_card_uses_only_existing_texts() -> None:
     source = (INTEGRATION / "frontend_card" / "dec-deepal-card.js").read_text(encoding="utf-8")
-    tables = {
-        language: set(re.findall(r"^      ([a-z_0-9]+):", block, re.M))
-        for language, block in re.findall(r"^    (es|en|pt): \{\n(.*?)^    \},", source, re.M | re.S)
-    }
-    assert set(tables) == set(LANGUAGES)
-    assert tables["es"] == tables["en"] == tables["pt"]
-    assert len(tables["es"]) > 100
-    # Todo texto que pide el código existe en la tabla.
-    used = set(re.findall(r'_t\("([a-z_0-9]+)"', source))
-    assert used - tables["es"] == set(), used - tables["es"]
+    spanish = json.loads((INTEGRATION / "idiomas" / "es.json").read_text(encoding="utf-8"))["tarjeta"]
+    used = set(re.findall(r'_t\("([a-z_0-9]+)"', source)) | set(re.findall(r'translate\([^,]+, "([a-z_0-9]+)"', source))
+    assert used - set(spanish) == set(), used - set(spanish)
+    assert len(spanish) > 100
     # Los tipos de seguro de la tarjeta son los de la integración.
     from custom_components.dec_deepal.documents import INSURANCE_KINDS
 
-    assert {f"kind_{kind}" for kind in INSURANCE_KINDS} <= tables["es"]
-    assert 'const SPANISH_FALLBACK = ["ca", "gl", "eu"];' in source
+    assert {f"kind_{kind}" for kind in INSURANCE_KINDS} <= set(spanish)
