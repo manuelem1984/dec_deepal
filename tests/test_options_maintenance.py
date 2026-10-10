@@ -16,6 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_mock_service
 
+from custom_components.dec_deepal.alert_rules import ALERT_TYPES
 from custom_components.dec_deepal.alerts import AlertManager
 from custom_components.dec_deepal.api.models import VehicleInfo
 from custom_components.dec_deepal.const import DOMAIN, OPT_ALERTS, OPT_MANUAL_URLS
@@ -88,6 +89,8 @@ async def test_alerts_and_maintenance_steps(hass: HomeAssistant, freezer) -> Non
     assert result["data"][OPT_ALERTS] == {
         "targets": ["mobile_app_test"],
         "types": ["charge_finished"],
+        # Se apunta qué tipos existían, para activar solos los que se añadan después.
+        "known_types": list(ALERT_TYPES),
         "persistent": False,
     }
 
