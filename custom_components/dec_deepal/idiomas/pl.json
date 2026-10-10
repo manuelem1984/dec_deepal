@@ -936,7 +936,8 @@
     "humidity": "Wilgotność {value}",
     "fan": "Wentylator {value}",
     "recirculating": "Obieg wewnętrzny",
-    "outside_air": "Powietrze z zewnątrz"
+    "outside_air": "Powietrze z zewnątrz",
+    "number_copied": "Skopiowano numer: {number}"
   },
   "catalogo": {
     "operacion_general_inspection": "Przegląd ogólny (napęd, akumulator, wysokie napięcie, hamulce i układ kierowniczy)",

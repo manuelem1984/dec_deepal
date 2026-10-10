@@ -249,7 +249,8 @@
       "humidity": "Humedad {value}",
       "fan": "Ventilador {value}",
       "recirculating": "Recirculando",
-      "outside_air": "Aire exterior"
+      "outside_air": "Aire exterior",
+      "number_copied": "Número copiado: {number}"
     },
     "en": {
       "card_description": "Your Deepal at a glance: car view, battery, comfort and quick actions.",
@@ -376,7 +377,8 @@
       "humidity": "Humidity {value}",
       "fan": "Fan {value}",
       "recirculating": "Recirculating",
-      "outside_air": "Outside air"
+      "outside_air": "Outside air",
+      "number_copied": "Number copied: {number}"
     },
     "pt": {
       "card_description": "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
@@ -503,7 +505,8 @@
       "humidity": "Humidade {value}",
       "fan": "Ventilador {value}",
       "recirculating": "A recircular",
-      "outside_air": "Ar exterior"
+      "outside_air": "Ar exterior",
+      "number_copied": "Número copiado: {number}"
     },
     "it": {
       "card_description": "La tua Deepal a colpo d'occhio: vista dell'auto, batteria, comfort e azioni rapide.",
@@ -630,7 +633,8 @@
       "humidity": "Umidità {value}",
       "fan": "Ventola {value}",
       "recirculating": "Ricircolo",
-      "outside_air": "Aria esterna"
+      "outside_air": "Aria esterna",
+      "number_copied": "Numero copiato: {number}"
     },
     "pl": {
       "card_description": "Twój Deepal w jednym miejscu: widok samochodu, akumulator, komfort i szybkie akcje.",
@@ -757,7 +761,8 @@
       "humidity": "Wilgotność {value}",
       "fan": "Wentylator {value}",
       "recirculating": "Obieg wewnętrzny",
-      "outside_air": "Powietrze z zewnątrz"
+      "outside_air": "Powietrze z zewnątrz",
+      "number_copied": "Skopiowano numer: {number}"
     }
   };
   // <<< TEXTOS GENERADOS <<<
@@ -868,6 +873,8 @@
     .mt dd { margin: 0; text-align: right; }
     .calls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
     .calls:empty { display: none; }
+    .call span { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.25; }
+    .call small { font-size: 11px; font-weight: 400; opacity: .85; }
     .call { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 500;
       text-decoration: none; color: var(--primary-color); background: rgba(var(--rgb-primary-color, 3, 169, 244), .12); --mdc-icon-size: 18px; }
     .tile { background: ${TILE_BG}; border-radius: 12px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -1520,8 +1527,15 @@
         data.dias_desistimiento >= 0
           ? `<div class="stat"><b>${data.dias_desistimiento}</b><small>${this._t("days_to_cancel")}</small></div>`
           : `<div class="stat"><b>—</b><small>${this._t("cancel_passed")}</small></div>`;
+      // Botón de llamar. En la app del móvil un enlace "tel:" normal no hace
+      // nada (la página va dentro de la app); con target="_blank" la app se lo
+      // pasa al sistema, que abre el marcador. Además se enseña el número y, al
+      // pulsar, se copia: así sirve aunque el dispositivo no pueda llamar.
       const phone = (number, icon, label) =>
-        number ? `<a class="call" href="tel:${escapeHtml(String(number).replace(/[^0-9+]/g, ""))}"><ha-icon icon="${icon}"></ha-icon>${label}</a>` : "";
+        number
+          ? `<a class="call" data-action="call" data-number="${escapeHtml(number)}" target="_blank" rel="noopener noreferrer"
+               href="tel:${escapeHtml(String(number).replace(/[^0-9+]/g, ""))}"><ha-icon icon="${icon}"></ha-icon><span>${label}<small>${escapeHtml(number)}</small></span></a>`
+          : "";
       const html = `
         <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button><h2>${this._t("insurance")}</h2></div>
         <div class="mt">
@@ -1535,7 +1549,16 @@
           <div class="calls">${phone(extra.phone_assistance, "mdi:tow-truck", this._t("assistance"))}${phone(extra.phone_company, "mdi:phone", this._t("company"))}</div>
         </div>
         <div class="btns"></div>`;
-      openDialog(html, () => undefined);
+      openDialog(html, (action, target) => {
+        if (action !== "call") return;
+        const number = target.dataset.number;
+        // El enlace abre el marcador por su cuenta; aquí solo se copia el número.
+        if (navigator.clipboard && navigator.clipboard.writeText)
+          navigator.clipboard.writeText(number).then(
+            () => this._toast(this._t("number_copied", { number })),
+            () => undefined
+          );
+      });
       return undefined;
     }
 

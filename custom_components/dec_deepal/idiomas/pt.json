@@ -936,7 +936,8 @@
     "humidity": "Humidade {value}",
     "fan": "Ventilador {value}",
     "recirculating": "A recircular",
-    "outside_air": "Ar exterior"
+    "outside_air": "Ar exterior",
+    "number_copied": "Número copiado: {number}"
   },
   "catalogo": {
     "operacion_general_inspection": "Inspeção geral (propulsão, bateria, alta tensão, travões e direção)",

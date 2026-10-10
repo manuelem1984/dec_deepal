@@ -936,7 +936,8 @@
     "humidity": "Humidity {value}",
     "fan": "Fan {value}",
     "recirculating": "Recirculating",
-    "outside_air": "Outside air"
+    "outside_air": "Outside air",
+    "number_copied": "Number copied: {number}"
   },
   "catalogo": {
     "operacion_general_inspection": "General inspection (drive unit, battery, high voltage, brakes and steering)",

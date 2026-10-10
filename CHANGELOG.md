@@ -3,6 +3,14 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b11] — 2026-10-10
+
+### Corregido
+
+- **Tarjeta → Seguro: los botones de llamar no hacían nada** en la app del
+  móvil. Ahora abren el marcador del teléfono. Además, cada botón enseña el
+  número y, al pulsarlo, lo copia.
+
 ## [2.3.0b10] — 2026-10-10
 
 ### Añadido
