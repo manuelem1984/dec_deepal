@@ -266,6 +266,45 @@ MAINTENANCE_SENSORS: Final[tuple[DecMaintenanceDescription, ...]] = (
 )
 
 
+@dataclass(frozen=True, kw_only=True)
+class DecDocumentDescription(SensorEntityDescription):
+    """Sensor de ITV o de seguro: un dato sacado del gestor de avisos."""
+
+    value: Callable[[Any, str], int | date | None]
+
+
+def _itv(field: str) -> Callable[[Any, str], int | date | None]:
+    return lambda alerts, vehicle_id: getattr(alerts.itv_status(vehicle_id), field, None)
+
+
+def _insurance(field: str) -> Callable[[Any, str], int | date | None]:
+    return lambda alerts, vehicle_id: getattr(alerts.insurance_status(vehicle_id), field, None)
+
+
+def _days(key: str, value: Callable[[Any, str], int | date | None]) -> DecDocumentDescription:
+    return DecDocumentDescription(
+        key=key,
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.DAYS,
+        suggested_display_precision=0,
+        value=value,
+    )
+
+
+def _date(key: str, value: Callable[[Any, str], int | date | None]) -> DecDocumentDescription:
+    return DecDocumentDescription(key=key, device_class=SensorDeviceClass.DATE, value=value)
+
+
+#: ITV: fecha límite y días que quedan (negativos si está vencida).
+ITV_SENSORS: Final = (_date("itv_date", _itv("due_date")), _days("itv_days", _itv("days_left")))
+#: Seguro: renovación, días que faltan y último día para desistir.
+INSURANCE_SENSORS: Final = (
+    _date("insurance_renewal_date", _insurance("renewal_date")),
+    _days("insurance_days", _insurance("days_to_renewal")),
+    _date("insurance_cancel_date", _insurance("cancel_deadline")),
+)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: DecDeepalConfigEntry,
@@ -289,6 +328,19 @@ async def async_setup_entry(
             DecMaintenanceSensor(runtime, vehicle, description)
             for description in MAINTENANCE_SENSORS
         )
+    # ITV y seguro: solo en los coches que los tienen activados.
+    for descriptions, record_of in (
+        (ITV_SENSORS, runtime.alerts.itv_record),
+        (INSURANCE_SENSORS, runtime.alerts.insurance_record),
+    ):
+        keys = tuple(description.key for description in descriptions)
+        for vehicle in runtime.vehicles.values():
+            if record_of(vehicle.info.vehicle_id) is None:
+                remove_entities(hass, "sensor", vehicle.info.vehicle_id, keys)
+                continue
+            entities.extend(
+                DecDocumentSensor(runtime, vehicle, description) for description in descriptions
+            )
     async_add_entities(entities)
 
 
@@ -340,3 +392,23 @@ class DecMaintenanceSensor(DecMaintenanceEntity, SensorEntity):
         """Valor actual (``None`` si falta el cuentakilómetros, en los km)."""
         current = self.maintenance
         return None if current is None else self.entity_description.value(current)
+
+
+class DecDocumentSensor(DecMaintenanceEntity, SensorEntity):
+    """Un dato de la ITV o del seguro (fecha o días)."""
+
+    entity_description: DecDocumentDescription
+
+    def __init__(
+        self,
+        runtime: DecDeepalRuntime,
+        vehicle: VehicleContext,
+        description: DecDocumentDescription,
+    ) -> None:
+        super().__init__(runtime, vehicle, "sensor", description.key)
+        self.entity_description = description
+
+    @property
+    def native_value(self) -> int | date | None:
+        """Valor actual."""
+        return self.entity_description.value(self.runtime.alerts, self.vehicle.info.vehicle_id)

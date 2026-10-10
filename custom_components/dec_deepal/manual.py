@@ -17,6 +17,13 @@ Vista, solo para usuarios con sesión en Home Assistant:
 
 - ``GET /api/dec_deepal/manual_info/<device_id>`` →
   ``{"available": bool, "url": str | null}``.
+
+En este módulo está también la otra vista que usa la tarjeta para datos que
+no deben ir a ninguna entidad (quedarían en el historial y a la vista de
+cualquiera con acceso al panel):
+
+- ``GET /api/dec_deepal/insurance_info/<device_id>`` →
+  ``{"policy": str, "phone_assistance": str, "phone_company": str}``.
 """
 
 from __future__ import annotations
@@ -29,7 +36,7 @@ from homeassistant.components.http import KEY_HASS, HomeAssistantView
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
-from .const import DOMAIN, MANUAL_INFO_API, OPT_MANUAL_URLS
+from .const import DOMAIN, INSURANCE_INFO_API, MANUAL_INFO_API, OPT_MANUAL_URLS
 from .runtime import VehicleContext
 
 
@@ -46,8 +53,8 @@ def manual_url(options: Mapping[str, Any], vehicle: VehicleContext) -> str | Non
     return vehicle.model.manual_url or None
 
 
-def _device_manual_url(hass: HomeAssistant, device_id: str) -> str | None:
-    """Enlace del manual del coche de un dispositivo.
+def _find(hass: HomeAssistant, device_id: str):  # noqa: ANN202
+    """Cuenta y coche de un dispositivo: ``(entry, vehicle)``.
 
     Raises:
         web.HTTPNotFound: el dispositivo no es un coche de DEC Deepal.
@@ -61,8 +68,14 @@ def _device_manual_url(hass: HomeAssistant, device_id: str) -> str | None:
                 continue
             for vehicle_id in vehicle_ids:
                 if vehicle := entry.runtime_data.vehicles.get(vehicle_id):
-                    return manual_url(entry.options, vehicle)
+                    return entry, vehicle
     raise web.HTTPNotFound
+
+
+def _device_manual_url(hass: HomeAssistant, device_id: str) -> str | None:
+    """Enlace del manual del coche de un dispositivo."""
+    entry, vehicle = _find(hass, device_id)
+    return manual_url(entry.options, vehicle)
 
 
 class ManualInfoView(HomeAssistantView):
@@ -77,6 +90,29 @@ class ManualInfoView(HomeAssistantView):
         return self.json({"available": url is not None, "url": url})
 
 
+class InsuranceInfoView(HomeAssistantView):
+    """``GET /api/dec_deepal/insurance_info/<device_id>`` → póliza y teléfonos."""
+
+    url = INSURANCE_INFO_API
+    name = "api:dec_deepal:insurance_info"
+
+    async def get(self, request: web.Request, device_id: str) -> web.Response:
+        """Datos del seguro que solo se enseñan en la tarjeta."""
+        entry, vehicle = _find(request.app[KEY_HASS], device_id)
+        alerts = getattr(entry.runtime_data, "alerts", None)
+        record = alerts.insurance_record(vehicle.info.vehicle_id) if alerts else None
+        if record is None:
+            raise web.HTTPNotFound
+        return self.json(
+            {
+                "policy": record.policy,
+                "phone_assistance": record.phone_assistance,
+                "phone_company": record.phone_company,
+            }
+        )
+
+
 def async_register_manual(hass: HomeAssistant) -> None:
-    """Registra la vista (una vez por arranque)."""
+    """Registra las vistas (una vez por arranque)."""
     hass.http.register_view(ManualInfoView())
+    hass.http.register_view(InsuranceInfoView())

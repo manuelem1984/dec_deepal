@@ -103,6 +103,46 @@ Las operaciones con intervalo propio se colocan en la revisión en la que se
 cumple su plazo **en años**. Quien haga muchos kilómetros al año puede
 necesitarlas antes: manda lo que diga el taller.
 
+## ITV
+
+**Configurar → ITV** (uno por coche): fecha de matriculación y, si ya ha
+pasado alguna, fecha de la última ITV. La próxima se calcula con la regla de
+los turismos en España: la primera a los 4 años; después, cada 2 años mientras
+el coche tenga menos de 10, y cada año a partir de entonces. Se puede poner
+otra fecha a mano, que vale hasta registrar la siguiente ITV.
+
+| Entidad | Qué muestra |
+|---|---|
+| Testigo ITV | Encendido desde 2 meses antes de la fecha límite, y mientras esté vencida |
+| Próxima ITV | Fecha límite |
+| Días hasta la ITV | Negativo si está vencida |
+
+Avisos (tipo "ITV"): quedan 2 meses, 1 mes, 15 días y vencida. Registrar una
+ITV pasada: en la tarjeta (*Registrar ITV pasada*, con confirmación), con la
+acción `dec_deepal.register_itv` o poniendo la fecha en Configurar.
+
+## Seguro
+
+**Configurar → Seguro** (uno por coche): compañía, número de póliza, tipo
+(terceros, terceros ampliado, todo riesgo con o sin franquicia), fecha de
+renovación, días de antelación para desistir (30 por defecto) y dos teléfonos
+opcionales (asistencia en carretera y compañía).
+
+| Entidad | Qué muestra |
+|---|---|
+| Testigo seguro | Ámbar los 30 días antes del límite para desistir; rojo el último día |
+| Renovación del seguro | Fecha |
+| Días hasta la renovación del seguro | |
+| Límite para desistir del seguro | Renovación menos los días de antelación |
+
+Avisos (tipo "Seguro"): 30 y 15 días antes del límite para desistir, el
+último día y el día de la renovación. Ese día la ficha pasa sola al año
+siguiente.
+
+**Privacidad:** el número de póliza y los teléfonos no están en ninguna
+entidad (quedarían en el historial) ni en los diagnósticos. Solo los pide la
+tarjeta, con la sesión del usuario, al abrir la ventana del seguro.
+
 ## Dónde se guarda
 
 Las fichas de mantenimiento y los avisos ya enviados se guardan en
@@ -114,6 +154,7 @@ Se borran al quitar la cuenta de la integración.
 | Archivo | Qué hace |
 |---|---|
 | `maintenance.py` | Cálculo de días y kilómetros, escalones de aviso, registro (sin Home Assistant) |
+| `documents.py` | ITV y seguro: fechas, niveles y avisos (sin Home Assistant) |
 | `alert_rules.py` | Qué cambios del coche avisan y los textos (sin Home Assistant) |
 | `alerts.py` | `AlertManager`: almacén, vigilancia de cada lectura y envío |
 | `options_flow.py` | Pasos `alerts` y `maintenance*` |

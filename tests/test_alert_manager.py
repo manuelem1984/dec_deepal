@@ -24,6 +24,7 @@ from custom_components.dec_deepal.const import (
     OPT_ALERT_TYPES,
     OPT_ALERTS,
 )
+from custom_components.dec_deepal.documents import InsuranceRecord, ItvRecord
 from custom_components.dec_deepal.maintenance import LEVEL_SOON, MaintenanceRecord
 from custom_components.dec_deepal.registries import load_all
 from custom_components.dec_deepal.telemetry import signals as s
@@ -112,6 +113,22 @@ async def test_alerts_and_maintenance(hass: HomeAssistant, freezer) -> None:  # 
     assert manager.status("car1").number == 3
     assert any("reductor delantero" in name for name in manager.operations("car1"))
 
+    # --- ITV y seguro -------------------------------------------------------------------
+    await manager.async_set_itv("car1", ItvRecord(registration_date=date(2022, 12, 12)))
+    await hass.async_block_till_done()
+    # Hoy es 22-01-2027: la ITV (12-12-2026) ya está vencida → un solo aviso.
+    assert calls[-1].data["message"] == "ITV vencida desde el 12/12/2026."
+    await manager.async_register_itv("car1", date(2027, 1, 22))
+    assert manager.itv_status("car1").due_date == date(2029, 1, 22)
+    # Seguro que renueva hoy: pasa al año siguiente y avisa.
+    await manager.async_set_insurance(
+        "car1", InsuranceRecord(renewal_date=date(2027, 1, 22), company="Mutua Ejemplo")
+    )
+    await hass.async_block_till_done()
+    assert calls[-1].data["message"] == "Seguro renovado hoy. Próxima renovación: 22/01/2028."
+    assert manager.insurance_record("car1").renewal_date == date(2028, 1, 22)
+    documents_calls = len(calls)
+
     # --- Lo guardado sobrevive a un reinicio -----------------------------------------
     await manager.async_stop()
     again = AlertManager(hass, "entry1", OPTIONS, vehicles)
@@ -121,5 +138,7 @@ async def test_alerts_and_maintenance(hass: HomeAssistant, freezer) -> None:  # 
     assert again.odometer("car1") == 37500
     again.async_start()
     await hass.async_block_till_done()
-    assert len(calls) == 4  # el testigo ABS ya estaba avisado
+    assert len(calls) == documents_calls  # nada nuevo: todo estaba ya avisado
+    assert again.itv_record("car1").history == ["2027-01-22"]
+    assert again.insurance_record("car1").company == "Mutua Ejemplo"
     await again.async_stop()

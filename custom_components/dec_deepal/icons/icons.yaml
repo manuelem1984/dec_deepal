@@ -64,6 +64,26 @@ range:
   plataforma: sensor
   descripcion: Autonomía estimada (km)
   defecto: mdi:map-marker-distance
+itv_date:
+  plataforma: sensor
+  descripcion: Fecha límite de la próxima ITV
+  defecto: mdi:calendar-check
+itv_days:
+  plataforma: sensor
+  descripcion: Días que quedan para la ITV (negativo = vencida)
+  defecto: mdi:calendar-clock
+insurance_renewal_date:
+  plataforma: sensor
+  descripcion: Fecha de renovación del seguro
+  defecto: mdi:calendar-refresh
+insurance_days:
+  plataforma: sensor
+  descripcion: Días que quedan para la renovación del seguro
+  defecto: mdi:calendar-clock
+insurance_cancel_date:
+  plataforma: sensor
+  descripcion: Último día para avisar de que no se renueva el seguro
+  defecto: mdi:calendar-alert
 maintenance_days:
   plataforma: sensor
   descripcion: Días que quedan para la próxima revisión (negativo = vencida)
@@ -474,6 +494,14 @@ air_recirculation:
   plataforma: binary_sensor
   descripcion: Recirculación de aire del climatizador
   defecto: mdi:sync
+itv_due:
+  plataforma: binary_sensor
+  descripcion: Testigo de ITV (encendido = se acerca la fecha límite o está vencida)
+  defecto: mdi:clipboard-check-outline
+insurance_due:
+  plataforma: binary_sensor
+  descripcion: Testigo del seguro (encendido = se acerca el límite para desistir)
+  defecto: mdi:shield-car
 maintenance_due:
   plataforma: binary_sensor
   descripcion: Testigo de mantenimiento (encendido = revisión próxima o vencida)

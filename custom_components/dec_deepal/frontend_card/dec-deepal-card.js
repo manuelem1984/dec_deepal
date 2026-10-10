@@ -19,6 +19,11 @@
 //     que quedan, lo que incluye la revisión, el historial y el botón para
 //     registrarla (con confirmación). La misma ventana se abre siempre desde
 //     "Otros → Mantenimiento".
+//   - Testigos de ITV (portapapeles) y de seguro (escudo), con las mismas
+//     reglas: ámbar si se acerca la fecha, rojo si vence; al pulsarlos abren su
+//     ventana, que también está en "Otros". El número de póliza y los
+//     teléfonos del seguro no están en ninguna entidad: la tarjeta se los pide
+//     a la integración al abrir la ventana.
 //   - Seis botones: Confort, Bloqueo, Maletero, Ventilar, Localizar vehículo
 //     (abre un menú con luces, claxon y las dos cosas) y Otros (abre un menú
 //     con el manual del coche y el mantenimiento).
@@ -91,7 +96,24 @@
 
   // Testigo de mantenimiento (solo existe si el usuario lo activó en Configurar).
   const MAINTENANCE = "binary_sensor.maintenance_due";
+  const ITV = "binary_sensor.itv_due";
+  const INSURANCE = "binary_sensor.insurance_due";
+  // Testigos de vencimiento, en el orden en que salen. Todos se pueden pulsar.
+  const DUE = [
+    { key: MAINTENANCE, action: "maintenance", icon: "mdi:wrench", label: "Mantenimiento" },
+    { key: ITV, action: "itv", icon: "mdi:clipboard-check-outline", label: "ITV" },
+    { key: INSURANCE, action: "insurance", icon: "mdi:shield-car", label: "Seguro" },
+  ];
+  const INSURANCE_KINDS = {
+    third_party: "Terceros",
+    third_party_plus: "Terceros ampliado",
+    comprehensive_excess: "Todo riesgo con franquicia",
+    comprehensive: "Todo riesgo sin franquicia",
+  };
 
+  const NO_ITV = "La ITV de este coche no está activada. Actívala en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → ITV.";
+  const NO_INSURANCE =
+    "El seguro de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Seguro.";
   const NO_MAINTENANCE =
     "El mantenimiento de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Mantenimiento.";
 
@@ -181,6 +203,16 @@
     /* Menú con menos de tres opciones: centradas, con el mismo ancho que en una fila de tres. */
     .three.center { display: flex; justify-content: center; }
     .three.center .tile { flex: 0 1 calc((100% - 16px) / 3); }
+    /* Menú "Otros": de dos en dos, centrado si sobra uno. */
+    .three.pairs { display: flex; flex-wrap: wrap; justify-content: center; }
+    .three.pairs .tile { flex: 0 1 calc((100% - 8px) / 2); box-sizing: border-box; }
+    .mt dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 13px; }
+    .mt dt { color: var(--secondary-text-color); }
+    .mt dd { margin: 0; text-align: right; }
+    .calls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+    .calls:empty { display: none; }
+    .call { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 12px; font-size: 13px; font-weight: 500;
+      text-decoration: none; color: var(--primary-color); background: rgba(var(--rgb-primary-color, 3, 169, 244), .12); --mdc-icon-size: 18px; }
     .tile { background: ${TILE_BG}; border-radius: 12px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px;
       text-align: center; min-height: 84px; color: var(--secondary-text-color); }
     .tile:active { transform: scale(.97); }
@@ -422,21 +454,21 @@
       $(".charge").hidden = !chargeText;
 
       // Línea de estado: tic verde, o el icono de cada testigo encendido.
-      // El de mantenimiento va el último y se puede pulsar.
+      // Los de vencimiento (mantenimiento, ITV, seguro) van al final y se pueden pulsar.
       const active = WARNINGS.filter((warning) => warning.keys.some((key) => this._value(key) === "on"));
-      const maintenance = this._value(MAINTENANCE) === "on" ? this._state(MAINTENANCE).attributes.nivel || "soon" : "";
-      const signature = `${active.map((warning) => warning.icon).join("|")}#${maintenance}`;
+      const due = DUE.map((item) => ({ ...item, level: this._dueLevel(item.key) })).filter((item) => item.level);
+      const signature = `${active.map((warning) => warning.icon).join("|")}#${due.map((item) => item.action + item.level).join("|")}`;
       if (this._statusSignature !== signature) {
         this._statusSignature = signature;
         const icons = active.map((warning) => `<ha-icon icon="${warning.icon}" style="color:${warning.color}"></ha-icon>`);
-        if (maintenance)
+        for (const item of due)
           icons.push(
-            `<button data-action="maintenance" aria-label="Mantenimiento"><ha-icon icon="mdi:wrench" style="color:${maintenance === "overdue" ? RED : AMBER}"></ha-icon></button>`
+            `<button data-action="${item.action}" aria-label="${item.label}"><ha-icon icon="${item.icon}" style="color:${item.level === "overdue" ? RED : AMBER}"></ha-icon></button>`
           );
         $(".status").innerHTML = icons.length ? icons.join("") : '<ha-icon class="ok" icon="mdi:check-circle"></ha-icon>';
       }
 
-      // Los cinco botones.
+      // Los seis botones.
       const tiles = this._tiles();
       for (const [action, data] of Object.entries(tiles)) {
         const element = $(`.tile[data-action="${action}"]`);
@@ -480,8 +512,50 @@
         trunk: { icon: trunkOpen ? "dec:trunk_open" : "dec:trunk_closed", text: trunkOpen ? "Abierto" : "Cerrado", on: trunkOpen },
         vent: { icon: "mdi:weather-windy", text: venting ? "Ventilando" : anyWindow ? "Abiertas" : "Cerradas", on: venting || anyWindow },
         locate: { icon: "mdi:car-search", text: "Luces y claxon" },
-        others: { icon: "mdi:dots-horizontal", text: this._maintenanceShort() || "Manual y revisión" },
+        others: { icon: "mdi:dots-horizontal", text: this._othersShort() || "Manual y documentos" },
       };
+    }
+
+    /** Nivel de un testigo de vencimiento: "", "soon" u "overdue". */
+    _dueLevel(key) {
+      return this._value(key) === "on" ? this._state(key).attributes.nivel || "soon" : "";
+    }
+
+    /** Lo más urgente de mantenimiento, ITV y seguro (primero lo vencido). */
+    _othersShort() {
+      const items = [
+        [this._dueLevel(MAINTENANCE), this._maintenanceShort()],
+        [this._dueLevel(ITV), this._itvShort()],
+        [this._dueLevel(INSURANCE), this._insuranceShort()],
+      ].filter(([level]) => level);
+      const urgent = items.find(([level]) => level === "overdue") || items[0];
+      return urgent ? urgent[1] : "";
+    }
+
+    _days(count) {
+      return `${count} ${Math.abs(count) === 1 ? "día" : "días"}`;
+    }
+
+    _itvShort() {
+      const data = (this._state(ITV) || { attributes: {} }).attributes;
+      if (data.dias_restantes == null) return "";
+      if (data.dias_restantes < 0) return "ITV vencida";
+      return data.dias_restantes === 0 ? "ITV: último día" : `ITV en ${this._days(data.dias_restantes)}`;
+    }
+
+    _insuranceShort() {
+      const data = (this._state(INSURANCE) || { attributes: {} }).attributes;
+      if (data.dias_desistimiento == null) return "";
+      if (data.dias_desistimiento === 0) return "Seguro: último día";
+      if (data.dias_desistimiento > 0 && data.nivel !== "ok") return `Seguro: ${this._days(data.dias_desistimiento)} para desistir`;
+      return `Renueva el ${this._day(data.renovacion)}`;
+    }
+
+    /** Fecha ISO ("2027-03-14") como "14 mar 2027". */
+    _day(iso) {
+      if (!iso) return "—";
+      const language = (this._hass.locale && this._hass.locale.language) || "es";
+      return new Date(`${iso}T00:00:00`).toLocaleDateString(language, { day: "numeric", month: "short", year: "numeric" });
     }
 
     /** Resumen corto del mantenimiento, solo si la revisión está próxima o vencida. */
@@ -603,6 +677,12 @@
         case "maintenance":
           this._openMaintenance();
           break;
+        case "itv":
+          this._openItv();
+          break;
+        case "insurance":
+          this._openInsurance();
+          break;
         case "others":
           this._openOthers();
           break;
@@ -636,18 +716,31 @@
     _openOthers() {
       const maintenance = this._state(MAINTENANCE);
       const known = maintenance && maintenance.attributes.revision != null;
+      const itv = this._state(ITV);
+      const insurance = this._state(INSURANCE);
+      const tone = (key) => {
+        const level = this._dueLevel(key);
+        return level ? ` style="color:${level === "overdue" ? RED : AMBER}"` : "";
+      };
       // Un enlace de verdad (no un botón): así el navegador y la app del móvil
       // lo abren fuera, en una pestaña nueva, sin bloquearlo como ventana emergente.
       const manual = this._manualUrl
         ? `<a class="tile" data-action="manual" href="${escapeHtml(this._manualUrl)}" target="_blank" rel="noopener noreferrer"><ha-icon icon="mdi:book-open-variant"></ha-icon><b>Manual</b><small>Abrir PDF</small></a>`
         : "";
+      // "ITV en 47 días" → "Quedan 47 días"; "Seguro: último día" → "Último día".
+      const plain = (text, name) => {
+        const short = text.replace(`${name} en `, "Quedan ").replace(new RegExp(`^${name}:? `), "");
+        return short ? short.charAt(0).toUpperCase() + short.slice(1) : "—";
+      };
+      const option = (action, key, icon, label, text) =>
+        `<button class="tile" data-action="${action}"><ha-icon icon="${icon}"${tone(key)}></ha-icon><b>${label}</b><small>${escapeHtml(text)}</small></button>`;
       const html = `
         <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Otros</h2></div>
-        <div class="three center">
+        <div class="three pairs">
           ${manual}
-          <button class="tile" data-action="maintenance"><ha-icon icon="mdi:wrench"></ha-icon><b>Mantenimiento</b><small>${
-            known ? `${maintenance.attributes.revision}ª revisión` : "Sin activar"
-          }</small></button>
+          ${option("maintenance", MAINTENANCE, "mdi:wrench", "Mantenimiento", known ? `${maintenance.attributes.revision}ª revisión` : "Sin activar")}
+          ${option("itv", ITV, "mdi:clipboard-check-outline", "ITV", itv ? plain(this._itvShort(), "ITV") : "Sin activar")}
+          ${option("insurance", INSURANCE, "mdi:shield-car", "Seguro", insurance ? plain(this._insuranceShort(), "Seguro") : "Sin activar")}
         </div>`;
       openDialog(html, (action, _target, dialog) => {
         if (action === "manual") {
@@ -655,11 +748,101 @@
           setTimeout(() => dialog.close(), 300);
           return;
         }
-        if (action !== "maintenance") return;
+        if (!["maintenance", "itv", "insurance"].includes(action)) return;
         dialog.close();
-        if (known) this._openMaintenance();
-        else this._message("Mantenimiento", NO_MAINTENANCE);
+        if (action === "maintenance") known ? this._openMaintenance() : this._message("Mantenimiento", NO_MAINTENANCE);
+        else if (action === "itv") this._openItv();
+        else this._openInsurance();
       });
+    }
+
+    // --- Ventana de ITV ---------------------------------------------------------------
+
+    _openItv() {
+      const state = this._state(ITV);
+      if (!state || state.attributes.fecha_limite == null) return this._message("ITV", NO_ITV);
+      const data = state.attributes;
+      const overdue = data.dias_restantes < 0;
+      const tone = overdue ? RED : data.nivel === "soon" ? AMBER : "var(--secondary-text-color)";
+      const history = (data.historial || []).slice().reverse();
+      const html = `
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>ITV</h2></div>
+        <div class="mt">
+          <div class="next"><ha-icon icon="mdi:clipboard-check-outline" style="color:${tone}"></ha-icon>Próxima ITV${overdue ? " · vencida" : ""}</div>
+          <div class="two">
+            <div class="stat"><b>${Math.abs(data.dias_restantes)}</b><small>días ${overdue ? "de retraso" : "restantes"}</small></div>
+            <div class="stat"><b>${this._day(data.fecha_limite)}</b><small>fecha límite</small></div>
+          </div>
+          <p class="due">Primera ITV a los 4 años de la matriculación. Después, cada 2 años hasta los 10 y cada año a partir de entonces.</p>
+          <h3>Datos</h3>
+          <dl><dt>Matriculación</dt><dd>${this._day(data.matriculacion)}</dd>
+            <dt>Última ITV</dt><dd>${data.ultima_itv ? this._day(data.ultima_itv) : "Aún no ha pasado ninguna"}</dd></dl>
+          ${history.length ? `<h3>Historial</h3><ul>${history.map((item) => `<li>${this._day(item)}</li>`).join("")}</ul>` : ""}
+        </div>
+        <div class="btns"><button class="tb fill" data-action="register">Registrar ITV pasada</button></div>`;
+      openDialog(html, (action, _target, dialog) => {
+        if (action !== "register") return;
+        dialog.close();
+        this._confirmItv();
+      });
+      return undefined;
+    }
+
+    _confirmItv() {
+      const html = `
+        <div class="confirm"><h2>¿Registrar la ITV?</h2>
+          <p>Se anotará que <b style="font-weight:500;color:var(--primary-text-color)">${escapeHtml(this._name())}</b> ha pasado la ITV hoy y se calculará la siguiente. Si la pasó otro día, ponlo en Configurar → ITV.</p></div>
+        <div class="btns"><button class="tb" data-action="close">Cancelar</button><button class="tb fill" data-action="ok">Registrar</button></div>`;
+      openDialog(html, async (action, _target, dialog) => {
+        if (action !== "ok") return;
+        dialog.close();
+        try {
+          await this._hass.callService(DOMAIN, "register_itv", { device_id: this._deviceId() });
+          this._toast("ITV registrada.");
+        } catch (error) {
+          this._toast((error && error.message) || "No se pudo registrar la ITV.");
+        }
+      });
+    }
+
+    // --- Ventana de Seguro ----------------------------------------------------------
+
+    async _openInsurance() {
+      const state = this._state(INSURANCE);
+      if (!state || state.attributes.renovacion == null) return this._message("Seguro", NO_INSURANCE);
+      const data = state.attributes;
+      // Póliza y teléfonos: no están en la entidad, se piden a la integración.
+      let extra = {};
+      try {
+        extra = (await this._hass.callApi("GET", `dec_deepal/insurance_info/${this._deviceId()}`)) || {};
+      } catch (_error) {
+        extra = {};
+      }
+      const lastDay = data.dias_desistimiento === 0;
+      const tone = lastDay ? RED : data.nivel === "soon" ? AMBER : "var(--secondary-text-color)";
+      const kind = INSURANCE_KINDS[data.tipo] || "";
+      const title = [data.compania, kind].filter(Boolean).join(" · ") || "Seguro";
+      const cancel =
+        data.dias_desistimiento >= 0
+          ? `<div class="stat"><b>${data.dias_desistimiento}</b><small>días para desistir</small></div>`
+          : '<div class="stat"><b>—</b><small>plazo para desistir pasado</small></div>';
+      const phone = (number, icon, label) =>
+        number ? `<a class="call" href="tel:${escapeHtml(String(number).replace(/[^0-9+]/g, ""))}"><ha-icon icon="${icon}"></ha-icon>${label}</a>` : "";
+      const html = `
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="Cerrar"><ha-icon icon="mdi:close"></ha-icon></button><h2>Seguro</h2></div>
+        <div class="mt">
+          <div class="next"><ha-icon icon="mdi:shield-car" style="color:${tone}"></ha-icon>${escapeHtml(title)}</div>
+          <div class="two"><div class="stat"><b>${data.dias_renovacion}</b><small>días para la renovación</small></div>${cancel}</div>
+          <p class="due">Renovación el ${this._day(data.renovacion)}. Para no renovar hay que avisar antes del ${this._day(data.limite_desistimiento)} (${data.dias_aviso} días antes).</p>
+          <h3>Póliza</h3>
+          <dl><dt>Compañía</dt><dd>${escapeHtml(data.compania || "—")}</dd>
+            <dt>Nº de póliza</dt><dd>${escapeHtml(extra.policy || "—")}</dd>
+            <dt>Tipo</dt><dd>${escapeHtml(kind || "—")}</dd></dl>
+          <div class="calls">${phone(extra.phone_assistance, "mdi:tow-truck", "Asistencia")}${phone(extra.phone_company, "mdi:phone", "Compañía")}</div>
+        </div>
+        <div class="btns"></div>`;
+      openDialog(html, () => undefined);
+      return undefined;
     }
 
     /** Ventana con un texto y un único botón. */

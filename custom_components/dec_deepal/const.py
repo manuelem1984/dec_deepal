@@ -89,6 +89,8 @@ OPT_ALERTS: Final = "alerts"
 #: Servicios de notificación elegidos (sin el "notify."): p. ej. "mobile_app_x".
 OPT_ALERT_TARGETS: Final = "targets"
 OPT_ALERT_TYPES: Final = "types"
+#: Tipos de aviso que existían al guardar (para activar solos los que se añadan después).
+OPT_ALERT_KNOWN: Final = "known_types"
 #: Mostrar también cada aviso en el panel de notificaciones de Home Assistant.
 OPT_ALERT_PERSISTENT: Final = "persistent"
 DEFAULT_ALERT_PERSISTENT: Final = False
@@ -163,6 +165,8 @@ ICONS_BUNDLE_API: Final = "/api/dec_deepal/icons_bundle"
 
 #: Enlace del manual de usuario que abre la tarjeta (ver manual.py).
 MANUAL_INFO_API: Final = "/api/dec_deepal/manual_info/{device_id}"
+#: Datos del seguro que solo se enseñan en la tarjeta (póliza y teléfonos).
+INSURANCE_INFO_API: Final = "/api/dec_deepal/insurance_info/{device_id}"
 
 # ---------------------------------------------------------------------------
 # Depuración (ver docs/depuracion.md)

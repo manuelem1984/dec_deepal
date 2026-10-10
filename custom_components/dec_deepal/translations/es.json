@@ -72,6 +72,8 @@
           "pin": "Control remoto con PIN",
           "alerts": "Avisos al móvil",
           "maintenance": "Mantenimiento",
+          "itv": "ITV",
+          "insurance": "Seguro",
           "advanced": "Avanzado (intervalo, depuración, manual)"
         }
       },
@@ -85,7 +87,50 @@
         },
         "data_description": {
           "targets": "Los móviles y tabletas con la app de Home Assistant, con el nombre que tienen en Ajustes → Aplicación móvil. Otros servicios de notificación aparecen como notify.nombre.",
-          "types": "Los de mantenimiento necesitan activar antes el mantenimiento del coche (Configurar → Mantenimiento) y solo se envían entre las 8:00 y las 22:00."
+          "types": "Los de mantenimiento, ITV y seguro necesitan activar antes cada cosa en su apartado de Configurar, y solo se envían entre las 8:00 y las 22:00."
+        }
+      },
+      "itv": {
+        "title": "ITV — vehículo",
+        "description": "Elige el coche.",
+        "data": { "vehicle": "Vehículo" }
+      },
+      "itv_setup": {
+        "title": "ITV de {vehicle}",
+        "description": "La próxima ITV se calcula sola con la regla de los turismos en España: la primera a los 4 años de la matriculación, después cada 2 años hasta los 10 y cada año a partir de entonces.\n\nSe crean el testigo de ITV y los sensores con la fecha límite y los días que faltan. Avisos: quedan 2 meses, 1 mes, 15 días y vencida.",
+        "data": {
+          "enabled": "Activar la ITV de este coche",
+          "registration_date": "Fecha de matriculación",
+          "last_itv_date": "Fecha de la última ITV",
+          "next_itv_date": "Próxima ITV"
+        },
+        "data_description": {
+          "last_itv_date": "Déjalo vacío si el coche aún no ha pasado ninguna.",
+          "next_itv_date": "Déjalo vacío para que se calcule sola. Rellénalo solo si tu fecha es otra; vale hasta que registres la siguiente ITV."
+        }
+      },
+      "insurance": {
+        "title": "Seguro — vehículo",
+        "description": "Elige el coche.",
+        "data": { "vehicle": "Vehículo" }
+      },
+      "insurance_setup": {
+        "title": "Seguro de {vehicle}",
+        "description": "Se crean el testigo del seguro y los sensores con la fecha de renovación y el último día para desistir. Avisos: 30 y 15 días antes de ese último día, el propio día y al renovarse. Al llegar la renovación, la fecha pasa sola al año siguiente.\n\nEl número de póliza y los teléfonos solo se ven en la tarjeta: no se crea ninguna entidad con ellos.",
+        "data": {
+          "enabled": "Activar el seguro de este coche",
+          "company": "Compañía",
+          "policy": "Número de póliza",
+          "insurance_kind": "Tipo de seguro",
+          "renewal_date": "Fecha de renovación",
+          "notice_days": "Desistimiento: días antes de la renovación",
+          "phone_assistance": "Teléfono de asistencia en carretera",
+          "phone_company": "Teléfono de la compañía"
+        },
+        "data_description": {
+          "notice_days": "Hasta cuántos días antes de la renovación puedes avisar de que no renuevas. Lo habitual en España es un mes; compruébalo en tu póliza.",
+          "phone_assistance": "Opcional. Si lo pones, la tarjeta enseña un botón para llamar.",
+          "phone_company": "Opcional."
         }
       },
       "maintenance": {
@@ -220,7 +265,17 @@
         "warnings": "Testigos del cuadro",
         "tires": "Neumáticos (cuando el coche enciende el aviso)",
         "key_battery": "Pila del mando baja",
-        "maintenance": "Mantenimiento (quedan 2 meses, 1 mes, 15 días; 3.000, 2.000, 1.000 km; vencido)"
+        "maintenance": "Mantenimiento (quedan 2 meses, 1 mes, 15 días; 3.000, 2.000, 1.000 km; vencido)",
+        "itv": "ITV (quedan 2 meses, 1 mes, 15 días; vencida)",
+        "insurance": "Seguro (30 y 15 días antes del límite para desistir, el último día y al renovarse)"
+      }
+    },
+    "insurance_kind": {
+      "options": {
+        "third_party": "Terceros",
+        "third_party_plus": "Terceros ampliado",
+        "comprehensive_excess": "Todo riesgo con franquicia",
+        "comprehensive": "Todo riesgo sin franquicia"
       }
     }
   },
@@ -265,7 +320,12 @@
       "window_opening_rear_right": { "name": "Apertura ventanilla trasera derecha" },
       "maintenance_days": { "name": "Días hasta el mantenimiento" },
       "maintenance_km": { "name": "Kilómetros hasta el mantenimiento" },
-      "maintenance_date": { "name": "Próximo mantenimiento" }
+      "maintenance_date": { "name": "Próximo mantenimiento" },
+      "itv_date": { "name": "Próxima ITV" },
+      "itv_days": { "name": "Días hasta la ITV" },
+      "insurance_renewal_date": { "name": "Renovación del seguro" },
+      "insurance_days": { "name": "Días hasta la renovación del seguro" },
+      "insurance_cancel_date": { "name": "Límite para desistir del seguro" }
     },
     "binary_sensor": {
       "cloud_connected": { "name": "Conexión con la nube" },
@@ -311,7 +371,9 @@
       "warning_power_system": { "name": "Testigo sistema de propulsión" },
       "warning_traction_battery_low": { "name": "Testigo batería baja" },
       "warning_coolant_temperature": { "name": "Testigo temperatura del refrigerante" },
-      "maintenance_due": { "name": "Testigo mantenimiento" }
+      "maintenance_due": { "name": "Testigo mantenimiento" },
+      "itv_due": { "name": "Testigo ITV" },
+      "insurance_due": { "name": "Testigo seguro" }
     },
     "button": {
       "refresh": { "name": "Actualizar datos del vehículo" },
@@ -373,6 +435,7 @@
     "pin_not_armed": { "message": "Primero desbloquea \"Desbloqueo acciones con PIN\"." },
     "unknown_device": { "message": "Ese dispositivo no es un vehículo de DEC Deepal." },
     "maintenance_not_configured": { "message": "Activa antes el mantenimiento de este coche en Configurar → Mantenimiento (integración DEC Deepal)." },
+    "itv_not_configured": { "message": "Activa antes la ITV de este coche en Configurar → ITV (integración DEC Deepal)." },
     "maintenance_no_odometer": { "message": "No se conoce el kilometraje del coche. Indica los kilómetros o registra la revisión desde Configurar → Mantenimiento." }
   },
   "services": {
@@ -383,6 +446,14 @@
         "device_id": { "name": "Vehículo", "description": "El coche a capturar." },
         "label": { "name": "Etiqueta", "description": "Nombre para reconocer la captura (p. ej. \"A - reposo\")." },
         "refresh": { "name": "Leer antes", "description": "Leer el coche justo antes de capturar." }
+      }
+    },
+    "register_itv": {
+      "name": "Registrar ITV",
+      "description": "Anota que el coche ha pasado la ITV y calcula la siguiente. Hace falta haber activado la ITV del coche en Configurar → ITV.",
+      "fields": {
+        "device_id": { "name": "Vehículo", "description": "El coche que ha pasado la ITV." },
+        "date": { "name": "Fecha", "description": "Fecha de la ITV. Si se deja vacío, hoy." }
       }
     },
     "register_maintenance": {

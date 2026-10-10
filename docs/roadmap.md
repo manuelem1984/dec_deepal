@@ -12,6 +12,15 @@
 - [ ] Aviso de mantenimiento al entrar en un escalón (se puede forzar
       poniendo una fecha de última revisión de hace casi un año).
 
+## Beta 2.3.0b7 (10-10-2026) — pendiente de probar
+
+- [ ] **ITV:** configurar un coche, ver el testigo y la ventana, registrar una
+      ITV desde la tarjeta.
+- [ ] **Seguro:** configurar, ver la ventana (póliza y botones de llamar) y
+      comprobar los avisos poniendo una renovación cercana.
+- [ ] Pendiente: traducciones reales (inglés y portugués de Portugal),
+      incluida la tarjeta.
+
 ## Beta 2.3.0b5 (09-10-2026) — pendiente de probar
 
 - [ ] **Vista isométrica por colores:** elegir cada color en Apariencia y

@@ -3,6 +3,34 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b7] — 2026-10-10
+
+### Añadido
+
+- **ITV** (*Configurar → ITV*, por coche): con la fecha de matriculación y la
+  de la última ITV, la integración calcula la siguiente con la regla de los
+  turismos en España (4 años; cada 2 hasta los 10; anual después). Se puede
+  poner otra fecha a mano. Entidades: **Testigo ITV**, **Próxima ITV** y
+  **Días hasta la ITV**. Avisos: quedan 2 meses, 1 mes, 15 días y vencida.
+- **Seguro** (*Configurar → Seguro*, por coche): compañía, número de póliza,
+  tipo, fecha de renovación, días de antelación para desistir y teléfonos
+  opcionales. Entidades: **Testigo seguro**, **Renovación del seguro**,
+  **Días hasta la renovación** y **Límite para desistir**. Avisos: 30 y 15
+  días antes del límite, el último día y al renovarse (la fecha pasa sola al
+  año siguiente).
+- **El número de póliza y los teléfonos solo se ven en la tarjeta**: no hay
+  ninguna entidad con ellos ni salen en los diagnósticos.
+- **Tarjeta**: "Otros" tiene ahora cuatro opciones (Manual, Mantenimiento,
+  ITV y Seguro). Testigos de ITV (portapapeles) y de seguro (escudo), ámbar o
+  rojo, que abren su ventana; la de seguro tiene botones para llamar a la
+  asistencia y a la compañía. Botón *Registrar ITV pasada*, con confirmación.
+- Acción `dec_deepal.register_itv`.
+
+### Cambiado
+
+- Los avisos de ITV y de seguro nacen activados para quien ya tenía
+  configurados los avisos (se pueden quitar en *Configurar → Avisos al móvil*).
+
 ## [2.3.0b6] — 2026-10-09
 
 ### Cambiado

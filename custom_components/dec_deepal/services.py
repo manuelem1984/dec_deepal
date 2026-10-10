@@ -17,6 +17,10 @@
     tarjeta, tras pedir confirmación. Hace falta haber activado antes el
     mantenimiento del coche en Configurar → Mantenimiento.
 
+``dec_deepal.register_itv`` — Registrar una ITV pasada
+    Anota que el coche ha pasado la ITV (por defecto, hoy) y calcula la
+    siguiente. Lo usa la tarjeta, tras pedir confirmación.
+
 Guía: ``docs/depuracion.md``.
 """
 
@@ -59,6 +63,11 @@ REGISTER_MAINTENANCE_SCHEMA = vol.Schema(
         vol.Optional(ATTR_DATE): cv.date,
         vol.Optional(ATTR_KM): vol.All(vol.Coerce(int), vol.Range(min=0)),
     }
+)
+
+SERVICE_REGISTER_ITV = "register_itv"
+REGISTER_ITV_SCHEMA = vol.Schema(
+    {vol.Required(ATTR_DEVICE_ID): cv.string, vol.Optional(ATTR_DATE): cv.date}
 )
 
 CAPTURE_SCHEMA = vol.Schema(
@@ -147,6 +156,18 @@ async def _async_register_maintenance(call: ServiceCall) -> None:
     await alerts.async_register_service(vehicle_id, when, km)
 
 
+async def _async_register_itv(call: ServiceCall) -> None:
+    """Implementación de ``register_itv``."""
+    runtime, vehicle = _find_vehicle(call.hass, call.data[ATTR_DEVICE_ID])
+    vehicle_id = vehicle.info.vehicle_id
+    alerts = runtime.alerts
+    if alerts is None or alerts.itv_record(vehicle_id) is None:
+        raise ServiceValidationError(
+            translation_domain=DOMAIN, translation_key="itv_not_configured"
+        )
+    await alerts.async_register_itv(vehicle_id, call.data.get(ATTR_DATE) or dt_util.now().date())
+
+
 def async_register_services(hass: HomeAssistant) -> None:
     """Registra los servicios (una vez por arranque, desde ``async_setup``)."""
     if hass.services.has_service(DOMAIN, SERVICE_CAPTURE):
@@ -163,4 +184,7 @@ def async_register_services(hass: HomeAssistant) -> None:
         SERVICE_REGISTER_MAINTENANCE,
         _async_register_maintenance,
         schema=REGISTER_MAINTENANCE_SCHEMA,
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_REGISTER_ITV, _async_register_itv, schema=REGISTER_ITV_SCHEMA
     )

@@ -38,3 +38,15 @@ register_maintenance:
           max: 2000000
           unit_of_measurement: km
           mode: box
+
+register_itv:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: dec_deepal
+    date:
+      required: false
+      selector:
+        date:

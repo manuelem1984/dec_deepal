@@ -107,6 +107,66 @@ async def test_alerts_and_maintenance_steps(hass: HomeAssistant, freezer) -> Non
     result = await new_flow().async_step_advanced(advanced)
     assert result["data"][OPT_MANUAL_URLS] == {}
 
+    # --- ITV ------------------------------------------------------------------------
+    flow = new_flow()
+    result = await flow.async_step_itv()
+    assert result["type"] == "form" and result["step_id"] == "itv", result
+    _serialize(result)
+    result = await flow.async_step_itv({"vehicle": "car1"})
+    assert result["type"] == "form" and result["step_id"] == "itv_setup", result
+    _serialize(result)
+    with patch.object(hass.config_entries, "async_schedule_reload") as reload:
+        result = await flow.async_step_itv_setup({"enabled": True, "registration_date": "2022-11-26"})
+        assert result["type"] == "create_entry"
+        reload.assert_called_once_with(entry.entry_id)
+    assert manager.itv_status("car1").due_date.isoformat() == "2026-11-26"
+    assert manager.itv_record("car2") is None
+    # Fecha a mano distinta de la calculada: se respeta. Igual a la calculada: no se guarda.
+    flow = new_flow()
+    await flow.async_step_itv({"vehicle": "car1"})
+    with patch.object(hass.config_entries, "async_schedule_reload") as reload:
+        await flow.async_step_itv_setup(
+            {"enabled": True, "registration_date": "2022-11-26", "next_itv_date": "2026-10-01"}
+        )
+        reload.assert_not_called()
+    assert manager.itv_record("car1").next_override.isoformat() == "2026-10-01"
+    flow = new_flow()
+    await flow.async_step_itv({"vehicle": "car1"})
+    result = await flow.async_step_itv_setup()
+    _serialize(result)
+    await flow.async_step_itv_setup(
+        {"enabled": True, "registration_date": "2022-11-26", "next_itv_date": "2026-11-26"}
+    )
+    assert manager.itv_record("car1").next_override is None
+
+    # --- Seguro ---------------------------------------------------------------------
+    flow = new_flow()
+    result = await flow.async_step_insurance({"vehicle": "car1"})
+    assert result["type"] == "form" and result["step_id"] == "insurance_setup", result
+    _serialize(result)
+    with patch.object(hass.config_entries, "async_schedule_reload"):
+        result = await flow.async_step_insurance_setup(
+            {
+                "enabled": True,
+                "company": " Mutua Ejemplo ",
+                "policy": "0123 4567 89",
+                "insurance_kind": "comprehensive_excess",
+                "renewal_date": "2027-03-14",
+                "notice_days": 30,
+                "phone_assistance": "900 000 000",
+            }
+        )
+    assert result["type"] == "create_entry"
+    insurance = manager.insurance_record("car1")
+    assert (insurance.company, insurance.policy, insurance.phone_company) == ("Mutua Ejemplo", "0123 4567 89", "")
+    assert manager.insurance_status("car1").cancel_deadline.isoformat() == "2027-02-12"
+    # La póliza no sale en los diagnósticos.
+    assert "0123" not in str(manager.diagnostics("car1"))
+    flow = new_flow()
+    await flow.async_step_insurance({"vehicle": "car1"})
+    result = await flow.async_step_insurance_setup()
+    _serialize(result)
+
     # --- Mantenimiento: elegir coche → ficha (aún sin configurar) --------------------
     flow = new_flow()
     result = await flow.async_step_maintenance()

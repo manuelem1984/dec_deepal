@@ -76,6 +76,8 @@ def _warning(key: str, signal: str) -> DecBinaryDescription:
 
 #: Clave del testigo de mantenimiento (la tarjeta lo busca por ella).
 MAINTENANCE_KEY: Final = "maintenance_due"
+ITV_KEY: Final = "itv_due"
+INSURANCE_KEY: Final = "insurance_due"
 
 #: Sensores que existieron en alguna beta y se retiraron: se borran del
 #: registro al arrancar para que no queden como "no disponible".
@@ -184,6 +186,15 @@ async def async_setup_entry(
             remove_entities(hass, "binary_sensor", vehicle_id, (MAINTENANCE_KEY,))
         else:
             entities.append(DecMaintenanceDue(runtime, vehicle))
+        # Testigos de ITV y de seguro: igual, solo si están activados.
+        for key, record, entity in (
+            (ITV_KEY, runtime.alerts.itv_record(vehicle_id), DecItvDue),
+            (INSURANCE_KEY, runtime.alerts.insurance_record(vehicle_id), DecInsuranceDue),
+        ):
+            if record is None:
+                remove_entities(hass, "binary_sensor", vehicle_id, (key,))
+            else:
+                entities.append(entity(runtime, vehicle))
     entities.extend(
         DecBinarySensor(runtime, vehicle, description)
         for vehicle in runtime.vehicles.values()
@@ -264,3 +275,85 @@ class DecMaintenanceDue(DecMaintenanceEntity, BinarySensorEntity):
         """``"on"`` / ``"off"`` para elegir el icono."""
         is_on = self.is_on
         return None if is_on is None else ("on" if is_on else "off")
+
+
+class _DecDueSensor(DecMaintenanceEntity, BinarySensorEntity):
+    """Base de los testigos de vencimiento (ITV, seguro)."""
+
+    _attr_device_class = BinarySensorDeviceClass.PROBLEM
+
+    def _level(self) -> str | None:
+        raise NotImplementedError
+
+    @property
+    def is_on(self) -> bool | None:
+        """Encendido = se acerca la fecha o ha vencido."""
+        level = self._level()
+        return None if level is None else level != LEVEL_OK
+
+    def icon_state(self) -> str | None:
+        """``"on"`` / ``"off"`` para elegir el icono."""
+        is_on = self.is_on
+        return None if is_on is None else ("on" if is_on else "off")
+
+
+class DecItvDue(_DecDueSensor):
+    """Testigo de ITV: encendido desde 2 meses antes de la fecha límite."""
+
+    def __init__(self, runtime: DecDeepalRuntime, vehicle: VehicleContext) -> None:
+        super().__init__(runtime, vehicle, "binary_sensor", ITV_KEY)
+
+    def _level(self) -> str | None:
+        current = self.runtime.alerts.itv_status(self.vehicle.info.vehicle_id)
+        return None if current is None else current.level
+
+    @property
+    def extra_state_attributes(self) -> dict[str, object] | None:
+        """Lo que enseña la tarjeta al pulsar el testigo."""
+        alerts = self.runtime.alerts
+        record = alerts.itv_record(self.vehicle.info.vehicle_id)
+        current = alerts.itv_status(self.vehicle.info.vehicle_id)
+        if record is None or current is None:
+            return None
+        return {
+            "nivel": current.level,
+            "fecha_limite": current.due_date.isoformat(),
+            "dias_restantes": current.days_left,
+            "matriculacion": record.registration_date.isoformat(),
+            "ultima_itv": record.last_date.isoformat() if record.last_date else None,
+            "historial": list(record.history),
+        }
+
+
+class DecInsuranceDue(_DecDueSensor):
+    """Testigo del seguro: encendido los 30 días antes del límite para desistir.
+
+    Los atributos no llevan el número de póliza ni los teléfonos: esos datos
+    solo los pide la tarjeta (ver ``manual.py`` → ``InsuranceInfoView``).
+    """
+
+    def __init__(self, runtime: DecDeepalRuntime, vehicle: VehicleContext) -> None:
+        super().__init__(runtime, vehicle, "binary_sensor", INSURANCE_KEY)
+
+    def _level(self) -> str | None:
+        current = self.runtime.alerts.insurance_status(self.vehicle.info.vehicle_id)
+        return None if current is None else current.level
+
+    @property
+    def extra_state_attributes(self) -> dict[str, object] | None:
+        """Lo que enseña la tarjeta al pulsar el testigo."""
+        alerts = self.runtime.alerts
+        record = alerts.insurance_record(self.vehicle.info.vehicle_id)
+        current = alerts.insurance_status(self.vehicle.info.vehicle_id)
+        if record is None or current is None:
+            return None
+        return {
+            "nivel": current.level,
+            "renovacion": current.renewal_date.isoformat(),
+            "limite_desistimiento": current.cancel_deadline.isoformat(),
+            "dias_renovacion": current.days_to_renewal,
+            "dias_desistimiento": current.days_to_cancel,
+            "dias_aviso": record.notice_days,
+            "compania": record.company,
+            "tipo": record.kind,
+        }

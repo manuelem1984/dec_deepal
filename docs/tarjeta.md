@@ -52,6 +52,14 @@ Abre un menú con dos opciones:
   modelo no tiene manual, la opción no aparece.
 - **Mantenimiento** (llave inglesa): la ventana de mantenimiento, disponible
   siempre. Si el coche no lo tiene activado, explica cómo hacerlo.
+- **ITV** (portapapeles): días que quedan, fecha límite, matriculación, última
+  ITV, historial y el botón *Registrar ITV pasada*.
+- **Seguro** (escudo): días para la renovación y para desistir, compañía, tipo,
+  número de póliza y botones para llamar a la asistencia y a la compañía (si
+  se pusieron los teléfonos).
+
+Las cuatro opciones salen de dos en dos. ITV y Seguro tienen también su
+testigo en la línea de estado, como el de mantenimiento.
 
 Cuando la revisión está próxima o vencida, el texto del botón cambia a
 "Revisión en 47 días" o "Revisión vencida".

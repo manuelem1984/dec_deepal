@@ -9,6 +9,7 @@ Un :class:`AlertManager` por cuenta. Hace dos cosas:
    ``DEC Deepal <nombre del coche>``. Ningún aviso es crítico.
 2. **Mantenimiento.** Guarda la ficha de cada coche (última revisión,
    intervalo, historial) y calcula cuánto falta (``maintenance.py``).
+3. **ITV y seguro.** Lo mismo con sus fichas (``documents.py``).
 
 Dónde se guarda
 ---------------
@@ -32,16 +33,22 @@ from homeassistant.helpers.storage import Store
 from homeassistant.helpers.translation import async_get_translations
 from homeassistant.util import dt as dt_util
 
+from . import documents as doc
 from . import maintenance as mt
 from .alert_rules import (
     ALERT_CHARGE_FINISHED,
     ALERT_CHARGE_INTERRUPTED,
     ALERT_CHARGE_STARTED,
+    ALERT_INSURANCE,
+    ALERT_ITV,
     ALERT_MAINTENANCE,
     PROBLEM_SIGNALS,
     WATCHED_SIGNALS,
     charge_event,
     charge_text,
+    enabled_types,
+    insurance_text,
+    itv_text,
     maintenance_text,
     new_problems,
     problem_text,
@@ -50,6 +57,7 @@ from .const import (
     DEFAULT_ALERT_PERSISTENT,
     DOMAIN,
     NAME,
+    OPT_ALERT_KNOWN,
     OPT_ALERT_PERSISTENT,
     OPT_ALERT_TARGETS,
     OPT_ALERT_TYPES,
@@ -88,9 +96,15 @@ class AlertManager:
         self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, storage_key(entry_id))
         config = options.get(OPT_ALERTS, {})
         self._targets: list[str] = list(config.get(OPT_ALERT_TARGETS, []))
-        self._types: set[str] = set(config.get(OPT_ALERT_TYPES, []))
+        self._types: set[str] = (
+            enabled_types(config.get(OPT_ALERT_TYPES), config.get(OPT_ALERT_KNOWN))
+            if config
+            else set()
+        )
         self._persistent = bool(config.get(OPT_ALERT_PERSISTENT, DEFAULT_ALERT_PERSISTENT))
         self._records: dict[str, mt.MaintenanceRecord] = {}
+        self._itv: dict[str, doc.ItvRecord] = {}
+        self._insurance: dict[str, doc.InsuranceRecord] = {}
         #: Testigos encendidos y ya avisados, por coche.
         self._active: dict[str, set[str]] = {}
         #: Última lectura de cada coche (solo las señales que se vigilan).
@@ -112,6 +126,15 @@ class AlertManager:
                 self._records[vehicle_id] = mt.MaintenanceRecord.from_dict(raw)
             except (KeyError, TypeError, ValueError) as err:
                 _LOGGER.warning("Ficha de mantenimiento ilegible (%s): %s", vehicle_id, err)
+        for key, target, loader in (
+            ("itv", self._itv, doc.ItvRecord.from_dict),
+            ("insurance", self._insurance, doc.InsuranceRecord.from_dict),
+        ):
+            for vehicle_id, raw in data.get(key, {}).items():
+                try:
+                    target[vehicle_id] = loader(raw)
+                except (KeyError, TypeError, ValueError) as err:
+                    _LOGGER.warning("Ficha de %s ilegible (%s): %s", key, vehicle_id, err)
         self._active = {
             vehicle_id: set(signals) for vehicle_id, signals in data.get("active", {}).items()
         }
@@ -163,6 +186,10 @@ class AlertManager:
         return {
             "maintenance": {
                 vehicle_id: record.to_dict() for vehicle_id, record in self._records.items()
+            },
+            "itv": {vehicle_id: record.to_dict() for vehicle_id, record in self._itv.items()},
+            "insurance": {
+                vehicle_id: record.to_dict() for vehicle_id, record in self._insurance.items()
             },
             "active": {vehicle_id: sorted(signals) for vehicle_id, signals in self._active.items()},
             "odometer": dict(self._odometer),
@@ -231,7 +258,122 @@ class AlertManager:
     def _on_daily_check(self, _now: datetime) -> None:
         for vehicle_id in self._vehicles:
             self._check_maintenance(vehicle_id)
+            self._check_documents(vehicle_id)
         self._notify_listeners()
+
+    # ------------------------------------------------------------------
+    # ITV y seguro
+    # ------------------------------------------------------------------
+
+    def itv_record(self, vehicle_id: str) -> doc.ItvRecord | None:
+        """Ficha de ITV del coche (``None`` = sin configurar)."""
+        return self._itv.get(vehicle_id)
+
+    def itv_status(self, vehicle_id: str) -> doc.DueStatus | None:
+        """Cuánto falta para la próxima ITV (``None`` = sin configurar)."""
+        record = self._itv.get(vehicle_id)
+        return None if record is None else doc.itv_status(record, dt_util.now().date())
+
+    def insurance_record(self, vehicle_id: str) -> doc.InsuranceRecord | None:
+        """Ficha del seguro del coche (``None`` = sin configurar)."""
+        return self._insurance.get(vehicle_id)
+
+    def insurance_status(self, vehicle_id: str) -> doc.InsuranceStatus | None:
+        """Situación del seguro (``None`` = sin configurar)."""
+        record = self._insurance.get(vehicle_id)
+        return None if record is None else doc.insurance_status(record, dt_util.now().date())
+
+    async def async_set_itv(self, vehicle_id: str, record: doc.ItvRecord | None) -> None:
+        """Guarda (o borra, con ``None``) la ficha de ITV de un coche."""
+        if record is None:
+            self._itv.pop(vehicle_id, None)
+        else:
+            self._itv[vehicle_id] = record
+        self._check_documents(vehicle_id)
+        await self._store.async_save(self._data_to_save())
+        self._notify_listeners()
+
+    async def async_register_itv(self, vehicle_id: str, when: date) -> None:
+        """Anota una ITV pasada."""
+        doc.register_itv(self._itv[vehicle_id], when)
+        await self._store.async_save(self._data_to_save())
+        self._notify_listeners()
+
+    async def async_set_insurance(
+        self, vehicle_id: str, record: doc.InsuranceRecord | None
+    ) -> None:
+        """Guarda (o borra, con ``None``) la ficha del seguro de un coche."""
+        if record is None:
+            self._insurance.pop(vehicle_id, None)
+        else:
+            self._insurance[vehicle_id] = record
+        self._check_documents(vehicle_id)
+        await self._store.async_save(self._data_to_save())
+        self._notify_listeners()
+
+    def _check_documents(self, vehicle_id: str) -> None:
+        """Avisos de ITV y seguro (de día y una vez cada uno); renueva el seguro si toca."""
+        now = dt_util.now()
+        today = now.date()
+        daytime = QUIET_BEFORE_HOUR <= now.hour < QUIET_FROM_HOUR
+        language = self.hass.config.language
+
+        def day(value: date) -> str:
+            return value.strftime("%d/%m/%Y")
+
+        itv = self._itv.get(vehicle_id)
+        if itv is not None and daytime and ALERT_ITV in self._types:
+            current = doc.itv_status(itv, today)
+            kind = doc.itv_pending_notice(itv, current)
+            if kind is not None:
+                self._send(
+                    vehicle_id,
+                    itv_text(
+                        kind,
+                        days_left=current.days_left,
+                        due_date=day(current.due_date),
+                        language=language,
+                    ),
+                )
+                itv.notified |= current.steps
+                self._save()
+
+        insurance = self._insurance.get(vehicle_id)
+        if insurance is None:
+            return
+        # La renovación se aplica siempre (aunque el aviso esté desactivado o sea de noche).
+        if doc.insurance_roll(insurance, today):
+            self._save()
+            if ALERT_INSURANCE in self._types:
+                self._send(
+                    vehicle_id,
+                    insurance_text(
+                        "renewed",
+                        days_to_cancel=0,
+                        deadline="",
+                        renewal=day(insurance.renewal_date),
+                        company=insurance.company,
+                        language=language,
+                    ),
+                )
+        if not daytime or ALERT_INSURANCE not in self._types:
+            return
+        status = doc.insurance_status(insurance, today)
+        kind = doc.insurance_pending_notice(insurance, status)
+        if kind is not None:
+            self._send(
+                vehicle_id,
+                insurance_text(
+                    kind,
+                    days_to_cancel=status.days_to_cancel,
+                    deadline=day(status.cancel_deadline),
+                    renewal=day(status.renewal_date),
+                    company=insurance.company,
+                    language=language,
+                ),
+            )
+            insurance.notified |= status.steps
+            self._save()
 
     def _check_maintenance(self, vehicle_id: str) -> None:
         """Envía el aviso de mantenimiento que toque (de día y una sola vez)."""
@@ -309,6 +451,7 @@ class AlertManager:
             self._send(vehicle_id, problem_text(alert, names, language))
 
         self._check_maintenance(vehicle_id)
+        self._check_documents(vehicle_id)
 
     # ------------------------------------------------------------------
     # Envío
@@ -358,6 +501,17 @@ class AlertManager:
                 }
             ),
             "testigos_avisados": sorted(self._active.get(vehicle_id, ())),
+            "itv": self._itv[vehicle_id].to_dict() if vehicle_id in self._itv else None,
+            # Del seguro, sin compañía, póliza ni teléfonos.
+            "seguro": (
+                {
+                    "tipo": self._insurance[vehicle_id].kind,
+                    "renovacion": self._insurance[vehicle_id].renewal_date.isoformat(),
+                    "dias_desistimiento": self._insurance[vehicle_id].notice_days,
+                }
+                if vehicle_id in self._insurance
+                else None
+            ),
         }
 
     def config_summary(self) -> dict[str, Any]:

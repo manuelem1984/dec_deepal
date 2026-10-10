@@ -1,6 +1,6 @@
 """Asistente de opciones ("Configurar" en la ficha de la integración).
 
-Menú con cinco apartados:
+Menú con siete apartados:
 
 - **Apariencia** (``appearance`` → ``appearance_details``): modelo, versión y
   color de cada coche. Decide la "Imagen DEC" y qué entidades se crean (p. ej.
@@ -14,6 +14,9 @@ Menú con cinco apartados:
   ``maintenance_setup`` / ``maintenance_register``): la ficha de cada coche.
   No se guarda en las opciones sino en el almacén de ``alerts.py``, para que
   registrar una revisión no recargue la integración.
+- **ITV** (``itv`` → ``itv_setup``) y **Seguro** (``insurance`` →
+  ``insurance_setup``): la ficha de cada coche, guardada igual que la de
+  mantenimiento (``documents.py``).
 - **Avanzado** (``advanced``): intervalo de lectura y modo depuración.
 
 Guardar un apartado recarga la integración para aplicar los cambios (salvo
@@ -33,7 +36,7 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
 
 from .api.errors import DeepalConnectionError, DeepalError, DeepalPinError, DeepalRateLimitError
-from .alert_rules import ALERT_TYPES, maintenance_text
+from .alert_rules import ALERT_TYPES, enabled_types, maintenance_text
 from .const import (
     ARM_SECONDS_CHOICES,
     DEFAULT_ALERT_PERSISTENT,
@@ -43,6 +46,7 @@ from .const import (
     DEFAULT_SCAN_MINUTES,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,
+    OPT_ALERT_KNOWN,
     OPT_ALERT_PERSISTENT,
     OPT_ALERT_TARGETS,
     OPT_ALERT_TYPES,
@@ -63,6 +67,13 @@ from .const import (
     PIN_MODE_DIRECT,
 )
 from .appearance import details_schema, model_schema, needs_details, updated_options
+from .documents import (
+    DEFAULT_NOTICE_DAYS,
+    INSURANCE_KINDS,
+    InsuranceRecord,
+    ItvRecord,
+    itv_calculated,
+)
 from .maintenance import MaintenanceRecord
 from .manual import is_valid_url
 from .runtime import DecDeepalRuntime
@@ -82,6 +93,19 @@ _MT_INTERVAL_KM = "interval_km"
 _MT_INTERVAL_MONTHS = "interval_months"
 _MT_SERVICE_DATE = "service_date"
 _MT_SERVICE_KM = "service_km"
+
+# Campos de los formularios de ITV y de seguro.
+_ENABLED = "enabled"
+_ITV_REGISTRATION = "registration_date"
+_ITV_LAST = "last_itv_date"
+_ITV_NEXT = "next_itv_date"
+_INS_COMPANY = "company"
+_INS_POLICY = "policy"
+_INS_KIND = "insurance_kind"
+_INS_RENEWAL = "renewal_date"
+_INS_NOTICE = "notice_days"
+_INS_PHONE_ASSISTANCE = "phone_assistance"
+_INS_PHONE_COMPANY = "phone_company"
 
 #: Servicios de "notify" que no son un destino (son genéricos de HA).
 _NOT_A_TARGET = frozenset({"send_message", "persistent_notification", "notify"})
@@ -133,7 +157,15 @@ class DecDeepalOptionsFlow(OptionsFlow):
             return self.async_abort(reason="not_loaded")
         return self.async_show_menu(
             step_id="init",
-            menu_options=["appearance", "pin", "alerts", "maintenance", "advanced"],
+            menu_options=[
+                "appearance",
+                "pin",
+                "alerts",
+                "maintenance",
+                "itv",
+                "insurance",
+                "advanced",
+            ],
         )
 
     # ------------------------------------------------------------------
@@ -318,6 +350,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
                     OPT_ALERTS: {
                         OPT_ALERT_TARGETS: list(user_input.get(OPT_ALERT_TARGETS, [])),
                         OPT_ALERT_TYPES: list(user_input.get(OPT_ALERT_TYPES, [])),
+                        OPT_ALERT_KNOWN: list(ALERT_TYPES),
                         OPT_ALERT_PERSISTENT: bool(user_input[OPT_ALERT_PERSISTENT]),
                     }
                 }
@@ -345,7 +378,15 @@ class DecDeepalOptionsFlow(OptionsFlow):
                 )
             )
         schema[
-            vol.Optional(OPT_ALERT_TYPES, default=list(stored.get(OPT_ALERT_TYPES, ALERT_TYPES)))
+            vol.Optional(
+                OPT_ALERT_TYPES,
+                default=[
+                    kind
+                    for kind in ALERT_TYPES
+                    if kind
+                    in enabled_types(stored.get(OPT_ALERT_TYPES), stored.get(OPT_ALERT_KNOWN))
+                ],
+            )
         ] = selector.SelectSelector(
             selector.SelectSelectorConfig(
                 options=list(ALERT_TYPES),
@@ -528,6 +569,185 @@ class DecDeepalOptionsFlow(OptionsFlow):
             step_id="maintenance_register",
             data_schema=schema,
             description_placeholders=self._maintenance_placeholders(),
+        )
+
+    # ------------------------------------------------------------------
+    # ITV y seguro
+    # ------------------------------------------------------------------
+
+    def _vehicle_form(self, step_id: str) -> ConfigFlowResult:
+        """Formulario para elegir coche (cuando hay más de uno)."""
+        vehicles = self._runtime.vehicles
+        schema = vol.Schema(
+            {
+                vol.Required(_VEHICLE, default=next(iter(vehicles))): _select(
+                    [
+                        selector.SelectOptionDict(
+                            value=vehicle.info.vehicle_id, label=vehicle.info.display_name
+                        )
+                        for vehicle in vehicles.values()
+                    ]
+                )
+            }
+        )
+        return self.async_show_form(step_id=step_id, data_schema=schema)
+
+    def _done(self, was_enabled: bool, enabled: bool) -> ConfigFlowResult:
+        """Cierra un apartado guardado en el almacén (las opciones no cambian).
+
+        Activar o desactivar crea o borra entidades: eso sí recarga.
+        """
+        if was_enabled != enabled:
+            self.hass.config_entries.async_schedule_reload(self.config_entry.entry_id)
+        return self.async_create_entry(data=dict(self.config_entry.options))
+
+    async def async_step_itv(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """ITV: qué coche."""
+        vehicles = self._runtime.vehicles
+        if user_input is None and len(vehicles) > 1:
+            return self._vehicle_form("itv")
+        self._vehicle_id = (user_input or {}).get(_VEHICLE) or next(iter(vehicles))
+        return await self.async_step_itv_setup()
+
+    async def async_step_itv_setup(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Ficha de ITV: matriculación, última ITV y, si se quiere, la próxima a mano."""
+        assert self._vehicle_id is not None
+        alerts = self._runtime.alerts
+        record = alerts.itv_record(self._vehicle_id)
+
+        if user_input is not None:
+            enabled = bool(user_input[_ENABLED])
+            if not enabled:
+                await alerts.async_set_itv(self._vehicle_id, None)
+            else:
+                last = user_input.get(_ITV_LAST)
+                new = ItvRecord(
+                    registration_date=date.fromisoformat(user_input[_ITV_REGISTRATION]),
+                    last_date=date.fromisoformat(last) if last else None,
+                    history=list(record.history) if record else [],
+                )
+                chosen = user_input.get(_ITV_NEXT)
+                # Solo se guarda como "a mano" si no coincide con la calculada.
+                if chosen and date.fromisoformat(chosen) != itv_calculated(new):
+                    new.next_override = date.fromisoformat(chosen)
+                await alerts.async_set_itv(self._vehicle_id, new)
+            return self._done(record is not None, enabled)
+
+        # Si el coche tiene mantenimiento sin revisiones, su fecha es la de matriculación.
+        maintenance = alerts.record(self._vehicle_id)
+        registration = (
+            record.registration_date
+            if record
+            else maintenance.last_date
+            if maintenance and maintenance.services_done == 0
+            else None
+        )
+
+        def suggested(value: date | None) -> dict[str, Any]:
+            return {"suggested_value": value.isoformat()} if value else {}
+
+        schema = vol.Schema(
+            {
+                vol.Required(_ENABLED, default=True): selector.BooleanSelector(),
+                vol.Required(
+                    _ITV_REGISTRATION, description=suggested(registration)
+                ): selector.DateSelector(),
+                vol.Optional(
+                    _ITV_LAST, description=suggested(record.last_date if record else None)
+                ): selector.DateSelector(),
+                vol.Optional(
+                    _ITV_NEXT, description=suggested(record.next_override if record else None)
+                ): selector.DateSelector(),
+            }
+        )
+        return self.async_show_form(
+            step_id="itv_setup",
+            data_schema=schema,
+            description_placeholders={
+                "vehicle": self._runtime.vehicles[self._vehicle_id].info.display_name
+            },
+        )
+
+    async def async_step_insurance(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Seguro: qué coche."""
+        vehicles = self._runtime.vehicles
+        if user_input is None and len(vehicles) > 1:
+            return self._vehicle_form("insurance")
+        self._vehicle_id = (user_input or {}).get(_VEHICLE) or next(iter(vehicles))
+        return await self.async_step_insurance_setup()
+
+    async def async_step_insurance_setup(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Ficha del seguro: compañía, póliza, tipo, renovación, desistimiento y teléfonos."""
+        assert self._vehicle_id is not None
+        alerts = self._runtime.alerts
+        record = alerts.insurance_record(self._vehicle_id)
+
+        if user_input is not None:
+            enabled = bool(user_input[_ENABLED])
+            if not enabled:
+                await alerts.async_set_insurance(self._vehicle_id, None)
+            else:
+                await alerts.async_set_insurance(
+                    self._vehicle_id,
+                    InsuranceRecord(
+                        renewal_date=date.fromisoformat(user_input[_INS_RENEWAL]),
+                        company=str(user_input.get(_INS_COMPANY) or "").strip(),
+                        policy=str(user_input.get(_INS_POLICY) or "").strip(),
+                        kind=user_input[_INS_KIND],
+                        notice_days=int(user_input[_INS_NOTICE]),
+                        phone_assistance=str(user_input.get(_INS_PHONE_ASSISTANCE) or "").strip(),
+                        phone_company=str(user_input.get(_INS_PHONE_COMPANY) or "").strip(),
+                    ),
+                )
+            return self._done(record is not None, enabled)
+
+        def text(key: str, value: str, kind: selector.TextSelectorType) -> dict[Any, Any]:
+            return {
+                vol.Optional(key, description={"suggested_value": value}): selector.TextSelector(
+                    selector.TextSelectorConfig(type=kind)
+                )
+            }
+
+        plain, phone = selector.TextSelectorType.TEXT, selector.TextSelectorType.TEL
+        renewal = (
+            vol.Required(_INS_RENEWAL, default=record.renewal_date.isoformat())
+            if record
+            else vol.Required(_INS_RENEWAL)
+        )
+        schema = vol.Schema(
+            {
+                vol.Required(_ENABLED, default=True): selector.BooleanSelector(),
+                **text(_INS_COMPANY, record.company if record else "", plain),
+                **text(_INS_POLICY, record.policy if record else "", plain),
+                vol.Required(
+                    _INS_KIND, default=record.kind if record else INSURANCE_KINDS[0]
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=list(INSURANCE_KINDS),
+                        translation_key="insurance_kind",
+                        mode=selector.SelectSelectorMode.DROPDOWN,
+                    )
+                ),
+                renewal: selector.DateSelector(),
+                vol.Required(
+                    _INS_NOTICE, default=record.notice_days if record else DEFAULT_NOTICE_DAYS
+                ): _number(0, 180, 1),
+                **text(_INS_PHONE_ASSISTANCE, record.phone_assistance if record else "", phone),
+                **text(_INS_PHONE_COMPANY, record.phone_company if record else "", phone),
+            }
+        )
+        return self.async_show_form(
+            step_id="insurance_setup",
+            data_schema=schema,
+            description_placeholders={
+                "vehicle": self._runtime.vehicles[self._vehicle_id].info.display_name
+            },
         )
 
     # ------------------------------------------------------------------
