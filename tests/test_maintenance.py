@@ -154,6 +154,9 @@ def test_problems_are_notified_once_until_they_clear() -> None:
     assert ar.new_problems({s.WARNING_ABS: False}, active) == []
     assert ar.new_problems({s.WARNING_ABS: True}, active) == [s.WARNING_ABS]
     assert ar.PROBLEM_SIGNALS[s.WARNING_TPMS] == ar.ALERT_TIRES
+    # El airbag se enciende solo al despertar el coche: no avisa.
+    assert s.WARNING_AIRBAG not in ar.PROBLEM_SIGNALS
+    assert ar.new_problems({s.WARNING_AIRBAG: True}, set()) == []
     assert ar.PROBLEM_SIGNALS[s.KEY_BATTERY_LOW] == ar.ALERT_KEY_BATTERY
 
 

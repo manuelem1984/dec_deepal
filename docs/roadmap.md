@@ -1,43 +1,26 @@
 # Hoja de ruta
 
-## Beta 2.3.0b1 (09-10-2026) — pendiente de probar
+## 2.3.0 (10-10-2026) — publicada
+
+Probado en una instalación real: mantenimiento, ITV, seguro, botón «Otros»,
+manual, colores y llantas de la vista isométrica, idiomas, mandos de la
+tarjeta, clima con el coche apagado y despertar del coche.
+
+Pendiente de comprobar:
 
 - [ ] **Avisos de carga**: iniciada, terminada e interrumpida. Sobre todo,
       que al terminar con un límite de carga (p. ej. 80 %) diga "terminada" y
       no "interrumpida", y que desenchufar a media carga diga "interrumpida".
 - [ ] **Avisos de testigos, neumáticos y pila del mando**: no se pueden
       provocar; falta ver uno real.
-- [ ] **Mantenimiento**: configurar un coche, ver el testigo en la tarjeta,
-      registrar una revisión desde la tarjeta y desde Configurar.
-- [ ] Aviso de mantenimiento al entrar en un escalón (se puede forzar
-      poniendo una fecha de última revisión de hace casi un año).
-
-## Beta 2.3.0b7 (10-10-2026) — pendiente de probar
-
-- [ ] **ITV:** configurar un coche, ver el testigo y la ventana, registrar una
-      ITV desde la tarjeta.
-- [ ] **Seguro:** configurar, ver la ventana (póliza y botones de llamar) y
-      comprobar los avisos poniendo una renovación cercana.
-- [x] Traducciones reales (inglés y portugués de Portugal), incluida la
-      tarjeta (2.3.0b8). Pendiente: revisión por alguien nativo.
-
-## Beta 2.3.0b5 (09-10-2026) — pendiente de probar
-
-- [ ] **Vista isométrica por colores:** elegir cada color en Apariencia y
-      comprobar la tarjeta en tema claro y oscuro, con puertas, capó y portón
-      abiertos y con las luces encendidas.
-- [ ] **Llantas:** Pro (18") y, en el Max, con y sin tapacubos.
-- [ ] Pendiente: los mismos colores en la **vista de planta** (las vistas
-      interior y de carga no se tocan).
-
-## Beta 2.3.0b3 (09-10-2026) — pendiente de probar
-
-- [x] **Otros → Manual** incrustado en una ventana: en el iPhone no se
-      podían pasar las páginas. Desde la 2.3.0b4 se abre en el navegador.
-- [ ] Otros → Manual (2.3.0b4): que abra el PDF en el navegador desde el
-      ordenador y desde la app del móvil.
-- [ ] Cambiar el enlace del manual en Configurar → Avanzado y comprobar que
-      se abre el nuevo.
+- [ ] **Testigo del airbag**: se quitó de los avisos y de la tarjeta porque
+      se enciende unos segundos al despertar el coche. Estudiar si se puede
+      recuperar ignorando los encendidos breves.
+- [ ] **Clima con el coche encendido**: el servidor lo rechaza; falta un
+      mensaje claro en la tarjeta.
+- [ ] Revisión de inglés, portugués, italiano y polaco por alguien nativo.
+- [ ] Los mismos colores en la **vista de planta** (las vistas interior y de
+      carga no se tocan).
 - [ ] Manual del PHEV: cuando se añada ese modelo al catálogo, con su enlace.
 
 ## Pendiente de diseño

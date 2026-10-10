@@ -74,10 +74,11 @@
   // Testigos de la línea de estado. "red" = grave; el resto, ámbar.
   const AMBER = "var(--warning-color, #f9a825)";
   const RED = "var(--error-color, #db4437)";
+  // El del airbag no está: el coche lo enciende unos segundos cada vez que
+  // despierta, así que daba avisos falsos. La entidad sigue existiendo.
   const WARNINGS = [
     { keys: ["binary_sensor.warning_brake"], icon: "mdi:car-brake-alert", color: RED },
     { keys: ["binary_sensor.warning_brake_fluid"], icon: "mdi:car-brake-fluid-level", color: RED },
-    { keys: ["binary_sensor.warning_airbag"], icon: "mdi:airbag", color: RED },
     { keys: ["binary_sensor.warning_12v_battery"], icon: "mdi:car-battery", color: RED },
     { keys: ["binary_sensor.warning_coolant_temperature"], icon: "mdi:coolant-temperature", color: RED },
     { keys: ["binary_sensor.warning_power_system"], icon: "mdi:engine", color: RED },
@@ -1035,6 +1036,13 @@
     _format(key) {
       const state = this._state(key);
       if (!state || ["unknown", "unavailable"].includes(state.state)) return undefined;
+      // Estados con texto ("Desconectado"): se traducen aquí. La función de
+      // Home Assistant se queda con el idioma anterior al cambiar de idioma.
+      const [domain, translationKey] = key.split(".");
+      const text =
+        this._hass.localize &&
+        this._hass.localize(`component.${DOMAIN}.entity.${domain}.${translationKey}.state.${state.state}`);
+      if (text) return text;
       return this._hass.formatEntityState ? this._hass.formatEntityState(state) : state.state;
     }
 
@@ -1080,6 +1088,10 @@
       const tracked = Object.values(this._ids).map((entityId) => this._hass.states[entityId]);
       const changed = tracked.length !== this._seen.length || tracked.some((state, index) => state !== this._seen[index]);
       if (this._builtLanguage !== this._language()) this._built = false; // cambió el idioma
+      // Al cambiar de idioma, los textos de Home Assistant llegan un poco
+      // después que el idioma: hay que repintar cuando llegan.
+      if (this._localize !== this._hass.localize) this._dirty = true;
+      this._localize = this._hass.localize;
       if (!this._built) this._build();
       else if (!changed && !this._dirty) return;
       this._seen = tracked;
@@ -1201,7 +1213,8 @@
       );
 
       return {
-        comfort: { icon: "mdi:sun-snowflake-variant", text: comfortText, primary: true },
+        // En azul solo si hay algo encendido (clima, asientos o volante).
+        comfort: { icon: "mdi:sun-snowflake-variant", text: comfortText, primary: comfortOn },
         lock: {
           icon: unlocked ? "mdi:lock-open-variant" : "mdi:lock",
           text: lockKnown ? this._t(unlocked ? "unlocked" : "locked") : "—",

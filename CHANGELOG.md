@@ -3,6 +3,42 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0] — 2026-10-10
+
+Versión estable. Reúne las betas `2.3.0b1` a `2.3.0b11`, validadas en una
+instalación real. Quedan por comprobar con el coche los avisos de carga
+(iniciada, terminada e interrumpida).
+
+### Añadido
+
+- **Avisos al móvil** desde la integración, sin automatizaciones: carga
+  iniciada, terminada e interrumpida, testigos, neumáticos y pila del mando.
+  Se eligen en Configurar → Avisos al móvil.
+- **Mantenimiento** por coche, con el plan del fabricante: entidades, testigo
+  en la tarjeta, ventana con las operaciones de la revisión y avisos por
+  fecha y por kilómetros.
+- **ITV** (solo España) y **Seguro**: fechas, avisos y ventana en la tarjeta,
+  con la póliza y botones para llamar a la asistencia y a la compañía.
+- **Tarjeta: botón «Otros»**, con Manual, Mantenimiento, ITV y Seguro.
+- **Vista isométrica en el color del coche**, con la llanta de cada versión
+  (Pro de 18"; Max con o sin tapacubos) y la matrícula «DEC Deepal».
+- **Idiomas:** inglés, portugués, italiano y polaco. Catalán, gallego y
+  euskera se muestran en español. Todos los textos salen de una sola fuente
+  (`docs/idiomas.md`).
+
+### Corregido
+
+- **Tarjeta: el botón Confort salía en azul con todo apagado.** Ahora solo se
+  pone en azul si hay algo encendido (clima, asientos o volante).
+- **Tarjeta: el estado de carga se quedaba en el idioma anterior** al cambiar
+  de idioma, hasta recargar la página.
+
+### Cambiado
+
+- **El testigo del airbag ya no avisa ni sale en la tarjeta.** El coche lo
+  enciende unos segundos cada vez que despierta y saltaba sin motivo. La
+  entidad «Testigo airbag» sigue existiendo.
+
 ## [2.3.0b11] — 2026-10-10
 
 ### Corregido

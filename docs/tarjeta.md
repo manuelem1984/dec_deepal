@@ -23,7 +23,7 @@ Con dos coches, una tarjeta por coche.
   ventanillas y luces. Tocarla no hace nada.
 - **Línea de estado** (encima de la batería, a la derecha): un tic verde si
   no hay avisos. Si los hay, el icono de cada testigo encendido: en rojo
-  los graves (frenos, líquido de frenos, airbag, batería de 12 V,
+  los graves (frenos, líquido de frenos, batería de 12 V,
   refrigerante y sistema de propulsión) y en ámbar el resto (ABS,
   dirección asistida, neumáticos, potencia limitada, batería baja y pila
   del mando).

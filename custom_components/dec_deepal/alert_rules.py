@@ -67,10 +67,11 @@ def enabled_types(stored: Iterable[str] | None, known: Iterable[str] | None) -> 
 
 #: Señal de problema → tipo de aviso. La clave del sensor binario que la
 #: muestra coincide con el nombre de la señal (de ahí sale el nombre visible).
+#: El testigo del airbag (``s.WARNING_AIRBAG``) no está: el coche lo enciende
+#: unos segundos cada vez que despierta y el aviso saltaba sin motivo.
 PROBLEM_SIGNALS: Final[dict[str, str]] = {
     s.WARNING_BRAKE: ALERT_WARNINGS,
     s.WARNING_BRAKE_FLUID: ALERT_WARNINGS,
-    s.WARNING_AIRBAG: ALERT_WARNINGS,
     s.WARNING_12V_BATTERY: ALERT_WARNINGS,
     s.WARNING_COOLANT_TEMPERATURE: ALERT_WARNINGS,
     s.WARNING_POWER_SYSTEM: ALERT_WARNINGS,
