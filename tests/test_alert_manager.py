@@ -142,3 +142,13 @@ async def test_alerts_and_maintenance(hass: HomeAssistant, freezer) -> None:  # 
     assert again.itv_record("car1").history == ["2027-01-22"]
     assert again.insurance_record("car1").company == "Mutua Ejemplo"
     await again.async_stop()
+
+    # --- País sin módulo de ITV: la ficha se conserva pero no se usa -------------------
+    abroad = AlertManager(hass, "entry1", OPTIONS, vehicles, itv_available=False)
+    await abroad.async_load()
+    assert abroad.itv_record("car1") is None and abroad.itv_status("car1") is None
+    assert abroad.insurance_record("car1") is not None
+    await abroad.async_stop()
+    back = AlertManager(hass, "entry1", OPTIONS, vehicles)
+    await back.async_load()
+    assert back.itv_record("car1").history == ["2027-01-22"]

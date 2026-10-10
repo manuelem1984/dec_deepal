@@ -806,7 +806,10 @@
     "days": "{value} días",
     "day": "1 día",
     "or": " o ",
-    "and": " y "
+    "and": " y ",
+    "thousands": ".",
+    "ordinal": "{number}ª",
+    "date_format": "%d/%m/%Y"
   },
   "tarjeta": {
     "card_description": "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",

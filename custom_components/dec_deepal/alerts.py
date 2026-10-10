@@ -47,6 +47,7 @@ from .alert_rules import (
     charge_event,
     charge_text,
     enabled_types,
+    format_date,
     insurance_text,
     itv_text,
     maintenance_text,
@@ -91,11 +92,15 @@ class AlertManager:
         options: dict[str, Any],
         vehicles: dict[str, VehicleContext],
         rules: doc.CountryRules = doc.DEFAULT_RULES,
+        itv_available: bool = True,
     ) -> None:
         self.hass = hass
         self._vehicles = vehicles
         #: Normas del país de la cuenta (ITV, preaviso del seguro).
         self.rules = rules
+        #: La ITV es una norma de cada país: solo existe donde está dada de
+        #: alta (hoy, España). En los demás no hay entidades, avisos ni menú.
+        self.itv_available = itv_available
         self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, storage_key(entry_id))
         config = options.get(OPT_ALERTS, {})
         self._targets: list[str] = list(config.get(OPT_ALERT_TARGETS, []))
@@ -129,10 +134,15 @@ class AlertManager:
                 self._records[vehicle_id] = mt.MaintenanceRecord.from_dict(raw)
             except (KeyError, TypeError, ValueError) as err:
                 _LOGGER.warning("Ficha de mantenimiento ilegible (%s): %s", vehicle_id, err)
+        #: Fichas de ITV guardadas que no se usan (país sin ITV): se conservan.
+        self._itv_parked: dict[str, Any] = {}
         for key, target, loader in (
             ("itv", self._itv, doc.ItvRecord.from_dict),
             ("insurance", self._insurance, doc.InsuranceRecord.from_dict),
         ):
+            if key == "itv" and not self.itv_available:
+                self._itv_parked = dict(data.get(key, {}))
+                continue
             for vehicle_id, raw in data.get(key, {}).items():
                 try:
                     target[vehicle_id] = loader(raw)
@@ -190,7 +200,10 @@ class AlertManager:
             "maintenance": {
                 vehicle_id: record.to_dict() for vehicle_id, record in self._records.items()
             },
-            "itv": {vehicle_id: record.to_dict() for vehicle_id, record in self._itv.items()},
+            "itv": {
+                **getattr(self, "_itv_parked", {}),
+                **{vehicle_id: record.to_dict() for vehicle_id, record in self._itv.items()},
+            },
             "insurance": {
                 vehicle_id: record.to_dict() for vehicle_id, record in self._insurance.items()
             },
@@ -326,7 +339,7 @@ class AlertManager:
         language = self.hass.config.language
 
         def day(value: date) -> str:
-            return value.strftime("%d/%m/%Y")
+            return format_date(value, language)
 
         itv = self._itv.get(vehicle_id)
         if itv is not None and daytime and ALERT_ITV in self._types:
@@ -402,7 +415,7 @@ class AlertManager:
                 number=current.number,
                 days_left=current.days_left,
                 km_left=current.km_left,
-                due_date=current.due_date.strftime("%d/%m/%Y"),
+                due_date=format_date(current.due_date, language),
                 due_km=current.due_km,
                 language=language,
             ),

@@ -19,6 +19,7 @@ Ningún aviso es crítico: son notificaciones normales.
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from datetime import date
 from typing import Any, Final
 
 from .telemetry import signals as s
@@ -164,20 +165,26 @@ def _texts(language: str) -> dict[str, str]:
 
 
 def format_number(value: float, language: str) -> str:
-    """Entero con separador de miles: ``2.000`` en español, ``2,000`` en inglés."""
-    text = f"{round(value):,}"
-    return text.replace(",", ".") if language_base(language) in ("es", "pt") else text
+    """Entero con separador de miles del idioma: ``2.000``, ``2,000``, ``2 000``."""
+    return f"{round(value):,}".replace(",", _texts(language)["thousands"])
 
 
 def ordinal(number: int, language: str) -> str:
-    """``2ª`` en español, ``2.ª`` en portugués y ``2nd`` en inglés (y demás)."""
-    if language_base(language) == "es":
-        return f"{number}ª"
-    if language_base(language) == "pt":
-        return f"{number}.ª"
-    if 10 <= number % 100 <= 20:
-        return f"{number}th"
-    return f"{number}{ENGLISH_SUFFIXES.get(number % 10, 'th')}"
+    """``2ª`` en español, ``2.ª`` en portugués, ``2nd`` en inglés...
+
+    El formato de cada idioma está en sus textos (clave ``ordinal``); el
+    inglés es el único con sufijos que cambian (1st, 2nd, 3rd).
+    """
+    if _texts(language) is TEXTS["en"]:
+        if 10 <= number % 100 <= 20:
+            return f"{number}th"
+        return f"{number}{ENGLISH_SUFFIXES.get(number % 10, 'th')}"
+    return _texts(language)["ordinal"].format(number=number)
+
+
+def format_date(value: date, language: str) -> str:
+    """Fecha corta con el formato del idioma (``10/03/2027``, ``10.03.2027``)."""
+    return value.strftime(_texts(language)["date_format"])
 
 
 def charge_text(alert: str, level: float | None, language: str) -> str:

@@ -9,7 +9,9 @@ idiomas/
 ├── idiomas.json   Qué idiomas hay, cuál es el base y cuáles usan los de otro
 ├── es.json        Español
 ├── en.json        Inglés (idioma base)
-└── pt.json        Portugués de Portugal
+├── pt.json        Portugués de Portugal
+├── it.json        Italiano
+└── pl.json        Polaco
 ```
 
 ## Qué hay en cada fichero
@@ -70,7 +72,9 @@ existe en el idioma base o si los datos entre llaves no coinciden.
 
 Los plazos de la ITV o el preaviso del seguro no son textos: son **normas de
 un país**. Están en `countries/countries.yaml` → `normas`, y se aplican según
-el país de la cuenta, no según el idioma. Ver
+el país de la cuenta, no según el idioma. Lo mismo el **módulo de ITV**: solo
+existe en los países con `itv: true` (hoy, España); un usuario con Home
+Assistant en italiano y cuenta española la tiene, en italiano. Ver
 [anadir-pais-vehiculo-idioma.md](anadir-pais-vehiculo-idioma.md).
 
 ## Glosario
@@ -78,25 +82,32 @@ el país de la cuenta, no según el idioma. Ver
 Para que varias personas traduzcan igual, cada idioma usa siempre la misma
 palabra para estas piezas. Ampliar la tabla al añadir un idioma.
 
-| Español | English | Português |
-|---|---|---|
-| maletero | boot | mala |
-| capó | bonnet | capô |
-| llanta | wheel | jante |
-| tapacubos | aero cover | tampão |
-| neumático | tyre | pneu |
-| ventanilla | window | janela |
-| testigo (del cuadro) | warning (light) | aviso (luz de aviso) |
-| luces de cruce / carretera / posición | dipped beam / main beam / side lights | médios / máximos / mínimos |
-| mantenimiento / revisión | servicing / service | manutenção / revisão |
-| ITV | ITV (roadworthiness test) | ITV (inspeção periódica) |
-| desistir (del seguro) | cancel | cancelar |
-| todo riesgo con franquicia | comprehensive with excess | danos próprios com franquia |
-| mando / pila del mando | key fob / key fob battery | chave / pilha da chave |
-| tarjeta (de los paneles) | card | cartão |
+| Español | English | Português | Italiano | Polski |
+|---|---|---|---|---|
+| maletero | boot | mala | bagagliaio | bagażnik |
+| capó | bonnet | capô | cofano | maska |
+| llanta | wheel | jante | cerchio | felga |
+| tapacubos | aero cover | tampão | copricerchio | kołpak |
+| neumático | tyre | pneu | pneumatico | opona |
+| ventanilla | window | janela | finestrino | szyba |
+| testigo (del cuadro) | warning (light) | aviso (luz de aviso) | spia | kontrolka |
+| luces de cruce / carretera / posición | dipped beam / main beam / side lights | médios / máximos / mínimos | anabbaglianti / abbaglianti / luci di posizione | światła mijania / drogowe / pozycyjne |
+| mantenimiento / revisión | servicing / service | manutenção / revisão | manutenzione / tagliando | serwis / przegląd |
+| ITV | ITV (roadworthiness test) | ITV (inspeção periódica) | ITV (revisione spagnola) | ITV (hiszpański przegląd techniczny) |
+| desistir (del seguro) | cancel | cancelar | disdire | wypowiedzieć |
+| todo riesgo con franquicia | comprehensive with excess | danos próprios com franquia | kasko con franchigia | AC z udziałem własnym |
+| mando / pila del mando | key fob / key fob battery | chave / pilha da chave | chiave / batteria della chiave | kluczyk / bateria kluczyka |
+| tarjeta (de los paneles) | card | cartão | scheda | karta |
 
 ## Revisores
 
-Cada idioma tiene un revisor en `idiomas.json`. Las traducciones al inglés y
-al portugués las hizo el proyecto y están pendientes de revisión por alguien
-nativo.
+Cada idioma tiene un revisor en `idiomas.json`. Las traducciones al inglés,
+portugués, italiano y polaco las hizo el proyecto y están pendientes de
+revisión por alguien nativo.
+
+## Formato de números, ordinales y fechas
+
+En la sección `avisos` de cada idioma hay tres claves que no son frases:
+`thousands` (separador de miles), `ordinal` (cómo se escribe "2.º") y
+`date_format` (formato de fecha corta). El inglés resuelve sus ordinales
+(1st, 2nd, 3rd) en el código.

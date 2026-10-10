@@ -11,5 +11,5 @@
   "issue_tracker": "https://github.com/manuelem1984/dec_deepal/issues",
   "loggers": ["custom_components.dec_deepal"],
   "requirements": [],
-  "version": "2.3.0b9"
+  "version": "2.3.0b10"
 }

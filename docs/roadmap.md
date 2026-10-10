@@ -42,10 +42,9 @@
 
 ## Pendiente de diseño
 
-- [ ] **Italiano y polaco.** Los idiomas ya se añaden con un fichero
-      (docs/idiomas.md). Falta decidir si también se aceptan cuentas de Italia
-      y Polonia (países nuevos, con sus normas de inspección) y encontrar un
-      revisor nativo de cada idioma.
+- [x] **Italiano y polaco**, solo la traducción (2.3.0b10). Pendiente:
+      revisor nativo de cada idioma. Las cuentas de Italia y Polonia (países
+      nuevos, con sus normas de inspección) no están previstas por ahora.
 - [ ] **Aceptar solo el S05** al añadir la cuenta (los demás modelos, "no
       compatible todavía"). Decidir qué pasa con el S05 PHEV.
 - [ ] **No enviar el clima con el coche encendido** (el servidor lo rechaza:

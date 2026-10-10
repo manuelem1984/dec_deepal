@@ -61,6 +61,9 @@ paises:
     # Correo primero: el SMS no llega en septiembre de 2026 (ver notas).
     metodos_login: [email, sms]
     verificado: true
+    # Módulo de ITV: solo se ofrece en los países que lo ponen a true. La ITV
+    # es la inspección española; otros países tienen la suya, con otros plazos.
+    itv: true
     # Normas del país (no dependen del idioma). Son las de por defecto; se
     # escriben para que sirvan de ejemplo al añadir otro país.
     normas:

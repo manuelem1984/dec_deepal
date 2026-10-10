@@ -36,7 +36,7 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
 
 from .api.errors import DeepalConnectionError, DeepalError, DeepalPinError, DeepalRateLimitError
-from .alert_rules import ALERT_TYPES, enabled_types, maintenance_text
+from .alert_rules import ALERT_ITV, ALERT_TYPES, enabled_types, format_date, maintenance_text
 from .const import (
     ARM_SECONDS_CHOICES,
     DEFAULT_ALERT_PERSISTENT,
@@ -154,18 +154,10 @@ class DecDeepalOptionsFlow(OptionsFlow):
         """
         if self.config_entry.state is not ConfigEntryState.LOADED:
             return self.async_abort(reason="not_loaded")
-        return self.async_show_menu(
-            step_id="init",
-            menu_options=[
-                "appearance",
-                "pin",
-                "alerts",
-                "maintenance",
-                "itv",
-                "insurance",
-                "advanced",
-            ],
-        )
+        menu = ["appearance", "pin", "alerts", "maintenance", "itv", "insurance", "advanced"]
+        if not self._runtime.alerts.itv_available:
+            menu.remove("itv")  # la ITV solo existe en los países que la tienen dada de alta
+        return self.async_show_menu(step_id="init", menu_options=menu)
 
     # ------------------------------------------------------------------
     # Apariencia
@@ -384,11 +376,16 @@ class DecDeepalOptionsFlow(OptionsFlow):
                     for kind in ALERT_TYPES
                     if kind
                     in enabled_types(stored.get(OPT_ALERT_TYPES), stored.get(OPT_ALERT_KNOWN))
+                    and (kind != ALERT_ITV or self._runtime.alerts.itv_available)
                 ],
             )
         ] = selector.SelectSelector(
             selector.SelectSelectorConfig(
-                options=list(ALERT_TYPES),
+                options=[
+                    kind
+                    for kind in ALERT_TYPES
+                    if kind != ALERT_ITV or self._runtime.alerts.itv_available
+                ],
                 translation_key="alert_type",
                 multiple=True,
                 mode=selector.SelectSelectorMode.LIST,
@@ -457,7 +454,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
                 number=current.number,
                 days_left=current.days_left,
                 km_left=current.km_left,
-                due_date=current.due_date.strftime("%d/%m/%Y"),
+                due_date=format_date(current.due_date, language),
                 due_km=current.due_km,
                 language=language,
             )

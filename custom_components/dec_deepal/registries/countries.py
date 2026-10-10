@@ -45,6 +45,8 @@ class Country:
     notes: str
     #: Normas del país (ITV, preaviso del seguro). Por defecto, las de España.
     rules: CountryRules = CountryRules()
+    #: ¿Se ofrece el módulo de ITV en este país? (hoy, solo España).
+    itv: bool = False
 
     def profile(self) -> CountryProfile:
         """Perfil mínimo que necesita el cliente de la API."""
@@ -172,6 +174,7 @@ def load_countries(path: Path) -> CountryRegistry:
             verified=bool(raw.get("verificado", False)),
             notes=str(raw.get("notas") or ""),
             rules=_rules(raw.get("normas"), f"{where}.normas"),
+            itv=bool(raw.get("itv", False)),
         )
 
     if not any(country.enabled for country in countries.values()):

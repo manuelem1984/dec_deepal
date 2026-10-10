@@ -215,7 +215,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     # (las de mantenimiento solo existen en los coches que lo tienen activado)
     # y se empieza a vigilar después.
     runtime.alerts = AlertManager(
-        hass, entry.entry_id, dict(options), runtime.vehicles, country.rules
+        hass,
+        entry.entry_id,
+        dict(options),
+        runtime.vehicles,
+        country.rules,
+        itv_available=country.itv,
     )
     await runtime.alerts.async_load()
 

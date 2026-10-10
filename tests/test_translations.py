@@ -18,6 +18,9 @@ from custom_components.dec_deepal import alert_rules as ar
 from custom_components.dec_deepal import textos_generados as generated
 from custom_components.dec_deepal.registries import load_all
 
+#: Idiomas con fichero propio.
+LANGUAGES = ("es", "en", "pt", "it", "pl")
+
 ROOT = Path(__file__).parents[1]
 INTEGRATION = ROOT / "custom_components" / "dec_deepal"
 
@@ -49,7 +52,7 @@ def test_generated_files_are_up_to_date(tool) -> None:  # noqa: ANN001
 
 def test_languages_and_fallbacks(tool) -> None:  # noqa: ANN001
     config, languages = tool.load()
-    assert config["base"] == "en" and set(languages) == {"es", "en", "pt"}
+    assert config["base"] == "en" and set(languages) == set(LANGUAGES)
     # El español (idioma del proyecto) y el base están siempre completos.
     gaps = tool.missing(config, languages)
     assert gaps["en"] == [] and gaps["es"] == []
@@ -57,6 +60,8 @@ def test_languages_and_fallbacks(tool) -> None:  # noqa: ANN001
     assert json.loads((INTEGRATION / "strings.json").read_text(encoding="utf-8")) == _translations("en")
     assert _translations("en")["entity"]["sensor"]["battery_level"]["name"] == "Battery"
     assert _translations("pt")["entity"]["binary_sensor"]["trunk"]["name"] == "Mala"
+    assert _translations("it")["entity"]["binary_sensor"]["trunk"]["name"] == "Bagagliaio"
+    assert _translations("pl")["entity"]["binary_sensor"]["trunk"]["name"] == "Bagażnik"
     assert generated.BASE_LANGUAGE == "en"
     assert generated.BORROWED_LANGUAGES == {"ca": "es", "eu": "es", "gl": "es"}
     for language in generated.BORROWED_LANGUAGES:
@@ -66,15 +71,15 @@ def test_languages_and_fallbacks(tool) -> None:  # noqa: ANN001
 def test_partial_language_is_filled_with_the_base(tool) -> None:  # noqa: ANN001
     """Un idioma a medias se publica igual: lo que falta sale en el idioma base."""
     config, languages = tool.load()
-    italian = {"avisos": {"charge_started": "Ricarica avviata{battery}."}, "tarjeta": {"comfort": "Comfort"}}
-    config = {**config, "idiomas": {**config["idiomas"], "it": {"nombre": "Italiano"}}}
-    languages = {**languages, "it": italian}
-    assert len(tool.missing(config, languages)["it"]) > 400
+    french = {"avisos": {"charge_started": "Recharge démarrée{battery}."}, "tarjeta": {"comfort": "Confort"}}
+    config = {**config, "idiomas": {**config["idiomas"], "fr": {"nombre": "Français"}}}
+    languages = {**languages, "fr": french}
+    assert len(tool.missing(config, languages)["fr"]) > 400
     files = tool.outputs(config, languages)
     text = files[INTEGRATION / "textos_generados.py"]
-    assert '"charge_started": "Ricarica avviata{battery}."' in text
-    assert json.loads(files[INTEGRATION / "translations" / "it.json"]) == _translations("en")
-    assert '"it": {' in files[INTEGRATION / "frontend_card" / "dec-deepal-card.js"]
+    assert '"charge_started": "Recharge démarrée{battery}."' in text
+    assert json.loads(files[INTEGRATION / "translations" / "fr.json"]) == _translations("en")
+    assert '"fr": {' in files[INTEGRATION / "frontend_card" / "dec-deepal-card.js"]
 
 
 def test_mistakes_are_reported(tool, monkeypatch, tmp_path) -> None:  # noqa: ANN001
@@ -103,6 +108,14 @@ def test_notifications_in_each_language() -> None:
     kwargs = {"number": 2, "days_left": 47, "km_left": 2000, "due_date": "10/03/2027", "due_km": 39500}
     assert ar.maintenance_text("remaining", language="pt", **kwargs) == "Faltam 2.000 km ou 47 dias para a 2.ª revisão."
     assert ar.maintenance_text("remaining", language="en-GB", **kwargs) == "2,000 km or 47 days left until the 2nd service."
+    # Italiano y polaco: cada uno con su formato de ordinal, de miles y de fecha.
+    assert ar.maintenance_text("remaining", language="it", **kwargs) == "Mancano 2.000 km o 47 giorni al 2º tagliando."
+    assert ar.maintenance_text("remaining", language="pl", **kwargs) == "Do 2. przeglądu: 2 000 km lub 47 dni."
+    from datetime import date
+
+    assert ar.format_date(date(2027, 3, 10), "pl") == "10.03.2027"
+    assert ar.format_date(date(2027, 3, 10), "es") == "10/03/2027"
+    assert ar.ordinal(3, "fr") == "3rd"  # sin traducir: como en inglés
     # Idioma sin traducción: el base (inglés), como el resto de Home Assistant...
     assert ar.charge_text(ar.ALERT_CHARGE_STARTED, None, "fr") == "Charging started."
     # ...salvo los prestados: catalán, gallego y euskera se muestran en español.
@@ -114,7 +127,7 @@ def test_notifications_in_each_language() -> None:
 def test_catalogue_names_in_every_language() -> None:
     plan = load_all(INTEGRATION).vehicles.get("s05_2024").maintenance
     for operation in plan.operations:
-        assert set(operation.names) == {"es", "en", "pt"}, operation.names
+        assert set(operation.names) == set(LANGUAGES), operation.names
     assert plan.operations_for(2, "max", "en")[1] == "Tyres (inspection and adjustment)"
     assert "travões" in " ".join(plan.operations_for(2, "max", "pt"))
     assert plan.operations_for(1, "max", "fr") == plan.operations_for(1, "max", "en")

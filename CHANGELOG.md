@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.3.0b10] — 2026-10-10
+
+### Añadido
+
+- **Idiomas: italiano y polaco.** Solo la traducción: integración, avisos al
+  móvil, tarjeta y operaciones de mantenimiento. Pendientes de revisión por
+  alguien nativo. (Las cuentas siguen siendo las de España.)
+- Los avisos usan el formato de cada idioma para los números (`2.000`,
+  `2 000`), los ordinales (`2ª`, `2º`, `2.`) y las fechas (`10/03/2027`,
+  `10.03.2027`).
+
+### Cambiado
+
+- **El módulo de ITV es solo para España.** Depende del país de la cuenta, no
+  del idioma: en un país sin ITV dada de alta no aparecen el apartado de
+  Configurar, las entidades, los avisos ni la opción de la tarjeta. Hoy solo
+  existe España, así que para los usuarios actuales no cambia nada.
+
 ## [2.3.0b9] — 2026-10-10
 
 Reorganización interna de los idiomas. **Para quien usa la integración no

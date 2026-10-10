@@ -53,14 +53,18 @@ async def test_manual_link_for_the_card(hass: HomeAssistant, hass_client) -> Non
     # --- Coche con manual en el catálogo ------------------------------------------
     response = await client.get(f"/api/dec_deepal/manual_info/{car1.id}")
     assert response.status == 200
-    assert await response.json() == {"available": True, "url": s05.manual_url}
+    assert await response.json() == {"available": True, "url": s05.manual_url, "itv": True}
 
     # --- Enlace cambiado en Configurar → Avanzado ---------------------------------------
     hass.config_entries.async_update_entry(entry, options={OPT_MANUAL_URLS: {"s05_2024": OTHER_URL}})
     response = await client.get(f"/api/dec_deepal/manual_info/{car1.id}")
-    assert await response.json() == {"available": True, "url": OTHER_URL}
+    assert await response.json() == {"available": True, "url": OTHER_URL, "itv": True}
 
     # --- Sin manual (modelo genérico) y dispositivo desconocido -----------------------------
     response = await client.get(f"/api/dec_deepal/manual_info/{car2.id}")
-    assert await response.json() == {"available": False, "url": None}
+    assert await response.json() == {"available": False, "url": None, "itv": True}
+    # Un país sin módulo de ITV: la tarjeta lo sabe y oculta la opción.
+    entry.runtime_data.alerts = SimpleNamespace(itv_available=False)
+    response = await client.get(f"/api/dec_deepal/manual_info/{car1.id}")
+    assert (await response.json())["itv"] is False
     assert (await client.get("/api/dec_deepal/manual_info/no-existe")).status == 404

@@ -115,6 +115,10 @@ Los plazos no dependen del idioma sino del país de la cuenta. En
 | `itv_reducida_cada_meses` | Intervalo reducido | 12 |
 | `seguro_preaviso_dias` | Días de preaviso para no renovar el seguro | 30 |
 
-Lo que no se ponga vale lo mismo que en España. Ojo: los textos que explican
+Lo que no se ponga vale lo mismo que en España.
+
+Además, `itv: true` activa el **módulo de ITV** en ese país (apartado de
+Configurar, entidades, avisos y opción de la tarjeta). Sin esa línea, el país
+no tiene ITV. Hoy solo la lleva España. Ojo: los textos que explican
 la regla al usuario ("Primera ITV a los 4 años...") describen la española; al
 añadir un país con otra norma habrá que adaptarlos.

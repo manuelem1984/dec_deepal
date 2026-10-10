@@ -36,7 +36,10 @@ def test_itv_rules_come_from_the_country() -> None:
     from custom_components.dec_deepal.registries import load_all
 
     integration = Path(__file__).parents[1] / "custom_components" / "dec_deepal"
-    spain = load_all(integration).countries.get("es").rules
+    country = load_all(integration).countries.get("es")
+    # El módulo de ITV solo se ofrece en los países que lo tienen dado de alta.
+    assert country.itv is True
+    spain = country.rules
     assert spain == doc.DEFAULT_RULES
     assert (spain.itv_first_months, spain.itv_interval_months, spain.insurance_notice_days) == (48, 24, 30)
     # Un país con inspección a los 3 años y anual desde entonces.

@@ -39,7 +39,10 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "days": "{value} días",
         "day": "1 día",
         "or": " o ",
-        "and": " y "
+        "and": " y ",
+        "thousands": ".",
+        "ordinal": "{number}ª",
+        "date_format": "%d/%m/%Y"
     },
     "en": {
         "charge_started": "Charging started{battery}.",
@@ -62,7 +65,10 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "days": "{value} days",
         "day": "1 day",
         "or": " or ",
-        "and": " and "
+        "and": " and ",
+        "thousands": ",",
+        "ordinal": "{number}",
+        "date_format": "%d/%m/%Y"
     },
     "pt": {
         "charge_started": "Carregamento iniciado{battery}.",
@@ -85,7 +91,62 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "days": "{value} dias",
         "day": "1 dia",
         "or": " ou ",
-        "and": " e "
+        "and": " e ",
+        "thousands": ".",
+        "ordinal": "{number}.ª",
+        "date_format": "%d/%m/%Y"
+    },
+    "it": {
+        "charge_started": "Ricarica avviata{battery}.",
+        "charge_interrupted": "Ricarica interrotta{battery}.",
+        "charge_finished": "Ricarica terminata{battery}.",
+        "battery": " (batteria al {level} %)",
+        "warnings": "Spia accesa: {names}.",
+        "tires": "Avviso pneumatici: {names}.",
+        "key_battery": "Batteria della chiave scarica. Sostituiscila con una CR2032.",
+        "maintenance_remaining": "Mancano {parts} al {ordinal} tagliando.",
+        "maintenance_overdue": "Manutenzione scaduta: il {ordinal} tagliando era previsto per il {date} o a {km} km.",
+        "itv_remaining": "Mancano {days} all'ITV (limite: {date}).",
+        "itv_today": "Oggi è l'ultimo giorno per fare l'ITV.",
+        "itv_overdue": "ITV scaduta dal {date}.",
+        "insurance_cancel": "Assicurazione: mancano {days} per poter disdire (fino al {deadline}). Si rinnova il {renewal}.",
+        "insurance_last_day": "Assicurazione: oggi è l'ultimo giorno per avvisare {company} se non vuoi rinnovare.",
+        "insurance_renewed": "Assicurazione rinnovata oggi. Prossimo rinnovo: {renewal}.",
+        "your_insurer": "la tua compagnia",
+        "km": "{value} km",
+        "days": "{value} giorni",
+        "day": "1 giorno",
+        "or": " o ",
+        "and": " e ",
+        "thousands": ".",
+        "ordinal": "{number}º",
+        "date_format": "%d/%m/%Y"
+    },
+    "pl": {
+        "charge_started": "Rozpoczęto ładowanie{battery}.",
+        "charge_interrupted": "Przerwano ładowanie{battery}.",
+        "charge_finished": "Zakończono ładowanie{battery}.",
+        "battery": " (akumulator: {level} %)",
+        "warnings": "Zapaliła się kontrolka: {names}.",
+        "tires": "Ostrzeżenie o oponach: {names}.",
+        "key_battery": "Słaba bateria kluczyka. Wymień ją na CR2032.",
+        "maintenance_remaining": "Do {ordinal} przeglądu: {parts}.",
+        "maintenance_overdue": "Serwis po terminie: {ordinal} przegląd przypadał {date} lub przy {km} km.",
+        "itv_remaining": "Do ITV: {days} (termin: {date}).",
+        "itv_today": "Dziś jest ostatni dzień na wykonanie ITV.",
+        "itv_overdue": "ITV po terminie od {date}.",
+        "insurance_cancel": "Ubezpieczenie: na wypowiedzenie zostało {days} (do {deadline}). Odnowienie: {renewal}.",
+        "insurance_last_day": "Ubezpieczenie: dziś ostatni dzień, aby powiadomić ({company}), jeśli nie chcesz przedłużać.",
+        "insurance_renewed": "Ubezpieczenie odnowione dzisiaj. Następne odnowienie: {renewal}.",
+        "your_insurer": "Twój ubezpieczyciel",
+        "km": "{value} km",
+        "days": "{value} dni",
+        "day": "1 dzień",
+        "or": " lub ",
+        "and": " i ",
+        "thousands": " ",
+        "ordinal": "{number}.",
+        "date_format": "%d.%m.%Y"
     }
 }
 #: Nombres del catálogo: ``{idioma: {clave: texto}}``.
@@ -122,5 +183,27 @@ CATALOGUE_TEXTS: Final[dict[str, dict[str, str]]] = {
         "operacion_coolant": "Substituição do líquido de refrigeração (a cada 3 anos ou 80.000 km)",
         "operacion_front_gear_oil": "Substituição do óleo do redutor dianteiro (a cada 3 anos ou 60.000 km)",
         "operacion_rear_gear_oil": "Substituição do óleo do redutor traseiro (a cada 5 anos ou 100.000 km)"
+    },
+    "it": {
+        "operacion_general_inspection": "Ispezione generale (propulsione, batteria, alta tensione, freni e sterzo)",
+        "operacion_tyres": "Pneumatici (ispezione e regolazione)",
+        "operacion_cabin_filter": "Filtro dell'aria condizionata (controllare o sostituire)",
+        "operacion_condenser_cleaning": "Pulizia del condensatore e dell'evaporatore",
+        "operacion_electrics_inspection": "Ispezione di impianto elettrico, aria condizionata e tubi di raffreddamento",
+        "operacion_brake_fluid": "Sostituzione del liquido dei freni (ogni 2 anni o 40.000 km)",
+        "operacion_coolant": "Sostituzione del liquido di raffreddamento (ogni 3 anni o 80.000 km)",
+        "operacion_front_gear_oil": "Sostituzione dell'olio del riduttore anteriore (ogni 3 anni o 60.000 km)",
+        "operacion_rear_gear_oil": "Sostituzione dell'olio del riduttore posteriore (ogni 5 anni o 100.000 km)"
+    },
+    "pl": {
+        "operacion_general_inspection": "Przegląd ogólny (napęd, akumulator, wysokie napięcie, hamulce i układ kierowniczy)",
+        "operacion_tyres": "Opony (kontrola i regulacja)",
+        "operacion_cabin_filter": "Filtr kabinowy (sprawdzić lub wymienić)",
+        "operacion_condenser_cleaning": "Czyszczenie skraplacza i parownika",
+        "operacion_electrics_inspection": "Kontrola instalacji elektrycznej, klimatyzacji i przewodów chłodzenia",
+        "operacion_brake_fluid": "Wymiana płynu hamulcowego (co 2 lata lub 40 000 km)",
+        "operacion_coolant": "Wymiana płynu chłodzącego (co 3 lata lub 80 000 km)",
+        "operacion_front_gear_oil": "Wymiana oleju przedniej przekładni redukcyjnej (co 3 lata lub 60 000 km)",
+        "operacion_rear_gear_oil": "Wymiana oleju tylnej przekładni redukcyjnej (co 5 lat lub 100 000 km)"
     }
 }

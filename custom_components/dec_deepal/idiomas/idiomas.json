@@ -1,9 +1,26 @@
 {
   "base": "en",
   "idiomas": {
-    "es": { "nombre": "Español", "revisor": "Comunidad Deepal España" },
-    "en": { "nombre": "English", "revisor": "" },
-    "pt": { "nombre": "Português (Portugal)", "revisor": "" }
+    "es": {
+      "nombre": "Español",
+      "revisor": "Comunidad Deepal España"
+    },
+    "en": {
+      "nombre": "English",
+      "revisor": ""
+    },
+    "pt": {
+      "nombre": "Português (Portugal)",
+      "revisor": ""
+    },
+    "it": {
+      "nombre": "Italiano",
+      "revisor": ""
+    },
+    "pl": {
+      "nombre": "Polski",
+      "revisor": ""
+    }
   },
   "prestados": {
     "ca": "es",

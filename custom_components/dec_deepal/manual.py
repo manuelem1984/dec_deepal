@@ -16,7 +16,8 @@ Qué enlace se usa (:func:`manual_url`):
 Vista, solo para usuarios con sesión en Home Assistant:
 
 - ``GET /api/dec_deepal/manual_info/<device_id>`` →
-  ``{"available": bool, "url": str | null}``.
+  ``{"available": bool, "url": str | null, "itv": bool}`` (``itv``: si el país
+  de la cuenta tiene módulo de ITV).
 
 En este módulo está también la otra vista que usa la tarjeta para datos que
 no deben ir a ninguna entidad (quedarían en el historial y a la vista de
@@ -72,12 +73,6 @@ def _find(hass: HomeAssistant, device_id: str):  # noqa: ANN202
     raise web.HTTPNotFound
 
 
-def _device_manual_url(hass: HomeAssistant, device_id: str) -> str | None:
-    """Enlace del manual del coche de un dispositivo."""
-    entry, vehicle = _find(hass, device_id)
-    return manual_url(entry.options, vehicle)
-
-
 class ManualInfoView(HomeAssistantView):
     """``GET /api/dec_deepal/manual_info/<device_id>`` → enlace del manual."""
 
@@ -86,8 +81,17 @@ class ManualInfoView(HomeAssistantView):
 
     async def get(self, request: web.Request, device_id: str) -> web.Response:
         """Dice a la tarjeta si hay manual y qué enlace abrir."""
-        url = _device_manual_url(request.app[KEY_HASS], device_id)
-        return self.json({"available": url is not None, "url": url})
+        entry, vehicle = _find(request.app[KEY_HASS], device_id)
+        url = manual_url(entry.options, vehicle)
+        alerts = getattr(entry.runtime_data, "alerts", None)
+        return self.json(
+            {
+                "available": url is not None,
+                "url": url,
+                # ¿Ofrece la ITV el país de la cuenta? (la tarjeta oculta la opción si no).
+                "itv": bool(getattr(alerts, "itv_available", True)),
+            }
+        )
 
 
 class InsuranceInfoView(HomeAssistantView):
