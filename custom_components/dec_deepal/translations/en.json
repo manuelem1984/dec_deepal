@@ -237,13 +237,15 @@
           "scan_minutes": "Reading interval",
           "wake": "Wake the car when needed",
           "debug": "Debug mode",
-          "manual_url": "BEV manual"
+          "manual_url": "BEV manual",
+          "manual_url_phev": "PHEV manual"
         },
         "data_description": {
           "manual_url": "Link to the owner's manual (PDF) of the electric car (BEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again.",
           "scan_minutes": "How often the car's data is read. Very low values can make Deepal limit the account.",
           "wake": "When you press \"Refresh vehicle data\" and before door/window/boot commands, if the data is more than 2 minutes old, the car is woken up and its report is awaited. At most once every 5 minutes, and never on automatic readings, to protect the 12 V battery.",
-          "debug": "Stores full requests and responses (without personal data) in the diagnostics and enables DEBUG messages in the log."
+          "debug": "Stores full requests and responses (without personal data) in the diagnostics and enables DEBUG messages in the log.",
+          "manual_url_phev": "Link to the owner's manual (PDF) of the plug-in hybrid car (PHEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again."
         }
       },
       "data": {

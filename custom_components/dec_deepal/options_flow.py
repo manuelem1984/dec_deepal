@@ -85,6 +85,7 @@ from .documents import (
     itv_calculated,
 )
 from .maintenance import MaintenanceRecord
+from .registries.vehicles import FEATURE_FUEL
 from .manual import is_valid_url
 from . import vehicle_data as vd
 from .runtime import DecDeepalRuntime
@@ -96,6 +97,7 @@ _VEHICLE = "vehicle"
 _ALL_VEHICLES = "all_vehicles"
 #: Campo "Enlace del manual" de Avanzado (se guarda en OPT_MANUAL_URLS).
 _MANUAL_URL = "manual_url"
+_MANUAL_URL_PHEV = "manual_url_phev"
 
 # Campos de los formularios de mantenimiento (no son opciones guardadas).
 _MT_ENABLED = "maintenance_enabled"
@@ -1005,13 +1007,15 @@ class DecDeepalOptionsFlow(OptionsFlow):
             if vehicle.configured
         }
         model = next(iter(models.values())) if len(models) == 1 else None
+        # El campo se llama "Manual BEV" o "Manual PHEV" según el coche.
+        field = _MANUAL_URL_PHEV if model is not None and model.has(FEATURE_FUEL) else _MANUAL_URL
         manual_urls: dict[str, str] = dict(options.get(OPT_MANUAL_URLS, {}))
         errors: dict[str, str] = {}
 
         if user_input is not None:
-            url = str(user_input.get(_MANUAL_URL) or "").strip()
+            url = str(user_input.get(field) or "").strip()
             if url and not is_valid_url(url):
-                errors[_MANUAL_URL] = "invalid_url"
+                errors[field] = "invalid_url"
             else:
                 if model is not None:
                     if url and url != model.manual_url:
@@ -1031,7 +1035,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
         if model is not None:
             current = manual_urls.get(model.id) or model.manual_url
             manual_field[
-                vol.Optional(_MANUAL_URL, description={"suggested_value": current})
+                vol.Optional(field, description={"suggested_value": current})
             ] = selector.TextSelector(
                 selector.TextSelectorConfig(type=selector.TextSelectorType.URL)
             )

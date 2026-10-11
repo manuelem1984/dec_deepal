@@ -103,8 +103,23 @@ def test_vehicle_sheets(registries) -> None:  # noqa: ANN001
     assert phev.photo_for("limited_edition", "andromeda_blue") == ev.photo_for("max", "andromeda_blue")
     assert set(phev.trims) == {"pro", "limited_edition"}  # no hay 4WD
     assert phev.sheet("limited_edition")["verificada"] is False
-    # Lo que no se conoce del PHEV no se inventa: sin manual ni operaciones.
-    assert phev.manual_url == "" and phev.maintenance.operations == ()
+    # Manual y plan de mantenimiento propios (manual oficial del PHEV, julio de 2026).
+    assert phev.manual_url.endswith("S05_PHEV_Manual_de_Usuario_ES-compressed.pdf")
+    assert phev.manual_url != ev.manual_url
+    plan = phev.maintenance
+    assert (plan.interval_km, plan.interval_months) == (20000, 12)
+    first, second, third = (plan.operations_for(number, "pro", "es") for number in (1, 2, 3))
+    # El motor de gasolina: aceite y filtro en todas; bujías y filtro de aire cada dos.
+    assert any("aceite del motor" in name for name in first)
+    assert not any("bujías" in name for name in first)
+    assert any("bujías" in name for name in second) and any("filtro de aire del motor" in name for name in second)
+    assert any("líquido de frenos" in name for name in second)
+    # Tracción delantera: reductor delantero en todas las versiones, y no hay trasero.
+    assert any("reductor delantero" in name for name in third)
+    assert any("reductor delantero" in name for name in plan.operations_for(3, "limited_edition", "es"))
+    assert not any("reductor trasero" in name for number in range(1, 11) for name in plan.operations_for(number, "pro", "es"))
+    # El EV sigue sin nada del motor de gasolina.
+    assert not any("motor" in name for number in range(1, 6) for name in ev.maintenance.operations_for(number, "max", "es"))
 
     # Testigos que no avisan: salen de la ficha (y son señales que existen).
     from custom_components.dec_deepal.alert_rules import PROBLEM_SIGNALS

@@ -237,13 +237,15 @@
           "scan_minutes": "Intervallo di lettura",
           "wake": "Risveglia l'auto quando serve",
           "debug": "Modalità debug",
-          "manual_url": "Manuale BEV"
+          "manual_url": "Manuale BEV",
+          "manual_url_phev": "Manuale PHEV"
         },
         "data_description": {
           "manual_url": "Link al manuale d'uso (PDF) dell'auto elettrica (BEV). La scheda lo apre nel browser da Altro → Manuale. È preimpostato quello ufficiale; se lo lasci vuoto, torna a essere usato quello.",
           "scan_minutes": "Ogni quanto vengono letti i dati dell'auto. Valori molto bassi possono portare Deepal a limitare l'account.",
           "wake": "Quando premi \"Aggiorna dati del veicolo\" e prima di porte/finestrini/bagagliaio, se i dati hanno più di 2 minuti, l'auto viene risvegliata e si attende il suo rapporto. Al massimo una volta ogni 5 minuti, e mai nelle letture automatiche, per preservare la batteria da 12 V.",
-          "debug": "Salva richieste e risposte complete (senza dati personali) nella diagnostica e attiva i messaggi DEBUG nel registro."
+          "debug": "Salva richieste e risposte complete (senza dati personali) nella diagnostica e attiva i messaggi DEBUG nel registro.",
+          "manual_url_phev": "Link al manuale d'uso (PDF) dell'auto ibrida plug-in (PHEV). La scheda lo apre nel browser da Altro → Manuale. È preimpostato quello ufficiale; se lo lasci vuoto, torna a essere usato quello."
         }
       },
       "data": {

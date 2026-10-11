@@ -238,13 +238,15 @@
             "scan_minutes": "Intervalo de leitura",
             "wake": "Acordar o carro quando for preciso",
             "debug": "Modo de depuração",
-            "manual_url": "Manual BEV"
+            "manual_url": "Manual BEV",
+            "manual_url_phev": "Manual PHEV"
           },
           "data_description": {
             "manual_url": "Ligação para o manual do utilizador (PDF) do carro elétrico (BEV). O cartão abre-o no navegador em Outros → Manual. Vem com o oficial; se deixar vazio, volta a usar-se esse.",
             "scan_minutes": "De quanto em quanto tempo se leem os dados do carro. Valores muito baixos podem levar a Deepal a limitar a conta.",
             "wake": "Ao carregar em \"Atualizar dados do veículo\" e antes de portas/janelas/mala, se os dados tiverem mais de 2 minutos, o carro é acordado e espera-se pelo seu relatório. No máximo uma vez a cada 5 minutos, e nunca nas leituras automáticas, para poupar a bateria de 12 V.",
-            "debug": "Guarda pedidos e respostas completos (sem dados pessoais) nos diagnósticos e ativa as mensagens DEBUG no registo."
+            "debug": "Guarda pedidos e respostas completos (sem dados pessoais) nos diagnósticos e ativa as mensagens DEBUG no registo.",
+            "manual_url_phev": "Ligação para o manual do utilizador (PDF) do carro híbrido plug-in (PHEV). O cartão abre-o no navegador em Outros → Manual. Vem com o oficial; se deixar vazio, volta a usar-se esse."
           }
         },
         "data": {
@@ -996,6 +998,10 @@
     "operacion_brake_fluid": "Substituição do líquido dos travões (a cada 2 anos ou 40.000 km)",
     "operacion_coolant": "Substituição do líquido de refrigeração (a cada 3 anos ou 80.000 km)",
     "operacion_front_gear_oil": "Substituição do óleo do redutor dianteiro (a cada 3 anos ou 60.000 km)",
-    "operacion_rear_gear_oil": "Substituição do óleo do redutor traseiro (a cada 5 anos ou 100.000 km)"
+    "operacion_rear_gear_oil": "Substituição do óleo do redutor traseiro (a cada 5 anos ou 100.000 km)",
+    "operacion_engine_oil": "Substituição do óleo do motor e do filtro de óleo",
+    "operacion_fuel_system": "Inspeção do sistema de combustível (depósito, tubagens, canister e corpo do acelerador)",
+    "operacion_spark_plugs": "Substituição das velas de ignição (a cada 2 anos ou 40.000 km)",
+    "operacion_engine_air_filter": "Substituição do filtro de ar do motor (a cada 2 anos ou 40.000 km)"
   }
 }

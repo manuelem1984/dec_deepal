@@ -236,9 +236,10 @@ modelos:
   # --- Deepal S05 híbrido enchufable (PHEV) -----------------------------------
   # Equipamiento según el catálogo oficial (2026): dos versiones, Pro y
   # Limited Edition (equivale al Max), las dos de tracción delantera y con
-  # llanta de 18". No hay 4WD. Nadie del proyecto tiene uno todavía: lo que
-  # el coche envía de verdad, y lo marcado con (?), hay que confirmarlo con
-  # el diagnóstico de un PHEV.
+  # la misma llanta de 18" que el EV Pro. No hay 4WD. Manual y plan de
+  # mantenimiento: los oficiales (manual de usuario, julio de 2026). Nadie
+  # del proyecto tiene uno todavía: lo que el coche envía de verdad, y lo
+  # marcado con (?), hay que confirmarlo con el diagnóstico de un PHEV.
   s05_phev:
     como: s05_2024
     nombre: Deepal S05 PHEV
@@ -251,15 +252,35 @@ modelos:
       codigo_serie: []
     funciones:
       combustible: true              # depósito y autonomía de gasolina (sin entidades todavía)
-    # Su manual es otro y aún no hay enlace oficial: el usuario puede poner el
-    # suyo en Configurar → Avanzado.
-    manual: ""
-    # (?) El plan del PHEV lleva además el motor de gasolina (aceite, filtros,
-    # bujías) y no lo conocemos: se deja solo el intervalo, sin operaciones.
+    # Manual del S05 híbrido enchufable (PHEV) para España, en la web de Changan Europe.
+    manual: "https://www.changaneurope.com/Portals/8/adam/ContentBlocks/lrfUbgl1KEGWVm6dnA8VPQ/Path/202607_S05_PHEV_Manual_de_Usuario_ES-compressed.pdf"
+    # Manual de usuario del S05 PHEV (España, julio de 2026), "Tabla de
+    # Mantenimiento Periódico": revisión cada 20.000 km o 12 meses. Como el EV,
+    # más el motor de gasolina; la transmisión eléctrica va delante (no hay
+    # reductor trasero). Las operaciones con intervalo propio se colocan en la
+    # revisión en la que se cumple su plazo en años.
     mantenimiento:
       intervalo_km: 20000
       intervalo_meses: 12
-      operaciones: []
+      operaciones:
+        - clave: general_inspection
+        - clave: engine_oil              # aceite y filtro: en todas las revisiones
+        - clave: fuel_system
+        - clave: tyres
+        - clave: cabin_filter
+        - clave: condenser_cleaning
+        - clave: electrics_inspection
+          cada: 2
+        - clave: brake_fluid
+          cada: 2
+        - clave: spark_plugs
+          cada: 2
+        - clave: engine_air_filter
+          cada: 2
+        - clave: coolant
+          cada: 3
+        - clave: front_gear_oil
+          cada: 3
     versiones:
       pro:
         nombre: Pro
@@ -279,7 +300,7 @@ modelos:
           Versión alta (el "Max" del PHEV): asientos calefactados y
           ventilados, volante calefactado y portón eléctrico.
         grupo_foto: max
-        llanta: pro                  # también 18" (?: no sabemos si es el mismo dibujo)
+        llanta: pro                  # la misma de 18" que los Pro
 
   generico:
     nombre: Deepal (sin configurar)

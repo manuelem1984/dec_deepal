@@ -238,13 +238,15 @@
             "scan_minutes": "Intervalo de lectura",
             "wake": "Despertar el coche cuando haga falta",
             "debug": "Modo depuración",
-            "manual_url": "Manual BEV"
+            "manual_url": "Manual BEV",
+            "manual_url_phev": "Manual PHEV"
           },
           "data_description": {
             "manual_url": "Enlace al manual de usuario (PDF) del coche eléctrico (BEV). La tarjeta lo abre en el navegador desde Otros → Manual. Viene con el oficial; si lo dejas vacío, se vuelve a usar ese.",
             "scan_minutes": "Cada cuánto se leen los datos del coche. Valores muy bajos pueden hacer que Deepal limite la cuenta.",
             "wake": "Al pulsar \"Actualizar datos del vehículo\" y antes de puertas/ventanillas/maletero, si los datos tienen más de 2 minutos, se despierta el coche y se espera su informe. Como mucho una vez cada 5 minutos, y nunca en las lecturas automáticas, para cuidar la batería de 12 V.",
-            "debug": "Guarda peticiones y respuestas completas (sin datos personales) en los diagnósticos y activa los mensajes DEBUG en el registro."
+            "debug": "Guarda peticiones y respuestas completas (sin datos personales) en los diagnósticos y activa los mensajes DEBUG en el registro.",
+            "manual_url_phev": "Enlace al manual de usuario (PDF) del coche híbrido enchufable (PHEV). La tarjeta lo abre en el navegador desde Otros → Manual. Viene con el oficial; si lo dejas vacío, se vuelve a usar ese."
           }
         },
         "data": {
@@ -996,6 +998,10 @@
     "operacion_brake_fluid": "Cambio del líquido de frenos (cada 2 años o 40.000 km)",
     "operacion_coolant": "Cambio del líquido refrigerante (cada 3 años u 80.000 km)",
     "operacion_front_gear_oil": "Cambio del aceite del reductor delantero (cada 3 años o 60.000 km)",
-    "operacion_rear_gear_oil": "Cambio del aceite del reductor trasero (cada 5 años o 100.000 km)"
+    "operacion_rear_gear_oil": "Cambio del aceite del reductor trasero (cada 5 años o 100.000 km)",
+    "operacion_engine_oil": "Cambio del aceite del motor y del filtro de aceite",
+    "operacion_fuel_system": "Inspección del sistema de combustible (depósito, tuberías, cánister y cuerpo de aceleración)",
+    "operacion_spark_plugs": "Cambio de las bujías (cada 2 años o 40.000 km)",
+    "operacion_engine_air_filter": "Cambio del filtro de aire del motor (cada 2 años o 40.000 km)"
   }
 }

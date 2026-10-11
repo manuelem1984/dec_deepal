@@ -116,7 +116,7 @@ tomado del manual de usuario del S05 para España:
 |---|---|
 | Todas | Inspección general, neumáticos, filtro del aire acondicionado, limpieza del condensador y del evaporador |
 | 2.ª, 4.ª, 6.ª... | Además: inspección de electricidad, aire acondicionado y mangueras; líquido de frenos (cada 2 años o 40.000 km) |
-| 3.ª, 6.ª, 9.ª... | Además: líquido refrigerante (cada 3 años u 80.000 km). En el Max AWD, aceite del reductor delantero (cada 3 años o 60.000 km) |
+| 3.ª, 6.ª, 9.ª... | Además: líquido refrigerante (cada 3 años u 80.000 km). En el 4WD Max, aceite del reductor delantero (cada 3 años o 60.000 km) |
 | 5.ª, 10.ª... | Además: aceite del reductor trasero (cada 5 años o 100.000 km) |
 
 Las operaciones con intervalo propio se colocan en la revisión en la que se

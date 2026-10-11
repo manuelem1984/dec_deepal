@@ -3,6 +3,22 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.4.0b4] — 2026-10-11
+
+### Añadido
+
+- **S05 PHEV: manual y plan de mantenimiento propios**, del manual oficial
+  (julio de 2026). Revisión cada 20.000 km o 12 meses, con lo del EV más el
+  motor de gasolina: aceite y filtro de aceite e inspección del sistema de
+  combustible en todas; bujías y filtro de aire del motor cada dos; aceite
+  del reductor delantero cada tres. En Configurar → Avanzado, su enlace se
+  llama «Manual PHEV».
+
+### Cambiado
+
+- Confirmado: el PHEV (Pro y Limited Edition) lleva la misma llanta de 18"
+  que el EV Pro.
+
 ## [2.4.0b3] — 2026-10-11
 
 ### Añadido

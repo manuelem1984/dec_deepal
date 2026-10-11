@@ -237,13 +237,15 @@
           "scan_minutes": "Interwał odczytu",
           "wake": "Budź samochód, gdy to potrzebne",
           "debug": "Tryb debugowania",
-          "manual_url": "Instrukcja BEV"
+          "manual_url": "Instrukcja BEV",
+          "manual_url_phev": "Instrukcja PHEV"
         },
         "data_description": {
           "manual_url": "Link do instrukcji obsługi (PDF) samochodu elektrycznego (BEV). Karta otwiera go w przeglądarce z Więcej → Instrukcja. Domyślnie ustawiony jest oficjalny; jeśli zostawisz pole puste, znów będzie używany ten.",
           "scan_minutes": "Jak często odczytywane są dane samochodu. Bardzo niskie wartości mogą sprawić, że Deepal ograniczy konto.",
           "wake": "Po naciśnięciu „Odśwież dane pojazdu” oraz przed poleceniami drzwi/szyb/bagażnika, jeśli dane mają ponad 2 minuty, samochód jest budzony i czeka się na jego raport. Najwyżej raz na 5 minut i nigdy przy automatycznych odczytach, aby oszczędzać akumulator 12 V.",
-          "debug": "Zapisuje pełne żądania i odpowiedzi (bez danych osobowych) w diagnostyce i włącza komunikaty DEBUG w dzienniku."
+          "debug": "Zapisuje pełne żądania i odpowiedzi (bez danych osobowych) w diagnostyce i włącza komunikaty DEBUG w dzienniku.",
+          "manual_url_phev": "Link do instrukcji obsługi (PDF) samochodu hybrydowego plug-in (PHEV). Karta otwiera go w przeglądarce z Więcej → Instrukcja. Domyślnie ustawiony jest oficjalny; jeśli zostawisz pole puste, znów będzie używany ten."
         }
       },
       "data": {

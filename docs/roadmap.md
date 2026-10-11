@@ -15,10 +15,9 @@
       "avisa solo si sigue encendido X minutos".
 - [ ] Pendiente: verificar con el diagnóstico de un coche real las fichas
       del EV RWD Pro, EV 4WD Max y PHEV (hoy salen del catálogo oficial). Del
-      PHEV faltan además el manual, el plan de mantenimiento, las entidades
-      de combustible, el dibujo de su llanta de 18" (se usa la del EV Pro),
-      los raíles de techo en las vistas y el nombre "Manual BEV" de
-      Configurar → Avanzado (que para él no vale).
+      PHEV faltan además las entidades de combustible (depósito de 51 L:
+      nivel y autonomía de gasolina; hay que ver cómo las envía el coche) y
+      los raíles de techo en las vistas.
 - [ ] **Un Pro:** el dispositivo no tiene asientos, volante ni mando del
       maletero; en la tarjeta, Confort solo trae el clima y Maletero avisa de
       que se abre a mano.

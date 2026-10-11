@@ -71,9 +71,11 @@ versión: dice qué ficha se le aplica (`vehiculos → <coche> → ficha`), qué
 funciones declara el servidor (`capacidades`) y qué datos envía de verdad.
 Con eso se corrige la ficha y se marca `verificada: true`.
 
-Del PHEV, lo que no está en el catálogo no se ha inventado: no tiene enlace
-al manual ni operaciones de mantenimiento (su plan lleva el motor de gasolina
-y no lo conocemos), y sus datos de combustible aún no tienen entidades.
+El PHEV lleva su propio manual y su plan de mantenimiento (manual oficial,
+julio de 2026): el del EV más el motor de gasolina (aceite y filtro en cada
+revisión; bujías y filtro de aire cada dos), con el reductor delante y sin
+reductor trasero. Sus datos de combustible aún no tienen entidades: hace
+falta el diagnóstico de un PHEV para saber cómo los envía.
 
 ## Añadir un vehículo
 

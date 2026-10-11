@@ -165,7 +165,11 @@ CATALOGUE_TEXTS: Final[dict[str, dict[str, str]]] = {
         "operacion_brake_fluid": "Cambio del líquido de frenos (cada 2 años o 40.000 km)",
         "operacion_coolant": "Cambio del líquido refrigerante (cada 3 años u 80.000 km)",
         "operacion_front_gear_oil": "Cambio del aceite del reductor delantero (cada 3 años o 60.000 km)",
-        "operacion_rear_gear_oil": "Cambio del aceite del reductor trasero (cada 5 años o 100.000 km)"
+        "operacion_rear_gear_oil": "Cambio del aceite del reductor trasero (cada 5 años o 100.000 km)",
+        "operacion_engine_oil": "Cambio del aceite del motor y del filtro de aceite",
+        "operacion_fuel_system": "Inspección del sistema de combustible (depósito, tuberías, cánister y cuerpo de aceleración)",
+        "operacion_spark_plugs": "Cambio de las bujías (cada 2 años o 40.000 km)",
+        "operacion_engine_air_filter": "Cambio del filtro de aire del motor (cada 2 años o 40.000 km)"
     },
     "en": {
         "operacion_general_inspection": "General inspection (drive unit, battery, high voltage, brakes and steering)",
@@ -176,7 +180,11 @@ CATALOGUE_TEXTS: Final[dict[str, dict[str, str]]] = {
         "operacion_brake_fluid": "Brake fluid change (every 2 years or 40,000 km)",
         "operacion_coolant": "Coolant change (every 3 years or 80,000 km)",
         "operacion_front_gear_oil": "Front reduction gear oil change (every 3 years or 60,000 km)",
-        "operacion_rear_gear_oil": "Rear reduction gear oil change (every 5 years or 100,000 km)"
+        "operacion_rear_gear_oil": "Rear reduction gear oil change (every 5 years or 100,000 km)",
+        "operacion_engine_oil": "Engine oil and oil filter change",
+        "operacion_fuel_system": "Fuel system inspection (tank, lines, canister and throttle body)",
+        "operacion_spark_plugs": "Spark plug replacement (every 2 years or 40,000 km)",
+        "operacion_engine_air_filter": "Engine air filter replacement (every 2 years or 40,000 km)"
     },
     "pt": {
         "operacion_general_inspection": "Inspeção geral (propulsão, bateria, alta tensão, travões e direção)",
@@ -187,7 +195,11 @@ CATALOGUE_TEXTS: Final[dict[str, dict[str, str]]] = {
         "operacion_brake_fluid": "Substituição do líquido dos travões (a cada 2 anos ou 40.000 km)",
         "operacion_coolant": "Substituição do líquido de refrigeração (a cada 3 anos ou 80.000 km)",
         "operacion_front_gear_oil": "Substituição do óleo do redutor dianteiro (a cada 3 anos ou 60.000 km)",
-        "operacion_rear_gear_oil": "Substituição do óleo do redutor traseiro (a cada 5 anos ou 100.000 km)"
+        "operacion_rear_gear_oil": "Substituição do óleo do redutor traseiro (a cada 5 anos ou 100.000 km)",
+        "operacion_engine_oil": "Substituição do óleo do motor e do filtro de óleo",
+        "operacion_fuel_system": "Inspeção do sistema de combustível (depósito, tubagens, canister e corpo do acelerador)",
+        "operacion_spark_plugs": "Substituição das velas de ignição (a cada 2 anos ou 40.000 km)",
+        "operacion_engine_air_filter": "Substituição do filtro de ar do motor (a cada 2 anos ou 40.000 km)"
     },
     "it": {
         "operacion_general_inspection": "Ispezione generale (propulsione, batteria, alta tensione, freni e sterzo)",
@@ -198,7 +210,11 @@ CATALOGUE_TEXTS: Final[dict[str, dict[str, str]]] = {
         "operacion_brake_fluid": "Sostituzione del liquido dei freni (ogni 2 anni o 40.000 km)",
         "operacion_coolant": "Sostituzione del liquido di raffreddamento (ogni 3 anni o 80.000 km)",
         "operacion_front_gear_oil": "Sostituzione dell'olio del riduttore anteriore (ogni 3 anni o 60.000 km)",
-        "operacion_rear_gear_oil": "Sostituzione dell'olio del riduttore posteriore (ogni 5 anni o 100.000 km)"
+        "operacion_rear_gear_oil": "Sostituzione dell'olio del riduttore posteriore (ogni 5 anni o 100.000 km)",
+        "operacion_engine_oil": "Sostituzione dell'olio motore e del filtro dell'olio",
+        "operacion_fuel_system": "Ispezione dell'impianto di alimentazione (serbatoio, tubazioni, canister e corpo farfallato)",
+        "operacion_spark_plugs": "Sostituzione delle candele (ogni 2 anni o 40.000 km)",
+        "operacion_engine_air_filter": "Sostituzione del filtro dell'aria del motore (ogni 2 anni o 40.000 km)"
     },
     "pl": {
         "operacion_general_inspection": "Przegląd ogólny (napęd, akumulator, wysokie napięcie, hamulce i układ kierowniczy)",
@@ -209,6 +225,10 @@ CATALOGUE_TEXTS: Final[dict[str, dict[str, str]]] = {
         "operacion_brake_fluid": "Wymiana płynu hamulcowego (co 2 lata lub 40 000 km)",
         "operacion_coolant": "Wymiana płynu chłodzącego (co 3 lata lub 80 000 km)",
         "operacion_front_gear_oil": "Wymiana oleju przedniej przekładni redukcyjnej (co 3 lata lub 60 000 km)",
-        "operacion_rear_gear_oil": "Wymiana oleju tylnej przekładni redukcyjnej (co 5 lat lub 100 000 km)"
+        "operacion_rear_gear_oil": "Wymiana oleju tylnej przekładni redukcyjnej (co 5 lat lub 100 000 km)",
+        "operacion_engine_oil": "Wymiana oleju silnikowego i filtra oleju",
+        "operacion_fuel_system": "Kontrola układu paliwowego (zbiornik, przewody, filtr z węglem aktywnym i przepustnica)",
+        "operacion_spark_plugs": "Wymiana świec zapłonowych (co 2 lata lub 40 000 km)",
+        "operacion_engine_air_filter": "Wymiana filtra powietrza silnika (co 2 lata lub 40 000 km)"
     }
 }
