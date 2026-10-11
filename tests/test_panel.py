@@ -157,13 +157,14 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> N
 
     # --- Datos: copia, envío a un móvil, carga y borrado -----------------------------------
     assert await async_setup_component(hass, "http", {})
-    hass.config.internal_url = "http://192.168.1.10:8123"
     link = (await call("export_url"))["result"]
     assert link["url"].startswith("/api/dec_deepal/export?authSig=")
-    assert link["absolute"].startswith("http://192.168.1.10:8123/api/dec_deepal/export?authSig=")
+    # El enlace completo usa la dirección con la que el usuario está entrando ahora.
+    assert link["absolute"].startswith("http://127.0.0.1") and link["absolute"].endswith(link["url"])
     assert (await call("send_backup", target=ME))["success"]
     await hass.async_block_till_done()
-    assert sent[-1].data["data"]["url"].startswith("http://192.168.1.10:8123/api/dec_deepal/export")
+    assert "/api/dec_deepal/export?authSig=" in sent[-1].data["data"]["url"]
+    assert sent[-1].data["data"]["url"].startswith("http://127.0.0.1")
     assert (await call("send_backup", target="mobile_app_no_existe"))["success"] is False
 
     state = (await call("state"))["result"]
