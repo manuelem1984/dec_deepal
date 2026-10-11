@@ -2,12 +2,13 @@
 // DEC Deepal — Panel de la barra lateral de Home Assistant
 // =============================================================================
 // Una página propia (como la de Alarmo) donde se ve y se configura todo lo de
-// los coches. Convive con Configurar: los dos escriben en el mismo sitio.
+// los coches. El botón "Configurar" de la integración lleva aquí.
 //
 // Pestañas:
 //   - Coches: una tarjeta por coche con su foto, versión, equipamiento (el de
 //     su ficha del catálogo) y tres recuadros —mantenimiento, ITV y seguro—,
-//     cada uno con un engranaje que abre su configuración.
+//     cada uno con un engranaje que abre su configuración. El botón
+//     "Apariencia" elige modelo, versión, color y llanta, con la foto delante.
 //   - Avisos: una tabla por coche. Un apartado plegable por cada cosa (carga,
 //     testigos, mantenimiento, ITV, seguro), una fila por aviso y una casilla
 //     por destino. Los avisos con plazo llevan un lápiz para cambiar los días
@@ -15,6 +16,7 @@
 //   - Datos: descargar la copia, enviarla a un móvil, cargarla y borrar.
 //   - Diagnóstico: lo que ha pasado (cambios, órdenes, avisos) y la ficha que
 //     se le aplica a cada coche.
+//   - Ajustes: control con PIN y lectura de datos (son de la cuenta).
 //
 // Cómo habla con la integración
 // -----------------------------

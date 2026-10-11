@@ -905,7 +905,7 @@
     "cancel": "Annulla",
     "understood": "Ho capito",
     "command_failed": "Impossibile inviare il comando all'auto.",
-    "no_pin": "Attiva il controllo con PIN in Configura (integrazione DEC Deepal) per usare questo pulsante.",
+    "no_pin": "Attiva il controllo con PIN nel pannello DEC Deepal (scheda Settings) per usare questo pulsante.",
     "pin_confirm": "Il comando verrà inviato a {name} con il tuo PIN salvato. L'auto può impiegare qualche secondo a rispondere.",
     "lock_q": "Bloccare le porte?",
     "lock_do": "Blocca",

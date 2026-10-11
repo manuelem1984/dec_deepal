@@ -33,7 +33,7 @@
               ${car.odometer == null ? "" : fact(`${this._number(Math.round(car.odometer))} km`, "odometer")}
             </div>
           </div>
-          <button class="btn o" data-action="appearance"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>
+          <button class="btn o" data-action="appearance" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>
         </div>
         ${chips.length ? `<div class="chips">${chips.join("")}</div>` : ""}
         <div class="grid3">
@@ -96,10 +96,5 @@
         `<div class="v">${this._date(data.record.renewal_date)}</div>
          <div class="d">${escapeHtml(detail)}</div>
          ${this._meter(1 - data.days_to_renewal / 365)}`);
-    }
-
-    /** La apariencia (modelo, versión, color) se sigue eligiendo en Configurar. */
-    _do_appearance() {
-      this._navigate(`/config/integrations/integration/${DOMAIN}`);
     }
   });

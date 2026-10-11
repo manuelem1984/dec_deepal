@@ -11,6 +11,7 @@
     ["alerts", "mdi:bell-ring"],
     ["data", "mdi:database"],
     ["diagnostics", "mdi:stethoscope"],
+    ["settings", "mdi:cog"],
   ];
 
   /** Apartados de los avisos, en su orden, con su icono. */

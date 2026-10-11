@@ -107,6 +107,103 @@ def test_gear_disables_and_registers(panel: Page) -> None:
     assert orders(panel)[1] == {"type": "dec_deepal/panel/set_itv", "vehicle_id": "car1", "enabled": False}
 
 
+def test_appearance_window(panel: Page) -> None:
+    mount(panel)
+    click(panel, "[data-action=appearance][data-car=car1]")
+    window = "banco.ventana()"
+    chosen = f"Array.from({window}.querySelectorAll('.on')).map(n => n.firstChild.textContent.trim() || n.textContent.trim())"
+    photo = f"{window}.querySelector('.prev img').getAttribute('src')"
+    assert "Apariencia de Changote" in window_text(panel)
+    # Abre con lo que tiene el coche, y la foto es la de esa versión y ese color.
+    assert panel.evaluate(chosen) == ["Deepal S05 EV", "RWD Max", "Ganymede Grey", "Llanta 20\" sin tapacubos"]
+    assert panel.evaluate(photo) == "coche.svg?max_ganymade_grey"
+    # Cada versión dice qué trae.
+    assert "RWD ProSin asientos ni volante calefactados · Llanta 18\"" in window_text(panel)
+
+    def pick(field: str, value: str) -> None:
+        panel.evaluate(
+            "([field, value]) => banco.ventana().querySelector(`[data-field=${field}][data-value=${value}]`).click()",
+            [field, value],
+        )
+
+    # Al elegir, la foto cambia; nada se guarda todavía.
+    pick("color", "andromeda_blue")
+    assert panel.evaluate(photo) == "coche.svg?max_andromeda_blue" and orders(panel) == []
+    # El Pro trae su llanta: desaparece la elección.
+    pick("trim", "pro")
+    assert "Llanta 20" not in window_text(panel)
+    # Otro modelo: la versión que no existe en él se quita; el color (que sí tiene) se queda.
+    pick("model", "s05_phev")
+    assert panel.evaluate(chosen) == ["Deepal S05 PHEV", "Pro", "Andromeda Blue"]
+    pick("trim", "limited_edition")
+    click_window(panel, "ok")
+    panel.wait_for_function("banco.ordenes().length === 1")
+    assert orders(panel)[0] == {
+        "type": "dec_deepal/panel/set_appearance", "vehicle_id": "car1", "model": "s05_phev",
+        "trim": "limited_edition", "color": "andromeda_blue", "wheels": None,
+    }
+    panel.wait_for_function("banco.texto().includes('Deepal S05 PHEV Limited Edition')")
+
+
+# --- Ajustes ----------------------------------------------------------------------
+
+
+def test_settings_tab(panel: Page) -> None:
+    mount(panel)
+    tab(panel, "settings")
+    text = panel.evaluate("banco.texto()")
+    assert "Control remoto con PIN" in text and "Comprobado" in text and "Manual BEV" in text
+    # El PIN guardado nunca llega al panel: el campo sale vacío.
+    assert panel.evaluate("banco.raiz().querySelector('[data-input=pin]').value") == ""
+    assert "Hay cambios sin guardar" not in text
+
+    def setting(field: str, value: str) -> None:
+        click(panel, f"[data-action=setting][data-field={field}][data-value='{value}']")
+
+    def typed(field: str, value: str) -> None:
+        panel.evaluate(
+            "([field, value]) => { const input = banco.raiz().querySelector(`[data-input=${field}]`);"
+            " input.value = value; input.dispatchEvent(new Event('input', { bubbles: true, composed: true })); }",
+            [field, value],
+        )
+
+    # Modo directo: desaparecen la duración y el aviso del desbloqueo.
+    assert "Cuánto dura el desbloqueo" in text
+    setting("pin_mode", "direct")
+    assert "Cuánto dura el desbloqueo" not in panel.evaluate("banco.texto()")
+    assert "Hay cambios sin guardar" in panel.evaluate("banco.texto()")
+    setting("pin_mode", "armed")
+    setting("arm_seconds", "60")
+    setting("scan_minutes", "10")
+    setting("debug", "true")
+    # Un PIN que Deepal no acepta: se explica y no se pierde lo cambiado.
+    typed("pin", "0000")
+    click(panel, "[data-action=save-settings]")
+    panel.wait_for_function("banco.avisos.length === 1")
+    assert "El PIN no es correcto" in panel.evaluate("banco.avisos[0]")
+    assert panel.evaluate("banco.raiz().querySelector('.seg .on').textContent") == "60 s"
+    typed("pin", "2468")
+    typed("manual_url", "https://example.com/otro.pdf")
+    click(panel, "[data-action=save-settings]")
+    panel.wait_for_function("banco.avisos.includes('Guardado')")
+    assert orders(panel)[-1] == {
+        "type": "dec_deepal/panel/set_settings", "entry_id": "entry1", "pin_enabled": True, "pin": "2468",
+        "pin_mode": "armed", "arm_seconds": 60, "arm_notify": False, "scan_minutes": 10, "wake": True,
+        "debug": True, "manual_url": "https://example.com/otro.pdf",
+    }
+    panel.wait_for_function("!banco.texto().includes('Hay cambios sin guardar')")
+    # Guardar otra cosa sin escribir el PIN: se manda vacío (= no cambiarlo).
+    setting("wake", "false")
+    click(panel, "[data-action=save-settings]")
+    panel.wait_for_function("banco.ordenes().length === 3")
+    assert orders(panel)[-1]["pin"] == "" and orders(panel)[-1]["wake"] is False
+    # Desactivar las órdenes con PIN esconde todo lo suyo.
+    setting("pin_enabled", "false")
+    assert "Cómo se usan las órdenes" not in panel.evaluate("banco.texto()")
+    click(panel, "[data-action=discard-settings]")
+    assert "Cómo se usan las órdenes" in panel.evaluate("banco.texto()")
+
+
 # --- Avisos -----------------------------------------------------------------------
 
 
@@ -278,7 +375,7 @@ def test_diagnostics_tab(panel: Page) -> None:
 def test_languages(panel: Page) -> None:
     mount(panel, idioma="en")
     assert "Verified sheet" in panel.evaluate("banco.texto()")
-    assert panel.evaluate("banco.texto('.tabs')") == "VehiclesNotificationsDataDiagnostics"
+    assert panel.evaluate("banco.texto('.tabs')") == "VehiclesNotificationsDataDiagnosticsSettings"
     # Catalán, gallego y euskera, en español; un idioma aún sin traducir, en inglés.
     for language, expected in (("ca", "Coches"), ("pt", "Vehicles"), ("fr", "Vehicles")):
         mount(panel, idioma=language)

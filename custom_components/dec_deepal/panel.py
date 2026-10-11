@@ -1,10 +1,11 @@
 """Panel "DEC Deepal" de la barra lateral: registro y canal con la integración.
 
 El panel es una página propia de Home Assistant (como la de Alarmo) donde se
-ve y se configura todo lo de los coches de un vistazo: la ficha de cada uno,
-quién recibe cada aviso, la copia de los datos y lo que ha pasado. **Convive**
-con Configurar: los dos escriben en el mismo sitio, así que se puede usar uno
-u otro.
+ve y se configura todo lo de los coches de un vistazo: la ficha de cada uno
+y su apariencia, quién recibe cada aviso, la copia de los datos, lo que ha
+pasado y los ajustes de la cuenta (PIN, lectura de datos). El botón
+**Configurar** de la integración lleva aquí (como en Alarmo): el panel
+sustituye a los apartados de Configurar, que escribían en el mismo sitio.
 
 - La página es ``frontend_panel/dec-deepal-panel.js`` (se genera uniendo los
   módulos de ``frontend_panel/src/``, igual que la tarjeta).
@@ -30,6 +31,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.util import slugify
 
+from . import appearance as ap
 from . import documents as doc
 from . import maintenance as mt
 from . import vehicle_data as vd
@@ -42,19 +44,46 @@ from .alert_rules import (
     clean_thresholds,
     panel_name,
 )
+from .api.errors import DeepalConnectionError, DeepalError, DeepalPinError, DeepalRateLimitError
 from .const import (
+    ARM_SECONDS_CHOICES,
+    DEFAULT_ARM_NOTIFY,
+    DEFAULT_ARM_SECONDS,
+    DEFAULT_PIN_MODE,
+    DEFAULT_SCAN_MINUTES,
+    DEFAULT_WAKE,
     DOMAIN,
     ICONS_JS_URL,
     INTEGRATION_DIR,
+    MAX_SCAN_MINUTES,
+    MIN_SCAN_MINUTES,
     NAME,
     OPT_ALERT_VEHICLES,
     OPT_ALERTS,
     OPT_APPEARANCE,
+    OPT_ARM_NOTIFY,
+    OPT_ARM_SECONDS,
+    OPT_COLOR,
+    OPT_DEBUG,
+    OPT_MANUAL_URLS,
+    OPT_MODEL,
+    OPT_PIN,
+    OPT_PIN_ENABLED,
+    OPT_PIN_MODE,
+    OPT_SCAN_MINUTES,
+    OPT_TRIM,
+    OPT_WAKE,
+    OPT_WHEELS,
     PANEL_JS_DIR,
     PANEL_JS_FILE,
     PANEL_URL_PATH,
+    PHOTOS_URL,
+    PIN_MODE_ARMED,
+    PIN_MODE_DIRECT,
     VERSION,
 )
+from .manual import is_valid_url
+from .registries.vehicles import FEATURE_FUEL, GENERIC_MODEL_ID
 from .telemetry import signals as s
 from .vehicle_store import async_export_url, async_get_store
 
@@ -82,7 +111,12 @@ async def async_register_panel(hass: HomeAssistant) -> None:
     path = INTEGRATION_DIR / PANEL_JS_DIR / PANEL_JS_FILE
     url = f"{ICONS_JS_URL}/{PANEL_JS_FILE}"
     try:
-        await hass.http.async_register_static_paths([StaticPathConfig(url, str(path), False)])
+        await hass.http.async_register_static_paths(
+            [
+                StaticPathConfig(url, str(path), False),
+                StaticPathConfig(PHOTOS_URL, str(INTEGRATION_DIR / "vehicles" / "photos"), True),
+            ]
+        )
     except RuntimeError as err:  # ruta ya registrada (tras quitar y volver a añadir la cuenta)
         _LOGGER.debug("Ruta del panel ya registrada: %s", err)
     await panel_custom.async_register_panel(
@@ -95,6 +129,8 @@ async def async_register_panel(hass: HomeAssistant) -> None:
         module_url=f"{url}?v={VERSION}",
         require_admin=True,
         config={},
+        # El botón "Configurar" de la integración abre el panel.
+        config_panel_domain=DOMAIN,
     )
     for command in COMMANDS:
         websocket_api.async_register_command(hass, command)
@@ -160,6 +196,91 @@ def notify_targets(hass: HomeAssistant, used: set[str]) -> list[dict[str, str]]:
     return targets
 
 
+class PanelError(ValueError):
+    """Una orden del panel que no se puede cumplir. ``code`` es la clave del texto."""
+
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.code = code
+
+
+def _photo_url(model: Any, trim: str | None, color: str | None) -> str | None:
+    """Dirección de la foto del catálogo para esa versión y ese color."""
+    photo = model.photo_for(trim, color)
+    if photo is None:
+        return None
+    relative = photo.relative_to(INTEGRATION_DIR / "vehicles" / "photos").as_posix()
+    return f"{PHOTOS_URL}/{relative}?v={VERSION}"
+
+
+def _model(model: Any) -> dict[str, Any]:
+    """Un modelo del catálogo, con lo que hace falta para elegir la apariencia."""
+    comfort = ("asientos_calefaccion", "asientos_ventilacion", "volante_calefactado", "porton_electrico")
+    return {
+        "id": model.id,
+        "name": model.name,
+        "fuel": model.has(FEATURE_FUEL),
+        "trims": [
+            {
+                "id": trim.id,
+                "name": trim.name,
+                # Llanta fija de la versión ("" = se puede elegir).
+                "wheel": trim.wheel,
+                "equipped": sum(1 for feature in comfort if model.has(feature, trim.id)),
+            }
+            for trim in model.trims.values()
+        ],
+        "colors": [
+            {"id": color.id, "name": color.name, "swatch": color.swatch}
+            for color in model.colors.values()
+        ],
+        "wheels": list(model.wheel_options),
+        # Foto de cada combinación: "<versión>|<color>" (vacíos = sin elegir).
+        "photos": {
+            f"{trim or ''}|{color or ''}": _photo_url(model, trim, color)
+            for trim in (None, *model.trims)
+            for color in (None, *model.colors)
+        },
+    }
+
+
+def _account(entry: Any) -> dict[str, Any]:
+    """Ajustes de una cuenta (sin el PIN: solo si lo tiene)."""
+    options = entry.options
+    models = {
+        vehicle.model.id: vehicle.model
+        for vehicle in entry.runtime_data.vehicles.values()
+        if vehicle.configured
+    }
+    # El enlace del manual es por modelo; solo se ofrece si todos los coches
+    # de la cuenta son del mismo (lo normal).
+    model = next(iter(models.values())) if len(models) == 1 else None
+    custom = str(options.get(OPT_MANUAL_URLS, {}).get(model.id) or "") if model else ""
+    return {
+        "entry_id": entry.entry_id,
+        "title": entry.title,
+        "pin_enabled": bool(options.get(OPT_PIN_ENABLED, False)),
+        "pin_set": bool(options.get(OPT_PIN)),
+        "pin_mode": options.get(OPT_PIN_MODE, DEFAULT_PIN_MODE),
+        "arm_seconds": int(options.get(OPT_ARM_SECONDS, DEFAULT_ARM_SECONDS)),
+        "arm_notify": bool(options.get(OPT_ARM_NOTIFY, DEFAULT_ARM_NOTIFY)),
+        "arm_choices": list(ARM_SECONDS_CHOICES),
+        "scan_minutes": int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES)),
+        "scan_limits": [MIN_SCAN_MINUTES, MAX_SCAN_MINUTES],
+        "wake": bool(options.get(OPT_WAKE, DEFAULT_WAKE)),
+        "debug": bool(options.get(OPT_DEBUG, False)),
+        "manual": (
+            None
+            if model is None
+            else {
+                "kind": "phev" if model.has(FEATURE_FUEL) else "bev",
+                "url": custom or model.manual_url,
+                "official": model.manual_url,
+            }
+        ),
+    }
+
+
 def _without_notified(record: Mapping[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in record.items() if key != "notified"}
 
@@ -215,6 +336,14 @@ def _car(hass: HomeAssistant, entry: Any, vehicle_id: str, vehicle: Any) -> dict
         "color": color.name if color else None,
         "wheel": vehicle.wheel,
         "configured": vehicle.configured,
+        # Lo elegido en Apariencia (sin modelo: nada elegido todavía).
+        "appearance": {
+            "model": vehicle.model.id if vehicle.configured else None,
+            "trim": vehicle.trim,
+            "color": vehicle.color,
+            "wheels": getattr(vehicle, "wheels", None),
+        },
+        "country": entry.runtime_data.country.id,
         "sheet": vehicle.model.sheet(vehicle.trim),
         "battery": data.get(s.BATTERY_LEVEL) if data else None,
         "range": data.get(s.RANGE_KM) if data else None,
@@ -254,9 +383,17 @@ def panel_state(hass: HomeAssistant) -> dict[str, Any]:
     for entry in _entries(hass):
         for kind, events in entry.runtime_data.recorder.history().items():
             history[kind].extend(events)
+    models: dict[str, Any] = {}
+    for entry in _entries(hass):
+        runtime = entry.runtime_data
+        for model in runtime.registries.vehicles.for_country(runtime.country.id):
+            if model.id != GENERIC_MODEL_ID:
+                models.setdefault(model.id, _model(model))
     return {
         "version": VERSION,
         "cars": cars,
+        "models": list(models.values()),
+        "accounts": [_account(entry) for entry in _entries(hass)],
         "targets": notify_targets(hass, used),
         "notices": [
             {
@@ -293,6 +430,8 @@ def _command(schema: dict[Any, Any]):  # noqa: ANN202
                 connection.send_error(msg["id"], "not_found", "Vehículo no encontrado")
             except ThresholdError as err:
                 connection.send_error(msg["id"], err.code, err.notice)
+            except PanelError as err:
+                connection.send_error(msg["id"], err.code, err.code)
             except vd.BackupError as err:
                 connection.send_error(msg["id"], err.code, "Copia no válida")
             except ValueError as err:
@@ -494,6 +633,134 @@ async def ws_set_insurance(hass: HomeAssistant, msg: dict[str, Any]) -> None:
     _reload_if(hass, entry, (previous is None) == msg["enabled"])
 
 
+# --- Apariencia y ajustes de la cuenta ---------------------------------------------
+
+
+@_command(
+    {
+        vol.Required("type"): "dec_deepal/panel/set_appearance",
+        **_VEHICLE,
+        vol.Required("model"): str,
+        vol.Optional("trim"): vol.Any(str, None),
+        vol.Optional("color"): vol.Any(str, None),
+        vol.Optional("wheels"): vol.Any(str, None),
+    }
+)
+async def ws_set_appearance(hass: HomeAssistant, msg: dict[str, Any]) -> None:
+    """Modelo, versión, color y llanta de un coche.
+
+    Cambiar las opciones recarga la cuenta: se crean las entidades de esa
+    versión y se quitan las que no le tocan.
+    """
+    entry, _vehicle = _find(hass, msg["vehicle_id"])
+    runtime = entry.runtime_data
+    offered = {
+        model.id: model
+        for model in runtime.registries.vehicles.for_country(runtime.country.id)
+        if model.id != GENERIC_MODEL_ID
+    }
+    # Lo que el modelo no tiene (una versión de otro, un color retirado) se descarta.
+    chosen = vd.clean_appearance(
+        {
+            OPT_MODEL: msg["model"],
+            OPT_TRIM: msg.get("trim"),
+            OPT_COLOR: msg.get("color"),
+            OPT_WHEELS: msg.get("wheels"),
+        },
+        offered,
+    )
+    if chosen is None:
+        raise PanelError("unknown_model")
+    hass.config_entries.async_update_entry(
+        entry,
+        options=ap.updated_options(entry.options, msg["vehicle_id"], offered[msg["model"]], chosen),
+    )
+
+
+async def _checked_pin(entry: Any, pin: str) -> str:
+    """El PIN que se va a guardar, comprobado con Deepal si es nuevo.
+
+    Vacío = el que ya había (no se gastan intentos al guardar otra cosa).
+    """
+    stored = entry.options.get(OPT_PIN)
+    pin = pin.strip() or str(stored or "")
+    if not pin:
+        raise PanelError("pin_required")
+    if pin == stored:
+        return pin
+    try:
+        await entry.runtime_data.commands.check_pin(pin)
+    except DeepalRateLimitError as err:
+        raise PanelError("pin_rate_limited") from err
+    except DeepalConnectionError as err:
+        raise PanelError("cannot_connect") from err
+    except (DeepalPinError, DeepalError) as err:
+        raise PanelError("pin_invalid") from err
+    return pin
+
+
+@_command(
+    {
+        vol.Required("type"): "dec_deepal/panel/set_settings",
+        vol.Required("entry_id"): str,
+        vol.Required("pin_enabled"): bool,
+        vol.Optional("pin", default=""): str,
+        vol.Optional("pin_mode", default=DEFAULT_PIN_MODE): vol.In((PIN_MODE_DIRECT, PIN_MODE_ARMED)),
+        vol.Optional("arm_seconds", default=DEFAULT_ARM_SECONDS): vol.In(ARM_SECONDS_CHOICES),
+        vol.Optional("arm_notify", default=DEFAULT_ARM_NOTIFY): bool,
+        vol.Required("scan_minutes"): vol.All(
+            int, vol.Range(min=MIN_SCAN_MINUTES, max=MAX_SCAN_MINUTES)
+        ),
+        vol.Required("wake"): bool,
+        vol.Required("debug"): bool,
+        vol.Optional("manual_url"): str,
+    }
+)
+async def ws_set_settings(hass: HomeAssistant, msg: dict[str, Any]) -> None:
+    """Ajustes de una cuenta: control con PIN y lectura de datos."""
+    entry = next((item for item in _entries(hass) if item.entry_id == msg["entry_id"]), None)
+    if entry is None:
+        raise KeyError(msg["entry_id"])
+    changes: dict[str, Any] = {
+        OPT_SCAN_MINUTES: msg["scan_minutes"],
+        OPT_WAKE: msg["wake"],
+        OPT_DEBUG: msg["debug"],
+    }
+    if msg["pin_enabled"]:
+        changes |= {
+            OPT_PIN_ENABLED: True,
+            OPT_PIN: await _checked_pin(entry, msg["pin"]),
+            OPT_PIN_MODE: msg["pin_mode"],
+            OPT_ARM_SECONDS: msg["arm_seconds"],
+            OPT_ARM_NOTIFY: msg["arm_notify"],
+        }
+    else:
+        # Desactivar siempre empieza de cero la próxima vez.
+        changes |= {
+            OPT_PIN_ENABLED: False,
+            OPT_PIN: None,
+            OPT_PIN_MODE: DEFAULT_PIN_MODE,
+            OPT_ARM_SECONDS: DEFAULT_ARM_SECONDS,
+            OPT_ARM_NOTIFY: DEFAULT_ARM_NOTIFY,
+        }
+    manual = _account(entry)["manual"]
+    if manual is not None and "manual_url" in msg:
+        url = msg["manual_url"].strip()
+        if url and not is_valid_url(url):
+            raise PanelError("invalid_url")
+        model_id = next(
+            vehicle.model.id for vehicle in entry.runtime_data.vehicles.values() if vehicle.configured
+        )
+        urls = dict(entry.options.get(OPT_MANUAL_URLS, {}))
+        # El oficial, o vacío, no se guarda (se sigue el catálogo).
+        if url and url != manual["official"]:
+            urls[model_id] = url
+        else:
+            urls.pop(model_id, None)
+        changes[OPT_MANUAL_URLS] = urls
+    hass.config_entries.async_update_entry(entry, options={**entry.options, **changes})
+
+
 # --- Datos: copia y borrado ---------------------------------------------------
 
 
@@ -587,6 +854,8 @@ COMMANDS: Final = (
     ws_set_itv,
     ws_register_itv,
     ws_set_insurance,
+    ws_set_appearance,
+    ws_set_settings,
     ws_export_url,
     ws_send_backup,
     ws_import_backup,

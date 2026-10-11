@@ -107,6 +107,8 @@
 #   colores         Colores oficiales. Clave = id interno.
 #                     nombre        Nombre comercial.
 #                     descripcion   Texto libre.
+#                     muestra       (opcional) Color aproximado, "#rrggbb": es
+#                                   el círculo que se pulsa en el panel.
 #
 # -----------------------------------------------------------------------------
 # NOMBRE DE LAS FOTOS
@@ -220,18 +222,23 @@ modelos:
       andromeda_blue:
         nombre: Andromeda Blue
         descripcion: Azul.
+        muestra: "#2f4a6b"
       deep_space_black:
         nombre: Deep Space Black
         descripcion: Negro.
+        muestra: "#16181b"
       ganymade_grey:                 # (el id conserva la errata: lo tienen guardado los usuarios)
         nombre: Ganymede Grey
         descripcion: Gris.
+        muestra: "#5d6166"
       mercury_silver:
         nombre: Mercury Silver
         descripcion: Plata.
+        muestra: "#b9bdc1"
       moonlight_white:
         nombre: Moonlight White
         descripcion: Blanco.
+        muestra: "#f2f3f4"
 
   # --- Deepal S05 híbrido enchufable (PHEV) -----------------------------------
   # Equipamiento según el catálogo oficial (2026): dos versiones, Pro y

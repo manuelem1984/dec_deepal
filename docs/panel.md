@@ -1,11 +1,13 @@
 # Panel DEC Deepal
 
 Una página propia en la barra lateral de Home Assistant, donde se ve y se
-configura todo lo de los coches de un vistazo. **Convive con Configurar:**
-los dos escriben en el mismo sitio, así que se puede usar uno u otro.
+configura todo lo de los coches de un vistazo.
 
 Aparece sola al instalar la integración (**DEC Deepal** en la barra lateral)
-y solo la ven los administradores.
+y solo la ven los administradores. El botón **Configurar** de la integración
+(Ajustes → Dispositivos y servicios → DEC Deepal) lleva también aquí, como en
+Alarmo: desde la 2.5.0b2 el panel sustituye a los apartados de Configurar.
+Lo único que queda fuera es añadir la cuenta y volver a iniciar sesión.
 
 ## Pestañas
 
@@ -22,8 +24,14 @@ tres recuadros con su **engranaje**:
 | Seguro | Renovación y límite para desistir | Compañía, póliza, tipo, fechas y teléfonos |
 
 Desmarcar "Activado" en la ventana del engranaje desactiva ese apartado (y
-quita sus entidades y avisos). El botón **Apariencia** lleva a Configurar:
-el modelo, la versión y el color se siguen eligiendo allí.
+quita sus entidades y avisos).
+
+El botón **Apariencia** abre una ventana para elegir modelo, versión, color
+y llanta, con la foto del catálogo delante: cambia con lo que se va
+eligiendo y nada se guarda hasta pulsar "Guardar". Cada versión dice qué
+trae, y la llanta solo se pregunta cuando la versión deja elegirla. Guardar
+recarga la integración: se crean las entidades de esa versión y se quitan
+las que no le tocan.
 
 ### Avisos
 
@@ -67,6 +75,18 @@ la respuesta del servidor y avisos enviados—, con filtros por coche y por
 tipo; la ficha que se le aplica a cada coche, y el fichero de diagnóstico de
 la cuenta.
 
+### Ajustes
+
+Son de la cuenta, no de un coche (con varias cuentas, una tarjeta por cuenta).
+
+- **Control remoto con PIN:** activarlo, el PIN (el de la app oficial de
+  Deepal; se comprueba al guardar) y cómo se usan las órdenes: **Directo** o
+  **Desbloquear antes**, con cuánto dura el desbloqueo y si avisa. Un solo
+  PIN para todos los coches de la cuenta. El panel nunca recibe el PIN
+  guardado: el campo sale vacío, y vacío significa "no cambiarlo".
+- **Lectura de datos:** intervalo, despertar el coche cuando haga falta, el
+  enlace del manual (BEV o PHEV, según el coche) y el modo depuración.
+
 ## Tocar el panel
 
 Como la tarjeta: JavaScript plano, sin dependencias y sin Node. El código
@@ -83,7 +103,7 @@ parte, y se une en `frontend_panel/dec-deepal-panel.js` con
 | `30_estilos.js` | Estilos del panel y de las ventanas |
 | `40_dialogo.js` | La ventana emergente de formularios y confirmaciones |
 | `50_panel.js` | El panel: carga de datos, pestañas y pulsaciones |
-| `60_coches.js` … `64_formularios.js` | Una pestaña (o los formularios) por fichero |
+| `60_coches.js` … `66_ajustes.js` | Una pestaña (o una ventana) por fichero |
 | `90_registro.js` | Alta del panel en Home Assistant |
 
 Cada pulsación lleva `data-action="algo"` y la atiende el método `_do_algo`.
@@ -107,7 +127,8 @@ Para mirarlo a mano sin Home Assistant: abrir
 
 ## Límites conocidos
 
-- La apariencia del coche, el PIN y el alta de la cuenta siguen en Configurar.
+- Los apartados de Configurar siguen en el código pero ya no se llega a
+  ellos: se quitarán cuando el panel esté rodado.
 - El historial se pierde al reiniciar Home Assistant.
 - No se puede ocultar el panel de la barra lateral desde la integración (sí
   desde el perfil de cada usuario, como cualquier otro panel).

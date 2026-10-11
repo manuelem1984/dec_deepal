@@ -13,8 +13,10 @@
       this._editing = null; // plazo que se está editando: { car, notice }
       this._filter = "all"; // filtro del historial
       this._links = {}; // enlaces firmados (copia, diagnósticos)
+      this._settings = {}; // ajustes cambiados y sin guardar, por cuenta
       this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
       this.shadowRoot.addEventListener("change", (event) => this._onChange(event));
+      this.shadowRoot.addEventListener("input", (event) => this._onInput(event));
       this.shadowRoot.addEventListener("keydown", (event) => this._onKey(event));
     }
 
@@ -185,6 +187,11 @@
       if (target && target.dataset && target.dataset.change) this[`_change_${target.dataset.change}`](target);
     }
 
+    _onInput(event) {
+      const target = event.target;
+      if (target && target.dataset && target.dataset.input) this._input_setting(target);
+    }
+
     _onKey(event) {
       if (!this._editing || !event.target.matches || !event.target.matches(".inp input")) return;
       if (event.key === "Enter") this._do_edit_ok();
@@ -200,12 +207,6 @@
 
     _do_reload() {
       this._load();
-    }
-
-    /** Va a otra página de Home Assistant sin recargar. */
-    _navigate(path) {
-      window.history.pushState(null, "", path);
-      window.dispatchEvent(new CustomEvent("location-changed", { bubbles: true, composed: true }));
     }
   }
 

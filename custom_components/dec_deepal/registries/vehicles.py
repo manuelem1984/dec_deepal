@@ -99,6 +99,8 @@ class Color:
     id: str
     name: str
     description: str
+    #: Color aproximado (``#rrggbb``) para la muestra del panel ("" = no se sabe).
+    swatch: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -412,6 +414,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
                 id=str(color_id),
                 name=str(require(color_raw, "nombre", color_where)),
                 description=str(color_raw.get("descripcion") or ""),
+                swatch=str(color_raw.get("muestra") or ""),
             )
         models[str(model_id)] = VehicleModel(
             id=str(model_id),

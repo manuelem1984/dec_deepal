@@ -4,12 +4,13 @@
 // DEC Deepal — Panel de la barra lateral de Home Assistant
 // =============================================================================
 // Una página propia (como la de Alarmo) donde se ve y se configura todo lo de
-// los coches. Convive con Configurar: los dos escriben en el mismo sitio.
+// los coches. El botón "Configurar" de la integración lleva aquí.
 //
 // Pestañas:
 //   - Coches: una tarjeta por coche con su foto, versión, equipamiento (el de
 //     su ficha del catálogo) y tres recuadros —mantenimiento, ITV y seguro—,
-//     cada uno con un engranaje que abre su configuración.
+//     cada uno con un engranaje que abre su configuración. El botón
+//     "Apariencia" elige modelo, versión, color y llanta, con la foto delante.
 //   - Avisos: una tabla por coche. Un apartado plegable por cada cosa (carga,
 //     testigos, mantenimiento, ITV, seguro), una fila por aviso y una casilla
 //     por destino. Los avisos con plazo llevan un lápiz para cambiar los días
@@ -17,6 +18,7 @@
 //   - Datos: descargar la copia, enviarla a un móvil, cargarla y borrar.
 //   - Diagnóstico: lo que ha pasado (cambios, órdenes, avisos) y la ficha que
 //     se le aplica a cada coche.
+//   - Ajustes: control con PIN y lectura de datos (son de la cuenta).
 //
 // Cómo habla con la integración
 // -----------------------------
@@ -47,6 +49,7 @@
     ["alerts", "mdi:bell-ring"],
     ["data", "mdi:database"],
     ["diagnostics", "mdi:stethoscope"],
+    ["settings", "mdi:cog"],
   ];
 
   /** Apartados de los avisos, en su orden, con su icono. */
@@ -255,7 +258,57 @@
       "kind_third_party": "Terceros",
       "kind_third_party_plus": "Terceros ampliado",
       "kind_comprehensive_excess": "Todo riesgo con franquicia",
-      "kind_comprehensive": "Todo riesgo sin franquicia"
+      "kind_comprehensive": "Todo riesgo sin franquicia",
+      "tab_settings": "Ajustes",
+      "appearance_title": "Apariencia de {name}",
+      "appearance_help": "Decide la foto, la vista del coche y qué equipamiento se da por bueno.",
+      "model": "Modelo",
+      "trim": "Versión",
+      "color": "Color",
+      "wheels": "Llanta",
+      "model_ev": "Eléctrico",
+      "model_phev": "Híbrido enchufable",
+      "trim_full": "Asientos y volante calefactados, portón eléctrico",
+      "trim_basic": "Sin asientos ni volante calefactados",
+      "account": "Cuenta: {name}",
+      "pin_title": "Control remoto con PIN",
+      "pin_help": "Para bloquear y desbloquear, ventanillas y maletero. Es el PIN de la app oficial de Deepal, con la misma cuenta. Vale para todos los coches de la cuenta.",
+      "pin_enabled": "Órdenes con PIN",
+      "pin_enabled_help": "Sin esto, la tarjeta solo enseña el estado de puertas, ventanillas y maletero.",
+      "pin": "PIN",
+      "pin_field_help": "Se comprueba con Deepal al guardar. Déjalo vacío para no cambiarlo.",
+      "pin_checked": "Comprobado",
+      "show_pin": "Ver el PIN",
+      "pin_mode_title": "Cómo se usan las órdenes",
+      "mode_direct": "Directo",
+      "mode_direct_help": "La orden se envía al pulsar, tras confirmar. Lo más cómodo.",
+      "mode_armed": "Desbloquear antes",
+      "mode_armed_help": "Hay que activar primero «Desbloqueo de acciones» y solo vale durante un rato. Lo más seguro.",
+      "arm_seconds": "Cuánto dura el desbloqueo",
+      "arm_seconds_help": "Pasado ese tiempo, las órdenes con PIN se vuelven a bloquear solas.",
+      "seconds": "{value} s",
+      "arm_notify": "Avisar al desbloquear",
+      "arm_notify_help": "Una notificación en Home Assistant cada vez que se permiten las órdenes.",
+      "reading_title": "Lectura de datos",
+      "reading_help": "Cómo y cada cuánto se pregunta al coche.",
+      "scan_title": "Intervalo de lectura",
+      "scan_help": "Cada cuánto se leen los datos del coche. Muy bajo puede hacer que Deepal limite la cuenta.",
+      "minutes": "{value} min",
+      "wake_title": "Despertar el coche cuando haga falta",
+      "wake_help": "Al pulsar Actualizar y antes de una orden con PIN. Nunca en las lecturas automáticas, para cuidar la batería de 12 V.",
+      "manual_bev": "Manual BEV",
+      "manual_phev": "Manual PHEV",
+      "manual_help": "El enlace que abre la tarjeta en Otros → Manual. Vacío para usar el oficial.",
+      "debug_title": "Modo depuración",
+      "debug_help": "Guarda peticiones y respuestas completas (sin datos personales) en los diagnósticos.",
+      "save_check": "Guardar",
+      "unsaved_settings": "Hay cambios sin guardar.",
+      "error_pin_required": "Escribe el PIN.",
+      "error_pin_invalid": "El PIN no es correcto. Es el de la app oficial de Deepal, con esta misma cuenta.",
+      "error_pin_rate_limited": "Demasiados intentos con el PIN. Espera unos minutos antes de volver a probar.",
+      "error_cannot_connect": "No se ha podido conectar con Deepal. Inténtalo más tarde.",
+      "error_invalid_url": "El enlace del manual no es válido: tiene que empezar por http:// o https://.",
+      "error_unknown_model": "Ese modelo no está en el catálogo."
     },
     "en": {
       "tab_cars": "Vehicles",
@@ -425,7 +478,57 @@
       "kind_third_party": "Third party",
       "kind_third_party_plus": "Third party plus",
       "kind_comprehensive_excess": "Comprehensive with excess",
-      "kind_comprehensive": "Comprehensive without excess"
+      "kind_comprehensive": "Comprehensive without excess",
+      "tab_settings": "Settings",
+      "appearance_title": "Appearance of {name}",
+      "appearance_help": "Decides the photo, the view of the vehicle and which equipment is assumed.",
+      "model": "Model",
+      "trim": "Version",
+      "color": "Colour",
+      "wheels": "Wheels",
+      "model_ev": "Electric",
+      "model_phev": "Plug-in hybrid",
+      "trim_full": "Heated seats and steering wheel, power tailgate",
+      "trim_basic": "No heated seats or steering wheel",
+      "account": "Account: {name}",
+      "pin_title": "Remote control with PIN",
+      "pin_help": "To lock and unlock, windows and boot. It is the PIN of the official Deepal app, with the same account. It applies to every vehicle in the account.",
+      "pin_enabled": "PIN commands",
+      "pin_enabled_help": "Without this, the card only shows the state of doors, windows and boot.",
+      "pin": "PIN",
+      "pin_field_help": "It is checked with Deepal on saving. Leave it empty to keep the current one.",
+      "pin_checked": "Checked",
+      "show_pin": "Show the PIN",
+      "pin_mode_title": "How commands are used",
+      "mode_direct": "Direct",
+      "mode_direct_help": "The command is sent when you tap, after confirming. The most convenient.",
+      "mode_armed": "Unlock first",
+      "mode_armed_help": "You first have to enable \"Unlock PIN actions\", and it only lasts for a while. The safest.",
+      "arm_seconds": "How long the unlock lasts",
+      "arm_seconds_help": "After that time, PIN commands lock again on their own.",
+      "seconds": "{value} s",
+      "arm_notify": "Notify on unlock",
+      "arm_notify_help": "A notification in Home Assistant every time commands are allowed.",
+      "reading_title": "Data reading",
+      "reading_help": "How and how often the vehicle is asked.",
+      "scan_title": "Reading interval",
+      "scan_help": "How often the vehicle data is read. Very low values may make Deepal throttle the account.",
+      "minutes": "{value} min",
+      "wake_title": "Wake the vehicle when needed",
+      "wake_help": "When you tap Refresh and before a PIN command. Never on automatic readings, to protect the 12 V battery.",
+      "manual_bev": "BEV manual",
+      "manual_phev": "PHEV manual",
+      "manual_help": "The link the card opens under More → Manual. Empty to use the official one.",
+      "debug_title": "Debug mode",
+      "debug_help": "Stores full requests and responses (without personal data) in the diagnostics.",
+      "save_check": "Save",
+      "unsaved_settings": "There are unsaved changes.",
+      "error_pin_required": "Enter the PIN.",
+      "error_pin_invalid": "The PIN is not correct. It is the one from the official Deepal app, with this same account.",
+      "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
+      "error_cannot_connect": "Could not connect to Deepal. Try again later.",
+      "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
+      "error_unknown_model": "That model is not in the catalogue."
     },
     "pt": {
       "tab_cars": "Vehicles",
@@ -595,7 +698,57 @@
       "kind_third_party": "Third party",
       "kind_third_party_plus": "Third party plus",
       "kind_comprehensive_excess": "Comprehensive with excess",
-      "kind_comprehensive": "Comprehensive without excess"
+      "kind_comprehensive": "Comprehensive without excess",
+      "tab_settings": "Settings",
+      "appearance_title": "Appearance of {name}",
+      "appearance_help": "Decides the photo, the view of the vehicle and which equipment is assumed.",
+      "model": "Model",
+      "trim": "Version",
+      "color": "Colour",
+      "wheels": "Wheels",
+      "model_ev": "Electric",
+      "model_phev": "Plug-in hybrid",
+      "trim_full": "Heated seats and steering wheel, power tailgate",
+      "trim_basic": "No heated seats or steering wheel",
+      "account": "Account: {name}",
+      "pin_title": "Remote control with PIN",
+      "pin_help": "To lock and unlock, windows and boot. It is the PIN of the official Deepal app, with the same account. It applies to every vehicle in the account.",
+      "pin_enabled": "PIN commands",
+      "pin_enabled_help": "Without this, the card only shows the state of doors, windows and boot.",
+      "pin": "PIN",
+      "pin_field_help": "It is checked with Deepal on saving. Leave it empty to keep the current one.",
+      "pin_checked": "Checked",
+      "show_pin": "Show the PIN",
+      "pin_mode_title": "How commands are used",
+      "mode_direct": "Direct",
+      "mode_direct_help": "The command is sent when you tap, after confirming. The most convenient.",
+      "mode_armed": "Unlock first",
+      "mode_armed_help": "You first have to enable \"Unlock PIN actions\", and it only lasts for a while. The safest.",
+      "arm_seconds": "How long the unlock lasts",
+      "arm_seconds_help": "After that time, PIN commands lock again on their own.",
+      "seconds": "{value} s",
+      "arm_notify": "Notify on unlock",
+      "arm_notify_help": "A notification in Home Assistant every time commands are allowed.",
+      "reading_title": "Data reading",
+      "reading_help": "How and how often the vehicle is asked.",
+      "scan_title": "Reading interval",
+      "scan_help": "How often the vehicle data is read. Very low values may make Deepal throttle the account.",
+      "minutes": "{value} min",
+      "wake_title": "Wake the vehicle when needed",
+      "wake_help": "When you tap Refresh and before a PIN command. Never on automatic readings, to protect the 12 V battery.",
+      "manual_bev": "BEV manual",
+      "manual_phev": "PHEV manual",
+      "manual_help": "The link the card opens under More → Manual. Empty to use the official one.",
+      "debug_title": "Debug mode",
+      "debug_help": "Stores full requests and responses (without personal data) in the diagnostics.",
+      "save_check": "Save",
+      "unsaved_settings": "There are unsaved changes.",
+      "error_pin_required": "Enter the PIN.",
+      "error_pin_invalid": "The PIN is not correct. It is the one from the official Deepal app, with this same account.",
+      "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
+      "error_cannot_connect": "Could not connect to Deepal. Try again later.",
+      "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
+      "error_unknown_model": "That model is not in the catalogue."
     },
     "it": {
       "tab_cars": "Vehicles",
@@ -765,7 +918,57 @@
       "kind_third_party": "Third party",
       "kind_third_party_plus": "Third party plus",
       "kind_comprehensive_excess": "Comprehensive with excess",
-      "kind_comprehensive": "Comprehensive without excess"
+      "kind_comprehensive": "Comprehensive without excess",
+      "tab_settings": "Settings",
+      "appearance_title": "Appearance of {name}",
+      "appearance_help": "Decides the photo, the view of the vehicle and which equipment is assumed.",
+      "model": "Model",
+      "trim": "Version",
+      "color": "Colour",
+      "wheels": "Wheels",
+      "model_ev": "Electric",
+      "model_phev": "Plug-in hybrid",
+      "trim_full": "Heated seats and steering wheel, power tailgate",
+      "trim_basic": "No heated seats or steering wheel",
+      "account": "Account: {name}",
+      "pin_title": "Remote control with PIN",
+      "pin_help": "To lock and unlock, windows and boot. It is the PIN of the official Deepal app, with the same account. It applies to every vehicle in the account.",
+      "pin_enabled": "PIN commands",
+      "pin_enabled_help": "Without this, the card only shows the state of doors, windows and boot.",
+      "pin": "PIN",
+      "pin_field_help": "It is checked with Deepal on saving. Leave it empty to keep the current one.",
+      "pin_checked": "Checked",
+      "show_pin": "Show the PIN",
+      "pin_mode_title": "How commands are used",
+      "mode_direct": "Direct",
+      "mode_direct_help": "The command is sent when you tap, after confirming. The most convenient.",
+      "mode_armed": "Unlock first",
+      "mode_armed_help": "You first have to enable \"Unlock PIN actions\", and it only lasts for a while. The safest.",
+      "arm_seconds": "How long the unlock lasts",
+      "arm_seconds_help": "After that time, PIN commands lock again on their own.",
+      "seconds": "{value} s",
+      "arm_notify": "Notify on unlock",
+      "arm_notify_help": "A notification in Home Assistant every time commands are allowed.",
+      "reading_title": "Data reading",
+      "reading_help": "How and how often the vehicle is asked.",
+      "scan_title": "Reading interval",
+      "scan_help": "How often the vehicle data is read. Very low values may make Deepal throttle the account.",
+      "minutes": "{value} min",
+      "wake_title": "Wake the vehicle when needed",
+      "wake_help": "When you tap Refresh and before a PIN command. Never on automatic readings, to protect the 12 V battery.",
+      "manual_bev": "BEV manual",
+      "manual_phev": "PHEV manual",
+      "manual_help": "The link the card opens under More → Manual. Empty to use the official one.",
+      "debug_title": "Debug mode",
+      "debug_help": "Stores full requests and responses (without personal data) in the diagnostics.",
+      "save_check": "Save",
+      "unsaved_settings": "There are unsaved changes.",
+      "error_pin_required": "Enter the PIN.",
+      "error_pin_invalid": "The PIN is not correct. It is the one from the official Deepal app, with this same account.",
+      "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
+      "error_cannot_connect": "Could not connect to Deepal. Try again later.",
+      "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
+      "error_unknown_model": "That model is not in the catalogue."
     },
     "pl": {
       "tab_cars": "Vehicles",
@@ -935,7 +1138,57 @@
       "kind_third_party": "Third party",
       "kind_third_party_plus": "Third party plus",
       "kind_comprehensive_excess": "Comprehensive with excess",
-      "kind_comprehensive": "Comprehensive without excess"
+      "kind_comprehensive": "Comprehensive without excess",
+      "tab_settings": "Settings",
+      "appearance_title": "Appearance of {name}",
+      "appearance_help": "Decides the photo, the view of the vehicle and which equipment is assumed.",
+      "model": "Model",
+      "trim": "Version",
+      "color": "Colour",
+      "wheels": "Wheels",
+      "model_ev": "Electric",
+      "model_phev": "Plug-in hybrid",
+      "trim_full": "Heated seats and steering wheel, power tailgate",
+      "trim_basic": "No heated seats or steering wheel",
+      "account": "Account: {name}",
+      "pin_title": "Remote control with PIN",
+      "pin_help": "To lock and unlock, windows and boot. It is the PIN of the official Deepal app, with the same account. It applies to every vehicle in the account.",
+      "pin_enabled": "PIN commands",
+      "pin_enabled_help": "Without this, the card only shows the state of doors, windows and boot.",
+      "pin": "PIN",
+      "pin_field_help": "It is checked with Deepal on saving. Leave it empty to keep the current one.",
+      "pin_checked": "Checked",
+      "show_pin": "Show the PIN",
+      "pin_mode_title": "How commands are used",
+      "mode_direct": "Direct",
+      "mode_direct_help": "The command is sent when you tap, after confirming. The most convenient.",
+      "mode_armed": "Unlock first",
+      "mode_armed_help": "You first have to enable \"Unlock PIN actions\", and it only lasts for a while. The safest.",
+      "arm_seconds": "How long the unlock lasts",
+      "arm_seconds_help": "After that time, PIN commands lock again on their own.",
+      "seconds": "{value} s",
+      "arm_notify": "Notify on unlock",
+      "arm_notify_help": "A notification in Home Assistant every time commands are allowed.",
+      "reading_title": "Data reading",
+      "reading_help": "How and how often the vehicle is asked.",
+      "scan_title": "Reading interval",
+      "scan_help": "How often the vehicle data is read. Very low values may make Deepal throttle the account.",
+      "minutes": "{value} min",
+      "wake_title": "Wake the vehicle when needed",
+      "wake_help": "When you tap Refresh and before a PIN command. Never on automatic readings, to protect the 12 V battery.",
+      "manual_bev": "BEV manual",
+      "manual_phev": "PHEV manual",
+      "manual_help": "The link the card opens under More → Manual. Empty to use the official one.",
+      "debug_title": "Debug mode",
+      "debug_help": "Stores full requests and responses (without personal data) in the diagnostics.",
+      "save_check": "Save",
+      "unsaved_settings": "There are unsaved changes.",
+      "error_pin_required": "Enter the PIN.",
+      "error_pin_invalid": "The PIN is not correct. It is the one from the official Deepal app, with this same account.",
+      "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
+      "error_cannot_connect": "Could not connect to Deepal. Try again later.",
+      "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
+      "error_unknown_model": "That model is not in the catalogue."
     }
   };
 
@@ -1083,8 +1336,31 @@
     .log .dot.green { background: rgba(67, 160, 71, .15); color: var(--success-color, #43a047); }
     .log .what { min-width: 0; overflow-wrap: anywhere; } .log .what small { display: block; color: var(--secondary-text-color); font-size: 12px; }
 
+    /* --- Ajustes --- */
+    .acct { font-size: 13px; color: var(--secondary-text-color); margin: 0 4px 8px; }
+    h2.next { border-top: 1px solid var(--divider-color, #e0e0e0); padding-top: 18px; margin-top: 6px; }
+    .lbl { font-size: 13px; color: var(--secondary-text-color); padding: 14px 20px 8px; border-top: 1px solid var(--divider-color, #e0e0e0); }
+    .tog { width: 40px; height: 22px; border-radius: 11px; background: var(--disabled-text-color, #bdbdbd); position: relative; flex: none; }
+    .tog::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+    .tog.on { background: var(--primary-color); } .tog.on::after { left: 21px; }
+    .seg { display: inline-flex; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 18px; overflow: hidden; flex-wrap: wrap; }
+    .seg button { padding: 7px 13px; font-size: 13px; border-right: 1px solid var(--divider-color, #e0e0e0); }
+    .seg button:last-child { border: 0; } .seg button.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 20px 16px; }
+    .mode { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 14px 16px; text-align: left; }
+    .mode.on { border: 2px solid var(--primary-color); padding: 13px 15px; background: rgba(var(--rgb-primary-color, 3, 169, 244), .08); }
+    .mode b { font-weight: 500; display: flex; gap: 8px; align-items: center; --mdc-icon-size: 20px; } .mode b ha-icon { color: var(--primary-color); }
+    .mode p { margin: 6px 0 0; color: var(--secondary-text-color); font-size: 13px; line-height: 1.45; }
+    .pinbox { display: inline-flex; align-items: center; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 8px; overflow: hidden;
+      background: var(--card-background-color, #fff); }
+    .pinbox input { width: 110px; border: 0; padding: 9px 10px; font: inherit; font-size: 16px; letter-spacing: 4px; background: transparent; color: inherit; outline: none; }
+    .pinbox button { padding: 6px 8px; color: var(--secondary-text-color); --mdc-icon-size: 20px; display: flex; }
+    input.url { font: inherit; color: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--divider-color, #e0e0e0);
+      background: var(--card-background-color, #fff); width: 320px; max-width: 100%; }
+
     @media (max-width: 700px) {
       .view { padding: 12px; }
+      .modes { grid-template-columns: 1fr; }
       .grid3 { grid-template-columns: 1fr; }
       .hero img { width: 100%; margin: 0; }
       .tabs button { padding: 12px 10px; } .tabs button ha-icon { display: none; }
@@ -1114,6 +1390,19 @@
     .tb.fill { background: var(--primary-color); color: var(--text-primary-color, #fff); }
     .tb.danger { background: var(--error-color, #db4437); color: #fff; }
     .tb.left { margin-right: auto; }
+    /* Ventana de Apariencia */
+    .dlg.wide { max-width: 640px; }
+    .prev { background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05); border-radius: 16px; text-align: center; padding-top: 4px; margin-bottom: 4px; overflow: hidden; }
+    .prev img { width: 88%; display: block; margin: 0 auto -4px; }
+    .lbl { font-size: 13px; color: var(--secondary-text-color); margin: 14px 0 6px; }
+    .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+    .opt { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 9px 14px; text-align: left; }
+    .opt small { display: block; color: var(--secondary-text-color); font-size: 12px; margin-top: 2px; }
+    .opt.on { border: 2px solid var(--primary-color); padding: 8px 13px; background: rgba(var(--rgb-primary-color, 3, 169, 244), .1); }
+    .sw { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sw button { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; width: 92px; padding: 4px 0; }
+    .sw i { display: block; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--divider-color, #cfd8dc); }
+    .sw .on i { outline: 3px solid var(--primary-color); outline-offset: 2px; }
     [hidden] { display: none !important; }
   `;
 
@@ -1175,8 +1464,10 @@
       this._editing = null; // plazo que se está editando: { car, notice }
       this._filter = "all"; // filtro del historial
       this._links = {}; // enlaces firmados (copia, diagnósticos)
+      this._settings = {}; // ajustes cambiados y sin guardar, por cuenta
       this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
       this.shadowRoot.addEventListener("change", (event) => this._onChange(event));
+      this.shadowRoot.addEventListener("input", (event) => this._onInput(event));
       this.shadowRoot.addEventListener("keydown", (event) => this._onKey(event));
     }
 
@@ -1347,6 +1638,11 @@
       if (target && target.dataset && target.dataset.change) this[`_change_${target.dataset.change}`](target);
     }
 
+    _onInput(event) {
+      const target = event.target;
+      if (target && target.dataset && target.dataset.input) this._input_setting(target);
+    }
+
     _onKey(event) {
       if (!this._editing || !event.target.matches || !event.target.matches(".inp input")) return;
       if (event.key === "Enter") this._do_edit_ok();
@@ -1362,12 +1658,6 @@
 
     _do_reload() {
       this._load();
-    }
-
-    /** Va a otra página de Home Assistant sin recargar. */
-    _navigate(path) {
-      window.history.pushState(null, "", path);
-      window.dispatchEvent(new CustomEvent("location-changed", { bubbles: true, composed: true }));
     }
   }
 
@@ -1418,7 +1708,7 @@
               ${car.odometer == null ? "" : fact(`${this._number(Math.round(car.odometer))} km`, "odometer")}
             </div>
           </div>
-          <button class="btn o" data-action="appearance"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>
+          <button class="btn o" data-action="appearance" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>
         </div>
         ${chips.length ? `<div class="chips">${chips.join("")}</div>` : ""}
         <div class="grid3">
@@ -1481,11 +1771,6 @@
         `<div class="v">${this._date(data.record.renewal_date)}</div>
          <div class="d">${escapeHtml(detail)}</div>
          ${this._meter(1 - data.days_to_renewal / 365)}`);
-    }
-
-    /** La apariencia (modelo, versión, color) se sigue eligiendo en Configurar. */
-    _do_appearance() {
-      this._navigate(`/config/integrations/integration/${DOMAIN}`);
     }
   });
 
@@ -2046,6 +2331,198 @@
           phone_company: values.phone_company,
         }),
       });
+    }
+  });
+
+  // ── src/65_apariencia.js ──────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Ventana "Apariencia" de un coche: modelo, versión, color y llanta
+  // ---------------------------------------------------------------------------
+  // Se abre con el botón "Apariencia" de la pestaña Coches. La foto de arriba
+  // cambia con lo que se va eligiendo (son las fotos del catálogo); nada se
+  // guarda hasta pulsar "Guardar".
+  install(class {
+    _do_appearance(data) {
+      const car = this._car(data.car);
+      const models = this._state.models;
+      if (!models.length) return;
+      const pick = { ...car.appearance };
+      if (!models.some((model) => model.id === pick.model)) pick.model = models[0].id;
+
+      /** Lo elegido, sin lo que el modelo no tiene (al cambiar de modelo, por ejemplo). */
+      const current = () => {
+        const model = models.find((item) => item.id === pick.model);
+        if (!model.trims.some((trim) => trim.id === pick.trim)) pick.trim = null;
+        if (!model.colors.some((color) => color.id === pick.color)) pick.color = null;
+        const trim = model.trims.find((item) => item.id === pick.trim);
+        // La llanta solo se elige si el modelo tiene varias y la versión no trae una fija.
+        const choosable = model.wheels.length > 1 && !(trim && trim.wheel);
+        if (!model.wheels.includes(pick.wheels)) pick.wheels = model.wheels[0] || null;
+        return { model, trim, choosable };
+      };
+
+      const option = (field, value, name, note, on) =>
+        `<button class="opt ${on ? "on" : ""}" data-action="pick" data-field="${field}" data-value="${escapeHtml(value)}" aria-pressed="${on}">${escapeHtml(name)}${note ? `<small>${escapeHtml(note)}</small>` : ""}</button>`;
+      const trimNote = (trim) => {
+        const parts = [];
+        if (trim.equipped === 4) parts.push(this._t("trim_full"));
+        if (trim.equipped === 0) parts.push(this._t("trim_basic"));
+        if (trim.wheel) parts.push(this._maybe(`wheel_${trim.wheel}`) || trim.wheel);
+        return parts.join(" · ");
+      };
+      const body = () => {
+        const { model, choosable } = current();
+        const photo = model.photos[`${pick.trim || ""}|${pick.color || ""}`] || model.photos["|"];
+        return `<h2>${this._t("appearance_title", { name: escapeHtml(car.name) })}</h2><p>${this._t("appearance_help")}</p>
+          ${photo ? `<div class="prev"><img src="${escapeHtml(photo)}" alt=""></div>` : ""}
+          ${models.length > 1 ? `<div class="lbl">${this._t("model")}</div><div class="opts">${models.map((item) =>
+            option("model", item.id, item.name, this._t(item.fuel ? "model_phev" : "model_ev"), item.id === pick.model)).join("")}</div>` : ""}
+          ${model.trims.length ? `<div class="lbl">${this._t("trim")}</div><div class="opts">${model.trims.map((trim) =>
+            option("trim", trim.id, trim.name, trimNote(trim), trim.id === pick.trim)).join("")}</div>` : ""}
+          ${model.colors.length ? `<div class="lbl">${this._t("color")}</div><div class="sw">${model.colors.map((color) =>
+            `<button class="${color.id === pick.color ? "on" : ""}" data-action="pick" data-field="color" data-value="${escapeHtml(color.id)}" aria-pressed="${color.id === pick.color}">
+              <i style="background:${escapeHtml(color.swatch || "#9e9e9e")}"></i>${escapeHtml(color.name)}</button>`).join("")}</div>` : ""}
+          ${choosable ? `<div class="lbl">${this._t("wheels")}</div><div class="opts">${model.wheels.map((wheel) =>
+            option("wheels", wheel, this._maybe(`wheel_${wheel}`) || wheel, "", wheel === pick.wheels)).join("")}</div>` : ""}
+          <div class="err"></div>
+          <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div>`;
+      };
+
+      const dialog = openDialog(body(), (action, open, target) => {
+        if (action === "pick") {
+          pick[target.dataset.field] = target.dataset.value;
+          open.root.querySelector(".dlg").innerHTML = body();
+          return undefined;
+        }
+        if (action !== "ok") return undefined;
+        const { choosable } = current();
+        open.close();
+        return this._run(
+          "set_appearance",
+          { vehicle_id: car.id, model: pick.model, trim: pick.trim, color: pick.color, wheels: choosable ? pick.wheels : null },
+          this._t("saved")
+        );
+      });
+      dialog.root.querySelector(".dlg").classList.add("wide");
+    }
+  });
+
+  // ── src/66_ajustes.js ─────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Pestaña "Ajustes": control con PIN y lectura de datos (de la cuenta)
+  // ---------------------------------------------------------------------------
+  // El PIN es de la cuenta de Deepal, no de un coche: vale para todos. El panel
+  // nunca recibe el PIN guardado (solo si lo hay): el campo vacío = no cambiarlo.
+  // Lo que se toca queda en un borrador (this._settings) hasta pulsar "Guardar".
+  install(class {
+    _view_settings() {
+      const accounts = this._state.accounts;
+      return accounts.map((account) => this._settingsCard(account, accounts.length > 1)).join("");
+    }
+
+    /** Ajustes de una cuenta tal como se ven ahora: el borrador o lo guardado. */
+    _settingsOf(account) {
+      return (this._settings && this._settings[account.entry_id]) || { ...account, pin: "", manual_url: account.manual ? account.manual.url : "" };
+    }
+
+    _settingsDraft(entryId) {
+      const account = this._state.accounts.find((item) => item.entry_id === entryId);
+      this._settings = this._settings || {};
+      if (!this._settings[entryId]) this._settings[entryId] = this._settingsOf(account);
+      return this._settings[entryId];
+    }
+
+    _settingsCard(account, several) {
+      const now = this._settingsOf(account);
+      const entry = escapeHtml(account.entry_id);
+      const set = (field, value) => `data-action="setting" data-entry="${entry}" data-field="${field}" data-value="${value}"`;
+      const toggle = (field) => `<button class="tog ${now[field] ? "on" : ""}" ${set(field, !now[field])} role="switch" aria-checked="${Boolean(now[field])}"></button>`;
+      const row = (icon, title, help, control, grey) => `<div class="row"><div class="ic ${grey ? "grey" : ""}"><ha-icon icon="${icon}"></ha-icon></div>
+        <div class="tx">${this._t(title)}<small>${this._t(help)}</small></div>${control}</div>`;
+      const segment = (field, values, unit) => `<span class="seg">${values.map((value) =>
+        `<button class="${Number(now[field]) === value ? "on" : ""}" ${set(field, value)}>${this._t(unit, { value })}</button>`).join("")}</span>`;
+      const mode = (value, icon, extra) => `<button class="mode ${now.pin_mode === value ? "on" : ""}" ${set("pin_mode", value)} aria-pressed="${now.pin_mode === value}">
+        <b><ha-icon icon="${icon}"></ha-icon>${this._t(`mode_${value}`)}</b><p>${this._t(`mode_${value}_help`)}</p></button>${extra || ""}`;
+      const scan = [...new Set([2, 5, 10, 15, 30, Number(now.scan_minutes)])].sort((a, b) => a - b);
+      const dirty = Boolean(this._settings && this._settings[account.entry_id]);
+
+      const pin = !now.pin_enabled ? "" : `
+        ${row("mdi:form-textbox-password", "pin", "pin_field_help",
+          `<span class="pinbox"><input type="password" inputmode="numeric" autocomplete="off" data-input="pin" data-entry="${entry}" value="${escapeHtml(now.pin)}"
+              placeholder="${account.pin_set ? "••••" : ""}" aria-label="${this._t("pin")}">
+            <button data-action="reveal" aria-label="${this._t("show_pin")}"><ha-icon icon="mdi:eye-outline"></ha-icon></button></span>
+           ${account.pin_set && !now.pin ? `<span class="badge ok"><ha-icon icon="mdi:check-circle"></ha-icon>${this._t("pin_checked")}</span>` : ""}`)}
+        <div class="lbl">${this._t("pin_mode_title")}</div>
+        <div class="modes">
+          ${mode("direct", "mdi:flash")}
+          ${mode("armed", "mdi:lock-clock")}
+        </div>
+        ${now.pin_mode !== "armed" ? "" : `
+          ${row("mdi:timer-sand", "arm_seconds", "arm_seconds_help", segment("arm_seconds", account.arm_choices, "seconds"))}
+          ${row("mdi:bell-outline", "arm_notify", "arm_notify_help", toggle("arm_notify"), true)}`}`;
+
+      const manual = !account.manual ? "" : row("mdi:book-open-variant", `manual_${account.manual.kind}`, "manual_help",
+        `<input class="url" type="url" data-input="manual_url" data-entry="${entry}" value="${escapeHtml(now.manual_url)}" placeholder="${escapeHtml(account.manual.official)}">`);
+
+      return `${several ? `<div class="acct">${this._t("account", { name: escapeHtml(account.title) })}</div>` : ""}
+        <div class="card" data-account="${entry}">
+          <h2>${this._t("pin_title")}</h2><div class="sub">${this._t("pin_help")}</div>
+          ${row("mdi:shield-key", "pin_enabled", "pin_enabled_help", toggle("pin_enabled"))}
+          ${pin}
+          <h2 class="next">${this._t("reading_title")}</h2><div class="sub">${this._t("reading_help")}</div>
+          ${row("mdi:timer-outline", "scan_title", "scan_help", segment("scan_minutes", scan, "minutes"))}
+          ${row("mdi:sleep-off", "wake_title", "wake_help", toggle("wake"))}
+          ${manual}
+          ${row("mdi:bug-outline", "debug_title", "debug_help", toggle("debug"), true)}
+          <div class="foot ${dirty ? "dirty" : ""}">
+            <span>${dirty ? this._t("unsaved_settings") : ""}</span>
+            ${dirty ? `<button class="btn o" data-action="discard-settings" data-entry="${entry}">${this._t("discard")}</button>` : ""}
+            <button class="btn" data-action="save-settings" data-entry="${entry}">${this._t("save_check")}</button>
+          </div>
+        </div>`;
+    }
+
+    _do_setting(data) {
+      const draft = this._settingsDraft(data.entry);
+      const value = data.value;
+      draft[data.field] = value === "true" ? true : value === "false" ? false : /^\d+$/.test(value) ? Number(value) : value;
+      this._render();
+    }
+
+    /** Lo que se escribe (PIN, enlace) se apunta sin repintar, para no perder el cursor. */
+    _input_setting(target) {
+      this._settingsDraft(target.dataset.entry)[target.dataset.input] = target.value;
+    }
+
+    _do_reveal(_data, target) {
+      const input = target.parentNode.querySelector("input");
+      input.type = input.type === "password" ? "text" : "password";
+    }
+
+    _do_discard_settings(data) {
+      delete this._settings[data.entry];
+      this._render();
+    }
+
+    async _do_save_settings(data) {
+      const account = this._state.accounts.find((item) => item.entry_id === data.entry);
+      const now = this._settingsOf(account);
+      const message = {
+        entry_id: account.entry_id,
+        pin_enabled: Boolean(now.pin_enabled),
+        pin: String(now.pin || ""),
+        pin_mode: now.pin_mode,
+        arm_seconds: Number(now.arm_seconds),
+        arm_notify: Boolean(now.arm_notify),
+        scan_minutes: Number(now.scan_minutes),
+        wake: Boolean(now.wake),
+        debug: Boolean(now.debug),
+      };
+      if (account.manual) message.manual_url = String(now.manual_url || "");
+      if (await this._run("set_settings", message, this._t("saved"))) {
+        if (this._settings) delete this._settings[data.entry];
+        this._render();
+      }
     }
   });
 

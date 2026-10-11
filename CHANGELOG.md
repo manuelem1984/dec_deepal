@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b2] — 2026-10-11
+
+### Añadido
+
+- **Panel → Coches → Apariencia:** una ventana para elegir modelo, versión,
+  color y llanta, con la foto del catálogo delante, que cambia con lo que se
+  va eligiendo.
+- **Panel → Ajustes** (pestaña nueva), con lo que es de la cuenta: el control
+  remoto con PIN (un PIN para todos los coches) y la lectura de datos
+  (intervalo, despertar el coche, enlace del manual y modo depuración).
+
+### Cambiado
+
+- **El botón Configurar de la integración abre el panel**, como en Alarmo. El
+  panel sustituye a los apartados de Configurar; lo único que queda fuera es
+  añadir la cuenta y volver a iniciar sesión.
+- Los dos modos del PIN se llaman ahora «Directo» y «Desbloquear antes».
+
 ## [2.5.0b1] — 2026-10-11
 
 ### Añadido

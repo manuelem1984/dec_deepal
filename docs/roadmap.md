@@ -1,5 +1,15 @@
 # Hoja de ruta
 
+## Beta 2.5.0b2 (11-10-2026) — pendiente de probar
+
+- [ ] **Configurar** (en la integración) abre el panel.
+- [ ] **Apariencia:** cambiar el color o la llanta de un coche y ver que
+      cambian la foto, la vista y, con otra versión, las entidades.
+- [ ] **Ajustes:** cambiar el modo del PIN y el intervalo; un PIN equivocado
+      se rechaza sin perder lo cambiado.
+- [ ] Pendiente: quitar del código los apartados de Configurar cuando el
+      panel esté rodado.
+
 ## Beta 2.5.0b1 (11-10-2026) — pendiente de probar
 
 - [ ] **Panel:** aparece "DEC Deepal" en la barra lateral y las cuatro
@@ -10,9 +20,7 @@
       mismo por grupos.
 - [ ] **Datos:** el botón Descargar baja la copia también desde el móvil.
 - [ ] **Diagnóstico:** el historial enseña lo que va pasando.
-- [ ] Pendiente: traducir el panel a portugués, italiano y polaco; mover al
-      panel la apariencia y el PIN; decidir si Configurar acaba llevando al
-      panel.
+- [ ] Pendiente: traducir el panel a portugués, italiano y polaco.
 
 ## 2.4.0 (11-10-2026) — publicada
 

@@ -905,7 +905,7 @@
     "cancel": "Anuluj",
     "understood": "Rozumiem",
     "command_failed": "Nie udało się wysłać polecenia do samochodu.",
-    "no_pin": "Włącz sterowanie z PIN-em w Konfiguruj (integracja DEC Deepal), aby używać tego przycisku.",
+    "no_pin": "Włącz sterowanie z PIN-em w panelu DEC Deepal (karta Settings), aby używać tego przycisku.",
     "pin_confirm": "Polecenie zostanie wysłane do: {name}, z użyciem zapisanego PIN-u. Samochód może odpowiedzieć po kilku sekundach.",
     "lock_q": "Zablokować drzwi?",
     "lock_do": "Zablokuj",

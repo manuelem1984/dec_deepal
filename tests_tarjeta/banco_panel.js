@@ -43,11 +43,33 @@
     testigos_sin_aviso: ["warning_airbag"],
   };
 
+  const COLORS = [
+    { id: "andromeda_blue", name: "Andromeda Blue", swatch: "#2f4a6b" },
+    { id: "ganymade_grey", name: "Ganymede Grey", swatch: "#5d6166" },
+    { id: "moonlight_white", name: "Moonlight White", swatch: "" },
+  ];
+  /** Una foto por combinación, como hace panel.py: "<versión>|<color>". */
+  const photos = (trims) => Object.fromEntries(["", ...trims].flatMap((trim) => ["", ...COLORS.map((c) => c.id)].map((color) =>
+    [`${trim}|${color}`, trim && color ? `coche.svg?${trim}_${color}` : "coche.svg?default"])));
+  const MODELS = [
+    { id: "s05_2024", name: "Deepal S05 EV", fuel: false, colors: COLORS, wheels: ["cover", "open"], photos: photos(["pro", "max", "max_awd"]),
+      trims: [{ id: "pro", name: "RWD Pro", wheel: "pro", equipped: 0 }, { id: "max", name: "RWD Max", wheel: "", equipped: 4 }, { id: "max_awd", name: "4WD Max", wheel: "", equipped: 4 }] },
+    { id: "s05_phev", name: "Deepal S05 PHEV", fuel: true, colors: COLORS, wheels: ["cover", "open"], photos: photos(["pro", "limited_edition"]),
+      trims: [{ id: "pro", name: "Pro", wheel: "pro", equipped: 0 }, { id: "limited_edition", name: "Limited Edition", wheel: "pro", equipped: 4 }] },
+  ];
+
   const initial = () => ({
-    version: "2.5.0b1",
+    version: "2.5.0b2",
+    models: MODELS,
+    accounts: [{
+      entry_id: "entry1", title: "manuel@example.com", pin_enabled: true, pin_set: true, pin_mode: "armed", arm_seconds: 30, arm_notify: false,
+      arm_choices: [10, 20, 30, 60], scan_minutes: 5, scan_limits: [2, 60], wake: true, debug: false,
+      manual: { kind: "bev", url: "https://example.com/manual.pdf", official: "https://example.com/manual.pdf" },
+    }],
     cars: [
       {
         id: "car1", entry_id: "entry1", device_id: "dev1", key: "LS5A3ABE0RA000001", name: "Changote",
+        appearance: { model: "s05_2024", trim: "max", color: "ganymade_grey", wheels: "open" }, country: "es",
         model: "Deepal S05 EV RWD Max", color: "Ganymede Grey", wheel: "open", configured: true, sheet: SHEET,
         battery: 56, range: 276, odometer: 3498.8, itv_available: true, plan: { interval_km: 20000, interval_months: 12 },
         maintenance: {
@@ -65,6 +87,7 @@
       },
       {
         id: "car2", entry_id: "entry1", device_id: "dev2", key: "LS5A3ABE0RA000002", name: "Changuito",
+        appearance: { model: "s05_2024", trim: "pro", color: null, wheels: null }, country: "es",
         model: "Deepal S05 EV RWD Pro", color: "Deep Space Black", wheel: "pro", configured: true,
         sheet: { ...SHEET, version: "pro", verificada: false,
           funciones: { asientos_calefaccion: false, asientos_ventilacion: false, volante_calefactado: false, porton_electrico: false } },
@@ -157,7 +180,30 @@
         if (message.backup.formato !== "dec_deepal.datos") throw fail("invalid_file");
         return { cars: Object.keys(message.backup.coches || {}) };
       }
+      if (type === "set_settings") {
+        const account = state.accounts.find((item) => item.entry_id === message.entry_id);
+        if (message.pin_enabled) {
+          if (!message.pin && !account.pin_set) throw fail("pin_required");
+          if (message.pin === "0000") throw fail("pin_invalid"); // el PIN "malo" del banco de pruebas
+          if (message.manual_url && !/^https?:\/\//.test(message.manual_url)) throw fail("invalid_url");
+        }
+        Object.assign(account, { ...message, pin_set: message.pin_enabled && (Boolean(message.pin) || account.pin_set) });
+        if (!message.pin_enabled) Object.assign(account, { pin_mode: "direct", arm_seconds: 30, arm_notify: false });
+        if ("manual_url" in message) account.manual.url = message.manual_url || account.manual.official;
+        for (const gone of ["type", "pin", "manual_url"]) delete account[gone];
+        return null;
+      }
       const car = banco._coche(message.vehicle_id);
+      if (type === "set_appearance") {
+        const model = MODELS.find((item) => item.id === message.model);
+        if (!model) throw fail("unknown_model");
+        const trim = model.trims.find((item) => item.id === message.trim);
+        car.appearance = { model: message.model, trim: message.trim, color: message.color, wheels: message.wheels };
+        car.model = [model.name, trim && trim.name].filter(Boolean).join(" ");
+        car.wheel = (trim && trim.wheel) || message.wheels || model.wheels[0];
+        car.configured = true;
+        return null;
+      }
       if (type === "set_alerts") {
         const values = Object.fromEntries(NOTICES.filter((notice) => notice.threshold != null).map((notice) => [notice.id, notice.threshold]));
         Object.assign(values, message.thresholds);

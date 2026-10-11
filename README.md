@@ -56,7 +56,7 @@ En **Configurar**:
 | --- | --- |
 | Apariencia | Modelo, versión y color → foto exacta y entidades según versión |
 | Control con PIN | Activar puertas/ventanillas/maletero. El PIN se comprueba al guardar. **Opción A**: directo. **Opción B**: hay que desbloquear antes "Desbloqueo acciones con PIN" durante 10-60 s |
-| **Panel DEC Deepal** (barra lateral) | Todo de un vistazo: cada coche con su mantenimiento, ITV y seguro; quién recibe cada aviso, uno a uno y con sus plazos; copia de los datos y diagnóstico. Convive con Configurar |
+| **Panel DEC Deepal** (barra lateral) | Todo de un vistazo: cada coche con su mantenimiento, ITV y seguro; quién recibe cada aviso, uno a uno y con sus plazos; copia de los datos y diagnóstico. El botón Configurar de la integración lleva aquí |
 | Datos de los coches | Copia de seguridad del mantenimiento, la ITV y el seguro (descargar y cargar) y borrado. Los datos son del coche: no se pierden al quitar la cuenta |
 | Avanzado | Intervalo de lectura (5 min por defecto) y modo depuración |
 

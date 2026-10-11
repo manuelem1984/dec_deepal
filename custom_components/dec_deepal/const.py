@@ -165,6 +165,9 @@ CARD_JS_DIR: Final = "frontend_card"
 PANEL_JS_FILE: Final = "dec-deepal-panel.js"
 PANEL_JS_DIR: Final = "frontend_panel"
 PANEL_URL_PATH: Final = "dec-deepal-panel"
+#: Fotos del catálogo (públicas, como los iconos): el panel enseña la del
+#: modelo, versión y color que se están eligiendo, antes de guardar.
+PHOTOS_URL: Final = "/dec_deepal/photos"
 #: Cargador temprano: se copia a <config>/www/dec_deepal/ y se registra como
 #: recurso de los paneles (ver frontend.py).
 ICONS_LOADER_FILE: Final = "dec-icons-loader.js"

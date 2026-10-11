@@ -83,6 +83,8 @@ def test_vehicle_sheets(registries) -> None:  # noqa: ANN001
     assert ev.wheel_for("pro", "open") == "pro" and ev.wheel_for("max", "open") == "open"
     assert phev.wheel_for("pro", None) == phev.wheel_for("limited_edition", "open") == "pro"
     assert ev.colors["ganymade_grey"].name == "Ganymede Grey"
+    # Cada color lleva su muestra para el panel.
+    assert all(color.swatch.startswith("#") and len(color.swatch) == 7 for color in ev.colors.values())
 
     # Solo está verificada la del coche que se ha probado de verdad.
     assert ev.sheet("max")["verificada"] is True and ev.sheet("max")["origen"] == "de su versión"

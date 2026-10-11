@@ -20,6 +20,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry, async_
 from custom_components.dec_deepal import panel
 from custom_components.dec_deepal.alert_rules import NOTICES, route_for
 from custom_components.dec_deepal.alerts import AlertManager
+from custom_components.dec_deepal.api.errors import DeepalPinError
 from custom_components.dec_deepal.api.models import VehicleInfo
 from custom_components.dec_deepal.const import DOMAIN, OPT_ALERTS, PANEL_URL_PATH
 from custom_components.dec_deepal.debug.recorder import DebugRecorder
@@ -41,6 +42,7 @@ def _vehicle(model, vehicle_id: str, name: str, vin: str, trim: str):  # noqa: A
         model=model,
         trim=trim,
         color=next(iter(model.colors)),
+        wheels=None,
         wheel=model.wheel_for(trim, None),
         configured=True,
     )
@@ -72,8 +74,20 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> N
     recorder = DebugRecorder(50)
     manager = AlertManager(hass, entry.entry_id, old, vehicles, recorder=recorder)
     await manager.async_load()
+    checked: list[str] = []
+
+    async def check_pin(pin: str) -> None:
+        checked.append(pin)
+        if pin == "0000":
+            raise DeepalPinError("PIN incorrecto")
+
     entry.runtime_data = SimpleNamespace(
-        vehicles=vehicles, alerts=manager, recorder=recorder, registries=registries
+        vehicles=vehicles,
+        alerts=manager,
+        recorder=recorder,
+        registries=registries,
+        country=SimpleNamespace(id="es"),
+        commands=SimpleNamespace(check_pin=check_pin),
     )
     counter = iter(range(1, 1000))
 
@@ -102,6 +116,22 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> N
         {"id": "persistent_notification", "name": "Home Assistant notifications", "kind": "panel"},
     ]
     assert state["stored"] == [] and state["version"]
+    # Para elegir la apariencia: los modelos del país, con sus versiones, colores y fotos.
+    assert [item["id"] for item in state["models"]] == ["s05_2024", "s05_phev"]
+    ev = state["models"][0]
+    assert [(trim["id"], trim["equipped"], trim["wheel"]) for trim in ev["trims"]] == [
+        ("pro", 0, "pro"), ("max", 4, ""), ("max_awd", 4, ""),
+    ]
+    assert ev["colors"][2] == {"id": "ganymade_grey", "name": "Ganymede Grey", "swatch": "#5d6166"}
+    assert ev["photos"]["max|ganymade_grey"].startswith("/dec_deepal/photos/s05_2024/max_ganymade_grey.png?v=")
+    assert ev["photos"]["|"].startswith("/dec_deepal/photos/s05_2024/default.png")
+    assert state["models"][1]["fuel"] is True
+    assert first["appearance"] == {"model": "s05_2024", "trim": "max", "color": first["appearance"]["color"], "wheels": None}
+    # Los ajustes de la cuenta, sin el PIN (solo si lo hay).
+    account = state["accounts"][0]
+    assert account["pin_enabled"] is False and account["pin_set"] is False and "pin" not in account
+    assert account["scan_minutes"] == 5 and account["manual"]["kind"] == "bev"
+    assert account["manual"]["url"] == account["manual"]["official"] == model.manual_url
 
     # --- Avisos: aviso a aviso, con plazos ------------------------------------------------
     notices = {**first["alerts"]["notices"], "insurance_r1": [ME, "persistent_notification"]}
@@ -155,6 +185,41 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> N
     assert "notified" not in car["maintenance"]["record"]
     assert car["itv"]["due_date"] == "2029-01-22" and car["insurance"] is None
 
+    # --- Apariencia -----------------------------------------------------------------------
+    assert (await call("set_appearance", vehicle_id="car2", model="no-existe"))["error"]["code"] == "unknown_model"
+    assert (await call(
+        "set_appearance", vehicle_id="car2", model="s05_phev", trim="limited_edition", color="rosa", wheels="open",
+    ))["success"]
+    # Lo que el modelo no tiene (ese color) se descarta; lo demás se guarda en las opciones.
+    assert entry.options["appearance"]["car2"] == {
+        "model": "s05_phev", "trim": "limited_edition", "color": None, "wheels": "open",
+    }
+
+    # --- Ajustes: PIN y lectura de datos -----------------------------------------------------
+    base = {"entry_id": entry.entry_id, "scan_minutes": 10, "wake": False, "debug": True}
+    assert (await call("set_settings", **base, pin_enabled=True))["error"]["code"] == "pin_required"
+    assert (await call("set_settings", **base, pin_enabled=True, pin="0000"))["error"]["code"] == "pin_invalid"
+    assert (await call("set_settings", **base, pin_enabled=True, pin="1"))["success"]
+    assert (await call(
+        "set_settings", **base, pin_enabled=True, pin=" 2468 ", pin_mode="armed", arm_seconds=60,
+        manual_url="https://example.com/otro.pdf",
+    ))["success"]
+    options = entry.options
+    assert (options["pin_enabled"], options["pin"], options["pin_mode"], options["arm_seconds"]) == (True, "2468", "armed", 60)
+    assert (options["scan_minutes"], options["wake"], options["debug"]) == (10, False, True)
+    assert options["manual_urls"] == {"s05_2024": "https://example.com/otro.pdf"}
+    # Guardar otra cosa con el PIN vacío: se conserva y no se vuelve a comprobar.
+    before = list(checked)
+    assert (await call("set_settings", **base, pin_enabled=True, manual_url=""))["success"]
+    assert entry.options["pin"] == "2468" and checked == before and entry.options["manual_urls"] == {}
+    assert (await call("set_settings", **base, pin_enabled=True, manual_url="mal"))["error"]["code"] == "invalid_url"
+    assert (await call("set_settings", entry_id="otra", pin_enabled=False, scan_minutes=5, wake=True, debug=False))["success"] is False
+    # Desactivar el PIN lo borra: la próxima vez se empieza de cero.
+    assert (await call("set_settings", **base, pin_enabled=False))["success"]
+    assert entry.options["pin"] is None and entry.options["pin_mode"] == "direct"
+    account = (await call("state"))["result"]["accounts"][0]
+    assert account["pin_set"] is False and account["scan_minutes"] == 10
+
     # --- Datos: copia, envío a un móvil, carga y borrado -----------------------------------
     assert await async_setup_component(hass, "http", {})
     link = (await call("export_url"))["result"]
@@ -199,8 +264,8 @@ async def test_panel_is_registered_once_and_removed(hass: HomeAssistant) -> None
         assert options["frontend_url_path"] == PANEL_URL_PATH == "dec-deepal-panel"
         assert options["webcomponent_name"] == "dec-deepal-panel" and options["require_admin"] is True
         assert options["module_url"].startswith("/dec_deepal/frontend/dec-deepal-panel.js?v=")
-        # Convive con Configurar: no lo sustituye.
-        assert "config_panel_domain" not in options
+        # El botón Configurar de la integración abre el panel (como en Alarmo).
+        assert options["config_panel_domain"] == DOMAIN
         panel.async_unregister_panel(hass)
         panel.async_unregister_panel(hass)
         remove.assert_called_once_with(hass, PANEL_URL_PATH)
