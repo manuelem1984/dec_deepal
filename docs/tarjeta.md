@@ -99,8 +99,10 @@ solo muestran el estado y avisan de cómo activarlo.
 
 ## Cómo funciona por dentro
 
-- `frontend_card/dec-deepal-card.js`: JavaScript plano, un solo archivo, sin
-  dependencias ni compilación.
+- JavaScript plano, sin dependencias y sin Node. El código está repartido en
+  `frontend_card/src/`; Home Assistant carga un solo fichero,
+  `frontend_card/dec-deepal-card.js`, que se **genera** uniendo esos módulos
+  (ver "Tocar la tarjeta", más abajo).
 - **Encuentra las entidades sola:** cada entidad de la integración tiene una
   clave interna (`translation_key`) que no cambia aunque se renombre. La
   tarjeta busca, entre las entidades del dispositivo elegido, la de cada
@@ -111,20 +113,73 @@ solo muestran el estado y avisan de cómo activarlo.
 - Solo repinta cuando cambia alguna de sus entidades, y la imagen solo se
   vuelve a pedir cuando cambia.
 - La posición de los botones sobre la foto interior y los recortes de las
-  imágenes están al principio del archivo (`HOTSPOTS`, `INTERIOR`,
+  imágenes están en `src/10_constantes.js` (`HOTSPOTS`, `INTERIOR`,
   `ISOMETRIC`), hoy para el Deepal S05.
+
+## Tocar la tarjeta
+
+El código está en `custom_components/dec_deepal/frontend_card/src/`, un
+fichero por parte. Se unen por orden de nombre:
+
+| Fichero | Qué contiene |
+|---|---|
+| `00_cabecera.js` | Comentario de cabecera: qué hace la tarjeta |
+| `10_constantes.js` | Recortes de las imágenes, botones de Confort, testigos |
+| `20_textos.js` | Textos por idioma. **Generado** desde `idiomas/` |
+| `21_idioma.js` | Qué idioma toca y cómo se rellenan los textos |
+| `30_estilos.js` | Estilos de la tarjeta y de las ventanas |
+| `40_dialogo.js` | La ventana emergente que usan todos los menús |
+| `50_tarjeta.js` | La tarjeta: entidades, pintado, órdenes y pulsaciones |
+| `60_localizar.js` … `65_confort.js` | Una ventana o menú por fichero |
+| `90_registro.js` | Alta de la tarjeta en Home Assistant |
+
+**Cambiar algo:**
+
+1. Editar el fichero de `src/`.
+2. Reconstruir: `python tools/construir_tarjeta.py` (no hace falta instalar
+   nada). `python tools/generar_idiomas.py` también la reconstruye.
+3. Subir **tanto** `src/` **como** `dec-deepal-card.js`. Si se olvida el paso
+   2, una prueba falla y lo dice.
+
+`dec-deepal-card.js` no se edita a mano: lo dice su primera línea.
+
+**Añadir una ventana:** un fichero nuevo `src/6x_nombre.js` con sus métodos
+dentro de `install(class { ... })` (dentro, `this` es la tarjeta), y la
+llamada que la abre en `_onClick` (`50_tarjeta.js`) o en el menú "Otros".
+El código va sangrado dos espacios porque acaba dentro de una función.
+
+### Pruebas en un navegador
+
+`tests_tarjeta/` prueba la tarjeta en un navegador de verdad, con un Home
+Assistant falso (`banco.js`): lo que pinta, los idiomas, cada ventana y lo
+que se le pide al coche al pulsar. Si la tarjeta lanza un error de
+JavaScript, la prueba falla. GitHub las ejecuta en cada subida.
+
+```
+pip install -r tests_tarjeta/requirements.txt
+playwright install chromium          # o usar uno instalado: DEC_NAVEGADOR=msedge
+pytest -c tests_tarjeta/pytest.ini tests_tarjeta
+```
+
+Para mirarla a mano sin Home Assistant: abrir `tests_tarjeta/pagina.html` en
+el navegador y escribir en la consola `banco.montar()`; con
+`banco.cambiar({"climate.cabin_climate": ["heat_cool"]})` llega otra lectura
+del coche.
+
+Al arreglar un fallo de la tarjeta, añadir aquí la prueba que lo habría
+detectado.
 
 ## Idiomas
 
-La tarjeta está en español, inglés y portugués, según el idioma de cada
-usuario en Home Assistant (catalán, gallego y euskera se ven en español; cualquier
-otro, en inglés). Los textos se
-escriben en `idiomas/<idioma>.json` (sección `tarjeta`) y la tabla `TEXTS` de
-`dec-deepal-card.js` se genera (ver [idiomas.md](idiomas.md)).
+La tarjeta está en español, inglés, portugués, italiano y polaco, según el
+idioma de cada usuario en Home Assistant (catalán, gallego y euskera se ven
+en español; cualquier otro, en inglés). Los textos se escriben en
+`idiomas/<idioma>.json` (sección `tarjeta`) y la tabla `TEXTS`
+(`src/20_textos.js`) se genera (ver [idiomas.md](idiomas.md)).
 
 ## Límites conocidos
 
-- Hoy solo en español y con las vistas del Deepal S05.
+- Hoy solo con las vistas del Deepal S05.
 - Sin opciones todavía: no se puede elegir qué botones mostrar.
 - Los niveles de los asientos se envían al coche con cada toque; el coche
   tarda unos segundos en confirmar.

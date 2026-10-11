@@ -19,6 +19,25 @@ jobs:
       - name: Pruebas
         run: pytest -v
 
+  # La tarjeta, en un navegador (no necesita Home Assistant). Ver docs/tarjeta.md
+  tarjeta:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: tests_tarjeta/requirements.txt
+      - name: Instalar dependencias
+        run: |
+          pip install -r tests_tarjeta/requirements.txt
+          playwright install --with-deps chromium
+      - name: Tarjeta al día
+        run: python tools/construir_tarjeta.py --check
+      - name: Pruebas de la tarjeta
+        run: pytest -v -c tests_tarjeta/pytest.ini tests_tarjeta
+
   ruff:
     runs-on: ubuntu-latest
     steps:

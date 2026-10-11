@@ -14,7 +14,9 @@ Este programa lee esos ficheros y escribe lo que usa cada parte:
 
 - ``translations/<idioma>.json`` y ``strings.json`` (Home Assistant).
 - ``textos_generados.py`` (avisos y catálogo, para el código Python).
-- La tabla de textos de ``frontend_card/dec-deepal-card.js``.
+- La tabla de textos de la tarjeta (``frontend_card/src/20_textos.js``) y,
+  con ella, la tarjeta entera (``frontend_card/dec-deepal-card.js``; ver
+  ``tools/construir_tarjeta.py``).
 
 Reglas (``idiomas/idiomas.json``):
 
@@ -40,15 +42,31 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import construir_tarjeta  # noqa: E402 - el otro programa de esta carpeta
+
 ROOT = Path(__file__).resolve().parents[1]
 INTEGRATION = ROOT / "custom_components" / "dec_deepal"
 SOURCES = INTEGRATION / "idiomas"
 CONFIG = SOURCES / "idiomas.json"
 SECTIONS = ("integracion", "avisos", "tarjeta", "catalogo")
 PLACEHOLDER = re.compile(r"\{[a-z_]+\}")
-CARD = INTEGRATION / "frontend_card" / "dec-deepal-card.js"
-CARD_START = "  // >>> TEXTOS GENERADOS — no editar aquí: ver idiomas/ y tools/generar_idiomas.py >>>\n"
-CARD_END = "  // <<< TEXTOS GENERADOS <<<\n"
+CARD = construir_tarjeta.CARD
+#: Módulo de la tarjeta con la tabla de textos (se genera entero).
+CARD_TEXTS = "20_textos.js"
+CARD_TEXTS_HEADER = """\
+  // ---------------------------------------------------------------------------
+  // Textos por idioma
+  // ---------------------------------------------------------------------------
+  // FICHERO GENERADO a partir de idiomas/<idioma>.json (sección "tarjeta") con
+  // tools/generar_idiomas.py. Para cambiar un texto o añadir un idioma, editar
+  // esos ficheros y volver a generar. Guía: docs/idiomas.md
+  //
+  //   BASE_LANGUAGE       idioma que se usa si el del usuario no está traducido
+  //   BORROWED_LANGUAGES  idiomas sin traducción propia que usan la de otro
+  //   TEXTS               { idioma: { clave: texto } }, ya completa (a un
+  //                       idioma a medias se le rellena con el idioma base)
+"""
 
 
 class LanguageError(Exception):
@@ -160,21 +178,22 @@ def outputs(config: dict, languages: dict[str, dict]) -> dict[Path, str]:
     )
 
     # --- Tarjeta --------------------------------------------------------------
-    card = CARD.read_text(encoding="utf-8")
-    if CARD_START not in card or CARD_END not in card:
-        raise LanguageError(f"{CARD.name}: no encuentro las marcas de los textos generados")
+    # La tabla de textos es un módulo más de la tarjeta; con ella se reconstruye
+    # el fichero único que carga Home Assistant.
     table = json.dumps({code: data["tarjeta"] for code, data in complete.items()}, ensure_ascii=False, indent=2)
-    block = (
-        CARD_START
+    texts = (
+        CARD_TEXTS_HEADER
         + f'  const BASE_LANGUAGE = "{base_code}";\n'
         + f"  const BORROWED_LANGUAGES = {json.dumps(borrowed, ensure_ascii=False)};\n"
         + "  const TEXTS = "
         + table.replace("\n", "\n  ")
         + ";\n"
-        + CARD_END
     )
-    start, end = card.index(CARD_START), card.index(CARD_END) + len(CARD_END)
-    files[CARD] = card[:start] + block + card[end:]
+    files[construir_tarjeta.SRC / CARD_TEXTS] = texts
+    try:
+        files[CARD] = construir_tarjeta.build({**construir_tarjeta.read_sources(), CARD_TEXTS: texts})
+    except construir_tarjeta.BuildError as err:
+        raise LanguageError(str(err)) from err
     return files
 
 

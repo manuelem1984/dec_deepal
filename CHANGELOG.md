@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.4.0b2] — 2026-10-11
+
+Sin cambios para el usuario: la tarjeta hace lo mismo que en la 2.4.0b1.
+
+### Cambiado
+
+- **La tarjeta, por módulos.** Su código pasa de un fichero de 1.750 líneas a
+  14 módulos en `frontend_card/src/` (uno por ventana), que se unen en el
+  fichero de siempre con `tools/construir_tarjeta.py`. Sin Node ni
+  dependencias. Ver `docs/tarjeta.md`.
+
+### Añadido
+
+- **Pruebas automáticas de la tarjeta en un navegador** (`tests_tarjeta/`):
+  lo que pinta, los idiomas, cada ventana y lo que se le pide al coche. GitHub
+  las ejecuta en cada subida. Incluyen los tres fallos de la 2.3.0 (botones
+  de llamar, Confort en azul y texto de carga al cambiar de idioma).
+
 ## [2.4.0b1] — 2026-10-11
 
 ### Cambiado

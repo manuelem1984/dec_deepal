@@ -1,0 +1,4 @@
+# Pruebas de la tarjeta: pytest y un navegador manejado con Playwright.
+# Después de instalar:  playwright install chromium
+pytest
+playwright

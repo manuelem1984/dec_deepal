@@ -63,7 +63,7 @@ Cualquier otro idioma sin traducción ve los textos en el idioma **base**
 |---|---|
 | `translations/<idioma>.json` y `strings.json` | Home Assistant |
 | `textos_generados.py` | Avisos y catálogo (código Python) |
-| Bloque `TEXTOS GENERADOS` de `frontend_card/dec-deepal-card.js` | Tarjeta |
+| `frontend_card/src/20_textos.js` y `frontend_card/dec-deepal-card.js` | Tarjeta |
 
 El generador avisa, con un mensaje claro, si un idioma tiene una clave que no
 existe en el idioma base o si los datos entre llaves no coinciden.

@@ -1,0 +1,41 @@
+<!doctype html>
+<!--
+  Banco de pruebas de la tarjeta: la carga sola, sin Home Assistant.
+
+  - Sustituye lo mínimo de Home Assistant (<ha-card>, <ha-icon>).
+  - banco.js crea un "hass" falso que se maneja desde las pruebas.
+  - No pide nada a internet.
+
+  También sirve para mirar la tarjeta a mano: abrir este fichero en el
+  navegador y escribir en la consola, por ejemplo,  banco.montar()
+  Guía: docs/tarjeta.md
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Banco de pruebas de la tarjeta</title>
+    <style>
+      html {
+        --primary-text-color: #212121; --secondary-text-color: #727272; --primary-color: #03a9f4;
+        --rgb-primary-color: 3, 169, 244; --rgb-primary-text-color: 33, 33, 33;
+        --card-background-color: #fff; --divider-color: #e0e0e0; --state-active-color: #ffc107;
+        --success-color: #43a047; --warning-color: #f9a825; --error-color: #db4437;
+      }
+      body { margin: 0; padding: 16px; width: 472px; box-sizing: border-box; background: #fafafa; font-family: sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div id="mount"></div>
+    <script>
+      customElements.define("ha-card", class extends HTMLElement {
+        connectedCallback() { this.style.cssText = "display:block;background:#fff;border:1px solid #e0e0e0;border-radius:12px"; }
+      });
+      // El icono no se dibuja: basta con saber cuál es (atributo "icon").
+      customElements.define("ha-icon", class extends HTMLElement {
+        connectedCallback() { this.style.cssText = "display:inline-block;width:24px;height:24px"; }
+      });
+    </script>
+    <script src="../custom_components/dec_deepal/frontend_card/dec-deepal-card.js"></script>
+    <script src="banco.js"></script>
+  </body>
+</html>

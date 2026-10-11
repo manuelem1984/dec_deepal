@@ -1,5 +1,10 @@
 # Hoja de ruta
 
+## Beta 2.4.0b2 (11-10-2026) — pendiente de probar
+
+- [ ] La tarjeta hace lo mismo que antes (se partió en módulos): un repaso a
+      los seis botones y a las ventanas de Otros.
+
 ## Beta 2.4.0b1 (11-10-2026) — pendiente de probar
 
 - [ ] Al actualizar, mantenimiento, ITV y seguro siguen como estaban.

@@ -1,3 +1,5 @@
+// FICHERO GENERADO — no editar. El código está en frontend_card/src/;
+// tras cambiarlo, ejecutar: python tools/construir_tarjeta.py
 // =============================================================================
 // DEC Deepal — Tarjeta para los paneles de Home Assistant
 // =============================================================================
@@ -46,11 +48,14 @@
 // genera a partir de idiomas/ (ver docs/idiomas.md); ahí se decide también
 // qué idiomas usan los textos de otro y cuál es el idioma por defecto.
 //
-// Sin herramientas de compilación: JavaScript plano en un solo archivo, sin
-// dependencias. Lo carga dec-icons.js (ver frontend.py).
+// Sin dependencias y sin Node: JavaScript plano. El código está repartido en
+// frontend_card/src/ y se une en un solo archivo (dec-deepal-card.js) con
+// tools/construir_tarjeta.py. Lo carga dec-icons.js (ver frontend.py).
+// Guía para tocarla: docs/tarjeta.md
 // =============================================================================
 
 (() => {
+  // ── src/10_constantes.js ──────────────────────────────────────────────────
   const TAG = "dec-deepal-card";
   if (customElements.get(TAG)) return;
 
@@ -110,18 +115,19 @@
     { key: ITV, action: "itv", icon: "mdi:clipboard-check-outline", label: "itv" },
     { key: INSURANCE, action: "insurance", icon: "mdi:shield-car", label: "insurance" },
   ];
+
+  // ── src/20_textos.js ──────────────────────────────────────────────────────
   // ---------------------------------------------------------------------------
   // Textos por idioma
   // ---------------------------------------------------------------------------
-  // La tabla de abajo se GENERA a partir de idiomas/<idioma>.json (sección
-  // "tarjeta") con tools/generar_idiomas.py. Para cambiar un texto o añadir un
-  // idioma, editar esos ficheros y volver a generar. Guía: docs/idiomas.md
+  // FICHERO GENERADO a partir de idiomas/<idioma>.json (sección "tarjeta") con
+  // tools/generar_idiomas.py. Para cambiar un texto o añadir un idioma, editar
+  // esos ficheros y volver a generar. Guía: docs/idiomas.md
   //
   //   BASE_LANGUAGE       idioma que se usa si el del usuario no está traducido
   //   BORROWED_LANGUAGES  idiomas sin traducción propia que usan la de otro
   //   TEXTS               { idioma: { clave: texto } }, ya completa (a un
   //                       idioma a medias se le rellena con el idioma base)
-  // >>> TEXTOS GENERADOS — no editar aquí: ver idiomas/ y tools/generar_idiomas.py >>>
   const BASE_LANGUAGE = "en";
   const BORROWED_LANGUAGES = {"ca": "es", "eu": "es", "gl": "es"};
   const TEXTS = {
@@ -766,8 +772,11 @@
       "number_copied": "Skopiowano numer: {number}"
     }
   };
-  // <<< TEXTOS GENERADOS <<<
 
+  // ── src/21_idioma.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Idioma: qué textos toca y cómo se rellenan
+  // ---------------------------------------------------------------------------
   /** "pt-BR" → "pt"; un idioma prestado → el que le presta; uno sin traducir → el base. */
   const textLanguage = (language) => {
     const base = String(language || BASE_LANGUAGE).toLowerCase().split("-")[0];
@@ -786,6 +795,7 @@
   const escapeHtml = (text) =>
     String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
+  // ── src/30_estilos.js ─────────────────────────────────────────────────────
   // ---------------------------------------------------------------------------
   // Estilos
   // ---------------------------------------------------------------------------
@@ -901,6 +911,7 @@
     .mt ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--secondary-text-color); }
   `;
 
+  // ── src/40_dialogo.js ─────────────────────────────────────────────────────
   // ---------------------------------------------------------------------------
   // Ventana emergente mínima (se cuelga de <body> para quedar por encima)
   // ---------------------------------------------------------------------------
@@ -928,6 +939,7 @@
     return dialog;
   }
 
+  // ── src/50_tarjeta.js ─────────────────────────────────────────────────────
   // ---------------------------------------------------------------------------
   // La tarjeta
   // ---------------------------------------------------------------------------
@@ -1408,8 +1420,32 @@
       }
     }
 
-    // --- Menú "Localizar vehículo" ------------------------------------------------
+    /** Ventana con un texto y un único botón. */
+    _message(title, text) {
+      const html = `
+        <div class="confirm"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div>
+        <div class="btns"><button class="tb fill" data-action="close">${this._t("understood")}</button></div>`;
+      openDialog(html, () => undefined);
+    }
+  }
 
+  /**
+   * Añade a la tarjeta los métodos de una clase. Cada ventana (ITV, seguro,
+   * confort...) está en su fichero y se engancha así: dentro, `this` es la
+   * tarjeta, igual que en los métodos de arriba.
+   */
+  const install = (source) => {
+    for (const name of Object.getOwnPropertyNames(source.prototype)) {
+      if (name === "constructor") continue;
+      Object.defineProperty(DecDeepalCard.prototype, name, Object.getOwnPropertyDescriptor(source.prototype, name));
+    }
+  };
+
+  // ── src/60_localizar.js ───────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Menú "Localizar vehículo"
+  // ---------------------------------------------------------------------------
+  install(class {
     _openLocate() {
       const option = (key, icon, label, text) =>
         this._ids[key]
@@ -1428,9 +1464,13 @@
         this._call("locate", "button", "press", target.dataset.key);
       });
     }
+  });
 
-    // --- Menú "Otros" ---------------------------------------------------------------
-
+  // ── src/61_otros.js ───────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Menú "Otros"
+  // ---------------------------------------------------------------------------
+  install(class {
     _openOthers() {
       const maintenance = this._state(MAINTENANCE);
       const known = maintenance && maintenance.attributes.revision != null;
@@ -1469,9 +1509,13 @@
         else this._openInsurance();
       });
     }
+  });
 
-    // --- Ventana de ITV ---------------------------------------------------------------
-
+  // ── src/62_itv.js ─────────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Ventana de ITV
+  // ---------------------------------------------------------------------------
+  install(class {
     _openItv() {
       const state = this._state(ITV);
       if (!state || state.attributes.fecha_limite == null) return this._message(this._t("itv"), this._t("no_itv"));
@@ -1518,9 +1562,13 @@
         }
       });
     }
+  });
 
-    // --- Ventana de Seguro ----------------------------------------------------------
-
+  // ── src/63_seguro.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Ventana de Seguro
+  // ---------------------------------------------------------------------------
+  install(class {
     async _openInsurance() {
       const state = this._state(INSURANCE);
       if (!state || state.attributes.renovacion == null) return this._message(this._t("insurance"), this._t("no_insurance"));
@@ -1574,17 +1622,13 @@
       });
       return undefined;
     }
+  });
 
-    /** Ventana con un texto y un único botón. */
-    _message(title, text) {
-      const html = `
-        <div class="confirm"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(text)}</p></div>
-        <div class="btns"><button class="tb fill" data-action="close">${this._t("understood")}</button></div>`;
-      openDialog(html, () => undefined);
-    }
-
-    // --- Ventana de Mantenimiento ---------------------------------------------------
-
+  // ── src/64_mantenimiento.js ───────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Ventana de Mantenimiento
+  // ---------------------------------------------------------------------------
+  install(class {
     _openMaintenance() {
       const state = this._state(MAINTENANCE);
       if (!state) return;
@@ -1637,9 +1681,13 @@
         }
       });
     }
+  });
 
-    // --- Ventana de Confort ----------------------------------------------------
-
+  // ── src/65_confort.js ─────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Ventana de Confort
+  // ---------------------------------------------------------------------------
+  install(class {
     _spotLevel(spot) {
       if (spot.key.startsWith("switch.")) return this._value(spot.key) === "on" ? 1 : 0;
       return this._number(spot.key) || 0;
@@ -1736,8 +1784,12 @@
         }, 900);
       }
     }
-  }
+  });
 
+  // ── src/90_registro.js ────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Alta de la tarjeta en Home Assistant
+  // ---------------------------------------------------------------------------
   customElements.define(TAG, DecDeepalCard);
   window.customCards = window.customCards || [];
   window.customCards.push({
