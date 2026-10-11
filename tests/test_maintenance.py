@@ -43,10 +43,10 @@ def test_status_counts_from_last_service() -> None:
 
 def test_status_steps_and_levels() -> None:
     record = _record()
-    # Quedan 47 días y 2.000 km: escalones de 2 meses, 3.000 y 2.000 km.
+    # Quedan 47 días y 2.000 km: escalones de 2 meses, 5.000 y 2.500 km.
     soon = mt.status(record, date(2027, 1, 22), 37500)
     assert (soon.days_left, soon.km_left) == (47, 2000)
-    assert soon.steps == {"d60", "k3000", "k2000"}
+    assert soon.steps == {"t1", "k1", "k2"}
     assert soon.level == mt.LEVEL_SOON
     # Por kilómetros, aunque falte mucho tiempo.
     assert mt.status(record, date(2026, 6, 1), 39600).level == mt.LEVEL_OVERDUE
@@ -75,14 +75,19 @@ def test_late_setup_sends_a_single_notice() -> None:
     """Configurado cuando ya se cumplen varios escalones: un solo aviso."""
     record = _record()
     current = mt.status(record, date(2027, 2, 25), 38800)
-    assert current.steps == {"d60", "d30", "d15", "k3000", "k2000", "k1000"}
+    assert current.steps == {"t1", "t2", "t3", "k1", "k2", "k3"}
     assert mt.pending_notice(record, current) == "remaining"
     mt.mark_notified(record, current)
     assert mt.pending_notice(record, current) is None
 
 
 def test_register_service_restarts_the_count() -> None:
-    record = _record(notified={"d60", "k3000"})
+    # Lo guardado antes de la 2.5.0 (escalones con el valor en el nombre) se sigue leyendo.
+    assert mt.MaintenanceRecord.from_dict({"last_date": "2026-03-10", "notified": ["d60", "k3000", "overdue"]}).notified == {"t1", "k1", "overdue"}
+    # Con los plazos de un coche que los ha cambiado: los escalones siguen llamándose igual.
+    custom = mt.status(_record(), date(2027, 1, 22), 37500, day_steps=(90, 40, 10), km_steps=(1500, 1000, 500))
+    assert custom.steps == {"t1"} and custom.km_left == 2000
+    record = _record(notified={"t1", "k1"})
     mt.register_service(record, date(2027, 2, 20), 39850)
     assert record.services_done == 2 and record.notified == set()
     assert record.history == [{"number": 2, "date": "2027-02-20", "km": 39850}]

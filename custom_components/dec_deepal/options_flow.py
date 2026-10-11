@@ -381,7 +381,10 @@ class DecDeepalOptionsFlow(OptionsFlow):
 
         Cuatro grupos, cada uno con sus destinos: los avisos del coche (y
         cuáles de ellos), mantenimiento, ITV y seguro. Un grupo sin destinos
-        no avisa. Los destinos son los servicios ``notify.*`` de Home
+        no avisa. Es la versión resumida del panel DEC Deepal, donde se elige
+        aviso a aviso y se cambian los plazos: aquí cada grupo enseña los
+        destinos de cualquiera de sus avisos y, al guardar, se los pone a
+        todos (los plazos no se tocan). Los destinos son los servicios ``notify.*`` de Home
         Assistant (cada móvil con la app tiene el suyo,
         ``notify.mobile_app_<nombre>``) y el panel de notificaciones. Se
         guarda el nombre del servicio, pero se enseña el del dispositivo
@@ -394,12 +397,15 @@ class DecDeepalOptionsFlow(OptionsFlow):
         groups = [group for group in GROUPS if group != GROUP_ITV or alerts.itv_available]
 
         if user_input is not None:
-            chosen = Route(
-                targets={group: tuple(user_input.get(group, [])) for group in groups},
-                car_types=frozenset(user_input.get(OPT_ALERT_CAR_TYPES, [])),
+            chosen = Route.from_groups(
+                {
+                    # País sin ITV: se conserva lo que hubiera.
+                    group: user_input.get(group, []) if group in groups else route.group_targets(group)
+                    for group in GROUPS
+                },
+                user_input.get(OPT_ALERT_CAR_TYPES, []),
+                base=route,
             ).to_dict()
-            if GROUP_ITV not in groups:  # país sin ITV: se conserva lo que hubiera
-                chosen[GROUP_ITV] = list(route.targets.get(GROUP_ITV, ()))
             everyone = bool(user_input.get(_ALL_VEHICLES))
             # Al guardar se escribe lo de todos los coches: así desaparece el
             # formato antiguo (una lista para toda la cuenta) sin cambiar nada.
@@ -419,6 +425,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
             )
 
         used = {name for names in route.targets.values() for name in names}
+        chosen_now = {group: list(route.group_targets(group)) for group in GROUPS}
         available = set(self.hass.services.async_services().get("notify", {})) - _NOT_A_TARGET
         # Los móviles primero y el panel al final; los ya elegidos se
         # mantienen aunque hoy no existan.
@@ -439,7 +446,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
 
         def targets(group: str) -> dict[Any, Any]:
             return {
-                vol.Optional(group, default=list(route.targets.get(group, ()))): (
+                vol.Optional(group, default=chosen_now[group]): (
                     selector.SelectSelector(
                         selector.SelectSelectorConfig(
                             options=options, multiple=True, mode=selector.SelectSelectorMode.LIST

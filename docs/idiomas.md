@@ -16,13 +16,14 @@ idiomas/
 
 ## Qué hay en cada fichero
 
-Cuatro secciones:
+Cinco secciones:
 
 | Sección | Qué contiene | Dónde se ve |
 |---|---|---|
 | `integracion` | Configurar, nombres de entidades, errores, acciones | Home Assistant (idioma de cada usuario) |
 | `avisos` | Mensajes al móvil | Notificaciones (idioma general de Home Assistant) |
 | `tarjeta` | Botones, ventanas y mensajes de la tarjeta | Paneles (idioma de cada usuario) |
+| `panel` | Textos del panel DEC Deepal de la barra lateral | Panel (idioma de cada usuario) |
 | `catalogo` | Nombres del catálogo, p. ej. `operacion_brake_fluid` | Ventana de mantenimiento (idioma general) |
 
 Lo que va entre llaves (`{vehicle}`, `{days}`, `{name}`...) es un dato que se
@@ -64,6 +65,7 @@ Cualquier otro idioma sin traducción ve los textos en el idioma **base**
 | `translations/<idioma>.json` y `strings.json` | Home Assistant |
 | `textos_generados.py` | Avisos y catálogo (código Python) |
 | `frontend_card/src/20_textos.js` y `frontend_card/dec-deepal-card.js` | Tarjeta |
+| `frontend_panel/src/20_textos.js` y `frontend_panel/dec-deepal-panel.js` | Panel |
 
 El generador avisa, con un mensaje claro, si un idioma tiene una clave que no
 existe en el idioma base o si los datos entre llaves no coinciden.

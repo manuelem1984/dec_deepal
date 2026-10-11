@@ -8,6 +8,7 @@ un fichero por idioma (``es.json``, ``en.json``...) con cuatro secciones:
                    Assistant llama "translations").
 - ``avisos``       Mensajes que se envían al móvil.
 - ``tarjeta``      Textos de la tarjeta de los paneles.
+- ``panel``        Textos del panel DEC Deepal de la barra lateral.
 - ``catalogo``     Nombres del catálogo (operaciones de mantenimiento...).
 
 Este programa lee esos ficheros y escribe lo que usa cada parte:
@@ -17,6 +18,8 @@ Este programa lee esos ficheros y escribe lo que usa cada parte:
 - La tabla de textos de la tarjeta (``frontend_card/src/20_textos.js``) y,
   con ella, la tarjeta entera (``frontend_card/dec-deepal-card.js``; ver
   ``tools/construir_tarjeta.py``).
+- Lo mismo para el panel (``frontend_panel/src/20_textos.js`` y
+  ``frontend_panel/dec-deepal-panel.js``).
 
 Reglas (``idiomas/idiomas.json``):
 
@@ -49,7 +52,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INTEGRATION = ROOT / "custom_components" / "dec_deepal"
 SOURCES = INTEGRATION / "idiomas"
 CONFIG = SOURCES / "idiomas.json"
-SECTIONS = ("integracion", "avisos", "tarjeta", "catalogo")
+SECTIONS = ("integracion", "avisos", "tarjeta", "panel", "catalogo")
 PLACEHOLDER = re.compile(r"\{[a-z_]+\}")
 CARD = construir_tarjeta.CARD
 #: Módulo de la tarjeta con la tabla de textos (se genera entero).
@@ -58,7 +61,7 @@ CARD_TEXTS_HEADER = """\
   // ---------------------------------------------------------------------------
   // Textos por idioma
   // ---------------------------------------------------------------------------
-  // FICHERO GENERADO a partir de idiomas/<idioma>.json (sección "tarjeta") con
+  // FICHERO GENERADO a partir de idiomas/<idioma>.json (sección "{section}") con
   // tools/generar_idiomas.py. Para cambiar un texto o añadir un idioma, editar
   // esos ficheros y volver a generar. Guía: docs/idiomas.md
   //
@@ -180,19 +183,28 @@ def outputs(config: dict, languages: dict[str, dict]) -> dict[Path, str]:
     # --- Tarjeta --------------------------------------------------------------
     # La tabla de textos es un módulo más de la tarjeta; con ella se reconstruye
     # el fichero único que carga Home Assistant.
-    table = json.dumps({code: data["tarjeta"] for code, data in complete.items()}, ensure_ascii=False, indent=2)
-    texts = (
-        CARD_TEXTS_HEADER
-        + f'  const BASE_LANGUAGE = "{base_code}";\n'
-        + f"  const BORROWED_LANGUAGES = {json.dumps(borrowed, ensure_ascii=False)};\n"
-        + "  const TEXTS = "
-        + table.replace("\n", "\n  ")
-        + ";\n"
-    )
-    files[construir_tarjeta.SRC / CARD_TEXTS] = texts
+    def table(section: str) -> str:
+        """Módulo de textos (tarjeta o panel) con una sección de los idiomas."""
+        body = json.dumps({code: data[section] for code, data in complete.items()}, ensure_ascii=False, indent=2)
+        return (
+            CARD_TEXTS_HEADER.replace("{section}", section)
+            + f'  const BASE_LANGUAGE = "{base_code}";\n'
+            + f"  const BORROWED_LANGUAGES = {json.dumps(borrowed, ensure_ascii=False)};\n"
+            + "  const TEXTS = "
+            + body.replace("\n", "\n  ")
+            + ";\n"
+        )
+
+    tool = construir_tarjeta
     try:
-        files[CARD] = construir_tarjeta.build({**construir_tarjeta.read_sources(), CARD_TEXTS: texts})
-    except construir_tarjeta.BuildError as err:
+        for section, src, target, banner in (
+            ("tarjeta", tool.SRC, CARD, tool.BANNER),
+            ("panel", tool.PANEL_SRC, tool.PANEL, tool.PANEL_BANNER),
+        ):
+            texts = table(section)
+            files[src / CARD_TEXTS] = texts
+            files[target] = tool.build({**tool.read_sources(src), CARD_TEXTS: texts}, banner)
+    except tool.BuildError as err:
         raise LanguageError(str(err)) from err
     return files
 

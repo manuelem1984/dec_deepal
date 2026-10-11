@@ -1,0 +1,2057 @@
+// FICHERO GENERADO — no editar. El código está en frontend_panel/src/;
+// tras cambiarlo, ejecutar: python tools/construir_tarjeta.py
+// =============================================================================
+// DEC Deepal — Panel de la barra lateral de Home Assistant
+// =============================================================================
+// Una página propia (como la de Alarmo) donde se ve y se configura todo lo de
+// los coches. Convive con Configurar: los dos escriben en el mismo sitio.
+//
+// Pestañas:
+//   - Coches: una tarjeta por coche con su foto, versión, equipamiento (el de
+//     su ficha del catálogo) y tres recuadros —mantenimiento, ITV y seguro—,
+//     cada uno con un engranaje que abre su configuración.
+//   - Avisos: una tabla por coche. Un apartado plegable por cada cosa (carga,
+//     testigos, mantenimiento, ITV, seguro), una fila por aviso y una casilla
+//     por destino. Los avisos con plazo llevan un lápiz para cambiar los días
+//     o los kilómetros. Los cambios se guardan con el botón del coche.
+//   - Datos: descargar la copia, enviarla a un móvil, cargarla y borrar.
+//   - Diagnóstico: lo que ha pasado (cambios, órdenes, avisos) y la ficha que
+//     se le aplica a cada coche.
+//
+// Cómo habla con la integración
+// -----------------------------
+// Por WebSocket, con órdenes "dec_deepal/panel/..." (ver panel.py). Al abrir
+// pide el estado completo ("state") y lo vuelve a pedir tras cada cambio. No
+// guarda nada en el navegador.
+//
+// Idiomas: el del usuario en Home Assistant. La tabla de textos se genera a
+// partir de idiomas/ (sección "panel"; ver docs/idiomas.md).
+//
+// Sin dependencias y sin Node: JavaScript plano. El código está repartido en
+// frontend_panel/src/ y se une en un solo archivo (dec-deepal-panel.js) con
+// tools/construir_tarjeta.py. Guía para tocarlo: docs/panel.md
+// =============================================================================
+
+(() => {
+  // ── src/10_constantes.js ──────────────────────────────────────────────────
+  const TAG = "dec-deepal-panel";
+  if (customElements.get(TAG)) return;
+
+  const DOMAIN = "dec_deepal";
+  /** Prefijo de las órdenes del panel (panel.py). */
+  const WS = "dec_deepal/panel/";
+
+  /** Pestañas: clave (su nombre es el texto "tab_<clave>") e icono. */
+  const TABS = [
+    ["cars", "mdi:car-multiple"],
+    ["alerts", "mdi:bell-ring"],
+    ["data", "mdi:database"],
+    ["diagnostics", "mdi:stethoscope"],
+  ];
+
+  /** Apartados de los avisos, en su orden, con su icono. */
+  const SECTIONS = [
+    ["charge", "mdi:battery-charging"],
+    ["warnings", "mdi:car-brake-alert"],
+    ["maintenance", "mdi:wrench"],
+    ["itv", "mdi:clipboard-check-outline"],
+    ["insurance", "mdi:shield-car"],
+  ];
+
+  /** Equipamiento que se enseña de la ficha del coche: función, icono y texto. */
+  const FEATURES = [
+    ["asientos_calefaccion", "mdi:car-seat-heater", "feature_seat_heat"],
+    ["asientos_ventilacion", "mdi:car-seat-cooler", "feature_seat_vent"],
+    ["volante_calefactado", "mdi:steering", "feature_wheel_heat"],
+    ["porton_electrico", "mdi:car-back", "feature_power_tailgate"],
+  ];
+
+  /** Icono del destino de un aviso, según su tipo. */
+  const TARGET_ICONS = { mobile: "mdi:cellphone", service: "mdi:send", panel: "mdi:bell" };
+
+  /** Cuántos eventos del historial se enseñan como mucho. */
+  const HISTORY_LIMIT = 80;
+
+  // ── src/20_textos.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Textos por idioma
+  // ---------------------------------------------------------------------------
+  // FICHERO GENERADO a partir de idiomas/<idioma>.json (sección "panel") con
+  // tools/generar_idiomas.py. Para cambiar un texto o añadir un idioma, editar
+  // esos ficheros y volver a generar. Guía: docs/idiomas.md
+  //
+  //   BASE_LANGUAGE       idioma que se usa si el del usuario no está traducido
+  //   BORROWED_LANGUAGES  idiomas sin traducción propia que usan la de otro
+  //   TEXTS               { idioma: { clave: texto } }, ya completa (a un
+  //                       idioma a medias se le rellena con el idioma base)
+  const BASE_LANGUAGE = "en";
+  const BORROWED_LANGUAGES = {"ca": "es", "eu": "es", "gl": "es"};
+  const TEXTS = {
+    "es": {
+      "tab_cars": "Coches",
+      "tab_alerts": "Avisos",
+      "tab_data": "Datos",
+      "tab_diagnostics": "Diagnóstico",
+      "loading": "Cargando…",
+      "retry": "Reintentar",
+      "no_cars": "No hay ningún coche. Añade tu cuenta de Deepal en Ajustes → Dispositivos y servicios.",
+      "error_generic": "No se ha podido completar. Inténtalo otra vez.",
+      "day": "{value} día",
+      "days": "{value} días",
+      "or": " o ",
+      "not_configured": "Sin modelo elegido",
+      "sheet_verified": "Ficha verificada",
+      "sheet_catalogue": "Ficha de catálogo",
+      "battery": "Batería",
+      "range": "Autonomía",
+      "odometer": "Cuentakilómetros",
+      "appearance": "Apariencia",
+      "configure": "Configurar",
+      "section_charge": "Carga",
+      "section_warnings": "Testigos",
+      "section_maintenance": "Mantenimiento",
+      "section_itv": "ITV",
+      "section_insurance": "Seguro",
+      "section_appearance": "Apariencia",
+      "not_set": "Sin configurar",
+      "add_maintenance": "Activar el mantenimiento",
+      "add_itv": "Añadir la ITV",
+      "add_insurance": "Añadir el seguro",
+      "feature_seat_heat": "Asientos calefactados",
+      "feature_seat_vent": "Asientos ventilados",
+      "feature_wheel_heat": "Volante calefactado",
+      "feature_power_tailgate": "Portón eléctrico",
+      "wheel_pro": "Llanta 18\"",
+      "wheel_cover": "Llanta 20\" con tapacubos",
+      "wheel_open": "Llanta 20\" sin tapacubos",
+      "service_number": "{number}ª revisión",
+      "overdue": "Vencido",
+      "left": "Quedan {parts}",
+      "overdue_since": "Vencida hace {days}",
+      "cancel_until": "Límite para desistir: {date}",
+      "renews_in": "Se renueva en {days}",
+      "notify_to": "Avisar a",
+      "n_notices": "{count} avisos",
+      "edit_threshold": "Cambiar el plazo",
+      "accept": "Aceptar",
+      "cancel": "Cancelar",
+      "unit_km": "km",
+      "unit_days": "días",
+      "when_km": "quedan {value} km",
+      "when_days": "quedan {value} días",
+      "when_days_deadline": "quedan {value} días para el límite",
+      "when_maintenance_overdue": "el mismo día o al llegar a los km",
+      "when_itv_overdue": "el mismo día",
+      "when_insurance_last_day": "último día para desistir",
+      "when_insurance_renewed": "el mismo día",
+      "notice_charge_started": "Carga iniciada",
+      "notice_charge_interrupted": "Carga interrumpida",
+      "notice_charge_finished": "Carga terminada",
+      "notice_warnings": "Testigos del cuadro",
+      "notice_tires": "Neumáticos",
+      "notice_key_battery": "Pila del mando baja",
+      "notice_maintenance_t1": "Aviso tiempo 1",
+      "notice_maintenance_t2": "Aviso tiempo 2",
+      "notice_maintenance_t3": "Aviso tiempo 3",
+      "notice_maintenance_k1": "Aviso kilometraje 1",
+      "notice_maintenance_k2": "Aviso kilometraje 2",
+      "notice_maintenance_k3": "Aviso kilometraje 3",
+      "notice_maintenance_overdue": "Mantenimiento cumplido",
+      "notice_itv_t1": "Aviso 1",
+      "notice_itv_t2": "Aviso 2",
+      "notice_itv_t3": "Aviso 3",
+      "notice_itv_overdue": "ITV cumplida",
+      "notice_insurance_c1": "Aviso desistimiento 1",
+      "notice_insurance_c2": "Aviso desistimiento 2",
+      "notice_insurance_last_day": "Desistimiento cumplido",
+      "notice_insurance_r1": "Aviso renovación 1",
+      "notice_insurance_r2": "Aviso renovación 2",
+      "notice_insurance_renewed": "Seguro renovado",
+      "unsaved": "Hay cambios sin guardar en este coche.",
+      "alerts_help": "Marca a quién llega cada aviso. El lápiz cambia los días o los kilómetros de ese aviso; los plazos son de este coche.",
+      "factory_thresholds": "Plazos de fábrica",
+      "discard": "Descartar",
+      "save": "Guardar",
+      "saved": "Guardado",
+      "copy_from": "Copiar de otro coche",
+      "car": "Coche",
+      "copy": "Copiar",
+      "error_threshold_range_limits": "El plazo tiene que estar entre {low} y {high}.",
+      "error_threshold_range": "Hay un plazo fuera de sus límites.",
+      "error_threshold_order": "Los plazos tienen que ir de mayor a menor: el aviso 1 antes que el 2, y el 2 antes que el 3.",
+      "error_not_found": "Ese coche ya no está en la cuenta.",
+      "error_invalid": "Hay algún dato que no vale.",
+      "error_invalid_file": "El fichero no es una copia de DEC Deepal o está dañado.",
+      "error_newer_file": "La copia es de una versión más nueva de la integración. Actualiza DEC Deepal y vuelve a intentarlo.",
+      "error_empty_file": "La copia no trae datos de ningún coche.",
+      "error_required": "Faltan datos por rellenar.",
+      "backup_title": "Copia de seguridad",
+      "backup_help": "Mantenimiento, ITV, seguro y apariencia de tus coches. Los datos son del coche: no se pierden al quitar la cuenta.",
+      "download_title": "Descargar una copia",
+      "download_help": "Un fichero con los datos de todos los coches. Lleva la póliza y los teléfonos del seguro: guárdalo en un sitio seguro.",
+      "download": "Descargar",
+      "send_title": "Enviar la copia a un móvil",
+      "send_help": "Llega una notificación; al tocarla se abre el navegador y se descarga. El enlace caduca en 10 minutos.",
+      "send": "Enviar",
+      "sent_to": "Notificación enviada a {device}.",
+      "upload_title": "Cargar una copia",
+      "upload_help": "Deja los coches del fichero como estaban en él. Los demás no se tocan.",
+      "choose_file": "Elegir fichero",
+      "imported": "Copia cargada: {cars}.",
+      "stored_title": "Datos guardados",
+      "stored_help": "Por coche, identificado por su bastidor.",
+      "stored_none": "No hay datos guardados de ningún coche.",
+      "in_account": "En la cuenta",
+      "no_account": "Sin cuenta",
+      "no_account_note": "Ya no está en ninguna cuenta",
+      "delete": "Borrar",
+      "delete_title": "Borrar datos guardados",
+      "delete_confirm": "Se borran el mantenimiento, la ITV y el seguro de {name}. No se puede deshacer: descarga antes una copia si los quieres conservar.",
+      "deleted": "Datos borrados.",
+      "history_title": "Qué ha pasado",
+      "history_help": "Cambios, órdenes y avisos desde el último reinicio. Es lo mismo que va en el fichero de diagnóstico.",
+      "history_none": "Todavía no hay nada que enseñar.",
+      "filter_all": "Todo",
+      "filter_orders": "Órdenes",
+      "filter_alerts": "Avisos",
+      "filter_errors": "Errores",
+      "sheets_title": "Ficha de cada coche",
+      "sheets_help": "Qué equipamiento da por bueno la integración y de dónde lo saca.",
+      "diagnostics_file": "Diagnóstico",
+      "ev_alert": "Aviso enviado: {name}",
+      "ev_targets": "{count} destinos",
+      "ev_wake": "Despertar del coche",
+      "ev_command": "Orden: {name}",
+      "ev_code": "código",
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "enabled": "Activado",
+      "mt_services_done": "Revisiones ya pasadas",
+      "mt_services_done_help": "0 si el coche aún no ha pasado ninguna.",
+      "mt_last_date": "Fecha de la última revisión",
+      "mt_last_km": "Kilómetros en esa revisión",
+      "mt_interval_km": "Intervalo (km)",
+      "mt_interval_months": "Intervalo (meses)",
+      "mt_register": "Registrar revisión hecha",
+      "mt_register_help": "Anota la {number}ª revisión de {name} y empieza a contar la siguiente.",
+      "date": "Fecha",
+      "mt_km": "Kilómetros",
+      "register": "Registrar",
+      "registered": "Registrado",
+      "itv_registration": "Fecha de matriculación",
+      "itv_last": "Última ITV pasada",
+      "itv_last_help": "Vacío si aún no ha pasado ninguna.",
+      "itv_next": "Próxima ITV (a mano)",
+      "itv_next_help": "Vacío para calcularla sola.",
+      "itv_register": "Registrar ITV pasada",
+      "itv_register_help": "Anota que {name} ha pasado la ITV y calcula la siguiente.",
+      "ins_company": "Compañía",
+      "ins_policy": "Número de póliza",
+      "ins_kind": "Tipo de seguro",
+      "ins_renewal": "Fecha de renovación",
+      "ins_notice": "Días de preaviso para desistir",
+      "ins_phone_assistance": "Teléfono de asistencia",
+      "ins_phone_company": "Teléfono de la compañía",
+      "kind_third_party": "Terceros",
+      "kind_third_party_plus": "Terceros ampliado",
+      "kind_comprehensive_excess": "Todo riesgo con franquicia",
+      "kind_comprehensive": "Todo riesgo sin franquicia"
+    },
+    "en": {
+      "tab_cars": "Vehicles",
+      "tab_alerts": "Notifications",
+      "tab_data": "Data",
+      "tab_diagnostics": "Diagnostics",
+      "loading": "Loading…",
+      "retry": "Retry",
+      "no_cars": "There are no vehicles. Add your Deepal account under Settings → Devices and services.",
+      "error_generic": "That could not be completed. Try again.",
+      "day": "{value} day",
+      "days": "{value} days",
+      "or": " or ",
+      "not_configured": "No model chosen",
+      "sheet_verified": "Verified sheet",
+      "sheet_catalogue": "Catalogue sheet",
+      "battery": "Battery",
+      "range": "Range",
+      "odometer": "Odometer",
+      "appearance": "Appearance",
+      "configure": "Configure",
+      "section_charge": "Charging",
+      "section_warnings": "Warnings",
+      "section_maintenance": "Servicing",
+      "section_itv": "ITV",
+      "section_insurance": "Insurance",
+      "section_appearance": "Appearance",
+      "not_set": "Not set up",
+      "add_maintenance": "Enable servicing",
+      "add_itv": "Add the ITV",
+      "add_insurance": "Add the insurance",
+      "feature_seat_heat": "Heated seats",
+      "feature_seat_vent": "Ventilated seats",
+      "feature_wheel_heat": "Heated steering wheel",
+      "feature_power_tailgate": "Power tailgate",
+      "wheel_pro": "18\" wheels",
+      "wheel_cover": "20\" wheels with aero covers",
+      "wheel_open": "20\" wheels without covers",
+      "service_number": "Service no. {number}",
+      "overdue": "Overdue",
+      "left": "{parts} left",
+      "overdue_since": "Overdue by {days}",
+      "cancel_until": "Cancellation deadline: {date}",
+      "renews_in": "Renews in {days}",
+      "notify_to": "Notify",
+      "n_notices": "{count} notifications",
+      "edit_threshold": "Change the lead time",
+      "accept": "Accept",
+      "cancel": "Cancel",
+      "unit_km": "km",
+      "unit_days": "days",
+      "when_km": "{value} km left",
+      "when_days": "{value} days left",
+      "when_days_deadline": "{value} days before the deadline",
+      "when_maintenance_overdue": "on the day or when the km are reached",
+      "when_itv_overdue": "on the day",
+      "when_insurance_last_day": "last day to cancel",
+      "when_insurance_renewed": "on the day",
+      "notice_charge_started": "Charging started",
+      "notice_charge_interrupted": "Charging interrupted",
+      "notice_charge_finished": "Charging finished",
+      "notice_warnings": "Warning lights",
+      "notice_tires": "Tyres",
+      "notice_key_battery": "Key fob battery low",
+      "notice_maintenance_t1": "Time notice 1",
+      "notice_maintenance_t2": "Time notice 2",
+      "notice_maintenance_t3": "Time notice 3",
+      "notice_maintenance_k1": "Distance notice 1",
+      "notice_maintenance_k2": "Distance notice 2",
+      "notice_maintenance_k3": "Distance notice 3",
+      "notice_maintenance_overdue": "Service due",
+      "notice_itv_t1": "Notice 1",
+      "notice_itv_t2": "Notice 2",
+      "notice_itv_t3": "Notice 3",
+      "notice_itv_overdue": "ITV due",
+      "notice_insurance_c1": "Cancellation notice 1",
+      "notice_insurance_c2": "Cancellation notice 2",
+      "notice_insurance_last_day": "Cancellation deadline",
+      "notice_insurance_r1": "Renewal notice 1",
+      "notice_insurance_r2": "Renewal notice 2",
+      "notice_insurance_renewed": "Insurance renewed",
+      "unsaved": "This vehicle has unsaved changes.",
+      "alerts_help": "Tick who gets each notification. The pencil changes the days or kilometres of that notification; lead times belong to this vehicle.",
+      "factory_thresholds": "Default lead times",
+      "discard": "Discard",
+      "save": "Save",
+      "saved": "Saved",
+      "copy_from": "Copy from another vehicle",
+      "car": "Vehicle",
+      "copy": "Copy",
+      "error_threshold_range_limits": "The lead time must be between {low} and {high}.",
+      "error_threshold_range": "A lead time is out of range.",
+      "error_threshold_order": "Lead times must go from longest to shortest: notice 1 before 2, and 2 before 3.",
+      "error_not_found": "That vehicle is no longer in the account.",
+      "error_invalid": "Some of the data is not valid.",
+      "error_invalid_file": "The file is not a DEC Deepal backup, or it is damaged.",
+      "error_newer_file": "The backup comes from a newer version of the integration. Update DEC Deepal and try again.",
+      "error_empty_file": "The backup has no data for any vehicle.",
+      "error_required": "Some fields are missing.",
+      "backup_title": "Backup",
+      "backup_help": "Servicing, ITV, insurance and appearance of your vehicles. The data belongs to the vehicle: it is not lost when the account is removed.",
+      "download_title": "Download a backup",
+      "download_help": "A file with the data of every vehicle. It contains the policy number and the insurance phone numbers: keep it somewhere safe.",
+      "download": "Download",
+      "send_title": "Send the backup to a phone",
+      "send_help": "A notification arrives; tapping it opens the browser and downloads the file. The link expires in 10 minutes.",
+      "send": "Send",
+      "sent_to": "Notification sent to {device}.",
+      "upload_title": "Load a backup",
+      "upload_help": "Leaves the vehicles in the file as they were in it. Other vehicles are left untouched.",
+      "choose_file": "Choose file",
+      "imported": "Backup loaded: {cars}.",
+      "stored_title": "Stored data",
+      "stored_help": "Per vehicle, identified by its VIN.",
+      "stored_none": "There is no stored data for any vehicle.",
+      "in_account": "In the account",
+      "no_account": "No account",
+      "no_account_note": "No longer in any account",
+      "delete": "Delete",
+      "delete_title": "Delete stored data",
+      "delete_confirm": "The servicing, ITV and insurance of {name} will be deleted. This cannot be undone: download a backup first if you want to keep them.",
+      "deleted": "Data deleted.",
+      "history_title": "What has happened",
+      "history_help": "Changes, commands and notifications since the last restart. The same goes into the diagnostics file.",
+      "history_none": "Nothing to show yet.",
+      "filter_all": "All",
+      "filter_orders": "Commands",
+      "filter_alerts": "Notifications",
+      "filter_errors": "Errors",
+      "sheets_title": "Sheet of each vehicle",
+      "sheets_help": "Which equipment the integration assumes, and where it gets it from.",
+      "diagnostics_file": "Diagnostics",
+      "ev_alert": "Notification sent: {name}",
+      "ev_targets": "{count} recipients",
+      "ev_wake": "Vehicle wake-up",
+      "ev_command": "Command: {name}",
+      "ev_code": "code",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "enabled": "Enabled",
+      "mt_services_done": "Services already done",
+      "mt_services_done_help": "0 if the vehicle has not had any yet.",
+      "mt_last_date": "Date of the last service",
+      "mt_last_km": "Kilometres at that service",
+      "mt_interval_km": "Interval (km)",
+      "mt_interval_months": "Interval (months)",
+      "mt_register": "Register a completed service",
+      "mt_register_help": "Records service no. {number} of {name} and starts counting towards the next one.",
+      "date": "Date",
+      "mt_km": "Kilometres",
+      "register": "Register",
+      "registered": "Registered",
+      "itv_registration": "Registration date",
+      "itv_last": "Last ITV passed",
+      "itv_last_help": "Empty if it has not passed any yet.",
+      "itv_next": "Next ITV (manual)",
+      "itv_next_help": "Empty to have it calculated.",
+      "itv_register": "Register a passed ITV",
+      "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
+      "ins_company": "Company",
+      "ins_policy": "Policy number",
+      "ins_kind": "Type of insurance",
+      "ins_renewal": "Renewal date",
+      "ins_notice": "Notice days to cancel",
+      "ins_phone_assistance": "Assistance phone",
+      "ins_phone_company": "Company phone",
+      "kind_third_party": "Third party",
+      "kind_third_party_plus": "Third party plus",
+      "kind_comprehensive_excess": "Comprehensive with excess",
+      "kind_comprehensive": "Comprehensive without excess"
+    },
+    "pt": {
+      "tab_cars": "Vehicles",
+      "tab_alerts": "Notifications",
+      "tab_data": "Data",
+      "tab_diagnostics": "Diagnostics",
+      "loading": "Loading…",
+      "retry": "Retry",
+      "no_cars": "There are no vehicles. Add your Deepal account under Settings → Devices and services.",
+      "error_generic": "That could not be completed. Try again.",
+      "day": "{value} day",
+      "days": "{value} days",
+      "or": " or ",
+      "not_configured": "No model chosen",
+      "sheet_verified": "Verified sheet",
+      "sheet_catalogue": "Catalogue sheet",
+      "battery": "Battery",
+      "range": "Range",
+      "odometer": "Odometer",
+      "appearance": "Appearance",
+      "configure": "Configure",
+      "section_charge": "Charging",
+      "section_warnings": "Warnings",
+      "section_maintenance": "Servicing",
+      "section_itv": "ITV",
+      "section_insurance": "Insurance",
+      "section_appearance": "Appearance",
+      "not_set": "Not set up",
+      "add_maintenance": "Enable servicing",
+      "add_itv": "Add the ITV",
+      "add_insurance": "Add the insurance",
+      "feature_seat_heat": "Heated seats",
+      "feature_seat_vent": "Ventilated seats",
+      "feature_wheel_heat": "Heated steering wheel",
+      "feature_power_tailgate": "Power tailgate",
+      "wheel_pro": "18\" wheels",
+      "wheel_cover": "20\" wheels with aero covers",
+      "wheel_open": "20\" wheels without covers",
+      "service_number": "Service no. {number}",
+      "overdue": "Overdue",
+      "left": "{parts} left",
+      "overdue_since": "Overdue by {days}",
+      "cancel_until": "Cancellation deadline: {date}",
+      "renews_in": "Renews in {days}",
+      "notify_to": "Notify",
+      "n_notices": "{count} notifications",
+      "edit_threshold": "Change the lead time",
+      "accept": "Accept",
+      "cancel": "Cancel",
+      "unit_km": "km",
+      "unit_days": "days",
+      "when_km": "{value} km left",
+      "when_days": "{value} days left",
+      "when_days_deadline": "{value} days before the deadline",
+      "when_maintenance_overdue": "on the day or when the km are reached",
+      "when_itv_overdue": "on the day",
+      "when_insurance_last_day": "last day to cancel",
+      "when_insurance_renewed": "on the day",
+      "notice_charge_started": "Charging started",
+      "notice_charge_interrupted": "Charging interrupted",
+      "notice_charge_finished": "Charging finished",
+      "notice_warnings": "Warning lights",
+      "notice_tires": "Tyres",
+      "notice_key_battery": "Key fob battery low",
+      "notice_maintenance_t1": "Time notice 1",
+      "notice_maintenance_t2": "Time notice 2",
+      "notice_maintenance_t3": "Time notice 3",
+      "notice_maintenance_k1": "Distance notice 1",
+      "notice_maintenance_k2": "Distance notice 2",
+      "notice_maintenance_k3": "Distance notice 3",
+      "notice_maintenance_overdue": "Service due",
+      "notice_itv_t1": "Notice 1",
+      "notice_itv_t2": "Notice 2",
+      "notice_itv_t3": "Notice 3",
+      "notice_itv_overdue": "ITV due",
+      "notice_insurance_c1": "Cancellation notice 1",
+      "notice_insurance_c2": "Cancellation notice 2",
+      "notice_insurance_last_day": "Cancellation deadline",
+      "notice_insurance_r1": "Renewal notice 1",
+      "notice_insurance_r2": "Renewal notice 2",
+      "notice_insurance_renewed": "Insurance renewed",
+      "unsaved": "This vehicle has unsaved changes.",
+      "alerts_help": "Tick who gets each notification. The pencil changes the days or kilometres of that notification; lead times belong to this vehicle.",
+      "factory_thresholds": "Default lead times",
+      "discard": "Discard",
+      "save": "Save",
+      "saved": "Saved",
+      "copy_from": "Copy from another vehicle",
+      "car": "Vehicle",
+      "copy": "Copy",
+      "error_threshold_range_limits": "The lead time must be between {low} and {high}.",
+      "error_threshold_range": "A lead time is out of range.",
+      "error_threshold_order": "Lead times must go from longest to shortest: notice 1 before 2, and 2 before 3.",
+      "error_not_found": "That vehicle is no longer in the account.",
+      "error_invalid": "Some of the data is not valid.",
+      "error_invalid_file": "The file is not a DEC Deepal backup, or it is damaged.",
+      "error_newer_file": "The backup comes from a newer version of the integration. Update DEC Deepal and try again.",
+      "error_empty_file": "The backup has no data for any vehicle.",
+      "error_required": "Some fields are missing.",
+      "backup_title": "Backup",
+      "backup_help": "Servicing, ITV, insurance and appearance of your vehicles. The data belongs to the vehicle: it is not lost when the account is removed.",
+      "download_title": "Download a backup",
+      "download_help": "A file with the data of every vehicle. It contains the policy number and the insurance phone numbers: keep it somewhere safe.",
+      "download": "Download",
+      "send_title": "Send the backup to a phone",
+      "send_help": "A notification arrives; tapping it opens the browser and downloads the file. The link expires in 10 minutes.",
+      "send": "Send",
+      "sent_to": "Notification sent to {device}.",
+      "upload_title": "Load a backup",
+      "upload_help": "Leaves the vehicles in the file as they were in it. Other vehicles are left untouched.",
+      "choose_file": "Choose file",
+      "imported": "Backup loaded: {cars}.",
+      "stored_title": "Stored data",
+      "stored_help": "Per vehicle, identified by its VIN.",
+      "stored_none": "There is no stored data for any vehicle.",
+      "in_account": "In the account",
+      "no_account": "No account",
+      "no_account_note": "No longer in any account",
+      "delete": "Delete",
+      "delete_title": "Delete stored data",
+      "delete_confirm": "The servicing, ITV and insurance of {name} will be deleted. This cannot be undone: download a backup first if you want to keep them.",
+      "deleted": "Data deleted.",
+      "history_title": "What has happened",
+      "history_help": "Changes, commands and notifications since the last restart. The same goes into the diagnostics file.",
+      "history_none": "Nothing to show yet.",
+      "filter_all": "All",
+      "filter_orders": "Commands",
+      "filter_alerts": "Notifications",
+      "filter_errors": "Errors",
+      "sheets_title": "Sheet of each vehicle",
+      "sheets_help": "Which equipment the integration assumes, and where it gets it from.",
+      "diagnostics_file": "Diagnostics",
+      "ev_alert": "Notification sent: {name}",
+      "ev_targets": "{count} recipients",
+      "ev_wake": "Vehicle wake-up",
+      "ev_command": "Command: {name}",
+      "ev_code": "code",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "enabled": "Enabled",
+      "mt_services_done": "Services already done",
+      "mt_services_done_help": "0 if the vehicle has not had any yet.",
+      "mt_last_date": "Date of the last service",
+      "mt_last_km": "Kilometres at that service",
+      "mt_interval_km": "Interval (km)",
+      "mt_interval_months": "Interval (months)",
+      "mt_register": "Register a completed service",
+      "mt_register_help": "Records service no. {number} of {name} and starts counting towards the next one.",
+      "date": "Date",
+      "mt_km": "Kilometres",
+      "register": "Register",
+      "registered": "Registered",
+      "itv_registration": "Registration date",
+      "itv_last": "Last ITV passed",
+      "itv_last_help": "Empty if it has not passed any yet.",
+      "itv_next": "Next ITV (manual)",
+      "itv_next_help": "Empty to have it calculated.",
+      "itv_register": "Register a passed ITV",
+      "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
+      "ins_company": "Company",
+      "ins_policy": "Policy number",
+      "ins_kind": "Type of insurance",
+      "ins_renewal": "Renewal date",
+      "ins_notice": "Notice days to cancel",
+      "ins_phone_assistance": "Assistance phone",
+      "ins_phone_company": "Company phone",
+      "kind_third_party": "Third party",
+      "kind_third_party_plus": "Third party plus",
+      "kind_comprehensive_excess": "Comprehensive with excess",
+      "kind_comprehensive": "Comprehensive without excess"
+    },
+    "it": {
+      "tab_cars": "Vehicles",
+      "tab_alerts": "Notifications",
+      "tab_data": "Data",
+      "tab_diagnostics": "Diagnostics",
+      "loading": "Loading…",
+      "retry": "Retry",
+      "no_cars": "There are no vehicles. Add your Deepal account under Settings → Devices and services.",
+      "error_generic": "That could not be completed. Try again.",
+      "day": "{value} day",
+      "days": "{value} days",
+      "or": " or ",
+      "not_configured": "No model chosen",
+      "sheet_verified": "Verified sheet",
+      "sheet_catalogue": "Catalogue sheet",
+      "battery": "Battery",
+      "range": "Range",
+      "odometer": "Odometer",
+      "appearance": "Appearance",
+      "configure": "Configure",
+      "section_charge": "Charging",
+      "section_warnings": "Warnings",
+      "section_maintenance": "Servicing",
+      "section_itv": "ITV",
+      "section_insurance": "Insurance",
+      "section_appearance": "Appearance",
+      "not_set": "Not set up",
+      "add_maintenance": "Enable servicing",
+      "add_itv": "Add the ITV",
+      "add_insurance": "Add the insurance",
+      "feature_seat_heat": "Heated seats",
+      "feature_seat_vent": "Ventilated seats",
+      "feature_wheel_heat": "Heated steering wheel",
+      "feature_power_tailgate": "Power tailgate",
+      "wheel_pro": "18\" wheels",
+      "wheel_cover": "20\" wheels with aero covers",
+      "wheel_open": "20\" wheels without covers",
+      "service_number": "Service no. {number}",
+      "overdue": "Overdue",
+      "left": "{parts} left",
+      "overdue_since": "Overdue by {days}",
+      "cancel_until": "Cancellation deadline: {date}",
+      "renews_in": "Renews in {days}",
+      "notify_to": "Notify",
+      "n_notices": "{count} notifications",
+      "edit_threshold": "Change the lead time",
+      "accept": "Accept",
+      "cancel": "Cancel",
+      "unit_km": "km",
+      "unit_days": "days",
+      "when_km": "{value} km left",
+      "when_days": "{value} days left",
+      "when_days_deadline": "{value} days before the deadline",
+      "when_maintenance_overdue": "on the day or when the km are reached",
+      "when_itv_overdue": "on the day",
+      "when_insurance_last_day": "last day to cancel",
+      "when_insurance_renewed": "on the day",
+      "notice_charge_started": "Charging started",
+      "notice_charge_interrupted": "Charging interrupted",
+      "notice_charge_finished": "Charging finished",
+      "notice_warnings": "Warning lights",
+      "notice_tires": "Tyres",
+      "notice_key_battery": "Key fob battery low",
+      "notice_maintenance_t1": "Time notice 1",
+      "notice_maintenance_t2": "Time notice 2",
+      "notice_maintenance_t3": "Time notice 3",
+      "notice_maintenance_k1": "Distance notice 1",
+      "notice_maintenance_k2": "Distance notice 2",
+      "notice_maintenance_k3": "Distance notice 3",
+      "notice_maintenance_overdue": "Service due",
+      "notice_itv_t1": "Notice 1",
+      "notice_itv_t2": "Notice 2",
+      "notice_itv_t3": "Notice 3",
+      "notice_itv_overdue": "ITV due",
+      "notice_insurance_c1": "Cancellation notice 1",
+      "notice_insurance_c2": "Cancellation notice 2",
+      "notice_insurance_last_day": "Cancellation deadline",
+      "notice_insurance_r1": "Renewal notice 1",
+      "notice_insurance_r2": "Renewal notice 2",
+      "notice_insurance_renewed": "Insurance renewed",
+      "unsaved": "This vehicle has unsaved changes.",
+      "alerts_help": "Tick who gets each notification. The pencil changes the days or kilometres of that notification; lead times belong to this vehicle.",
+      "factory_thresholds": "Default lead times",
+      "discard": "Discard",
+      "save": "Save",
+      "saved": "Saved",
+      "copy_from": "Copy from another vehicle",
+      "car": "Vehicle",
+      "copy": "Copy",
+      "error_threshold_range_limits": "The lead time must be between {low} and {high}.",
+      "error_threshold_range": "A lead time is out of range.",
+      "error_threshold_order": "Lead times must go from longest to shortest: notice 1 before 2, and 2 before 3.",
+      "error_not_found": "That vehicle is no longer in the account.",
+      "error_invalid": "Some of the data is not valid.",
+      "error_invalid_file": "The file is not a DEC Deepal backup, or it is damaged.",
+      "error_newer_file": "The backup comes from a newer version of the integration. Update DEC Deepal and try again.",
+      "error_empty_file": "The backup has no data for any vehicle.",
+      "error_required": "Some fields are missing.",
+      "backup_title": "Backup",
+      "backup_help": "Servicing, ITV, insurance and appearance of your vehicles. The data belongs to the vehicle: it is not lost when the account is removed.",
+      "download_title": "Download a backup",
+      "download_help": "A file with the data of every vehicle. It contains the policy number and the insurance phone numbers: keep it somewhere safe.",
+      "download": "Download",
+      "send_title": "Send the backup to a phone",
+      "send_help": "A notification arrives; tapping it opens the browser and downloads the file. The link expires in 10 minutes.",
+      "send": "Send",
+      "sent_to": "Notification sent to {device}.",
+      "upload_title": "Load a backup",
+      "upload_help": "Leaves the vehicles in the file as they were in it. Other vehicles are left untouched.",
+      "choose_file": "Choose file",
+      "imported": "Backup loaded: {cars}.",
+      "stored_title": "Stored data",
+      "stored_help": "Per vehicle, identified by its VIN.",
+      "stored_none": "There is no stored data for any vehicle.",
+      "in_account": "In the account",
+      "no_account": "No account",
+      "no_account_note": "No longer in any account",
+      "delete": "Delete",
+      "delete_title": "Delete stored data",
+      "delete_confirm": "The servicing, ITV and insurance of {name} will be deleted. This cannot be undone: download a backup first if you want to keep them.",
+      "deleted": "Data deleted.",
+      "history_title": "What has happened",
+      "history_help": "Changes, commands and notifications since the last restart. The same goes into the diagnostics file.",
+      "history_none": "Nothing to show yet.",
+      "filter_all": "All",
+      "filter_orders": "Commands",
+      "filter_alerts": "Notifications",
+      "filter_errors": "Errors",
+      "sheets_title": "Sheet of each vehicle",
+      "sheets_help": "Which equipment the integration assumes, and where it gets it from.",
+      "diagnostics_file": "Diagnostics",
+      "ev_alert": "Notification sent: {name}",
+      "ev_targets": "{count} recipients",
+      "ev_wake": "Vehicle wake-up",
+      "ev_command": "Command: {name}",
+      "ev_code": "code",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "enabled": "Enabled",
+      "mt_services_done": "Services already done",
+      "mt_services_done_help": "0 if the vehicle has not had any yet.",
+      "mt_last_date": "Date of the last service",
+      "mt_last_km": "Kilometres at that service",
+      "mt_interval_km": "Interval (km)",
+      "mt_interval_months": "Interval (months)",
+      "mt_register": "Register a completed service",
+      "mt_register_help": "Records service no. {number} of {name} and starts counting towards the next one.",
+      "date": "Date",
+      "mt_km": "Kilometres",
+      "register": "Register",
+      "registered": "Registered",
+      "itv_registration": "Registration date",
+      "itv_last": "Last ITV passed",
+      "itv_last_help": "Empty if it has not passed any yet.",
+      "itv_next": "Next ITV (manual)",
+      "itv_next_help": "Empty to have it calculated.",
+      "itv_register": "Register a passed ITV",
+      "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
+      "ins_company": "Company",
+      "ins_policy": "Policy number",
+      "ins_kind": "Type of insurance",
+      "ins_renewal": "Renewal date",
+      "ins_notice": "Notice days to cancel",
+      "ins_phone_assistance": "Assistance phone",
+      "ins_phone_company": "Company phone",
+      "kind_third_party": "Third party",
+      "kind_third_party_plus": "Third party plus",
+      "kind_comprehensive_excess": "Comprehensive with excess",
+      "kind_comprehensive": "Comprehensive without excess"
+    },
+    "pl": {
+      "tab_cars": "Vehicles",
+      "tab_alerts": "Notifications",
+      "tab_data": "Data",
+      "tab_diagnostics": "Diagnostics",
+      "loading": "Loading…",
+      "retry": "Retry",
+      "no_cars": "There are no vehicles. Add your Deepal account under Settings → Devices and services.",
+      "error_generic": "That could not be completed. Try again.",
+      "day": "{value} day",
+      "days": "{value} days",
+      "or": " or ",
+      "not_configured": "No model chosen",
+      "sheet_verified": "Verified sheet",
+      "sheet_catalogue": "Catalogue sheet",
+      "battery": "Battery",
+      "range": "Range",
+      "odometer": "Odometer",
+      "appearance": "Appearance",
+      "configure": "Configure",
+      "section_charge": "Charging",
+      "section_warnings": "Warnings",
+      "section_maintenance": "Servicing",
+      "section_itv": "ITV",
+      "section_insurance": "Insurance",
+      "section_appearance": "Appearance",
+      "not_set": "Not set up",
+      "add_maintenance": "Enable servicing",
+      "add_itv": "Add the ITV",
+      "add_insurance": "Add the insurance",
+      "feature_seat_heat": "Heated seats",
+      "feature_seat_vent": "Ventilated seats",
+      "feature_wheel_heat": "Heated steering wheel",
+      "feature_power_tailgate": "Power tailgate",
+      "wheel_pro": "18\" wheels",
+      "wheel_cover": "20\" wheels with aero covers",
+      "wheel_open": "20\" wheels without covers",
+      "service_number": "Service no. {number}",
+      "overdue": "Overdue",
+      "left": "{parts} left",
+      "overdue_since": "Overdue by {days}",
+      "cancel_until": "Cancellation deadline: {date}",
+      "renews_in": "Renews in {days}",
+      "notify_to": "Notify",
+      "n_notices": "{count} notifications",
+      "edit_threshold": "Change the lead time",
+      "accept": "Accept",
+      "cancel": "Cancel",
+      "unit_km": "km",
+      "unit_days": "days",
+      "when_km": "{value} km left",
+      "when_days": "{value} days left",
+      "when_days_deadline": "{value} days before the deadline",
+      "when_maintenance_overdue": "on the day or when the km are reached",
+      "when_itv_overdue": "on the day",
+      "when_insurance_last_day": "last day to cancel",
+      "when_insurance_renewed": "on the day",
+      "notice_charge_started": "Charging started",
+      "notice_charge_interrupted": "Charging interrupted",
+      "notice_charge_finished": "Charging finished",
+      "notice_warnings": "Warning lights",
+      "notice_tires": "Tyres",
+      "notice_key_battery": "Key fob battery low",
+      "notice_maintenance_t1": "Time notice 1",
+      "notice_maintenance_t2": "Time notice 2",
+      "notice_maintenance_t3": "Time notice 3",
+      "notice_maintenance_k1": "Distance notice 1",
+      "notice_maintenance_k2": "Distance notice 2",
+      "notice_maintenance_k3": "Distance notice 3",
+      "notice_maintenance_overdue": "Service due",
+      "notice_itv_t1": "Notice 1",
+      "notice_itv_t2": "Notice 2",
+      "notice_itv_t3": "Notice 3",
+      "notice_itv_overdue": "ITV due",
+      "notice_insurance_c1": "Cancellation notice 1",
+      "notice_insurance_c2": "Cancellation notice 2",
+      "notice_insurance_last_day": "Cancellation deadline",
+      "notice_insurance_r1": "Renewal notice 1",
+      "notice_insurance_r2": "Renewal notice 2",
+      "notice_insurance_renewed": "Insurance renewed",
+      "unsaved": "This vehicle has unsaved changes.",
+      "alerts_help": "Tick who gets each notification. The pencil changes the days or kilometres of that notification; lead times belong to this vehicle.",
+      "factory_thresholds": "Default lead times",
+      "discard": "Discard",
+      "save": "Save",
+      "saved": "Saved",
+      "copy_from": "Copy from another vehicle",
+      "car": "Vehicle",
+      "copy": "Copy",
+      "error_threshold_range_limits": "The lead time must be between {low} and {high}.",
+      "error_threshold_range": "A lead time is out of range.",
+      "error_threshold_order": "Lead times must go from longest to shortest: notice 1 before 2, and 2 before 3.",
+      "error_not_found": "That vehicle is no longer in the account.",
+      "error_invalid": "Some of the data is not valid.",
+      "error_invalid_file": "The file is not a DEC Deepal backup, or it is damaged.",
+      "error_newer_file": "The backup comes from a newer version of the integration. Update DEC Deepal and try again.",
+      "error_empty_file": "The backup has no data for any vehicle.",
+      "error_required": "Some fields are missing.",
+      "backup_title": "Backup",
+      "backup_help": "Servicing, ITV, insurance and appearance of your vehicles. The data belongs to the vehicle: it is not lost when the account is removed.",
+      "download_title": "Download a backup",
+      "download_help": "A file with the data of every vehicle. It contains the policy number and the insurance phone numbers: keep it somewhere safe.",
+      "download": "Download",
+      "send_title": "Send the backup to a phone",
+      "send_help": "A notification arrives; tapping it opens the browser and downloads the file. The link expires in 10 minutes.",
+      "send": "Send",
+      "sent_to": "Notification sent to {device}.",
+      "upload_title": "Load a backup",
+      "upload_help": "Leaves the vehicles in the file as they were in it. Other vehicles are left untouched.",
+      "choose_file": "Choose file",
+      "imported": "Backup loaded: {cars}.",
+      "stored_title": "Stored data",
+      "stored_help": "Per vehicle, identified by its VIN.",
+      "stored_none": "There is no stored data for any vehicle.",
+      "in_account": "In the account",
+      "no_account": "No account",
+      "no_account_note": "No longer in any account",
+      "delete": "Delete",
+      "delete_title": "Delete stored data",
+      "delete_confirm": "The servicing, ITV and insurance of {name} will be deleted. This cannot be undone: download a backup first if you want to keep them.",
+      "deleted": "Data deleted.",
+      "history_title": "What has happened",
+      "history_help": "Changes, commands and notifications since the last restart. The same goes into the diagnostics file.",
+      "history_none": "Nothing to show yet.",
+      "filter_all": "All",
+      "filter_orders": "Commands",
+      "filter_alerts": "Notifications",
+      "filter_errors": "Errors",
+      "sheets_title": "Sheet of each vehicle",
+      "sheets_help": "Which equipment the integration assumes, and where it gets it from.",
+      "diagnostics_file": "Diagnostics",
+      "ev_alert": "Notification sent: {name}",
+      "ev_targets": "{count} recipients",
+      "ev_wake": "Vehicle wake-up",
+      "ev_command": "Command: {name}",
+      "ev_code": "code",
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "enabled": "Enabled",
+      "mt_services_done": "Services already done",
+      "mt_services_done_help": "0 if the vehicle has not had any yet.",
+      "mt_last_date": "Date of the last service",
+      "mt_last_km": "Kilometres at that service",
+      "mt_interval_km": "Interval (km)",
+      "mt_interval_months": "Interval (months)",
+      "mt_register": "Register a completed service",
+      "mt_register_help": "Records service no. {number} of {name} and starts counting towards the next one.",
+      "date": "Date",
+      "mt_km": "Kilometres",
+      "register": "Register",
+      "registered": "Registered",
+      "itv_registration": "Registration date",
+      "itv_last": "Last ITV passed",
+      "itv_last_help": "Empty if it has not passed any yet.",
+      "itv_next": "Next ITV (manual)",
+      "itv_next_help": "Empty to have it calculated.",
+      "itv_register": "Register a passed ITV",
+      "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
+      "ins_company": "Company",
+      "ins_policy": "Policy number",
+      "ins_kind": "Type of insurance",
+      "ins_renewal": "Renewal date",
+      "ins_notice": "Notice days to cancel",
+      "ins_phone_assistance": "Assistance phone",
+      "ins_phone_company": "Company phone",
+      "kind_third_party": "Third party",
+      "kind_third_party_plus": "Third party plus",
+      "kind_comprehensive_excess": "Comprehensive with excess",
+      "kind_comprehensive": "Comprehensive without excess"
+    }
+  };
+
+  // ── src/21_idioma.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Idioma: qué textos toca y cómo se rellenan
+  // ---------------------------------------------------------------------------
+  /** "pt-BR" → "pt"; un idioma prestado → el que le presta; uno sin traducir → el base. */
+  const textLanguage = (language) => {
+    const base = String(language || BASE_LANGUAGE).toLowerCase().split("-")[0];
+    const resolved = BORROWED_LANGUAGES[base] || base;
+    return TEXTS[resolved] ? resolved : BASE_LANGUAGE;
+  };
+
+  /** Texto de una clave en el idioma pedido. */
+  const translate = (language, key, values) => {
+    const table = TEXTS[textLanguage(language)];
+    let text = key in table ? table[key] : key;
+    for (const [name, value] of Object.entries(values || {})) text = text.split(`{${name}}`).join(String(value));
+    return text;
+  };
+
+  const escapeHtml = (text) =>
+    String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+  // ── src/30_estilos.js ─────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Estilos (con las variables del tema de Home Assistant: claro y oscuro)
+  // ---------------------------------------------------------------------------
+  const SOFT = "rgba(var(--rgb-primary-text-color, 33, 33, 33), 0.06)";
+  const PANEL_CSS = `
+    :host { display: block; height: 100%; color: var(--primary-text-color); background: var(--primary-background-color, #fafafa);
+      font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif); font-size: 14px; }
+    * { box-sizing: border-box; }
+    button { font: inherit; color: inherit; border: 0; background: none; margin: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .page { display: flex; flex-direction: column; height: 100%; }
+    .bar { background: var(--app-header-background-color, var(--primary-color)); color: var(--app-header-text-color, #fff); flex: none; }
+    .top { display: flex; align-items: center; height: var(--header-height, 56px); padding: 0 12px; gap: 8px; font-size: 20px; }
+    .top span { flex: 1; } .top small { font-size: 13px; opacity: .85; }
+    .tabs { display: flex; padding: 0 12px; gap: 4px; overflow-x: auto; }
+    .tabs button { font-weight: 500; font-size: 13px; letter-spacing: .6px; text-transform: uppercase; padding: 13px 16px; opacity: .75;
+      border-bottom: 3px solid transparent; display: flex; gap: 8px; align-items: center; white-space: nowrap; --mdc-icon-size: 18px; }
+    .tabs button.on { opacity: 1; border-color: currentColor; }
+    .scroll { flex: 1; overflow: auto; }
+    .view { padding: 20px; max-width: 1040px; margin: 0 auto; }
+    .card { background: var(--ha-card-background, var(--card-background-color, #fff)); border: 1px solid var(--divider-color, #e0e0e0);
+      border-radius: 12px; margin-bottom: 20px; overflow: hidden; }
+    .card h2 { font-size: 18px; font-weight: 400; margin: 0; padding: 16px 20px 4px; }
+    .sub { color: var(--secondary-text-color); padding: 0 20px 12px; font-size: 13px; }
+    .pad { padding: 14px 20px; }
+    .empty { padding: 40px 20px; text-align: center; color: var(--secondary-text-color); }
+
+    .btn { display: inline-flex; gap: 8px; align-items: center; border-radius: 18px; padding: 8px 16px; font-weight: 500; white-space: nowrap;
+      background: var(--primary-color); color: var(--text-primary-color, #fff); text-decoration: none; --mdc-icon-size: 18px; }
+    .btn.o { background: transparent; color: var(--primary-color); border: 1px solid var(--divider-color, #e0e0e0); }
+    .btn.r { background: transparent; color: var(--error-color, #db4437); border: 1px solid var(--divider-color, #e0e0e0); }
+    .btn[disabled] { opacity: .5; pointer-events: none; }
+    .badge { font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 500; display: inline-flex; gap: 4px; align-items: center; --mdc-icon-size: 14px; }
+    .badge.ok { background: rgba(67, 160, 71, .15); color: var(--success-color, #2e7d32); }
+    .badge.warn { background: rgba(249, 168, 37, .18); color: var(--warning-color, #f57f17); }
+    .badge.info { background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color); }
+
+    /* --- Coches --- */
+    .hero { display: flex; align-items: center; gap: 16px; padding: 12px 20px 0; flex-wrap: wrap; }
+    .hero img { width: 380px; max-width: 100%; margin: -4px 0 -8px -16px; }
+    .hero .who { flex: 1; min-width: 200px; }
+    .hero .n { font-size: 26px; } .hero .m { color: var(--secondary-text-color); margin: 2px 0 10px; }
+    .kv { display: flex; gap: 26px; margin-top: 8px; flex-wrap: wrap; }
+    .kv div { font-size: 13px; color: var(--secondary-text-color); } .kv b { display: block; font-size: 18px; font-weight: 400; color: var(--primary-text-color); }
+    .chips { padding: 14px 20px 2px; }
+    .chip { display: inline-flex; gap: 6px; align-items: center; padding: 5px 12px; border-radius: 16px; background: ${SOFT}; font-size: 13px;
+      margin: 0 6px 6px 0; --mdc-icon-size: 16px; }
+    .chip ha-icon { color: var(--primary-color); }
+    .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 10px 20px 18px; }
+    .tile { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+    .tile .h { display: flex; gap: 8px; align-items: center; color: var(--secondary-text-color); font-size: 13px; --mdc-icon-size: 20px; }
+    .tile .h span { flex: 1; }
+    .gear { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: -4px -6px -4px 0;
+      color: var(--secondary-text-color); background: ${SOFT}; --mdc-icon-size: 20px; }
+    .tile .v { font-size: 20px; margin: 6px 0 2px; } .tile .d { color: var(--secondary-text-color); font-size: 13px; }
+    .tile.off .v { color: var(--secondary-text-color); }
+    .tile.ok .h > ha-icon { color: var(--success-color, #43a047); }
+    .tile.soon .h > ha-icon { color: var(--warning-color, #f9a825); }
+    .tile.overdue .h > ha-icon { color: var(--error-color, #db4437); }
+    .link { color: var(--primary-color); font-size: 13px; padding: 0; }
+    .meter { height: 6px; border-radius: 3px; background: ${SOFT}; margin-top: 10px; overflow: hidden; }
+    .meter i { display: block; height: 100%; background: var(--success-color, #43a047); }
+    .tile.soon .meter i { background: var(--warning-color, #f9a825); } .tile.overdue .meter i { background: var(--error-color, #db4437); }
+
+    /* --- Avisos --- */
+    .chead { display: flex; align-items: center; gap: 10px; padding: 8px 20px 0; flex-wrap: wrap; }
+    .chead img { width: 170px; margin: -6px 0 -10px -18px; }
+    .chead .n { font-size: 20px; flex: 1; min-width: 140px; } .chead .n small { display: block; font-size: 13px; color: var(--secondary-text-color); }
+    .wide { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { font-weight: 400; font-size: 12px; color: var(--secondary-text-color); padding: 10px 6px; text-align: center; border-bottom: 1px solid var(--divider-color, #e0e0e0); }
+    th:first-child { text-align: left; padding-left: 20px; font-size: 13px; }
+    .dev { display: flex; flex-direction: column; align-items: center; gap: 4px; max-width: 96px; margin: 0 auto; }
+    .dev u { text-decoration: none; width: 30px; height: 30px; border-radius: 50%; background: var(--primary-color); color: var(--text-primary-color, #fff);
+      display: flex; align-items: center; justify-content: center; --mdc-icon-size: 17px; }
+    .dev.panel u { background: var(--secondary-text-color); }
+    td { padding: 6px; text-align: center; border-bottom: 1px solid var(--divider-color, #e0e0e0); }
+    td:first-child { text-align: left; padding-left: 20px; }
+    tr:last-child td { border-bottom: 0; }
+    .box { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+      color: var(--secondary-text-color); --mdc-icon-size: 22px; }
+    .box.y, .box.some { color: var(--primary-color); }
+    tr.grp td { background: ${SOFT}; }
+    tr.grp td:first-child { padding: 0; }
+    .fold { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; font-weight: 500; font-size: 15px; text-align: left; --mdc-icon-size: 22px; }
+    .fold .sic { color: var(--primary-color); } .fold small { font-weight: 400; font-size: 12px; color: var(--secondary-text-color); margin-left: 6px; }
+    tr.it td:first-child { padding-left: 52px; }
+    .lab { display: flex; align-items: center; gap: 8px; min-height: 36px; }
+    .lab b { font-weight: 400; } .lab small { color: var(--secondary-text-color); font-size: 12px; flex: 1; }
+    .pen { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+      color: var(--secondary-text-color); --mdc-icon-size: 18px; flex: none; }
+    tr.ed td { background: rgba(var(--rgb-primary-color, 3, 169, 244), .1); }
+    .inp { display: inline-flex; align-items: center; border: 1px solid var(--primary-color); border-radius: 6px; overflow: hidden;
+      background: var(--card-background-color, #fff); }
+    .inp input { width: 78px; border: 0; padding: 6px 8px; font: inherit; text-align: right; background: transparent; color: inherit; outline: none; }
+    .inp span { padding: 6px 10px; color: var(--secondary-text-color); font-size: 13px; border-left: 1px solid var(--divider-color, #e0e0e0); }
+    .mini { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; --mdc-icon-size: 18px; flex: none; }
+    .mini.ok { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .foot { display: flex; align-items: center; gap: 10px; padding: 12px 20px; border-top: 1px solid var(--divider-color, #e0e0e0); flex-wrap: wrap; }
+    .foot span { flex: 1; color: var(--secondary-text-color); font-size: 13px; min-width: 160px; }
+    .foot.dirty { background: rgba(var(--rgb-primary-color, 3, 169, 244), .08); }
+
+    /* --- Datos y diagnóstico --- */
+    .row { display: flex; gap: 14px; align-items: center; padding: 14px 20px; border-top: 1px solid var(--divider-color, #e0e0e0); flex-wrap: wrap; }
+    .row .ic { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color);
+      display: flex; align-items: center; justify-content: center; flex: none; }
+    .row .ic.grey { background: ${SOFT}; color: var(--secondary-text-color); }
+    .row .tx { flex: 1; min-width: 180px; } .row .tx small { display: block; color: var(--secondary-text-color); font-size: 13px; }
+    select { font: inherit; color: inherit; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--divider-color, #e0e0e0);
+      background: var(--card-background-color, #fff); max-width: 100%; }
+    .filt { display: flex; gap: 8px; padding: 0 20px 14px; flex-wrap: wrap; }
+    .filt button { padding: 5px 12px; border-radius: 16px; border: 1px solid var(--divider-color, #e0e0e0); font-size: 13px; }
+    .filt button.on { background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); border-color: var(--primary-color); color: var(--primary-color); }
+    .log { display: flex; gap: 12px; padding: 10px 20px; border-top: 1px solid var(--divider-color, #e0e0e0); align-items: flex-start; }
+    .log time { color: var(--secondary-text-color); font-size: 12px; width: 86px; flex: none; padding-top: 6px; }
+    .log .dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: none; --mdc-icon-size: 17px;
+      background: ${SOFT}; color: var(--secondary-text-color); }
+    .log .dot.blue { background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color); }
+    .log .dot.red { background: rgba(219, 68, 55, .15); color: var(--error-color, #db4437); }
+    .log .dot.green { background: rgba(67, 160, 71, .15); color: var(--success-color, #43a047); }
+    .log .what { min-width: 0; overflow-wrap: anywhere; } .log .what small { display: block; color: var(--secondary-text-color); font-size: 12px; }
+
+    @media (max-width: 700px) {
+      .view { padding: 12px; }
+      .grid3 { grid-template-columns: 1fr; }
+      .hero img { width: 100%; margin: 0; }
+      .tabs button { padding: 12px 10px; } .tabs button ha-icon { display: none; }
+      tr.it td:first-child { padding-left: 20px; }
+    }
+  `;
+
+  const DIALOG_CSS = `
+    :host { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;
+      background: rgba(0, 0, 0, .32); font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif); color: var(--primary-text-color); font-size: 14px; }
+    * { box-sizing: border-box; }
+    .dlg { width: 100%; max-width: 460px; max-height: 100%; overflow: auto; background: var(--ha-card-background, var(--card-background-color, #fff));
+      border-radius: 24px; box-shadow: 0 8px 24px rgba(0, 0, 0, .3); padding: 20px 22px 16px; }
+    button { font: inherit; color: inherit; border: 0; background: none; margin: 0; cursor: pointer; }
+    h2 { margin: 0 0 4px; font-size: 20px; font-weight: 400; }
+    p { margin: 6px 0 12px; color: var(--secondary-text-color); line-height: 1.45; }
+    label { display: block; margin: 12px 0 0; font-size: 13px; color: var(--secondary-text-color); }
+    label small { display: block; font-size: 12px; margin-top: 3px; }
+    input:not([type=checkbox]), select { display: block; width: 100%; margin-top: 4px; font: inherit; color: var(--primary-text-color); padding: 9px 10px;
+      border-radius: 8px; border: 1px solid var(--divider-color, #e0e0e0); background: var(--card-background-color, #fff); }
+    label.check { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--primary-text-color); }
+    label.check input { width: 18px; height: 18px; margin: 0; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
+    .err { color: var(--error-color, #db4437); font-size: 13px; margin-top: 10px; min-height: 18px; }
+    .btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .tb { font-weight: 500; color: var(--primary-color); padding: 9px 14px; border-radius: 18px; }
+    .tb.fill { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .tb.danger { background: var(--error-color, #db4437); color: #fff; }
+    .tb.left { margin-right: auto; }
+    [hidden] { display: none !important; }
+  `;
+
+  // ── src/40_dialogo.js ─────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Ventana emergente mínima (se cuelga de <body> para quedar por encima)
+  // ---------------------------------------------------------------------------
+  function openDialog(html, onAction) {
+    const host = document.createElement("div");
+    const root = host.attachShadow({ mode: "open" });
+    root.innerHTML = `<style>${DIALOG_CSS}</style><div class="dlg" role="dialog" aria-modal="true">${html}</div>`;
+    const close = () => {
+      document.removeEventListener("keydown", onKey);
+      host.remove();
+    };
+    const onKey = (event) => event.key === "Escape" && close();
+    document.addEventListener("keydown", onKey);
+    host.addEventListener("click", (event) => {
+      const path = event.composedPath();
+      if (path[0] === host) return close(); // toque en el fondo oscuro
+      const target = path.find((node) => node.dataset && node.dataset.action);
+      if (!target) return undefined;
+      if (target.dataset.action === "close") return close();
+      return onAction(target.dataset.action, dialog, target);
+    });
+    const dialog = {
+      root,
+      close,
+      /** Valores del formulario: `{ nombre: valor }` (casillas → true/false). */
+      values() {
+        const values = {};
+        for (const field of root.querySelectorAll("[name]")) {
+          values[field.name] = field.type === "checkbox" ? field.checked : field.value;
+        }
+        return values;
+      },
+      error(text) {
+        const box = root.querySelector(".err");
+        if (box) box.textContent = text || "";
+      },
+    };
+    document.body.append(host);
+    return dialog;
+  }
+
+  // ── src/50_panel.js ───────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // El panel: carga de datos, pestañas y reparto de las pulsaciones
+  // ---------------------------------------------------------------------------
+  class DecDeepalPanel extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+      this._tab = "cars";
+      this._state = null; // lo que devuelve "state" (panel.py)
+      this._error = "";
+      this._open = new Set(); // apartados de avisos desplegados: "<coche>/<apartado>"
+      this._drafts = {}; // avisos cambiados y sin guardar, por coche
+      this._editing = null; // plazo que se está editando: { car, notice }
+      this._filter = "all"; // filtro del historial
+      this._links = {}; // enlaces firmados (copia, diagnósticos)
+      this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
+      this.shadowRoot.addEventListener("change", (event) => this._onChange(event));
+      this.shadowRoot.addEventListener("keydown", (event) => this._onKey(event));
+    }
+
+    // --- Lo que Home Assistant le pasa a un panel --------------------------------
+
+    set hass(hass) {
+      const first = !this._hass;
+      const language = first ? "" : this._language();
+      this._hass = hass;
+      if (first) this._load();
+      else if (language !== this._language()) this._render();
+      this._syncMenu();
+    }
+
+    set narrow(narrow) {
+      this._narrow = narrow;
+      this._syncMenu();
+    }
+
+    // --- Idioma y textos ---------------------------------------------------------
+
+    _language() {
+      const hass = this._hass || {};
+      return (hass.locale && hass.locale.language) || hass.language || BASE_LANGUAGE;
+    }
+
+    _t(key, values) {
+      return translate(this._language(), key, values);
+    }
+
+    /** Texto si existe; si no, `undefined` (para claves opcionales). */
+    _maybe(key, values) {
+      return key in TEXTS[textLanguage(this._language())] ? this._t(key, values) : undefined;
+    }
+
+    /** Número con separador de miles siempre ("5.000": el español no lo pone con cuatro cifras). */
+    _number(value) {
+      try {
+        return new Intl.NumberFormat(this._language(), { useGrouping: "always" }).format(Number(value));
+      } catch (_error) {
+        return Number(value).toLocaleString(this._language());
+      }
+    }
+
+    _date(iso) {
+      if (!iso) return "—";
+      const [year, month, day] = String(iso).slice(0, 10).split("-").map(Number);
+      return new Date(year, month - 1, day).toLocaleDateString(this._language(), { day: "numeric", month: "short", year: "numeric" });
+    }
+
+    _days(count) {
+      return this._t(Math.abs(count) === 1 ? "day" : "days", { value: this._number(Math.abs(count)) });
+    }
+
+    // --- Datos ---------------------------------------------------------------------
+
+    _ws(type, data) {
+      return this._hass.callWS({ type: WS + type, ...(data || {}) });
+    }
+
+    async _load() {
+      try {
+        this._state = await this._ws("state");
+        this._error = "";
+      } catch (error) {
+        this._error = (error && error.message) || this._t("error_generic");
+      }
+      this._render();
+    }
+
+    /**
+     * Ejecuta una orden y vuelve a pedir el estado. Algunos cambios recargan
+     * la integración: por eso se pide otra vez pasados unos segundos.
+     */
+    async _run(type, data, done) {
+      try {
+        const result = await this._ws(type, data);
+        if (done) this._toast(done);
+        await this._load();
+        clearTimeout(this._again);
+        this._again = setTimeout(() => this._load(), 3500);
+        return result === undefined || result === null ? true : result;
+      } catch (error) {
+        this._toast(this._errorText(error));
+        return false;
+      }
+    }
+
+    _errorText(error) {
+      const code = error && error.code;
+      return this._maybe(`error_${code}`) || (error && error.message) || this._t("error_generic");
+    }
+
+    _toast(message) {
+      this.dispatchEvent(new CustomEvent("hass-notification", { detail: { message }, bubbles: true, composed: true }));
+    }
+
+    _car(id) {
+      return this._state.cars.find((car) => car.id === id);
+    }
+
+    /** Foto del coche: la entidad de imagen de la integración (de lado; si no, la isométrica). */
+    _photo(car) {
+      const hass = this._hass;
+      for (const key of ["dec_photo", "isometric_view"]) {
+        for (const [entityId, entry] of Object.entries(hass.entities || {})) {
+          if (entry.platform !== DOMAIN || entry.device_id !== car.device_id || entry.translation_key !== key) continue;
+          if (!entityId.startsWith("image.")) continue;
+          const state = hass.states[entityId];
+          const picture = state && state.attributes.entity_picture;
+          if (picture) return `${picture}${picture.includes("?") ? "&" : "?"}state=${encodeURIComponent(state.state)}`;
+        }
+      }
+      return "";
+    }
+
+    // --- Pintado ---------------------------------------------------------------------
+
+    _render() {
+      const root = this.shadowRoot;
+      const scroller = root.querySelector(".scroll");
+      const top = scroller ? scroller.scrollTop : 0;
+      const tabs = TABS.map(
+        ([key, icon]) =>
+          `<button class="${key === this._tab ? "on" : ""}" data-action="tab" data-tab="${key}"><ha-icon icon="${icon}"></ha-icon>${this._t(`tab_${key}`)}</button>`
+      ).join("");
+      let view;
+      if (this._error) view = `<div class="empty">${escapeHtml(this._error)}<br><br><button class="btn o" data-action="reload">${this._t("retry")}</button></div>`;
+      else if (!this._state) view = `<div class="empty">${this._t("loading")}</div>`;
+      else if (!this._state.cars.length) view = `<div class="empty">${this._t("no_cars")}</div>`;
+      else view = this[`_view_${this._tab}`]();
+      root.innerHTML = `<style>${PANEL_CSS}</style>
+        <div class="page">
+          <div class="bar">
+            <div class="top"><ha-menu-button></ha-menu-button><span>DEC Deepal</span><small>${this._state ? `v${escapeHtml(this._state.version)}` : ""}</small></div>
+            <div class="tabs">${tabs}</div>
+          </div>
+          <div class="scroll"><div class="view">${view}</div></div>
+        </div>`;
+      this._syncMenu();
+      root.querySelector(".scroll").scrollTop = top;
+      const input = root.querySelector(".inp input");
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }
+
+    /** El botón del menú lateral es de Home Assistant: hay que pasarle sus datos. */
+    _syncMenu() {
+      const button = this.shadowRoot.querySelector("ha-menu-button");
+      if (!button) return;
+      button.hass = this._hass;
+      button.narrow = this._narrow;
+    }
+
+    // --- Pulsaciones -------------------------------------------------------------------
+
+    _onClick(event) {
+      const target = event.composedPath().find((node) => node.dataset && node.dataset.action);
+      if (!target) return;
+      const handler = this[`_do_${target.dataset.action.replace(/-/g, "_")}`];
+      if (handler) handler.call(this, target.dataset, target, event);
+    }
+
+    _onChange(event) {
+      const target = event.target;
+      if (target && target.dataset && target.dataset.change) this[`_change_${target.dataset.change}`](target);
+    }
+
+    _onKey(event) {
+      if (!this._editing || !event.target.matches || !event.target.matches(".inp input")) return;
+      if (event.key === "Enter") this._do_edit_ok();
+      if (event.key === "Escape") this._do_edit_cancel();
+    }
+
+    _do_tab(data) {
+      this._tab = data.tab;
+      this._editing = null;
+      this._render();
+      if (data.tab === "data" || data.tab === "diagnostics") this._prepareLinks();
+    }
+
+    _do_reload() {
+      this._load();
+    }
+
+    /** Va a otra página de Home Assistant sin recargar. */
+    _navigate(path) {
+      window.history.pushState(null, "", path);
+      window.dispatchEvent(new CustomEvent("location-changed", { bubbles: true, composed: true }));
+    }
+  }
+
+  /**
+   * Añade al panel los métodos de una clase. Cada pestaña está en su fichero
+   * y se engancha así: dentro, `this` es el panel, igual que arriba.
+   */
+  const install = (source) => {
+    for (const name of Object.getOwnPropertyNames(source.prototype)) {
+      if (name === "constructor") continue;
+      Object.defineProperty(DecDeepalPanel.prototype, name, Object.getOwnPropertyDescriptor(source.prototype, name));
+    }
+  };
+
+  // ── src/60_coches.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Pestaña "Coches"
+  // ---------------------------------------------------------------------------
+  install(class {
+    _view_cars() {
+      return this._state.cars.map((car) => this._carCard(car)).join("");
+    }
+
+    _carCard(car) {
+      const photo = this._photo(car);
+      const sheet = car.sheet || {};
+      const features = sheet.funciones || {};
+      const chips = car.configured
+        ? FEATURES.filter(([key]) => features[key]).map(([, icon, text]) => `<span class="chip"><ha-icon icon="${icon}"></ha-icon>${this._t(text)}</span>`)
+        : [];
+      if (car.wheel) chips.push(`<span class="chip"><ha-icon icon="mdi:tire"></ha-icon>${this._maybe(`wheel_${car.wheel}`) || escapeHtml(car.wheel)}</span>`);
+      const badge = !car.configured
+        ? `<span class="badge warn"><ha-icon icon="mdi:alert-circle-outline"></ha-icon>${this._t("not_configured")}</span>`
+        : sheet.verificada
+          ? `<span class="badge ok"><ha-icon icon="mdi:check-decagram"></ha-icon>${this._t("sheet_verified")}</span>`
+          : `<span class="badge info"><ha-icon icon="mdi:book-open-variant"></ha-icon>${this._t("sheet_catalogue")}</span>`;
+      const fact = (value, label) => `<div><b>${value}</b>${this._t(label)}</div>`;
+      return `<div class="card">
+        <div class="hero">
+          ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
+          <div class="who">
+            <div class="n">${escapeHtml(car.name)}</div>
+            <div class="m">${escapeHtml([car.model, car.color].filter(Boolean).join(" · "))}</div>
+            ${badge}
+            <div class="kv">
+              ${car.battery == null ? "" : fact(`${this._number(car.battery)} %`, "battery")}
+              ${car.range == null ? "" : fact(`${this._number(Math.round(car.range))} km`, "range")}
+              ${car.odometer == null ? "" : fact(`${this._number(Math.round(car.odometer))} km`, "odometer")}
+            </div>
+          </div>
+          <button class="btn o" data-action="appearance"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>
+        </div>
+        ${chips.length ? `<div class="chips">${chips.join("")}</div>` : ""}
+        <div class="grid3">
+          ${this._maintenanceTile(car)}
+          ${car.itv_available ? this._itvTile(car) : ""}
+          ${this._insuranceTile(car)}
+        </div>
+      </div>`;
+    }
+
+    /** Recuadro con engranaje; `body` va vacío si el apartado está sin configurar. */
+    _tile(car, kind, icon, level, body) {
+      const gear = `<button class="gear" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>`;
+      const head = `<div class="h"><ha-icon icon="${icon}"></ha-icon><span>${this._t(`section_${kind}`)}</span>${gear}</div>`;
+      if (!body) {
+        return `<div class="tile off">${head}<div class="v">${this._t("not_set")}</div>
+          <button class="link" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${this._t(`add_${kind}`)}</button></div>`;
+      }
+      return `<div class="tile ${level}">${head}${body}</div>`;
+    }
+
+    _meter(fraction) {
+      return `<div class="meter"><i style="width:${Math.round(Math.max(0, Math.min(1, fraction)) * 100)}%"></i></div>`;
+    }
+
+    _maintenanceTile(car) {
+      const data = car.maintenance;
+      if (!data) return this._tile(car, "maintenance", "mdi:wrench", "", "");
+      const left = [];
+      if (data.days_left >= 0) left.push(this._days(data.days_left));
+      if (data.km_left != null && data.km_left >= 0) left.push(`${this._number(data.km_left)} km`);
+      const overdue = data.level === "overdue";
+      // Lo recorrido del intervalo: lo que más avance, tiempo o kilómetros.
+      const months = data.record.interval_months * 30.4;
+      const byDays = 1 - data.days_left / months;
+      const byKm = data.km_left == null ? 0 : 1 - data.km_left / data.record.interval_km;
+      return this._tile(car, "maintenance", "mdi:wrench", data.level,
+        `<div class="v">${this._t("service_number", { number: data.number })}</div>
+         <div class="d">${overdue ? this._t("overdue") : this._t("left", { parts: left.join(this._t("or")) })}</div>
+         ${this._meter(Math.max(byDays, byKm))}`);
+    }
+
+    _itvTile(car) {
+      const data = car.itv;
+      if (!data) return this._tile(car, "itv", "mdi:clipboard-check-outline", "", "");
+      const overdue = data.days_left < 0;
+      return this._tile(car, "itv", "mdi:clipboard-check-outline", data.level,
+        `<div class="v">${this._date(data.due_date)}</div>
+         <div class="d">${overdue ? this._t("overdue_since", { days: this._days(data.days_left) }) : this._t("left", { parts: this._days(data.days_left) })}</div>
+         ${this._meter(1 - data.days_left / 730)}`);
+    }
+
+    _insuranceTile(car) {
+      const data = car.insurance;
+      if (!data) return this._tile(car, "insurance", "mdi:shield-car", "", "");
+      const detail = data.days_to_cancel >= 0
+        ? this._t("cancel_until", { date: this._date(data.cancel_deadline) })
+        : this._t("renews_in", { days: this._days(data.days_to_renewal) });
+      return this._tile(car, "insurance", "mdi:shield-car", data.level,
+        `<div class="v">${this._date(data.record.renewal_date)}</div>
+         <div class="d">${escapeHtml(detail)}</div>
+         ${this._meter(1 - data.days_to_renewal / 365)}`);
+    }
+
+    /** La apariencia (modelo, versión, color) se sigue eligiendo en Configurar. */
+    _do_appearance() {
+      this._navigate(`/config/integrations/integration/${DOMAIN}`);
+    }
+  });
+
+  // ── src/61_avisos.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Pestaña "Avisos": una tabla por coche, con sus apartados plegables
+  // ---------------------------------------------------------------------------
+  // Lo que se toca se guarda en un borrador del coche (this._drafts) hasta que
+  // se pulsa "Guardar": guardar recarga la integración, y no conviene hacerlo
+  // con cada casilla.
+  install(class {
+    _view_alerts() {
+      return this._state.cars.map((car) => this._alertsCard(car)).join("");
+    }
+
+    /** Avisos de un coche tal como se ven ahora: el borrador o lo guardado. */
+    _alerts(car) {
+      return this._drafts[car.id] || car.alerts;
+    }
+
+    /** Borrador del coche (se crea, copiando lo guardado, la primera vez). */
+    _draft(car) {
+      if (!this._drafts[car.id]) this._drafts[car.id] = JSON.parse(JSON.stringify(car.alerts));
+      return this._drafts[car.id];
+    }
+
+    _threshold(car, notice) {
+      const changed = this._alerts(car).thresholds[notice.id];
+      return changed == null ? notice.threshold : changed;
+    }
+
+    /** Avisos de un apartado para un coche (la ITV solo donde existe). */
+    _notices(car, section) {
+      if (section === "itv" && !car.itv_available) return [];
+      return this._state.notices.filter((notice) => notice.section === section);
+    }
+
+    _when(car, notice) {
+      if (notice.threshold == null) return this._maybe(`when_${notice.id}`) || "";
+      const value = this._number(this._threshold(car, notice));
+      if (notice.unit === "km") return this._t("when_km", { value });
+      return this._t(notice.id.startsWith("insurance_c") ? "when_days_deadline" : "when_days", { value });
+    }
+
+    _alertsCard(car) {
+      const targets = this._state.targets;
+      const alerts = this._alerts(car);
+      const photo = this._photo(car);
+      const box = (state, action, extra) =>
+        `<td><button class="box ${state}" data-action="${action}" data-car="${escapeHtml(car.id)}" ${extra} aria-pressed="${state === "y"}">
+          <ha-icon icon="mdi:${state === "y" ? "checkbox-marked" : state === "some" ? "minus-box" : "checkbox-blank-outline"}"></ha-icon></button></td>`;
+      const rows = [];
+      for (const [section, icon] of SECTIONS) {
+        const notices = this._notices(car, section);
+        if (!notices.length) continue;
+        const open = this._open.has(`${car.id}/${section}`);
+        const configured = !["maintenance", "itv", "insurance"].includes(section) || car[section];
+        const note = configured ? (open ? "" : this._t("n_notices", { count: notices.length })) : this._t("not_set");
+        rows.push(`<tr class="grp"><td><button class="fold" data-action="fold" data-car="${escapeHtml(car.id)}" data-section="${section}" aria-expanded="${open}">
+            <ha-icon icon="mdi:chevron-${open ? "down" : "right"}"></ha-icon><ha-icon class="sic" icon="${icon}"></ha-icon>${this._t(`section_${section}`)}<small>${note}</small></button></td>
+          ${targets.map((target) => {
+            const count = notices.filter((notice) => (alerts.notices[notice.id] || []).includes(target.id)).length;
+            const state = count === notices.length ? "y" : count ? "some" : "";
+            return box(state, "section-cell", `data-section="${section}" data-target="${escapeHtml(target.id)}"`);
+          }).join("")}</tr>`);
+        if (!open) continue;
+        for (const notice of notices) {
+          const editing = this._editing && this._editing.car === car.id && this._editing.notice === notice.id;
+          const pen = notice.threshold == null
+            ? ""
+            : `<button class="pen" data-action="edit" data-car="${escapeHtml(car.id)}" data-notice="${notice.id}" aria-label="${this._t("edit_threshold")}"><ha-icon icon="mdi:pencil"></ha-icon></button>`;
+          const label = editing
+            ? `<div class="lab"><b>${this._t(`notice_${notice.id}`)}</b><small></small>
+                <span class="inp"><input type="number" min="${notice.limits[0]}" max="${notice.limits[1]}" value="${this._threshold(car, notice)}"><span>${this._t(notice.unit === "km" ? "unit_km" : "unit_days")}</span></span>
+                <button class="mini ok" data-action="edit-ok" aria-label="${this._t("accept")}"><ha-icon icon="mdi:check"></ha-icon></button>
+                <button class="mini" data-action="edit-cancel" aria-label="${this._t("cancel")}"><ha-icon icon="mdi:close"></ha-icon></button></div>`
+            : `<div class="lab"><b>${this._t(`notice_${notice.id}`)}</b><small>${escapeHtml(this._when(car, notice))}</small>${pen}</div>`;
+          rows.push(`<tr class="it ${editing ? "ed" : ""}"><td>${label}</td>
+            ${targets.map((target) => box((alerts.notices[notice.id] || []).includes(target.id) ? "y" : "", "cell",
+              `data-notice="${notice.id}" data-target="${escapeHtml(target.id)}"`)).join("")}</tr>`);
+        }
+      }
+      const dirty = Boolean(this._drafts[car.id]);
+      const changedThresholds = Object.keys(alerts.thresholds).length > 0;
+      const others = this._state.cars.length > 1;
+      return `<div class="card" data-car-card="${escapeHtml(car.id)}">
+        <div class="chead">
+          ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
+          <div class="n">${escapeHtml(car.name)}<small>${escapeHtml(car.model)}</small></div>
+          ${others ? `<button class="btn o" data-action="copy-alerts" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:content-copy"></ha-icon>${this._t("copy_from")}</button>` : ""}
+        </div>
+        <div class="wide"><table>
+          <tr><th>${this._t("notify_to")}</th>${targets.map((target) =>
+            `<th><div class="dev ${target.kind}"><u><ha-icon icon="${TARGET_ICONS[target.kind] || TARGET_ICONS.service}"></ha-icon></u>${escapeHtml(target.name)}</div></th>`).join("")}</tr>
+          ${rows.join("")}
+        </table></div>
+        <div class="foot ${dirty ? "dirty" : ""}">
+          <span>${dirty ? this._t("unsaved") : this._t("alerts_help")}</span>
+          ${changedThresholds ? `<button class="btn o" data-action="reset-thresholds" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:restore"></ha-icon>${this._t("factory_thresholds")}</button>` : ""}
+          ${dirty ? `<button class="btn o" data-action="discard-alerts" data-car="${escapeHtml(car.id)}">${this._t("discard")}</button>
+                     <button class="btn" data-action="save-alerts" data-car="${escapeHtml(car.id)}">${this._t("save")}</button>` : ""}
+        </div>
+      </div>`;
+    }
+
+    _do_fold(data) {
+      const key = `${data.car}/${data.section}`;
+      if (!this._open.delete(key)) this._open.add(key);
+      this._editing = null;
+      this._render();
+    }
+
+    _toggle(list, target, on) {
+      const without = (list || []).filter((item) => item !== target);
+      return on ? [...without, target] : without;
+    }
+
+    _do_cell(data) {
+      const draft = this._draft(this._car(data.car));
+      const on = !(draft.notices[data.notice] || []).includes(data.target);
+      draft.notices[data.notice] = this._toggle(draft.notices[data.notice], data.target, on);
+      this._render();
+    }
+
+    /** Casilla del apartado: marca todos sus avisos (o los desmarca si ya lo estaban todos). */
+    _do_section_cell(data) {
+      const car = this._car(data.car);
+      const draft = this._draft(car);
+      const notices = this._notices(car, data.section);
+      const all = notices.every((notice) => (draft.notices[notice.id] || []).includes(data.target));
+      for (const notice of notices) draft.notices[notice.id] = this._toggle(draft.notices[notice.id], data.target, !all);
+      this._render();
+    }
+
+    _do_edit(data) {
+      this._editing = { car: data.car, notice: data.notice };
+      this._render();
+    }
+
+    _do_edit_cancel() {
+      this._editing = null;
+      this._render();
+    }
+
+    _do_edit_ok() {
+      const { car: carId, notice: noticeId } = this._editing;
+      const car = this._car(carId);
+      const notice = this._state.notices.find((item) => item.id === noticeId);
+      const value = Math.round(Number(this.shadowRoot.querySelector(".inp input").value));
+      const [low, high] = notice.limits;
+      if (!Number.isFinite(value) || value < low || value > high) {
+        this._toast(this._t("error_threshold_range_limits", { low: this._number(low), high: this._number(high) }));
+        return;
+      }
+      const draft = this._draft(car);
+      if (value === notice.threshold) delete draft.thresholds[noticeId];
+      else draft.thresholds[noticeId] = value;
+      this._editing = null;
+      this._render();
+    }
+
+    _do_reset_thresholds(data) {
+      this._draft(this._car(data.car)).thresholds = {};
+      this._render();
+    }
+
+    _do_discard_alerts(data) {
+      delete this._drafts[data.car];
+      this._editing = null;
+      this._render();
+    }
+
+    async _do_save_alerts(data) {
+      const draft = this._drafts[data.car];
+      if (!draft) return;
+      const done = await this._run("set_alerts", { vehicle_id: data.car, notices: draft.notices, thresholds: draft.thresholds }, this._t("saved"));
+      if (done) {
+        delete this._drafts[data.car];
+        this._render();
+      }
+    }
+
+    /** Copia los avisos y los plazos de otro coche al borrador de este (falta guardar). */
+    _do_copy_alerts(data) {
+      const others = this._state.cars.filter((car) => car.id !== data.car);
+      const copy = (fromId) => {
+        const from = this._car(fromId);
+        const mine = this._car(data.car);
+        const source = JSON.parse(JSON.stringify(this._alerts(from)));
+        // La ITV no se copia a un coche que no la tiene.
+        if (!mine.itv_available) for (const notice of this._state.notices) if (notice.section === "itv") source.notices[notice.id] = [];
+        this._drafts[data.car] = source;
+        this._render();
+      };
+      if (others.length === 1) return copy(others[0].id);
+      const options = others.map((car) => `<option value="${escapeHtml(car.id)}">${escapeHtml(car.name)}</option>`).join("");
+      openDialog(
+        `<h2>${this._t("copy_from")}</h2><label>${this._t("car")}<select name="from">${options}</select></label>
+         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("copy")}</button></div>`,
+        (action, dialog) => {
+          if (action !== "ok") return;
+          copy(dialog.values().from);
+          dialog.close();
+        }
+      );
+      return undefined;
+    }
+  });
+
+  // ── src/62_datos.js ───────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Pestaña "Datos": copia de seguridad y datos guardados
+  // ---------------------------------------------------------------------------
+  install(class {
+    _view_data() {
+      const mobiles = this._state.targets.filter((target) => target.kind === "mobile");
+      const link = this._links.backup;
+      const stored = this._state.stored.map((item) => {
+        const has = item.has.map((section) => this._t(`section_${section}`)).join(" · ");
+        return `<div class="row">
+          <div class="ic ${item.in_account ? "" : "grey"}"><ha-icon icon="mdi:${item.in_account ? "car" : "car-off"}"></ha-icon></div>
+          <div class="tx">${escapeHtml(item.label)} <span style="color:var(--secondary-text-color)">(…${escapeHtml(item.tail)})</span>
+            <small>${escapeHtml(has)}${item.in_account ? "" : `. ${this._t("no_account_note")}`}</small></div>
+          <span class="badge ${item.in_account ? "info" : "warn"}">${this._t(item.in_account ? "in_account" : "no_account")}</span>
+          <button class="btn r" data-action="delete-data" data-key="${escapeHtml(item.key)}" data-label="${escapeHtml(item.label)}"><ha-icon icon="mdi:delete-outline"></ha-icon>${this._t("delete")}</button>
+        </div>`;
+      });
+      return `<div class="card">
+          <h2>${this._t("backup_title")}</h2><div class="sub">${this._t("backup_help")}</div>
+          <div class="row"><div class="ic"><ha-icon icon="mdi:download"></ha-icon></div>
+            <div class="tx">${this._t("download_title")}<small>${this._t("download_help")}</small></div>
+            <a class="btn" ${link ? `href="${escapeHtml(link)}"` : "disabled"} target="_blank" rel="noopener noreferrer" data-action="downloaded"><ha-icon icon="mdi:download"></ha-icon>${this._t("download")}</a></div>
+          ${mobiles.length ? `<div class="row"><div class="ic"><ha-icon icon="mdi:cellphone-arrow-down"></ha-icon></div>
+            <div class="tx">${this._t("send_title")}<small>${this._t("send_help")}</small></div>
+            <select data-field="mobile">${mobiles.map((target) => `<option value="${escapeHtml(target.id)}">${escapeHtml(target.name)}</option>`).join("")}</select>
+            <button class="btn o" data-action="send-backup"><ha-icon icon="mdi:send"></ha-icon>${this._t("send")}</button></div>` : ""}
+          <div class="row"><div class="ic"><ha-icon icon="mdi:upload"></ha-icon></div>
+            <div class="tx">${this._t("upload_title")}<small>${this._t("upload_help")}</small></div>
+            <label class="btn o"><ha-icon icon="mdi:upload"></ha-icon>${this._t("choose_file")}<input type="file" accept=".json,application/json" data-change="backup" hidden></label></div>
+        </div>
+        <div class="card">
+          <h2>${this._t("stored_title")}</h2><div class="sub">${this._t("stored_help")}</div>
+          ${stored.length ? stored.join("") : `<div class="row"><div class="tx" style="color:var(--secondary-text-color)">${this._t("stored_none")}</div></div>`}
+        </div>`;
+    }
+
+    /**
+     * Enlaces firmados (caducan en minutos): se piden al abrir la pestaña para
+     * que el botón sea un enlace de verdad, que se abre en el navegador también
+     * desde la app del móvil.
+     */
+    async _prepareLinks() {
+      try {
+        const backup = await this._ws("export_url");
+        this._links.backup = backup.url;
+        for (const entryId of new Set(this._state.cars.map((car) => car.entry_id))) {
+          const signed = await this._hass.callWS({ type: "auth/sign_path", path: `/api/diagnostics/config_entry/${entryId}` });
+          this._links[`diagnostics_${entryId}`] = signed.path;
+        }
+      } catch (_error) {
+        // Sin enlace: el botón queda desactivado.
+      }
+      if (this._tab === "data" || this._tab === "diagnostics") this._render();
+    }
+
+    /** El enlace sirve una vez con garantías: se pide otro para la próxima. */
+    _do_downloaded() {
+      setTimeout(() => this._prepareLinks(), 1500);
+    }
+
+    async _do_send_backup() {
+      const select = this.shadowRoot.querySelector('select[data-field="mobile"]');
+      const name = select.options[select.selectedIndex].textContent;
+      await this._run("send_backup", { target: select.value }, this._t("sent_to", { device: name }));
+    }
+
+    async _change_backup(input) {
+      const file = input.files && input.files[0];
+      input.value = "";
+      if (!file) return;
+      let backup;
+      try {
+        backup = JSON.parse(await file.text());
+      } catch (_error) {
+        backup = null;
+      }
+      if (!backup || typeof backup !== "object" || Array.isArray(backup)) {
+        this._toast(this._t("error_invalid_file"));
+        return;
+      }
+      const result = await this._run("import_backup", { backup });
+      if (result) this._toast(this._t("imported", { cars: (result.cars || []).join(", ") }));
+    }
+
+    _do_delete_data(data) {
+      openDialog(
+        `<h2>${this._t("delete_title")}</h2><p>${this._t("delete_confirm", { name: `<b>${escapeHtml(data.label)}</b>` })}</p>
+         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb danger" data-action="ok">${this._t("delete")}</button></div>`,
+        async (action, dialog) => {
+          if (action !== "ok") return;
+          dialog.close();
+          await this._run("delete_data", { keys: [data.key] }, this._t("deleted"));
+        }
+      );
+    }
+  });
+
+  // ── src/63_diagnostico.js ─────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Pestaña "Diagnóstico": qué ha pasado y la ficha de cada coche
+  // ---------------------------------------------------------------------------
+  install(class {
+    _view_diagnostics() {
+      const history = this._state.history;
+      const events = [...history.cambios, ...history.ordenes, ...history.avisos]
+        .map((event) => this._event(event))
+        .filter((item) => this._matches(item))
+        .sort((a, b) => (a.time < b.time ? 1 : -1))
+        .slice(0, HISTORY_LIMIT);
+      const names = [...new Set(this._state.cars.map((car) => car.name))];
+      const filters = [["all", this._t("filter_all")], ...names.map((name) => [`car:${name}`, name]),
+        ["orders", this._t("filter_orders")], ["alerts", this._t("filter_alerts")], ["errors", this._t("filter_errors")]];
+      const sheets = this._state.cars.map((car) => {
+        const sheet = car.sheet || {};
+        const link = this._links[`diagnostics_${car.entry_id}`];
+        return `<div class="row"><div class="ic"><ha-icon icon="mdi:car-info"></ha-icon></div>
+          <div class="tx">${escapeHtml(car.name)} · ${escapeHtml(car.model)}<small>${escapeHtml(sheet.origen || "")}</small></div>
+          <span class="badge ${sheet.verificada ? "ok" : "info"}">${this._t(sheet.verificada ? "sheet_verified" : "sheet_catalogue")}</span>
+          <a class="btn o" ${link ? `href="${escapeHtml(link)}"` : "disabled"} target="_blank" rel="noopener noreferrer" data-action="downloaded"><ha-icon icon="mdi:download"></ha-icon>${this._t("diagnostics_file")}</a>
+        </div>`;
+      });
+      return `<div class="card">
+          <h2>${this._t("history_title")}</h2><div class="sub">${this._t("history_help")}</div>
+          <div class="filt">${filters.map(([key, name]) => `<button class="${key === this._filter ? "on" : ""}" data-action="filter" data-filter="${escapeHtml(key)}">${escapeHtml(name)}</button>`).join("")}</div>
+          ${events.length ? events.map((item) => `<div class="log"><time>${escapeHtml(this._time(item.time))}</time>
+              <div class="dot ${item.tone}"><ha-icon icon="${item.icon}"></ha-icon></div>
+              <div class="what">${escapeHtml(item.title)}<small>${escapeHtml(item.detail)}</small></div></div>`).join("")
+            : `<div class="row"><div class="tx" style="color:var(--secondary-text-color)">${this._t("history_none")}</div></div>`}
+        </div>
+        <div class="card">
+          <h2>${this._t("sheets_title")}</h2><div class="sub">${this._t("sheets_help")}</div>
+          ${sheets.join("")}
+        </div>`;
+    }
+
+    /** Un evento del historial, listo para pintar. */
+    _event(event) {
+      const car = event.vehicle || "";
+      const failed = Boolean(event.error) || event.ok === false || ["rechazado", "error_envio"].includes(event.stage);
+      if (event.kind === "alert") {
+        return { time: event.time, car, group: "alerts", tone: "blue", icon: "mdi:bell-ring",
+          title: this._t("ev_alert", { name: this._maybe(`notice_${event.type}`) || this._maybe(`section_${event.type}`) || event.type }),
+          detail: [car, this._t("ev_targets", { count: event.sent == null ? event.targets : event.sent })].filter(Boolean).join(" · ") };
+      }
+      if (event.kind === "change") {
+        const changes = event.changes || [];
+        return { time: event.time, car, group: "changes", tone: "green", icon: "mdi:swap-horizontal",
+          title: changes.slice(0, 3).join(" · ") + (changes.length > 3 ? ` (+${changes.length - 3})` : ""), detail: car };
+      }
+      if (event.kind === "wake") {
+        return { time: event.time, car, group: "orders", tone: failed ? "red" : "", icon: "mdi:sleep-off", failed,
+          title: this._t("ev_wake"), detail: [car, event.error || event.stage || ""].filter(Boolean).join(" · ") };
+      }
+      return { time: event.time, car, group: "orders", tone: failed ? "red" : "", icon: "mdi:remote", failed,
+        title: this._t("ev_command", { name: event.name || "" }),
+        detail: [car, event.stage, event.code == null ? "" : `${this._t("ev_code")} ${event.code}`, event.error].filter(Boolean).join(" · ") };
+    }
+
+    _matches(item) {
+      const filter = this._filter;
+      if (filter === "all") return true;
+      if (filter === "errors") return Boolean(item.failed);
+      if (filter.startsWith("car:")) return item.car === filter.slice(4);
+      return item.group === filter;
+    }
+
+    /** "Hoy 13:38", "Ayer 21:09" o "9 oct 20:47". */
+    _time(iso) {
+      const date = new Date(iso);
+      if (Number.isNaN(date.getTime())) return "";
+      const language = this._language();
+      const time = date.toLocaleTimeString(language, { hour: "2-digit", minute: "2-digit" });
+      const day = (value) => new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+      const days = Math.round((day(new Date()) - day(date)) / 86400000);
+      if (days === 0) return `${this._t("today")} ${time}`;
+      if (days === 1) return `${this._t("yesterday")} ${time}`;
+      return `${date.toLocaleDateString(language, { day: "numeric", month: "short" })} ${time}`;
+    }
+
+    _do_filter(data) {
+      this._filter = data.filter;
+      this._render();
+    }
+  });
+
+  // ── src/64_formularios.js ─────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Engranajes de "Coches": configurar mantenimiento, ITV y seguro
+  // ---------------------------------------------------------------------------
+  // Los mismos datos que piden los apartados de Configurar, en una ventana.
+  install(class {
+    _do_gear(data) {
+      const car = this._car(data.car);
+      this[`_form_${data.kind}`](car);
+    }
+
+    _today() {
+      const now = new Date();
+      const two = (value) => String(value).padStart(2, "0");
+      return `${now.getFullYear()}-${two(now.getMonth() + 1)}-${two(now.getDate())}`;
+    }
+
+    /** Campo de formulario: etiqueta, control y, si la hay, una ayuda. */
+    _field(name, label, attributes, help) {
+      return `<label>${this._t(label)}<input name="${name}" ${attributes}>${help ? `<small>${this._t(help)}</small>` : ""}</label>`;
+    }
+
+    /**
+     * Ventana de un apartado. Con "Activado" desmarcado se guarda como
+     * desactivado (y se quitan sus entidades y avisos).
+     */
+    _form(car, kind, enabled, fields, extra, save) {
+      const dialog = openDialog(
+        `<h2>${this._t(`section_${kind}`)} — ${escapeHtml(car.name)}</h2>
+         <label class="check"><input type="checkbox" name="enabled" ${enabled ? "checked" : ""}>${this._t("enabled")}</label>
+         <div class="fields">${fields}</div>
+         <div class="err"></div>
+         <div class="btns">${extra || ""}<button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div>`,
+        async (action, current) => {
+          if (action === "extra") {
+            current.close();
+            return this[`_register_${kind}`](car);
+          }
+          if (action !== "ok") return undefined;
+          const values = current.values();
+          const message = values.enabled ? save.check(values) : "";
+          if (message) return current.error(message);
+          current.close();
+          return this._run(`set_${kind}`, { vehicle_id: car.id, ...(values.enabled ? save.data(values) : { enabled: false }) }, this._t("saved"));
+        }
+      );
+      const toggle = () => {
+        dialog.root.querySelector(".fields").hidden = !dialog.root.querySelector('[name="enabled"]').checked;
+      };
+      dialog.root.querySelector('[name="enabled"]').addEventListener("change", toggle);
+      toggle();
+    }
+
+    _required(values, names) {
+      return names.every((name) => String(values[name] || "").trim()) ? "" : this._t("error_required");
+    }
+
+    _form_maintenance(car) {
+      const data = car.maintenance;
+      const record = data ? data.record : { services_done: 0, last_date: "", last_km: 0, ...car.plan };
+      const fields = `
+        ${this._field("services_done", "mt_services_done", `type="number" min="0" max="50" value="${record.services_done}"`, "mt_services_done_help")}
+        <div class="two">
+          ${this._field("last_date", "mt_last_date", `type="date" value="${escapeHtml(record.last_date)}"`)}
+          ${this._field("last_km", "mt_last_km", `type="number" min="0" max="2000000" value="${record.last_km}"`)}
+          ${this._field("interval_km", "mt_interval_km", `type="number" min="1000" max="100000" step="500" value="${record.interval_km}"`)}
+          ${this._field("interval_months", "mt_interval_months", `type="number" min="1" max="60" value="${record.interval_months}"`)}
+        </div>`;
+      const extra = data ? `<button class="tb left" data-action="extra">${this._t("mt_register")}</button>` : "";
+      this._form(car, "maintenance", true, fields, extra, {
+        check: (values) => this._required(values, ["last_date", "interval_km", "interval_months"]),
+        data: (values) => ({
+          enabled: true,
+          services_done: Number(values.services_done) || 0,
+          last_date: values.last_date,
+          last_km: Number(values.last_km) || 0,
+          interval_km: Number(values.interval_km),
+          interval_months: Number(values.interval_months),
+        }),
+      });
+    }
+
+    /** Registrar una revisión hecha: fecha y kilómetros (por defecto, hoy y los del coche). */
+    _register_maintenance(car) {
+      openDialog(
+        `<h2>${this._t("mt_register")}</h2><p>${this._t("mt_register_help", { name: escapeHtml(car.name), number: car.maintenance.number })}</p>
+         <div class="two">${this._field("date", "date", `type="date" value="${this._today()}"`)}
+           ${this._field("km", "mt_km", `type="number" min="0" max="2000000" value="${Math.round(car.odometer || 0)}"`)}</div>
+         <div class="err"></div>
+         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`,
+        (action, dialog) => {
+          if (action !== "ok") return undefined;
+          const values = dialog.values();
+          if (!values.date) return dialog.error(this._t("error_required"));
+          dialog.close();
+          return this._run("register_maintenance", { vehicle_id: car.id, date: values.date, km: Number(values.km) || 0 }, this._t("registered"));
+        }
+      );
+    }
+
+    _form_itv(car) {
+      const data = car.itv;
+      const record = data ? data.record : { registration_date: "", last_date: "", next_override: "" };
+      const fields = `
+        ${this._field("registration_date", "itv_registration", `type="date" value="${escapeHtml(record.registration_date || "")}"`)}
+        ${this._field("last_date", "itv_last", `type="date" value="${escapeHtml(record.last_date || "")}"`, "itv_last_help")}
+        ${this._field("next_date", "itv_next", `type="date" value="${escapeHtml(record.next_override || "")}"`, "itv_next_help")}`;
+      const extra = data ? `<button class="tb left" data-action="extra">${this._t("itv_register")}</button>` : "";
+      this._form(car, "itv", true, fields, extra, {
+        check: (values) => this._required(values, ["registration_date"]),
+        data: (values) => ({
+          enabled: true,
+          registration_date: values.registration_date,
+          last_date: values.last_date || null,
+          next_date: values.next_date || null,
+        }),
+      });
+    }
+
+    _register_itv(car) {
+      openDialog(
+        `<h2>${this._t("itv_register")}</h2><p>${this._t("itv_register_help", { name: escapeHtml(car.name) })}</p>
+         ${this._field("date", "date", `type="date" value="${this._today()}"`)}
+         <div class="err"></div>
+         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`,
+        (action, dialog) => {
+          if (action !== "ok") return undefined;
+          const values = dialog.values();
+          if (!values.date) return dialog.error(this._t("error_required"));
+          dialog.close();
+          return this._run("register_itv", { vehicle_id: car.id, date: values.date }, this._t("registered"));
+        }
+      );
+    }
+
+    _form_insurance(car) {
+      const data = car.insurance;
+      const record = data ? data.record
+        : { renewal_date: "", company: "", policy: "", kind: this._state.insurance_kinds[0], notice_days: 30, phone_assistance: "", phone_company: "" };
+      const kinds = this._state.insurance_kinds
+        .map((kind) => `<option value="${kind}" ${kind === record.kind ? "selected" : ""}>${this._t(`kind_${kind}`)}</option>`)
+        .join("");
+      const text = (name, label, value, type) => this._field(name, label, `type="${type || "text"}" value="${escapeHtml(value || "")}"`);
+      const fields = `
+        <div class="two">${text("company", "ins_company", record.company)}${text("policy", "ins_policy", record.policy)}</div>
+        <label>${this._t("ins_kind")}<select name="kind">${kinds}</select></label>
+        <div class="two">
+          ${this._field("renewal_date", "ins_renewal", `type="date" value="${escapeHtml(record.renewal_date)}"`)}
+          ${this._field("notice_days", "ins_notice", `type="number" min="1" max="180" value="${record.notice_days}"`)}
+          ${text("phone_assistance", "ins_phone_assistance", record.phone_assistance, "tel")}
+          ${text("phone_company", "ins_phone_company", record.phone_company, "tel")}
+        </div>`;
+      this._form(car, "insurance", true, fields, "", {
+        check: (values) => this._required(values, ["renewal_date", "notice_days"]),
+        data: (values) => ({
+          enabled: true,
+          renewal_date: values.renewal_date,
+          company: values.company,
+          policy: values.policy,
+          kind: values.kind,
+          notice_days: Number(values.notice_days),
+          phone_assistance: values.phone_assistance,
+          phone_company: values.phone_company,
+        }),
+      });
+    }
+  });
+
+  // ── src/90_registro.js ────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Alta del panel en Home Assistant
+  // ---------------------------------------------------------------------------
+  customElements.define(TAG, DecDeepalPanel);
+})();

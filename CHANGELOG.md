@@ -3,6 +3,39 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b1] — 2026-10-11
+
+### Añadido
+
+- **Panel DEC Deepal en la barra lateral.** Una página propia, solo para
+  administradores, que convive con Configurar. Cuatro pestañas:
+  - **Coches:** cada coche con su foto, versión, equipamiento de su ficha y
+    tres recuadros —mantenimiento, ITV y seguro— con un engranaje para
+    configurarlos y registrar revisiones o ITV.
+  - **Avisos:** una tabla por coche, con un apartado por cada cosa (carga,
+    testigos, mantenimiento, ITV, seguro), una fila por aviso y una casilla
+    por destino.
+  - **Datos:** descargar la copia, enviarla a un móvil, cargarla y borrar.
+  - **Diagnóstico:** lo que ha pasado (cambios, órdenes, avisos) y la ficha
+    de cada coche.
+  Ver `docs/panel.md`.
+- **Cada aviso tiene sus destinos**, no solo cada grupo: se puede mandar el
+  aviso de los 15 días a un móvil y el de «cumplido» a dos.
+- **Plazos editables por coche** (el lápiz de la pestaña Avisos): los días y
+  los kilómetros de cada aviso de mantenimiento, ITV y seguro.
+- **Avisos de renovación del seguro:** 30 y 15 días antes de renovarse.
+  Nacen sin destinos; se activan en el panel.
+
+### Cambiado
+
+- **Avisos de mantenimiento por kilómetros:** de fábrica pasan a 5.000, 2.500
+  y 1.000 km (antes 3.000, 2.000 y 1.000). Se pueden cambiar en el panel.
+- Quien ya tenía avisos configurados no nota nada: cada aviso hereda los
+  destinos de su grupo. Configurar → Avisos al móvil sigue funcionando, por
+  grupos.
+- El panel está en español e inglés; en portugués, italiano y polaco se ve en
+  inglés por ahora.
+
 ## [2.4.0] — 2026-10-11
 
 Versión estable. Reúne las betas `2.4.0b1` a `2.4.0b4`, probadas en una

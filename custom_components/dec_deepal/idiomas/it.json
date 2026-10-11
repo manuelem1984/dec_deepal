@@ -858,6 +858,7 @@
     "itv_overdue": "ITV scaduta dal {date}.",
     "insurance_cancel": "Assicurazione: mancano {days} per poter disdire (fino al {deadline}). Si rinnova il {renewal}.",
     "insurance_last_day": "Assicurazione: oggi è l'ultimo giorno per avvisare {company} se non vuoi rinnovare.",
+    "insurance_renewal": "Assicurazione: mancano {days} al rinnovo ({renewal}).",
     "insurance_renewed": "Assicurazione rinnovata oggi. Prossimo rinnovo: {renewal}.",
     "your_insurer": "la tua compagnia",
     "km": "{value} km",

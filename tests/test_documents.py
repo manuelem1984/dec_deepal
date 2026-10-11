@@ -64,11 +64,11 @@ def test_itv_steps_once_each() -> None:
     record = doc.ItvRecord(registration_date=REGISTRATION)
     assert doc.itv_status(record, date(2026, 9, 1)).level == LEVEL_OK
     current = doc.itv_status(record, date(2026, 10, 10))  # quedan 47 días
-    assert (current.days_left, current.level, current.steps) == (47, LEVEL_SOON, {"d60"})
+    assert (current.days_left, current.level, current.steps) == (47, LEVEL_SOON, {"t1"})
     assert doc.itv_pending_notice(record, current) == "remaining"
     record.notified |= current.steps
     assert doc.itv_pending_notice(record, doc.itv_status(record, date(2026, 10, 20))) is None
-    for day, steps in ((date(2026, 10, 27), {"d60", "d30"}), (date(2026, 11, 11), {"d60", "d30", "d15"})):
+    for day, steps in ((date(2026, 10, 27), {"t1", "t2"}), (date(2026, 11, 11), {"t1", "t2", "t3"})):
         current = doc.itv_status(record, day)
         assert current.steps == steps and doc.itv_pending_notice(record, current) == "remaining"
         record.notified |= current.steps
@@ -97,13 +97,24 @@ def test_insurance_dates_and_levels() -> None:
     far = doc.insurance_status(record, date(2026, 10, 9))
     assert (far.days_to_renewal, far.days_to_cancel, far.level) == (156, 126, LEVEL_OK)
     soon = doc.insurance_status(record, date(2027, 1, 13))  # 30 días antes del límite
-    assert soon.level == LEVEL_SOON and soon.steps == {"c30"}
+    assert soon.level == LEVEL_SOON and soon.steps == {"c1"}
     last = doc.insurance_status(record, date(2027, 2, 12))
     assert last.days_to_cancel == 0 and last.level == LEVEL_OVERDUE
     assert doc.STEP_LAST_DAY in last.steps
     # Pasado el plazo ya no hay nada que hacer: sin testigo hasta la renovación.
     late = doc.insurance_status(record, date(2027, 2, 20))
-    assert late.level == LEVEL_OK and late.steps == frozenset() and late.days_to_cancel == -8
+    assert late.level == LEVEL_OK and late.days_to_cancel == -8
+    # Lo único que queda son los avisos de renovación (22 días: el de 30 ya ha saltado),
+    # que no encienden el testigo.
+    assert late.steps == {"r1"} and late.days_to_renewal == 22
+    assert doc.insurance_status(record, date(2027, 3, 1)).steps == {"r1", "r2"}
+    # Con los plazos de un coche que los ha cambiado.
+    custom = doc.insurance_status(record, date(2027, 1, 3), cancel_steps=(45, 10), renewal_steps=(20, 5))
+    assert custom.steps == {"c1"} and custom.level == LEVEL_SOON
+    # Lo guardado antes de la 2.5.0 (escalones con el valor en el nombre) se sigue leyendo.
+    old = doc.InsuranceRecord.from_dict({"renewal_date": "2027-03-14", "notified": ["c30", "c15"]})
+    assert old.notified == {"c1", "c2"}
+    assert doc.ItvRecord.from_dict({"registration_date": "2022-01-01", "notified": ["d60", "overdue"]}).notified == {"t1", "overdue"}
 
 
 def test_insurance_notices_and_renewal() -> None:
@@ -216,6 +227,66 @@ def test_alerts_configured_before_2_4_keep_working() -> None:
     assert route.targets_for(ar.ALERT_ITV) == everyone
     assert route.targets_for(ar.ALERT_INSURANCE) == ()
     assert ar.panel_name("es") == "Notificaciones de Home Assistant"
+    # Los avisos nuevos (renovación del seguro) nacen sin destinos: antes no los recibía nadie.
+    old["types"] = list(ar.ALERT_TYPES)
+    route = ar.route_for(old, "c")
+    assert route.targets_for("insurance_c1") == everyone and route.targets_for("insurance_renewed") == everyone
+    assert route.targets_for("insurance_r1") == () and route.targets_for("insurance_r2") == ()
+
+
+def test_each_notice_has_its_own_targets_and_thresholds() -> None:
+    """Formato de la 2.5.0 (panel): destinos aviso a aviso y plazos por coche."""
+    me, bell = "mobile_app_manuel", ar.TARGET_PANEL
+    stored = {
+        "notices": {"charge_finished": [me], "maintenance_t3": [me, bell], "maintenance_k2": [me], "insurance_r1": [me]},
+        "thresholds": {"maintenance_t1": 90, "maintenance_k1": 4000, "bogus": 3},
+    }
+    route = ar.route_for({"vehicles": {"c": stored}}, "c")
+    assert route.targets_for("charge_finished") == (me,) and route.targets_for("charge_started") == ()
+    assert route.targets_for("maintenance_t3") == (me, bell) and route.targets_for("maintenance_t1") == ()
+    # Un apartado entero: los destinos de cualquiera de sus avisos.
+    assert route.targets_for(ar.ALERT_MAINTENANCE) == (me, bell) and route.targets_for(ar.ALERT_ITV) == ()
+    assert route.car_types == {"charge_finished"}
+    # Plazos: los cambiados y, para el resto, los de fábrica.
+    assert route.steps("maintenance", "t") == (90, 30, 15)
+    assert route.steps("maintenance", "k") == (4000, 2500, 1000)
+    assert route.steps("itv", "t") == (60, 30, 15)
+    assert route.steps("insurance", "c") == (30, 15) and route.steps("insurance", "r") == (30, 15)
+    assert route.thresholds == {"maintenance_t1": 90, "maintenance_k1": 4000}
+    assert ar.route_for({"vehicles": {"c": route.to_dict()}}, "c") == route
+    assert len(ar.NOTICES) == 23 and [n.id for n in ar.NOTICES if n.opt_in] == ["insurance_r1", "insurance_r2"]
+
+    # El apartado clásico de Configurar (por grupos) pisa los destinos del grupo
+    # y respeta lo que no sabe tocar: plazos y avisos nuevos.
+    coarse = ar.Route.from_groups({"car": [bell], "maintenance": [me]}, ["tires"], base=route)
+    assert coarse.targets_for("tires") == (bell,) and coarse.targets_for("charge_finished") == ()
+    assert coarse.targets_for("maintenance_t1") == (me,) and coarse.targets_for("maintenance_overdue") == (me,)
+    assert coarse.targets_for("insurance_r1") == (me,) and coarse.targets_for("insurance_c1") == ()
+    assert coarse.thresholds == route.thresholds
+
+
+def test_thresholds_are_validated() -> None:
+    assert ar.clean_thresholds(None) == {} and ar.clean_thresholds({"itv_t1": 60}) == {}
+    assert ar.clean_thresholds({"itv_t1": 45.0, "maintenance_k3": 500}) == {"itv_t1": 45, "maintenance_k3": 500}
+    for bad, code, notice in (
+        ({"itv_t1": 0}, ar.ERROR_THRESHOLD_RANGE, "itv_t1"),
+        ({"itv_t1": 400}, ar.ERROR_THRESHOLD_RANGE, "itv_t1"),
+        ({"maintenance_k1": "5000"}, ar.ERROR_THRESHOLD_RANGE, "maintenance_k1"),
+        ({"maintenance_k1": 50}, ar.ERROR_THRESHOLD_RANGE, "maintenance_k1"),
+        # El aviso 1 tiene que saltar antes que el 2, y el 2 antes que el 3.
+        ({"itv_t1": 20}, ar.ERROR_THRESHOLD_ORDER, "itv_t2"),
+        ({"maintenance_k2": 1000}, ar.ERROR_THRESHOLD_ORDER, "maintenance_k3"),
+        ({"insurance_r2": 30}, ar.ERROR_THRESHOLD_ORDER, "insurance_r2"),
+    ):
+        try:
+            ar.clean_thresholds(bad)
+        except ar.ThresholdError as err:
+            assert (err.code, err.notice) == (code, notice), bad
+        else:
+            raise AssertionError(bad)
+    # Unos plazos guardados que ya no valen no rompen nada: se usan los de fábrica.
+    broken = ar.route_for({"vehicles": {"c": {"notices": {}, "thresholds": {"itv_t1": 5}}}}, "c")
+    assert broken.thresholds == {} and broken.steps("itv", "t") == (60, 30, 15)
     assert set(doc.INSURANCE_KINDS) == {
         "third_party",
         "third_party_plus",

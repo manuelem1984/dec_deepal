@@ -71,68 +71,235 @@ ALERT_TYPES: Final = (
 ORIGINAL_ALERT_TYPES: Final = ALERT_TYPES[:7]
 
 
-#: Grupos de avisos: cada uno tiene su lista de destinos en cada coche.
+#: Grupos de avisos del apartado clásico de Configurar (hasta la 2.4.0 se
+#: elegían los destinos por grupo; el panel los elige aviso a aviso).
 GROUP_CAR: Final = "car"
 GROUP_MAINTENANCE: Final = "maintenance"
 GROUP_ITV: Final = "itv"
 GROUP_INSURANCE: Final = "insurance"
 GROUPS: Final = (GROUP_CAR, GROUP_MAINTENANCE, GROUP_ITV, GROUP_INSURANCE)
-#: Avisos del grupo "coche": los únicos que se activan uno a uno.
+#: Avisos del grupo "coche" (carga, testigos, neumáticos y pila del mando).
 CAR_ALERT_TYPES: Final = ALERT_TYPES[:6]
-#: Grupo de cada tipo de aviso.
-GROUP_OF: Final[dict[str, str]] = {
-    **dict.fromkeys(CAR_ALERT_TYPES, GROUP_CAR),
-    ALERT_MAINTENANCE: GROUP_MAINTENANCE,
-    ALERT_ITV: GROUP_ITV,
-    ALERT_INSURANCE: GROUP_INSURANCE,
-}
 #: Destino especial: el panel de notificaciones de Home Assistant.
 TARGET_PANEL: Final = "persistent_notification"
 
+#: Apartados del panel, en su orden.
+SECTION_CHARGE: Final = "charge"
+SECTION_WARNINGS: Final = "warnings"
+SECTIONS: Final = (
+    SECTION_CHARGE, SECTION_WARNINGS, GROUP_MAINTENANCE, GROUP_ITV, GROUP_INSURANCE,
+)  # fmt: skip
+UNIT_DAYS: Final = "days"
+UNIT_KM: Final = "km"
+
 
 @dataclass(frozen=True, slots=True)
-class Route:
-    """A quién avisa un coche de cada cosa."""
+class Notice:
+    """Un aviso concreto: con sus destinos y, si tiene plazo, cuándo salta."""
 
-    #: Destinos de cada grupo (servicios ``notify.*`` o :data:`TARGET_PANEL`).
-    targets: Mapping[str, tuple[str, ...]]
-    #: Avisos del coche activados (carga iniciada, testigos...).
-    car_types: frozenset[str]
+    id: str
+    section: str
+    #: Plazo de fábrica (días o km que quedan); ``None`` = no tiene plazo.
+    threshold: int | None = None
+    unit: str | None = None
+    #: Nuevo en la 2.5.0: nace sin destinos (no lo recibía nadie antes).
+    opt_in: bool = False
 
-    def targets_for(self, alert: str) -> tuple[str, ...]:
-        """Destinos de un tipo de aviso (vacío = no se avisa)."""
-        group = GROUP_OF[alert]
-        if group == GROUP_CAR and alert not in self.car_types:
-            return ()
-        return self.targets.get(group, ())
+    @property
+    def group(self) -> str:
+        """Grupo del apartado clásico de Configurar."""
+        return GROUP_CAR if self.section in (SECTION_CHARGE, SECTION_WARNINGS) else self.section
 
-    def to_dict(self) -> dict[str, list[str]]:
-        """Como se guarda en las opciones."""
-        return {
-            **{group: list(self.targets.get(group, ())) for group in GROUPS},
-            OPT_ALERT_CAR_TYPES: [kind for kind in CAR_ALERT_TYPES if kind in self.car_types],
-            # Para activar solos los tipos que se añadan en versiones futuras.
-            OPT_ALERT_CAR_KNOWN: list(CAR_ALERT_TYPES),
-        }
+    @property
+    def limits(self) -> tuple[int, int] | None:
+        """Mínimo y máximo que se puede poner de plazo."""
+        if self.unit == UNIT_DAYS:
+            return (1, 365)
+        return (100, 20000) if self.unit == UNIT_KM else None
 
 
-#: Coche sin ningún aviso.
-NO_ROUTE: Final = Route(targets={}, car_types=frozenset())
+def _due(section: str, step: str, threshold: int | None = None, unit: str | None = None, **more: Any) -> Notice:
+    return Notice(f"{section}_{step}", section, threshold, unit, **more)
+
+
+#: Todos los avisos, en el orden del panel. El id de los de mantenimiento,
+#: ITV y seguro es ``<apartado>_<escalón>`` (los escalones los calculan
+#: ``maintenance.py`` y ``documents.py``).
+NOTICES: Final[tuple[Notice, ...]] = (
+    Notice(ALERT_CHARGE_STARTED, SECTION_CHARGE),
+    Notice(ALERT_CHARGE_INTERRUPTED, SECTION_CHARGE),
+    Notice(ALERT_CHARGE_FINISHED, SECTION_CHARGE),
+    Notice(ALERT_WARNINGS, SECTION_WARNINGS),
+    Notice(ALERT_TIRES, SECTION_WARNINGS),
+    Notice(ALERT_KEY_BATTERY, SECTION_WARNINGS),
+    _due(GROUP_MAINTENANCE, "t1", 60, UNIT_DAYS),
+    _due(GROUP_MAINTENANCE, "t2", 30, UNIT_DAYS),
+    _due(GROUP_MAINTENANCE, "t3", 15, UNIT_DAYS),
+    _due(GROUP_MAINTENANCE, "k1", 5000, UNIT_KM),
+    _due(GROUP_MAINTENANCE, "k2", 2500, UNIT_KM),
+    _due(GROUP_MAINTENANCE, "k3", 1000, UNIT_KM),
+    _due(GROUP_MAINTENANCE, "overdue"),
+    _due(GROUP_ITV, "t1", 60, UNIT_DAYS),
+    _due(GROUP_ITV, "t2", 30, UNIT_DAYS),
+    _due(GROUP_ITV, "t3", 15, UNIT_DAYS),
+    _due(GROUP_ITV, "overdue"),
+    _due(GROUP_INSURANCE, "c1", 30, UNIT_DAYS),
+    _due(GROUP_INSURANCE, "c2", 15, UNIT_DAYS),
+    _due(GROUP_INSURANCE, "last_day"),
+    _due(GROUP_INSURANCE, "r1", 30, UNIT_DAYS, opt_in=True),
+    _due(GROUP_INSURANCE, "r2", 15, UNIT_DAYS, opt_in=True),
+    _due(GROUP_INSURANCE, "renewed"),
+)
+NOTICE: Final[dict[str, Notice]] = {notice.id: notice for notice in NOTICES}
+#: Plazos que deben ir de mayor a menor (el aviso 1 salta antes que el 2).
+THRESHOLD_CHAINS: Final = (
+    ("maintenance_t1", "maintenance_t2", "maintenance_t3"),
+    ("maintenance_k1", "maintenance_k2", "maintenance_k3"),
+    ("itv_t1", "itv_t2", "itv_t3"),
+    ("insurance_c1", "insurance_c2"),
+    ("insurance_r1", "insurance_r2"),
+)
+#: Claves de lo guardado por coche (``options["alerts"]["vehicles"][<id>]``).
+KEY_NOTICES: Final = "notices"
+KEY_THRESHOLDS: Final = "thresholds"
+
+#: Motivos por los que se rechazan unos plazos (claves de texto del panel).
+ERROR_THRESHOLD_RANGE: Final = "threshold_range"
+ERROR_THRESHOLD_ORDER: Final = "threshold_order"
+
+
+class ThresholdError(ValueError):
+    """Plazos que no valen. ``code`` dice por qué y ``notice`` cuál."""
+
+    def __init__(self, code: str, notice: str) -> None:
+        super().__init__(f"{code}: {notice}")
+        self.code = code
+        self.notice = notice
+
+
+def clean_thresholds(raw: Mapping[str, Any] | None) -> dict[str, int]:
+    """Plazos válidos a partir de lo que manda el panel (solo los distintos de fábrica).
+
+    Raises:
+        ThresholdError: un plazo fuera de sus límites, o un aviso que saltaría
+            después que el siguiente (p. ej. aviso 1 a 20 días y aviso 2 a 30).
+    """
+    values = {notice.id: notice.threshold for notice in NOTICES if notice.threshold is not None}
+    for notice_id, value in (raw or {}).items():
+        notice = NOTICE.get(str(notice_id))
+        if notice is None or notice.limits is None:
+            continue
+        low, high = notice.limits
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not low <= value <= high:
+            raise ThresholdError(ERROR_THRESHOLD_RANGE, notice.id)
+        values[notice.id] = int(value)
+    for chain in THRESHOLD_CHAINS:
+        for earlier, later in zip(chain, chain[1:], strict=False):
+            if values[earlier] <= values[later]:
+                raise ThresholdError(ERROR_THRESHOLD_ORDER, later)
+    return {
+        notice_id: value for notice_id, value in values.items() if value != NOTICE[notice_id].threshold
+    }
 
 
 def _unique(names: Iterable[Any]) -> tuple[str, ...]:
     return tuple(dict.fromkeys(str(name) for name in names if name))
 
 
+@dataclass(frozen=True, slots=True)
+class Route:
+    """A quién avisa un coche de cada cosa, y con qué plazos."""
+
+    #: Destinos de cada aviso (servicios ``notify.*`` o :data:`TARGET_PANEL`).
+    targets: Mapping[str, tuple[str, ...]]
+    #: Plazos cambiados respecto a los de fábrica: ``{aviso: días o km}``.
+    thresholds: Mapping[str, int]
+
+    def targets_for(self, alert: str) -> tuple[str, ...]:
+        """Destinos de un aviso (vacío = no se avisa).
+
+        También admite un apartado entero (``"maintenance"``): devuelve los
+        destinos de cualquiera de sus avisos.
+        """
+        if alert in NOTICE:
+            return self.targets.get(alert, ())
+        return self.group_targets(alert)
+
+    def group_targets(self, group: str) -> tuple[str, ...]:
+        """Destinos de un grupo o apartado: los de todos sus avisos, sin repetir."""
+        return _unique(
+            target
+            for notice in NOTICES
+            if group in (notice.group, notice.section)
+            for target in self.targets.get(notice.id, ())
+        )
+
+    @property
+    def car_types(self) -> frozenset[str]:
+        """Avisos del coche (carga, testigos...) que tienen algún destino."""
+        return frozenset(kind for kind in CAR_ALERT_TYPES if self.targets.get(kind))
+
+    def threshold(self, notice_id: str) -> int:
+        """Plazo de un aviso: el del coche o, si no lo ha cambiado, el de fábrica."""
+        return int(self.thresholds.get(notice_id, NOTICE[notice_id].threshold or 0))
+
+    def steps(self, section: str, kind: str) -> tuple[int, ...]:
+        """Plazos de una serie (``("maintenance", "k")`` → ``(5000, 2500, 1000)``)."""
+        return tuple(
+            self.threshold(notice.id)
+            for notice in NOTICES
+            if notice.section == section and notice.threshold is not None
+            and notice.id.removeprefix(f"{section}_").startswith(kind)
+        )  # fmt: skip
+
+    def to_dict(self) -> dict[str, Any]:
+        """Como se guarda en las opciones."""
+        return {
+            KEY_NOTICES: {notice.id: list(self.targets.get(notice.id, ())) for notice in NOTICES},
+            KEY_THRESHOLDS: dict(self.thresholds),
+        }
+
+    @classmethod
+    def from_groups(
+        cls,
+        groups: Mapping[str, Iterable[str]],
+        car_types: Iterable[str],
+        base: Route | None = None,
+    ) -> Route:
+        """A partir de lo elegido por grupos (apartado clásico de Configurar).
+
+        Todos los avisos de un grupo reciben sus destinos; del grupo "coche",
+        solo los activados. Lo que el apartado clásico no sabe tocar se
+        conserva de ``base``: los plazos y los avisos nuevos (``opt_in``).
+        """
+        chosen = set(car_types)
+        targets: dict[str, tuple[str, ...]] = {}
+        for notice in NOTICES:
+            if notice.opt_in:
+                targets[notice.id] = base.targets.get(notice.id, ()) if base else ()
+            elif notice.group == GROUP_CAR and notice.id not in chosen:
+                targets[notice.id] = ()
+            else:
+                targets[notice.id] = _unique(groups.get(notice.group) or ())
+        return cls(targets=targets, thresholds=dict(base.thresholds) if base else {})
+
+
+#: Coche sin ningún aviso.
+NO_ROUTE: Final = Route(targets={}, thresholds={})
+
+
 def route_for(config: Mapping[str, Any] | None, vehicle_id: str) -> Route:
     """A quién avisa un coche, según las opciones de la cuenta.
 
-    Args:
-        config: ``options["alerts"]``. Admite el formato por coche (2.4.0) y
-            el anterior, con una sola lista para toda la cuenta: en ese caso
-            todos los coches avisan a esa lista de los tipos que estuvieran
-            activados, que es lo que hacían antes de actualizar.
-        vehicle_id: coche.
+    Lee los tres formatos que ha habido:
+
+    - **2.5.0** (panel): destinos aviso a aviso y plazos, por coche.
+    - **2.4.0**: destinos por grupo, por coche.
+    - **Antes**: una sola lista para toda la cuenta. Todos los coches avisan
+      a esa lista de los tipos que estuvieran activados.
+
+    Al leer un formato anterior, los avisos de un grupo heredan sus destinos,
+    de modo que nadie nota nada al actualizar.
     """
     if not config:
         return NO_ROUTE
@@ -141,28 +308,33 @@ def route_for(config: Mapping[str, Any] | None, vehicle_id: str) -> Route:
         stored = vehicles.get(vehicle_id)
         if not isinstance(stored, Mapping):
             return NO_ROUTE
+        if isinstance(stored.get(KEY_NOTICES), Mapping):
+            try:
+                thresholds = clean_thresholds(stored.get(KEY_THRESHOLDS))
+            except ThresholdError:
+                thresholds = {}
+            return Route(
+                targets={
+                    notice.id: _unique(stored[KEY_NOTICES].get(notice.id) or ()) for notice in NOTICES
+                },
+                thresholds=thresholds,
+            )
         known = stored.get(OPT_ALERT_CAR_KNOWN)
         chosen = set(stored.get(OPT_ALERT_CAR_TYPES) or ())
-        # Tipos nuevos (que no existían al guardar) nacen activados.
+        # Tipos que no existían al guardar nacen activados.
         new = set(CAR_ALERT_TYPES) - set(CAR_ALERT_TYPES if known is None else known)
-        return Route(
-            targets={group: _unique(stored.get(group) or ()) for group in GROUPS},
-            car_types=frozenset((chosen & set(CAR_ALERT_TYPES)) | new),
-        )
+        return Route.from_groups(stored, (chosen & set(CAR_ALERT_TYPES)) | new)
 
     targets = list(config.get(OPT_ALERT_TARGETS) or ())
     if config.get(OPT_ALERT_PERSISTENT):
         targets.append(TARGET_PANEL)
     types = enabled_types(config.get(OPT_ALERT_TYPES), config.get(OPT_ALERT_KNOWN))
-    return Route(
-        targets={
-            GROUP_CAR: _unique(targets),
-            **{
-                GROUP_OF[alert]: _unique(targets) if alert in types else ()
-                for alert in (ALERT_MAINTENANCE, ALERT_ITV, ALERT_INSURANCE)
-            },
+    return Route.from_groups(
+        {
+            GROUP_CAR: targets,
+            **{group: targets for group in (GROUP_MAINTENANCE, GROUP_ITV, GROUP_INSURANCE) if group in types},
         },
-        car_types=frozenset(types & set(CAR_ALERT_TYPES)),
+        types & set(CAR_ALERT_TYPES),
     )
 
 
@@ -381,10 +553,19 @@ def itv_text(kind: str, *, days_left: int, due_date: str, language: str) -> str:
 def insurance_text(
     kind: str, *, days_to_cancel: int, deadline: str, renewal: str, company: str, language: str
 ) -> str:
-    """Texto del aviso de seguro (``kind``: ``"cancel"``, ``"last_day"`` o ``"renewed"``)."""
+    """Texto del aviso de seguro.
+
+    ``kind``: ``"cancel"`` (quedan X días para desistir), ``"last_day"``,
+    ``"renewal"`` (quedan X días para que se renueve; ``days_to_cancel`` son
+    entonces los días hasta la renovación) o ``"renewed"``.
+    """
     texts = _texts(language)
     if kind == "renewed":
         return texts["insurance_renewed"].format(renewal=renewal)
+    if kind == "renewal":
+        return texts["insurance_renewal"].format(
+            days=_days(days_to_cancel, texts), renewal=renewal
+        )
     if kind == "last_day":
         return texts["insurance_last_day"].format(company=company or texts["your_insurer"])
     return texts["insurance_cancel"].format(

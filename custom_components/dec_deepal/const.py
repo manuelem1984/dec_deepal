@@ -160,6 +160,11 @@ ICONS_JS_FILE: Final = "dec-icons.js"
 #: Tarjeta para los paneles (custom:dec-deepal-card). La carga dec-icons.js.
 CARD_JS_FILE: Final = "dec-deepal-card.js"
 CARD_JS_DIR: Final = "frontend_card"
+#: Panel de la barra lateral (ver panel.py). Su dirección no puede ser
+#: "dec-deepal": hay usuarios con un tablero propio con ese nombre.
+PANEL_JS_FILE: Final = "dec-deepal-panel.js"
+PANEL_JS_DIR: Final = "frontend_panel"
+PANEL_URL_PATH: Final = "dec-deepal-panel"
 #: Cargador temprano: se copia a <config>/www/dec_deepal/ y se registra como
 #: recurso de los paneles (ver frontend.py).
 ICONS_LOADER_FILE: Final = "dec-icons-loader.js"

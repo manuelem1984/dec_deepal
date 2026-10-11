@@ -68,6 +68,7 @@ from .debug.history import changes as signal_changes
 from .debug.recorder import DebugRecorder, VehicleRecorder
 from .frontend import async_register_frontend, async_remove_early_loader
 from .manual import async_register_manual
+from .panel import async_register_panel, async_unregister_panel
 from .registries import RegistryError
 from .registries.vehicles import FEATURE_MQTT
 from .runtime import (
@@ -241,6 +242,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     runtime.alerts.async_start()
+    # Panel de la barra lateral (una vez, con la primera cuenta).
+    await async_register_panel(hass)
 
     # Recargar SOLO si cambian las opciones. Guardar tokens nuevos también
     # "actualiza" la entrada, y eso no debe provocar una recarga.
@@ -292,6 +295,7 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     )
     if not hass.config_entries.async_entries(DOMAIN):
         await async_remove_early_loader(hass)
+        async_unregister_panel(hass)
 
 
 def _track_changes(coordinator: VehicleCoordinator, recorder: VehicleRecorder):  # noqa: ANN202

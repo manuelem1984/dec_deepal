@@ -1,7 +1,7 @@
-"""La tarjeta se genera uniendo los módulos de ``frontend_card/src/``.
+"""La tarjeta y el panel se generan uniendo los módulos de sus carpetas ``src/``.
 
-Lo que hace la tarjeta se prueba en un navegador (``tests_tarjeta/``); aquí
-solo se comprueba que el fichero que carga Home Assistant está al día.
+Lo que hacen se prueba en un navegador (``tests_tarjeta/``); aquí solo se
+comprueba que los ficheros que carga Home Assistant están al día.
 """
 
 from __future__ import annotations
@@ -27,6 +27,17 @@ def test_card_is_up_to_date(tool) -> None:  # noqa: ANN001
     """Si falla: ejecutar ``python tools/construir_tarjeta.py`` y subir el resultado."""
     assert tool.CARD.read_text(encoding="utf-8") == tool.build(tool.read_sources())
     assert tool.main(["--check"]) == 0
+
+
+def test_panel_is_built_the_same_way(tool) -> None:  # noqa: ANN001
+    built = tool.outputs()
+    assert set(built) == {tool.CARD, tool.PANEL}
+    panel = built[tool.PANEL]
+    assert tool.PANEL.read_text(encoding="utf-8") == panel
+    assert panel.startswith(tool.PANEL_BANNER) and "frontend_panel/src/" in tool.PANEL_BANNER
+    assert 'customElements.define(TAG, DecDeepalPanel)' in panel
+    for content in tool.read_sources(tool.PANEL_SRC).values():
+        assert content in panel
 
 
 def test_modules_are_joined_in_order(tool) -> None:  # noqa: ANN001

@@ -43,7 +43,9 @@ from .alert_rules import (
     ALERT_INSURANCE,
     ALERT_ITV,
     ALERT_MAINTENANCE,
-    GROUPS,
+    GROUP_INSURANCE,
+    GROUP_ITV,
+    GROUP_MAINTENANCE,
     PROBLEM_SIGNALS,
     TARGET_PANEL,
     WATCHED_SIGNALS,
@@ -276,7 +278,20 @@ class AlertManager:
         record = self._records.get(vehicle_id)
         if record is None:
             return None
-        return mt.status(record, dt_util.now().date(), self.odometer(vehicle_id))
+        return self._maintenance_status(vehicle_id, record, dt_util.now().date())
+
+    def _maintenance_status(
+        self, vehicle_id: str, record: mt.MaintenanceRecord, today: date
+    ) -> mt.MaintenanceStatus:
+        """Situación de la revisión, con los plazos de aviso de ese coche."""
+        route = self._routes[vehicle_id]
+        return mt.status(
+            record,
+            today,
+            self.odometer(vehicle_id),
+            route.steps(GROUP_MAINTENANCE, "t"),
+            route.steps(GROUP_MAINTENANCE, "k"),
+        )
 
     def operations(self, vehicle_id: str) -> list[str]:
         """Operaciones de la próxima revisión, según el plan del modelo."""
@@ -340,7 +355,20 @@ class AlertManager:
         record = self._itv.get(vehicle_id)
         if record is None:
             return None
-        return doc.itv_status(record, dt_util.now().date(), self.rules)
+        return self._itv_status(vehicle_id, record, dt_util.now().date())
+
+    def _itv_status(self, vehicle_id: str, record: doc.ItvRecord, today: date) -> doc.DueStatus:
+        return doc.itv_status(
+            record, today, self.rules, self._routes[vehicle_id].steps(GROUP_ITV, "t")
+        )
+
+    def _insurance_status(
+        self, vehicle_id: str, record: doc.InsuranceRecord, today: date
+    ) -> doc.InsuranceStatus:
+        route = self._routes[vehicle_id]
+        return doc.insurance_status(
+            record, today, route.steps(GROUP_INSURANCE, "c"), route.steps(GROUP_INSURANCE, "r")
+        )
 
     def insurance_record(self, vehicle_id: str) -> doc.InsuranceRecord | None:
         """Ficha del seguro del coche (``None`` = sin configurar)."""
@@ -349,7 +377,9 @@ class AlertManager:
     def insurance_status(self, vehicle_id: str) -> doc.InsuranceStatus | None:
         """Situación del seguro (``None`` = sin configurar)."""
         record = self._insurance.get(vehicle_id)
-        return None if record is None else doc.insurance_status(record, dt_util.now().date())
+        if record is None:
+            return None
+        return self._insurance_status(vehicle_id, record, dt_util.now().date())
 
     async def async_set_itv(self, vehicle_id: str, record: doc.ItvRecord | None) -> None:
         """Guarda (o borra, con ``None``) la ficha de ITV de un coche."""
@@ -387,30 +417,48 @@ class AlertManager:
         """¿Tiene ese coche algún destino para ese tipo de aviso?"""
         return bool(self._routes[vehicle_id].targets_for(alert))
 
+    def _fresh(
+        self, vehicle_id: str, section: str, steps: frozenset[str], notified: set[str]
+    ) -> tuple[set[str], tuple[str, ...]]:
+        """Escalones recién alcanzados que tienen a quién avisar, y esos destinos.
+
+        Cada escalón es un aviso con sus propios destinos
+        (``<apartado>_<escalón>``). Uno sin destinos no cuenta: si más
+        adelante se le ponen, avisará entonces.
+        """
+        route = self._routes[vehicle_id]
+        fresh = {step for step in steps - notified if route.targets_for(f"{section}_{step}")}
+        targets = dict.fromkeys(
+            target for step in sorted(fresh) for target in route.targets_for(f"{section}_{step}")
+        )
+        return fresh, tuple(targets)
+
     def _check_documents(self, vehicle_id: str) -> None:
         """Avisos de ITV y seguro (de día y una vez cada uno); renueva el seguro si toca."""
         now = dt_util.now()
         today = now.date()
         daytime = QUIET_BEFORE_HOUR <= now.hour < QUIET_FROM_HOUR
         language = self.hass.config.language
+        route = self._routes[vehicle_id]
 
         def day(value: date) -> str:
             return format_date(value, language)
 
         itv = self._itv.get(vehicle_id)
-        if itv is not None and daytime and self._wants(vehicle_id, ALERT_ITV):
-            current = doc.itv_status(itv, today, self.rules)
-            kind = doc.itv_pending_notice(itv, current)
-            if kind is not None:
+        if itv is not None and daytime and doc.STEP_OVERDUE not in itv.notified:
+            current = self._itv_status(vehicle_id, itv, today)
+            fresh, targets = self._fresh(vehicle_id, GROUP_ITV, current.steps, itv.notified)
+            if fresh:
                 self._send(
                     vehicle_id,
                     ALERT_ITV,
                     itv_text(
-                        kind,
+                        "overdue" if doc.STEP_OVERDUE in fresh else "remaining",
                         days_left=current.days_left,
                         due_date=day(current.due_date),
                         language=language,
                     ),
+                    targets,
                 )
                 itv.notified |= current.steps
                 self._save()
@@ -418,10 +466,10 @@ class AlertManager:
         insurance = self._insurance.get(vehicle_id)
         if insurance is None:
             return
-        # La renovación se aplica siempre (aunque el aviso esté desactivado o sea de noche).
+        # La renovación se aplica siempre (aunque no avise a nadie o sea de noche).
         if doc.insurance_roll(insurance, today):
             self._save()
-            if self._wants(vehicle_id, ALERT_INSURANCE):
+            if renewed := route.targets_for(f"{GROUP_INSURANCE}_renewed"):
                 self._send(
                     vehicle_id,
                     ALERT_INSURANCE,
@@ -433,45 +481,54 @@ class AlertManager:
                         company=insurance.company,
                         language=language,
                     ),
+                    renewed,
                 )
-        if not daytime or not self._wants(vehicle_id, ALERT_INSURANCE):
+        if not daytime:
             return
-        status = doc.insurance_status(insurance, today)
-        kind = doc.insurance_pending_notice(insurance, status)
-        if kind is not None:
-            self._send(
-                vehicle_id,
-                ALERT_INSURANCE,
-                insurance_text(
-                    kind,
-                    days_to_cancel=status.days_to_cancel,
-                    deadline=day(status.cancel_deadline),
-                    renewal=day(status.renewal_date),
-                    company=insurance.company,
-                    language=language,
-                ),
-            )
-            insurance.notified |= status.steps
-            self._save()
+        status = self._insurance_status(vehicle_id, insurance, today)
+        fresh, targets = self._fresh(vehicle_id, GROUP_INSURANCE, status.steps, insurance.notified)
+        if not fresh:
+            return
+        # Si coinciden varios, manda el más urgente: último día, desistir, renovación.
+        if doc.STEP_LAST_DAY in fresh:
+            kind = "last_day"
+        else:
+            kind = "cancel" if any(step.startswith("c") for step in fresh) else "renewal"
+        self._send(
+            vehicle_id,
+            ALERT_INSURANCE,
+            insurance_text(
+                kind,
+                days_to_cancel=status.days_to_renewal if kind == "renewal" else status.days_to_cancel,
+                deadline=day(status.cancel_deadline),
+                renewal=day(status.renewal_date),
+                company=insurance.company,
+                language=language,
+            ),
+            targets,
+        )
+        insurance.notified |= status.steps
+        self._save()
 
     def _check_maintenance(self, vehicle_id: str) -> None:
         """Envía el aviso de mantenimiento que toque (de día y una sola vez)."""
         record = self._records.get(vehicle_id)
-        if record is None or not self._wants(vehicle_id, ALERT_MAINTENANCE):
+        # Tras el aviso de "vencido" ya no hay más hasta registrar la revisión.
+        if record is None or mt.STEP_OVERDUE in record.notified:
             return
         now = dt_util.now()
         if not QUIET_BEFORE_HOUR <= now.hour < QUIET_FROM_HOUR:
             return
-        current = mt.status(record, now.date(), self.odometer(vehicle_id))
-        kind = mt.pending_notice(record, current)
-        if kind is None:
+        current = self._maintenance_status(vehicle_id, record, now.date())
+        fresh, targets = self._fresh(vehicle_id, GROUP_MAINTENANCE, current.steps, record.notified)
+        if not fresh:
             return
         language = self.hass.config.language
         self._send(
             vehicle_id,
             ALERT_MAINTENANCE,
             maintenance_text(
-                kind,
+                "overdue" if mt.STEP_OVERDUE in fresh else "remaining",
                 number=current.number,
                 days_left=current.days_left,
                 km_left=current.km_left,
@@ -479,6 +536,7 @@ class AlertManager:
                 due_km=current.due_km,
                 language=language,
             ),
+            targets,
         )
         mt.mark_notified(record, current)
         self._save()
@@ -546,11 +604,19 @@ class AlertManager:
             return device.name_by_user or device.name
         return self._vehicles[vehicle_id].info.display_name
 
-    def _send(self, vehicle_id: str, alert: str, message: str) -> None:
-        """Envía un aviso a los destinos de su grupo (sin esperar a que lleguen)."""
+    def _send(
+        self, vehicle_id: str, alert: str, message: str, targets: tuple[str, ...] | None = None
+    ) -> None:
+        """Envía un aviso (sin esperar a que llegue).
+
+        Args:
+            alert: tipo de aviso (para el historial).
+            targets: a quién; si no se dice, los destinos de ese aviso.
+        """
         title = f"{NAME} {self._vehicle_name(vehicle_id)}"
         _LOGGER.debug("Aviso: %s — %s", title, message)
-        targets = self._routes[vehicle_id].targets_for(alert)
+        if targets is None:
+            targets = self._routes[vehicle_id].targets_for(alert)
         sent = 0
         for service in targets:
             if service == TARGET_PANEL:
@@ -614,8 +680,11 @@ class AlertManager:
         """Configuración de avisos de cada coche, sin los nombres de los móviles."""
         return {
             self._vehicles[vehicle_id].info.display_name: {
-                "destinos": {group: len(route.targets.get(group, ())) for group in GROUPS},
-                "avisos_del_coche": sorted(route.car_types),
+                # Nº de destinos de cada aviso (sin nombres) y plazos cambiados.
+                "destinos": {
+                    notice: len(targets) for notice, targets in route.targets.items() if targets
+                },
+                "plazos": dict(route.thresholds),
             }
             for vehicle_id, route in self._routes.items()
         }

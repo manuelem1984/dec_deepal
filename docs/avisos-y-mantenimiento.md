@@ -6,6 +6,11 @@ en Home Assistant.
 
 ## Avisos al móvil
 
+Desde la 2.5.0, los avisos se eligen **uno a uno** y con sus plazos en el
+**panel DEC Deepal** de la barra lateral (pestaña Avisos; ver
+[panel.md](panel.md)). Lo que sigue describe el apartado clásico, que sigue
+funcionando y es una versión resumida de lo mismo.
+
 **Configurar → Avisos al móvil** (uno por coche). Cada coche reparte sus
 avisos en cuatro grupos, y cada grupo tiene su lista de destinos:
 

@@ -858,6 +858,7 @@
     "itv_overdue": "ITV po terminie od {date}.",
     "insurance_cancel": "Ubezpieczenie: na wypowiedzenie zostało {days} (do {deadline}). Odnowienie: {renewal}.",
     "insurance_last_day": "Ubezpieczenie: dziś ostatni dzień, aby powiadomić ({company}), jeśli nie chcesz przedłużać.",
+    "insurance_renewal": "Ubezpieczenie: do odnowienia zostało {days} ({renewal}).",
     "insurance_renewed": "Ubezpieczenie odnowione dzisiaj. Następne odnowienie: {renewal}.",
     "your_insurer": "Twój ubezpieczyciel",
     "km": "{value} km",

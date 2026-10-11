@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import Any, Final
 
-from .maintenance import LEVEL_OK, LEVEL_OVERDUE, LEVEL_SOON, add_months
+from .maintenance import LEVEL_OK, LEVEL_OVERDUE, LEVEL_SOON, add_months, current_steps
 
 # ---------------------------------------------------------------------------
 # ITV
@@ -98,7 +98,7 @@ class ItvRecord:
                 date.fromisoformat(raw["next_override"]) if raw.get("next_override") else None
             ),
             history=list(raw.get("history", [])),
-            notified=set(raw.get("notified", [])),
+            notified=current_steps(raw.get("notified")),
         )
 
 
@@ -129,11 +129,16 @@ def itv_due(record: ItvRecord, rules: CountryRules = DEFAULT_RULES) -> date:
     return record.next_override or itv_calculated(record, rules)
 
 
-def itv_status(record: ItvRecord, today: date, rules: CountryRules = DEFAULT_RULES) -> DueStatus:
-    """Cuánto falta para la próxima ITV."""
+def itv_status(
+    record: ItvRecord,
+    today: date,
+    rules: CountryRules = DEFAULT_RULES,
+    day_steps: tuple[int, ...] = ITV_DAY_STEPS,
+) -> DueStatus:
+    """Cuánto falta para la próxima ITV (``day_steps``: plazos de aviso del coche)."""
     due = itv_due(record, rules)
     days_left = (due - today).days
-    steps = {f"d{days}" for days in ITV_DAY_STEPS if days_left <= days}
+    steps = {f"t{slot}" for slot, days in enumerate(day_steps, 1) if days_left <= days}
     overdue = days_left < 0
     if overdue:
         steps.add(STEP_OVERDUE)
@@ -181,6 +186,10 @@ DEFAULT_NOTICE_DAYS: Final = 30
 #: Avisos antes del límite de desistimiento (días) y el del último día.
 CANCEL_DAY_STEPS: Final = (30, 15)
 STEP_LAST_DAY: Final = "last_day"
+#: Avisos antes de la renovación (días). Desde la 2.5.0; nacen sin destinos.
+RENEWAL_DAY_STEPS: Final = (30, 15)
+#: Nombres de los escalones del seguro hasta la 2.4.0 → los de ahora.
+OLD_INSURANCE_STEPS: Final = {"c30": "c1", "c15": "c2"}
 
 
 @dataclass(slots=True)
@@ -221,7 +230,9 @@ class InsuranceRecord:
             notice_days=int(raw.get("notice_days", DEFAULT_NOTICE_DAYS)),
             phone_assistance=str(raw.get("phone_assistance") or ""),
             phone_company=str(raw.get("phone_company") or ""),
-            notified=set(raw.get("notified", [])),
+            notified={
+                OLD_INSURANCE_STEPS.get(str(step), str(step)) for step in raw.get("notified", [])
+            },
         )
 
     @property
@@ -243,22 +254,31 @@ class InsuranceStatus:
     steps: frozenset[str]
 
 
-def insurance_status(record: InsuranceRecord, today: date) -> InsuranceStatus:
+def insurance_status(
+    record: InsuranceRecord,
+    today: date,
+    cancel_steps: tuple[int, ...] = CANCEL_DAY_STEPS,
+    renewal_steps: tuple[int, ...] = RENEWAL_DAY_STEPS,
+) -> InsuranceStatus:
     """Cuánto falta para la renovación y para el límite de desistimiento.
 
-    Testigo: ámbar desde 30 días antes del límite; rojo el último día. Pasado
-    el plazo ya no hay nada que hacer hasta la renovación: sin testigo.
+    Testigo: ámbar desde el primer aviso antes del límite; rojo el último
+    día. Pasado el plazo ya no hay nada que hacer hasta la renovación: sin
+    testigo. Los escalones ``r1``/``r2`` (días hasta la renovación) solo
+    sirven para avisar: no cambian el testigo.
     """
     days_to_cancel = (record.cancel_deadline - today).days
+    days_to_renewal = (record.renewal_date - today).days
     steps: set[str] = set()
     level = LEVEL_OK
     if days_to_cancel >= 0:
-        steps = {f"c{days}" for days in CANCEL_DAY_STEPS if days_to_cancel <= days}
+        steps = {f"c{slot}" for slot, days in enumerate(cancel_steps, 1) if days_to_cancel <= days}
         if days_to_cancel == 0:
             steps.add(STEP_LAST_DAY)
             level = LEVEL_OVERDUE
         elif steps:
             level = LEVEL_SOON
+    steps |= {f"r{slot}" for slot, days in enumerate(renewal_steps, 1) if days_to_renewal <= days}
     return InsuranceStatus(
         renewal_date=record.renewal_date,
         cancel_deadline=record.cancel_deadline,
@@ -270,11 +290,16 @@ def insurance_status(record: InsuranceRecord, today: date) -> InsuranceStatus:
 
 
 def insurance_pending_notice(record: InsuranceRecord, current: InsuranceStatus) -> str | None:
-    """Aviso de seguro que toca: ``"last_day"``, ``"cancel"`` o ``None``."""
+    """Aviso de seguro que toca: ``"last_day"``, ``"cancel"``, ``"renewal"`` o ``None``.
+
+    Si coinciden varios, el más urgente.
+    """
     new = current.steps - record.notified
     if not new:
         return None
-    return "last_day" if STEP_LAST_DAY in new else "cancel"
+    if STEP_LAST_DAY in new:
+        return "last_day"
+    return "cancel" if any(step.startswith("c") for step in new) else "renewal"
 
 
 def insurance_roll(record: InsuranceRecord, today: date) -> bool:

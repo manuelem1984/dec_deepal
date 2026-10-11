@@ -1,5 +1,19 @@
 # Hoja de ruta
 
+## Beta 2.5.0b1 (11-10-2026) — pendiente de probar
+
+- [ ] **Panel:** aparece "DEC Deepal" en la barra lateral y las cuatro
+      pestañas cargan con los dos coches (ordenador y app del móvil).
+- [ ] **Coches:** los engranajes abren mantenimiento, ITV y seguro y guardan.
+- [ ] **Avisos:** marcar destinos aviso a aviso, cambiar un plazo con el
+      lápiz y guardar; comprobar que Configurar → Avisos al móvil enseña lo
+      mismo por grupos.
+- [ ] **Datos:** el botón Descargar baja la copia también desde el móvil.
+- [ ] **Diagnóstico:** el historial enseña lo que va pasando.
+- [ ] Pendiente: traducir el panel a portugués, italiano y polaco; mover al
+      panel la apariencia y el PIN; decidir si Configurar acaba llevando al
+      panel.
+
 ## 2.4.0 (11-10-2026) — publicada
 
 Datos por coche, copia de seguridad, avisos por coche y grupo, fichas de las

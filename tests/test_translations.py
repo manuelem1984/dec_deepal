@@ -134,6 +134,30 @@ def test_catalogue_names_in_every_language() -> None:
     assert plan.operations_for(1, "max", "eu") == plan.operations_for(1, "max", "es")
 
 
+def test_panel_texts() -> None:
+    """El panel solo usa textos que existen, y hay nombre para cada aviso y apartado."""
+    from custom_components.dec_deepal.alert_rules import NOTICES, SECTIONS
+    from custom_components.dec_deepal.documents import INSURANCE_KINDS
+
+    spanish = json.loads((INTEGRATION / "idiomas" / "es.json").read_text(encoding="utf-8"))["panel"]
+    english = json.loads((INTEGRATION / "idiomas" / "en.json").read_text(encoding="utf-8"))["panel"]
+    assert set(spanish) == set(english) and len(spanish) > 150
+    sources = (INTEGRATION / "frontend_panel" / "src").glob("*.js")
+    code = "".join(path.read_text(encoding="utf-8") for path in sources if path.name != "20_textos.js")
+    used = set(re.findall(r'_(?:t|maybe)\("([a-z_0-9]+)"', code))
+    assert used - set(spanish) == set(), used - set(spanish)
+    # Claves que se montan en el código: avisos, apartados, plazos sin número, tipos de seguro.
+    for notice in NOTICES:
+        assert f"notice_{notice.id}" in spanish, notice.id
+        if notice.threshold is None and notice.section not in ("charge", "warnings"):
+            assert f"when_{notice.id}" in spanish, notice.id
+    for section in SECTIONS:
+        assert f"section_{section}" in spanish, section
+    assert {f"kind_{kind}" for kind in INSURANCE_KINDS} <= set(spanish)
+    assert {"tab_cars", "tab_alerts", "tab_data", "tab_diagnostics"} <= set(spanish)
+    assert {"error_threshold_order", "error_threshold_range", "error_invalid_file", "error_not_found"} <= set(spanish)
+
+
 def test_card_uses_only_existing_texts() -> None:
     source = (INTEGRATION / "frontend_card" / "dec-deepal-card.js").read_text(encoding="utf-8")
     spanish = json.loads((INTEGRATION / "idiomas" / "es.json").read_text(encoding="utf-8"))["tarjeta"]

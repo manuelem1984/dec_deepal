@@ -220,10 +220,11 @@ async def test_each_car_notifies_its_own_people(hass: HomeAssistant, freezer) ->
         ("Changuito", "warnings", 1),
         ("Changuito", "maintenance", 2),
     ]
-    assert manager.config_summary()["Changuito"] == {
-        "destinos": {"car": 1, "maintenance": 2, "itv": 0, "insurance": 0},
-        "avisos_del_coche": ["warnings"],
-    }
+    # El resumen para los diagnósticos: cuántos destinos tiene cada aviso, sin nombres.
+    summary = manager.config_summary()["Changuito"]
+    assert summary["plazos"] == {}
+    assert summary["destinos"]["warnings"] == 1 and "charge_started" not in summary["destinos"]
+    assert summary["destinos"]["maintenance_t1"] == 2 and summary["destinos"]["maintenance_overdue"] == 2
     await manager.async_stop()
 
 

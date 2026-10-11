@@ -35,10 +35,23 @@ from .textos_generados import BASE_LANGUAGE, BORROWED_LANGUAGES
 DEFAULT_INTERVAL_KM: Final = 20000
 DEFAULT_INTERVAL_MONTHS: Final = 12
 
-#: Escalones de aviso por tiempo (días que quedan) y por distancia (km).
+#: Escalones de aviso por tiempo (días que quedan) y por distancia (km), del
+#: más lejano al más cercano. Son los de fábrica: cada coche puede cambiar los
+#: suyos (ver ``alert_rules.Route``). Un escalón se llama por su puesto
+#: (``t1``, ``t2``, ``t3``, ``k1``...), no por su valor: así cambiar "60 días"
+#: por "45" no hace que se avise otra vez.
 DAY_STEPS: Final = (60, 30, 15)
-KM_STEPS: Final = (3000, 2000, 1000)
+KM_STEPS: Final = (5000, 2500, 1000)
 STEP_OVERDUE: Final = "overdue"
+#: Nombres de los escalones hasta la 2.4.0 (iban por valor) → los de ahora.
+OLD_STEPS: Final = {
+    "d60": "t1", "d30": "t2", "d15": "t3", "k3000": "k1", "k2000": "k2", "k1000": "k3",
+}  # fmt: skip
+
+
+def current_steps(notified: Any) -> set[str]:
+    """Escalones ya avisados, con los nombres de ahora (lee los de antes)."""
+    return {OLD_STEPS.get(str(step), str(step)) for step in notified or ()}
 
 LEVEL_OK: Final = "ok"
 #: Dentro del margen de aviso (testigo ámbar en la tarjeta).
@@ -130,7 +143,7 @@ class MaintenanceRecord:
             interval_km=int(raw.get("interval_km", DEFAULT_INTERVAL_KM)),
             interval_months=int(raw.get("interval_months", DEFAULT_INTERVAL_MONTHS)),
             history=list(raw.get("history", [])),
-            notified=set(raw.get("notified", [])),
+            notified=current_steps(raw.get("notified")),
         )
 
 
@@ -158,16 +171,27 @@ def add_months(start: date, months: int) -> date:
     return date(year, month, min(start.day, calendar.monthrange(year, month)[1]))
 
 
-def status(record: MaintenanceRecord, today: date, odometer_km: float | None) -> MaintenanceStatus:
-    """Calcula cuánto falta para la próxima revisión."""
+def status(
+    record: MaintenanceRecord,
+    today: date,
+    odometer_km: float | None,
+    day_steps: tuple[int, ...] = DAY_STEPS,
+    km_steps: tuple[int, ...] = KM_STEPS,
+) -> MaintenanceStatus:
+    """Calcula cuánto falta para la próxima revisión.
+
+    Args:
+        day_steps / km_steps: plazos de aviso del coche (por defecto, los de
+            fábrica), del más lejano al más cercano.
+    """
     due_date = add_months(record.last_date, record.interval_months)
     due_km = record.last_km + record.interval_km
     days_left = (due_date - today).days
     km_left = None if odometer_km is None else round(due_km - odometer_km)
 
-    steps = {f"d{days}" for days in DAY_STEPS if days_left <= days}
+    steps = {f"t{slot}" for slot, days in enumerate(day_steps, 1) if days_left <= days}
     if km_left is not None:
-        steps |= {f"k{km}" for km in KM_STEPS if km_left <= km}
+        steps |= {f"k{slot}" for slot, km in enumerate(km_steps, 1) if km_left <= km}
     overdue = days_left <= 0 or (km_left is not None and km_left <= 0)
     if overdue:
         steps.add(STEP_OVERDUE)

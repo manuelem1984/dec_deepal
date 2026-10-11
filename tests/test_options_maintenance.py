@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_mock_service
 
-from custom_components.dec_deepal.alert_rules import CAR_ALERT_TYPES
+from custom_components.dec_deepal.alert_rules import CAR_ALERT_TYPES, NO_ROUTE, route_for
 from custom_components.dec_deepal.alerts import AlertManager
 from custom_components.dec_deepal.api.models import VehicleInfo
 from custom_components.dec_deepal.const import DOMAIN, OPT_ALERTS, OPT_MANUAL_URLS
@@ -99,18 +99,19 @@ async def test_alerts_and_maintenance_steps(hass: HomeAssistant, freezer) -> Non
     }
     result = await flow.async_step_alerts_setup(hers)
     assert result["type"] == "create_entry"
-    saved = {key: value for key, value in hers.items() if key != "all_vehicles"}
-    assert result["data"][OPT_ALERTS] == {
-        "vehicles": {
-            # El otro coche se escribe como estaba (aquí, sin avisos).
-            "car1": {
-                "car": [], "maintenance": [], "itv": [], "insurance": [],
-                "car_types": [], "car_known": list(CAR_ALERT_TYPES),
-            },
-            # Se apunta qué avisos existían, para activar solos los que se añadan después.
-            "car2": {**saved, "car_known": list(CAR_ALERT_TYPES)},
-        }
-    }
+    # Se guarda aviso a aviso (el formato del panel): cada aviso de un grupo
+    # recibe los destinos de su grupo. El otro coche se escribe como estaba.
+    saved = result["data"][OPT_ALERTS]["vehicles"]
+    assert saved["car1"] == NO_ROUTE.to_dict()
+    assert saved["car2"]["thresholds"] == {}
+    notices = saved["car2"]["notices"]
+    assert notices["charge_finished"] == ["mobile_app_test"] and notices["charge_started"] == []
+    assert notices["maintenance_t1"] == notices["maintenance_overdue"] == hers["maintenance"]
+    assert notices["itv_t2"] == hers["itv"] and notices["insurance_c1"] == []
+    # Lo guardado se vuelve a leer igual en el formulario por grupos.
+    route = route_for({"vehicles": saved}, "car2")
+    assert list(route.group_targets("maintenance")) == hers["maintenance"]
+    assert route.car_types == {"charge_finished"}
     # "Usar lo mismo en los demás coches".
     flow = new_flow()
     await flow.async_step_alerts({"vehicle": "car2"})

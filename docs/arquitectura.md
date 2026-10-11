@@ -38,6 +38,8 @@ custom_components/dec_deepal/
 ├── frontend_card/         Tarjeta para los paneles (custom:dec-deepal-card)
 │   ├── src/               Su código, por módulos (ver docs/tarjeta.md)
 │   └── dec-deepal-card.js Generado: los módulos unidos (lo que carga HA)
+├── frontend_panel/        Panel de la barra lateral (ver docs/panel.md), hecho igual
+├── panel.py               Registro del panel y sus órdenes (WebSocket)
 ├── services.py/.yaml      Servicios: captura de depuración y registrar mantenimiento
 ├── alerts.py              Avisos al móvil y fichas de mantenimiento, ITV y seguro
 ├── debug/history.py       Qué señales cambian entre lecturas (historial del diagnóstico; sin HA)

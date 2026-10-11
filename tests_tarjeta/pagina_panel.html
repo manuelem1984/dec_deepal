@@ -1,0 +1,55 @@
+<!doctype html>
+<!--
+  Banco de pruebas del panel DEC Deepal: lo carga solo, sin Home Assistant.
+
+  - banco_panel.js hace de Home Assistant y de la integración: responde a las
+    órdenes "dec_deepal/panel/..." con dos coches de ejemplo.
+  - No pide nada a internet.
+
+  Para mirarlo a mano: abrir este fichero en el navegador y escribir en la
+  consola  banco.montar()   (o banco.montar({ idioma: "en" })).
+  Guía: docs/panel.md
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Banco de pruebas del panel</title>
+    <style>
+      html {
+        --primary-text-color: #212121; --secondary-text-color: #727272; --primary-color: #03a9f4;
+        --rgb-primary-color: 3, 169, 244; --rgb-primary-text-color: 33, 33, 33; --text-primary-color: #fff;
+        --card-background-color: #fff; --primary-background-color: #fafafa; --divider-color: #e0e0e0;
+        --success-color: #43a047; --warning-color: #f9a825; --error-color: #db4437;
+      }
+      html, body { margin: 0; height: 100%; font-family: sans-serif; }
+      #mount { height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="mount"></div>
+    <script>
+      // El icono no se dibuja: basta con saber cuál es (atributo "icon"). Para
+      // verlos al mirar el panel a mano, abrir la página con "?iconos=1" (los
+      // pide a internet; las pruebas no lo usan).
+      const DRAW_ICONS = new URLSearchParams(location.search).has("iconos");
+      const MDI = "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css";
+      if (DRAW_ICONS) document.head.insertAdjacentHTML("beforeend", `<link rel="stylesheet" href="${MDI}">`);
+      customElements.define("ha-icon", class extends HTMLElement {
+        static observedAttributes = ["icon"];
+        connectedCallback() {
+          this.style.cssText = "display:inline-block;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px)";
+          this.draw();
+        }
+        attributeChangedCallback() { this.draw(); }
+        draw() {
+          if (!DRAW_ICONS) return;
+          const name = (this.getAttribute("icon") || "").split(":")[1];
+          const root = this.shadowRoot || this.attachShadow({ mode: "open" });
+          root.innerHTML = `<link rel="stylesheet" href="${MDI}"><span class="mdi mdi-${name}" style="font-size:var(--mdc-icon-size,24px);line-height:1;display:block"></span>`;
+        }
+      });
+    </script>
+    <script src="../custom_components/dec_deepal/frontend_panel/dec-deepal-panel.js"></script>
+    <script src="banco_panel.js"></script>
+  </body>
+</html>
