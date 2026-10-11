@@ -154,9 +154,16 @@ def test_problems_are_notified_once_until_they_clear() -> None:
     assert ar.new_problems({s.WARNING_ABS: False}, active) == []
     assert ar.new_problems({s.WARNING_ABS: True}, active) == [s.WARNING_ABS]
     assert ar.PROBLEM_SIGNALS[s.WARNING_TPMS] == ar.ALERT_TIRES
-    # El airbag se enciende solo al despertar el coche: no avisa.
-    assert s.WARNING_AIRBAG not in ar.PROBLEM_SIGNALS
-    assert ar.new_problems({s.WARNING_AIRBAG: True}, set()) == []
+    # Testigos que la ficha del coche silencia (el airbag del S05, que se
+    # enciende solo al despertar): no avisan ni se quedan apuntados.
+    silent = {s.WARNING_AIRBAG}
+    active = set()
+    assert ar.new_problems({s.WARNING_AIRBAG: True, s.WARNING_ABS: True}, active, silent) == [
+        s.WARNING_ABS
+    ]
+    assert active == {s.WARNING_ABS}
+    # En un coche cuya ficha no lo silencia, sí avisa.
+    assert ar.new_problems({s.WARNING_AIRBAG: True}, set()) == [s.WARNING_AIRBAG]
     assert ar.PROBLEM_SIGNALS[s.KEY_BATTERY_LOW] == ar.ALERT_KEY_BATTERY
 
 
@@ -168,7 +175,7 @@ def test_every_problem_signal_has_a_named_entity() -> None:
     binary = names["entity"]["binary_sensor"]
     assert [signal for signal in ar.PROBLEM_SIGNALS if signal not in binary] == []
     options = names["selector"]["alert_type"]["options"]
-    assert set(options) == set(ar.ALERT_TYPES)
+    assert set(options) == set(ar.CAR_ALERT_TYPES)
 
 
 def test_texts() -> None:

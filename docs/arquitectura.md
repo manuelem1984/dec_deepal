@@ -40,6 +40,7 @@ custom_components/dec_deepal/
 │   └── dec-deepal-card.js Generado: los módulos unidos (lo que carga HA)
 ├── services.py/.yaml      Servicios: captura de depuración y registrar mantenimiento
 ├── alerts.py              Avisos al móvil y fichas de mantenimiento, ITV y seguro
+├── debug/history.py       Qué señales cambian entre lecturas (historial del diagnóstico; sin HA)
 ├── vehicle_data.py        Datos por coche: formato, migración y copias (sin HA)
 ├── vehicle_store.py       Almacén por bastidor (.storage/dec_deepal.vehicles)
 ├── alert_rules.py         Qué cambios del coche avisan y sus textos (sin HA)

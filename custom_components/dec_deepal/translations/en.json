@@ -91,16 +91,28 @@
         }
       },
       "alerts": {
-        "title": "Phone notifications",
-        "description": "The integration notifies you when something happens with the car. Every notification has the car's name in its title (\"DEC Deepal My car\"). They are normal notifications, not critical ones.",
+        "title": "Notifications — vehicle",
+        "description": "Choose the vehicle. Each vehicle has its own recipients.",
         "data": {
-          "targets": "Notify",
-          "types": "Notifications enabled",
-          "persistent": "Also show them in Home Assistant's notifications"
+          "vehicle": "Vehicle"
+        }
+      },
+      "alerts_setup": {
+        "title": "Notifications for {vehicle}",
+        "description": "Choose who this vehicle notifies about each thing. A group with no recipients sends nothing. Every notification has the vehicle name in its title (\"DEC Deepal {vehicle}\"). They are normal notifications, not critical ones.",
+        "data": {
+          "car": "Vehicle notifications: notify",
+          "car_types": "Vehicle notifications enabled",
+          "maintenance": "Servicing: notify",
+          "itv": "ITV: notify",
+          "insurance": "Insurance: notify",
+          "all_vehicles": "Use the same for the other vehicles"
         },
         "data_description": {
-          "targets": "Phones and tablets with the Home Assistant app, with the name they have in Settings → Mobile App. Other notification services appear as notify.name.",
-          "types": "Servicing, ITV and insurance notifications need each of them to be enabled first in its own section of Configure, and are only sent between 8:00 and 22:00."
+          "car": "Phones and tablets with the Home Assistant app, with the name they have under Settings → Mobile app. Other notification services appear as notify.name.",
+          "maintenance": "2 months, 1 month, 15 days left; 3,000, 2,000, 1,000 km left; overdue. Enable servicing for the vehicle in its own section first. Only between 8:00 and 22:00.",
+          "itv": "2 months, 1 month, 15 days left; overdue. Enable the ITV for the vehicle in its own section first. Only between 8:00 and 22:00.",
+          "insurance": "30 and 15 days before the cancellation deadline, on the last day and when it renews. Enable insurance for the vehicle in its own section first. Only between 8:00 and 22:00."
         }
       },
       "itv": {
@@ -347,10 +359,7 @@
         "charge_finished": "Charging finished",
         "warnings": "Dashboard warning lights",
         "tires": "Tyres (when the car turns the warning on)",
-        "key_battery": "Key fob battery low",
-        "maintenance": "Servicing (2 months, 1 month, 15 days left; 3,000, 2,000, 1,000 km; overdue)",
-        "itv": "ITV (2 months, 1 month, 15 days left; overdue)",
-        "insurance": "Insurance (30 and 15 days before the cancellation deadline, on the last day and on renewal)"
+        "key_battery": "Key fob battery low"
       }
     },
     "insurance_kind": {

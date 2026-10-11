@@ -12,7 +12,7 @@ from homeassistant.components.number import NumberEntity, NumberEntityDescriptio
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .entity import DecDeepalEntity
+from .entity import DecDeepalEntity, remove_entities
 from .registries.vehicles import FEATURE_SEAT_HEAT, FEATURE_SEAT_VENT
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
@@ -57,6 +57,16 @@ async def async_setup_entry(
 ) -> None:
     """Crea los niveles de asiento de cada coche."""
     runtime = entry.runtime_data
+    for vehicle in runtime.vehicles.values():
+        # Coche ya configurado cuya versión no los tiene (p. ej. un Pro al que
+        # una versión anterior de la integración se los creó): se quitan.
+        if vehicle.configured:
+            remove_entities(
+                hass,
+                "number",
+                vehicle.info.vehicle_id,
+                tuple(seat.key for seat in SEATS if not vehicle.has(seat.feature)),
+            )
     async_add_entities(
         DecSeatLevel(runtime, vehicle, description)
         for vehicle in runtime.vehicles.values()

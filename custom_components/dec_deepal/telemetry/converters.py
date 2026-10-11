@@ -79,12 +79,20 @@ def tenths(value: Any) -> float | None:
     return None if number is None else number / 10
 
 
-def humidity_tenths(value: Any) -> float | None:
-    """Humedad en décimas de % (``453`` → ``45.3``); fuera de 0-100 → ``None``."""
-    humidity = tenths(value)
-    if humidity is None or not 0 <= humidity <= 100:
+def humidity(value: Any) -> float | None:
+    """Humedad interior en %; fuera de 0-100 → ``None``.
+
+    El coche la envía de dos formas, según el momento (visto en coches
+    reales): en % (``61.0``) o en décimas de % (``453`` = 45,3 %). Un valor
+    por encima de 100 solo puede ser lo segundo. (Una humedad real por debajo
+    del 10 % enviada en décimas se leería mal, pero en un habitáculo no se da.)
+    """
+    number = to_float(value)
+    if number is None:
         return None
-    return humidity
+    if number > 100:
+        number /= 10
+    return number if 0 <= number <= 100 else None
 
 
 def locked_if_zero(value: Any) -> bool | None:

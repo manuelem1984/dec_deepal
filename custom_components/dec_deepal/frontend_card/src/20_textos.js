@@ -138,7 +138,8 @@
       "fan": "Ventilador {value}",
       "recirculating": "Recirculando",
       "outside_air": "Aire exterior",
-      "number_copied": "Número copiado: {number}"
+      "number_copied": "Número copiado: {number}",
+      "trunk_manual": "Este coche no tiene portón eléctrico: el maletero se abre y se cierra a mano."
     },
     "en": {
       "card_description": "Your Deepal at a glance: car view, battery, comfort and quick actions.",
@@ -266,7 +267,8 @@
       "fan": "Fan {value}",
       "recirculating": "Recirculating",
       "outside_air": "Outside air",
-      "number_copied": "Number copied: {number}"
+      "number_copied": "Number copied: {number}",
+      "trunk_manual": "This vehicle has no power tailgate: the boot is opened and closed by hand."
     },
     "pt": {
       "card_description": "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
@@ -394,7 +396,8 @@
       "fan": "Ventilador {value}",
       "recirculating": "A recircular",
       "outside_air": "Ar exterior",
-      "number_copied": "Número copiado: {number}"
+      "number_copied": "Número copiado: {number}",
+      "trunk_manual": "Este veículo não tem portão elétrico: a mala abre-se e fecha-se à mão."
     },
     "it": {
       "card_description": "La tua Deepal a colpo d'occhio: vista dell'auto, batteria, comfort e azioni rapide.",
@@ -522,7 +525,8 @@
       "fan": "Ventola {value}",
       "recirculating": "Ricircolo",
       "outside_air": "Aria esterna",
-      "number_copied": "Numero copiato: {number}"
+      "number_copied": "Numero copiato: {number}",
+      "trunk_manual": "Questo veicolo non ha il portellone elettrico: il bagagliaio si apre e si chiude a mano."
     },
     "pl": {
       "card_description": "Twój Deepal w jednym miejscu: widok samochodu, akumulator, komfort i szybkie akcje.",
@@ -650,6 +654,7 @@
       "fan": "Wentylator {value}",
       "recirculating": "Obieg wewnętrzny",
       "outside_air": "Powietrze z zewnątrz",
-      "number_copied": "Skopiowano numer: {number}"
+      "number_copied": "Skopiowano numer: {number}",
+      "trunk_manual": "Ten pojazd nie ma elektrycznej klapy bagażnika: bagażnik otwiera się i zamyka ręcznie."
     }
   };

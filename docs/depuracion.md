@@ -32,12 +32,19 @@ Ficha de la integración → ⋮ → **Descargar diagnósticos**. Incluye:
 | --- | --- |
 | `integracion` | Versión, país, opciones (sin PIN) |
 | `catalogos` | Modelos cargados, iconos SVG y avisos de iconos |
-| `vehiculos` | Por coche: modelo/versión/color, **señales** interpretadas y su **origen** (mqtt / rest / anterior / optimista / calculado), **MQTT en bruto**, claves **sin mapear**, **REST en bruto**, avisos |
+| `vehiculos` | Por coche: modelo/versión/color, la **ficha** del catálogo que se le aplica (y si está verificada), **señales** interpretadas y su **origen** (mqtt / rest / anterior / optimista / calculado), **MQTT en bruto**, claves **sin mapear**, **REST en bruto**, avisos y sus **entidades** con su estado |
+| `historial` | **Qué pasó**, guardado aparte para que la rutina no lo borre: `cambios` (qué señales cambiaron en cada lectura, con su hora; hasta 400), `ordenes` (órdenes y despertares con la respuesta del servidor; 120), `avisos` (avisos enviados: tipo y nº de destinos, sin el texto; 60) y `errores` (cualquier evento que acabó en error; 60) |
 | `registro_depuracion` | Últimos 300 eventos: peticiones HTTP, lecturas MQTT, comandos (enviado, aceptado, rechazado…), actualizaciones |
 | `capturas` | Las capturas hechas con el servicio de abajo |
 
 `mqtt_sin_mapear` es la lista de claves que el coche manda y ninguna entidad
 usa todavía: **son las candidatas a nuevas entidades**.
+
+El `historial` se conserva al recargar la integración (al cambiar una
+opción), pero no al reiniciar Home Assistant: si algo falla, lo mejor es
+descargar el diagnóstico antes de reiniciar. En `cambios` no se apuntan las
+señales que varían en casi todas las lecturas (autonomía, temperatura,
+presiones, corriente de carga...): su valor actual ya está en `senales`.
 
 ## 3. Servicio de captura (`dec_deepal.capture_snapshot`)
 

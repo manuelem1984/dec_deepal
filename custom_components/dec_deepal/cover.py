@@ -22,7 +22,9 @@ Solo se crean con el bloque de PIN activo en Configurar.
   Los textos del estado se traducen como "Cerradas" / "Ventilando"
   (``translations`` → ``entity.cover.windows.state``). **En automatizaciones:**
   el estado ``open`` significa ventanillas CERRADAS.
-- **trunk_control** — abre o cierra el maletero.
+- **trunk_control** — abre o cierra el maletero. Solo en las versiones con
+  portón eléctrico (``porton_electrico`` en la ficha del coche): en las demás
+  el maletero se abre a mano y no hay nada que mandar.
 
 Las lecturas individuales (cada ventanilla, maletero) siguen existiendo como
 sensores binarios.
@@ -37,8 +39,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import OPT_PIN_ENABLED
-from .entity import DecDeepalEntity
-from .registries.vehicles import FEATURE_PIN_COMMANDS
+from .entity import DecDeepalEntity, remove_entities
+from .registries.vehicles import FEATURE_PIN_COMMANDS, FEATURE_POWER_TAILGATE
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
 
@@ -56,14 +58,20 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Crea ventanillas y maletero si el bloque de PIN está activo."""
+    runtime = entry.runtime_data
+    for vehicle in runtime.vehicles.values():
+        # Coche ya configurado cuya versión no tiene portón eléctrico: si una
+        # versión anterior le creó el mando del maletero, se quita.
+        if vehicle.configured and not vehicle.has(FEATURE_POWER_TAILGATE):
+            remove_entities(hass, "cover", vehicle.info.vehicle_id, ("trunk_control",))
     if not entry.options.get(OPT_PIN_ENABLED):
         return
-    runtime = entry.runtime_data
     entities: list[DecDeepalEntity] = []
     for vehicle in runtime.vehicles.values():
         if vehicle.has(FEATURE_PIN_COMMANDS):
             entities.append(DecWindowsCover(runtime, vehicle))
-            entities.append(DecTrunkCover(runtime, vehicle))
+            if vehicle.has(FEATURE_POWER_TAILGATE):
+                entities.append(DecTrunkCover(runtime, vehicle))
     async_add_entities(entities)
 
 

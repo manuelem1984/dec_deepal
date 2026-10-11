@@ -3,6 +3,44 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.4.0b3] — 2026-10-11
+
+### Añadido
+
+- **Avisos por coche y por grupo.** En Configurar → Avisos al móvil, cada
+  coche elige a quién avisa de cada cosa: los avisos del coche (carga,
+  testigos, neumáticos, pila del mando), mantenimiento, ITV y seguro, cada
+  grupo con sus destinos. Un grupo sin destinos no avisa. Las notificaciones
+  de Home Assistant (la campana) son un destino más. Quien ya tenía avisos
+  configurados no nota nada al actualizar.
+- **Fichas de coche.** El catálogo describe las cinco variantes del S05 en
+  España, con el equipamiento de los catálogos oficiales: EV RWD Pro, EV RWD
+  Max, EV 4WD Max, PHEV Pro y PHEV Limited Edition. Cada versión solo escribe
+  en qué se diferencia; un coche sin ficha propia usa la del Max. Verificada
+  en un coche real solo está la del EV RWD Max. Ver
+  `docs/anadir-pais-vehiculo-idioma.md`.
+- **Los Pro, como son de verdad.** Sin asientos calefactados ni ventilados,
+  sin volante calefactado y sin portón eléctrico: dejan de crearse esas
+  entidades (y se quitan si existían), la ventana de Confort no enseña esos
+  botones y el botón Maletero de la tarjeta solo indica el estado.
+- **Diagnóstico ampliado.** Nuevo bloque `historial`, que la rutina no borra:
+  qué señales cambiaron y cuándo, órdenes enviadas con la respuesta del
+  servidor, avisos enviados y errores. Además, por coche, la ficha que se le
+  aplica y sus entidades con su estado. Ver `docs/depuracion.md`.
+
+### Corregido
+
+- **Humedad interior mal escalada.** El coche la envía a veces en % (61) y a
+  veces en décimas (453): se mostraba 6,1 % en vez de 61 %.
+
+### Cambiado
+
+- **Nombres de modelo y versión:** «Deepal S05 EV RWD Max» en vez de «Deepal
+  S05 Max (2024-25)»; «Max AWD» pasa a ser «4WD Max». No hay que volver a
+  elegir nada. El color se llama «Ganymede Grey» (estaba mal escrito).
+- Qué testigos no avisan (hoy, el del airbag) lo dice ahora la ficha del
+  coche, no el código. Para el usuario no cambia nada.
+
 ## [2.4.0b2] — 2026-10-11
 
 Sin cambios para el usuario: la tarjeta hace lo mismo que en la 2.4.0b1.

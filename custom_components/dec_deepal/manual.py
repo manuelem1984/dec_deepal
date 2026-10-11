@@ -16,8 +16,10 @@ Qué enlace se usa (:func:`manual_url`):
 Vista, solo para usuarios con sesión en Home Assistant:
 
 - ``GET /api/dec_deepal/manual_info/<device_id>`` →
-  ``{"available": bool, "url": str | null, "itv": bool}`` (``itv``: si el país
-  de la cuenta tiene módulo de ITV).
+  ``{"available": bool, "url": str | null, "itv": bool, "silent_warnings": [...],
+  "features": {...}}`` (``itv``: si el país de la cuenta tiene módulo de ITV;
+  ``silent_warnings`` y ``features`` salen de la ficha del coche: testigos que
+  no se enseñan y equipamiento de su versión).
 
 En este módulo está también la otra vista que usa la tarjeta para datos que
 no deben ir a ninguna entidad (quedarían en el historial y a la vista de
@@ -38,6 +40,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 
 from .const import DOMAIN, INSURANCE_INFO_API, MANUAL_INFO_API, OPT_MANUAL_URLS
+from .registries.vehicles import GENERIC_MODEL_ID
 from .runtime import VehicleContext
 
 
@@ -90,6 +93,14 @@ class ManualInfoView(HomeAssistantView):
                 "url": url,
                 # ¿Ofrece la ITV el país de la cuenta? (la tarjeta oculta la opción si no).
                 "itv": bool(getattr(alerts, "itv_available", True)),
+                # De la ficha del coche: testigos que no se enseñan y qué
+                # equipamiento tiene su versión (p. ej. portón eléctrico).
+                "silent_warnings": sorted(vehicle.model.silent_warnings),
+                "features": (
+                    {}  # coche sin modelo elegido: todavía no se sabe qué trae
+                    if vehicle.model.id == GENERIC_MODEL_ID
+                    else vehicle.model.features_for(getattr(vehicle, "trim", None))
+                ),
             }
         )
 

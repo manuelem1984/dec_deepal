@@ -3,10 +3,11 @@
 Un :class:`AlertManager` por cuenta. Hace dos cosas:
 
 1. **Avisos.** Escucha cada lectura de cada coche y, según lo que el usuario
-   haya activado en Configurar → Avisos, envía una notificación a las apps de
-   Home Assistant elegidas (y, si quiere, también al panel de notificaciones).
-   Qué se avisa y con qué texto: ``alert_rules.py``. El título es siempre
-   ``DEC Deepal <nombre del coche>``. Ningún aviso es crítico.
+   haya elegido en Configurar → Avisos, envía una notificación a las apps de
+   Home Assistant (o al panel de notificaciones). Cada coche tiene sus
+   destinos para cada grupo de avisos: los del coche, mantenimiento, ITV y
+   seguro. Qué se avisa, a quién y con qué texto: ``alert_rules.py``. El
+   título es siempre ``DEC Deepal <nombre del coche>``. Ningún aviso es crítico.
 2. **Mantenimiento.** Guarda la ficha de cada coche (última revisión,
    intervalo, historial) y calcula cuánto falta (``maintenance.py``).
 3. **ITV y seguro.** Lo mismo con sus fichas (``documents.py``).
@@ -42,26 +43,24 @@ from .alert_rules import (
     ALERT_INSURANCE,
     ALERT_ITV,
     ALERT_MAINTENANCE,
+    GROUPS,
     PROBLEM_SIGNALS,
+    TARGET_PANEL,
     WATCHED_SIGNALS,
+    Route,
     charge_event,
     charge_text,
-    enabled_types,
     format_date,
     insurance_text,
     itv_text,
     maintenance_text,
     new_problems,
     problem_text,
+    route_for,
 )
 from .const import (
-    DEFAULT_ALERT_PERSISTENT,
     DOMAIN,
     NAME,
-    OPT_ALERT_KNOWN,
-    OPT_ALERT_PERSISTENT,
-    OPT_ALERT_TARGETS,
-    OPT_ALERT_TYPES,
     OPT_ALERTS,
     OPT_COLOR,
     OPT_MODEL,
@@ -94,6 +93,7 @@ class AlertManager:
         rules: doc.CountryRules = doc.DEFAULT_RULES,
         itv_available: bool = True,
         store: VehicleStore | None = None,
+        recorder: Any = None,
     ) -> None:
         self.hass = hass
         self._entry_id = entry_id
@@ -104,14 +104,12 @@ class AlertManager:
         #: alta (hoy, España). En los demás no hay entidades, avisos ni menú.
         self.itv_available = itv_available
         self._store = store or async_get_store(hass)
-        config = options.get(OPT_ALERTS, {})
-        self._targets: list[str] = list(config.get(OPT_ALERT_TARGETS, []))
-        self._types: set[str] = (
-            enabled_types(config.get(OPT_ALERT_TYPES), config.get(OPT_ALERT_KNOWN))
-            if config
-            else set()
-        )
-        self._persistent = bool(config.get(OPT_ALERT_PERSISTENT, DEFAULT_ALERT_PERSISTENT))
+        #: A quién avisa cada coche de cada cosa (ver ``alert_rules.route_for``).
+        self._routes: dict[str, Route] = {
+            vehicle_id: route_for(options.get(OPT_ALERTS), vehicle_id) for vehicle_id in vehicles
+        }
+        #: Registro de depuración (``debug/recorder.py``): apunta cada aviso enviado.
+        self._recorder = recorder
         self._records: dict[str, mt.MaintenanceRecord] = {}
         self._itv: dict[str, doc.ItvRecord] = {}
         self._insurance: dict[str, doc.InsuranceRecord] = {}
@@ -381,6 +379,14 @@ class AlertManager:
         await self._async_save()
         self._notify_listeners()
 
+    def route(self, vehicle_id: str) -> Route:
+        """A quién avisa un coche de cada cosa."""
+        return self._routes[vehicle_id]
+
+    def _wants(self, vehicle_id: str, alert: str) -> bool:
+        """¿Tiene ese coche algún destino para ese tipo de aviso?"""
+        return bool(self._routes[vehicle_id].targets_for(alert))
+
     def _check_documents(self, vehicle_id: str) -> None:
         """Avisos de ITV y seguro (de día y una vez cada uno); renueva el seguro si toca."""
         now = dt_util.now()
@@ -392,12 +398,13 @@ class AlertManager:
             return format_date(value, language)
 
         itv = self._itv.get(vehicle_id)
-        if itv is not None and daytime and ALERT_ITV in self._types:
+        if itv is not None and daytime and self._wants(vehicle_id, ALERT_ITV):
             current = doc.itv_status(itv, today, self.rules)
             kind = doc.itv_pending_notice(itv, current)
             if kind is not None:
                 self._send(
                     vehicle_id,
+                    ALERT_ITV,
                     itv_text(
                         kind,
                         days_left=current.days_left,
@@ -414,9 +421,10 @@ class AlertManager:
         # La renovación se aplica siempre (aunque el aviso esté desactivado o sea de noche).
         if doc.insurance_roll(insurance, today):
             self._save()
-            if ALERT_INSURANCE in self._types:
+            if self._wants(vehicle_id, ALERT_INSURANCE):
                 self._send(
                     vehicle_id,
+                    ALERT_INSURANCE,
                     insurance_text(
                         "renewed",
                         days_to_cancel=0,
@@ -426,13 +434,14 @@ class AlertManager:
                         language=language,
                     ),
                 )
-        if not daytime or ALERT_INSURANCE not in self._types:
+        if not daytime or not self._wants(vehicle_id, ALERT_INSURANCE):
             return
         status = doc.insurance_status(insurance, today)
         kind = doc.insurance_pending_notice(insurance, status)
         if kind is not None:
             self._send(
                 vehicle_id,
+                ALERT_INSURANCE,
                 insurance_text(
                     kind,
                     days_to_cancel=status.days_to_cancel,
@@ -448,7 +457,7 @@ class AlertManager:
     def _check_maintenance(self, vehicle_id: str) -> None:
         """Envía el aviso de mantenimiento que toque (de día y una sola vez)."""
         record = self._records.get(vehicle_id)
-        if record is None or ALERT_MAINTENANCE not in self._types:
+        if record is None or not self._wants(vehicle_id, ALERT_MAINTENANCE):
             return
         now = dt_util.now()
         if not QUIET_BEFORE_HOUR <= now.hour < QUIET_FROM_HOUR:
@@ -460,6 +469,7 @@ class AlertManager:
         language = self.hass.config.language
         self._send(
             vehicle_id,
+            ALERT_MAINTENANCE,
             maintenance_text(
                 kind,
                 number=current.number,
@@ -502,23 +512,25 @@ class AlertManager:
 
         event = charge_event(previous, current)
         if event in (ALERT_CHARGE_STARTED, ALERT_CHARGE_INTERRUPTED, ALERT_CHARGE_FINISHED):
-            if event in self._types:
-                self._send(vehicle_id, charge_text(event, current.get(s.BATTERY_LEVEL), language))
+            if self._wants(vehicle_id, event):
+                self._send(
+                    vehicle_id, event, charge_text(event, current.get(s.BATTERY_LEVEL), language)
+                )
 
         active = self._active.setdefault(vehicle_id, set())
         before = set(active)
-        fresh = new_problems(current, active)
+        fresh = new_problems(current, active, vehicle.model.silent_warnings)
         if active != before:
             self._save()
         for alert in dict.fromkeys(PROBLEM_SIGNALS[signal] for signal in fresh):
-            if alert not in self._types:
+            if not self._wants(vehicle_id, alert):
                 continue
             names = [
                 self._names.get(signal, signal)
                 for signal in fresh
                 if PROBLEM_SIGNALS[signal] == alert
             ]
-            self._send(vehicle_id, problem_text(alert, names, language))
+            self._send(vehicle_id, alert, problem_text(alert, names, language))
 
         self._check_maintenance(vehicle_id)
         self._check_documents(vehicle_id)
@@ -534,11 +546,17 @@ class AlertManager:
             return device.name_by_user or device.name
         return self._vehicles[vehicle_id].info.display_name
 
-    def _send(self, vehicle_id: str, message: str) -> None:
-        """Envía un aviso a los destinos elegidos (sin esperar a que lleguen)."""
+    def _send(self, vehicle_id: str, alert: str, message: str) -> None:
+        """Envía un aviso a los destinos de su grupo (sin esperar a que lleguen)."""
         title = f"{NAME} {self._vehicle_name(vehicle_id)}"
         _LOGGER.debug("Aviso: %s — %s", title, message)
-        for service in self._targets:
+        targets = self._routes[vehicle_id].targets_for(alert)
+        sent = 0
+        for service in targets:
+            if service == TARGET_PANEL:
+                persistent_notification.async_create(self.hass, message, title=title)
+                sent += 1
+                continue
             if not self.hass.services.has_service("notify", service):
                 _LOGGER.warning("Aviso no enviado: ya no existe notify.%s", service)
                 continue
@@ -547,8 +565,16 @@ class AlertManager:
                     "notify", service, {"title": title, "message": message}, blocking=False
                 )
             )
-        if self._persistent:
-            persistent_notification.async_create(self.hass, message, title=title)
+            sent += 1
+        if self._recorder is not None:
+            # Sin el texto (el del seguro lleva la compañía) ni los destinos.
+            self._recorder.record(
+                "alert",
+                vehicle=self._vehicles[vehicle_id].info.display_name,
+                type=alert,
+                targets=len(targets),
+                sent=sent,
+            )
 
     # ------------------------------------------------------------------
     # Diagnóstico
@@ -585,9 +611,11 @@ class AlertManager:
         }
 
     def config_summary(self) -> dict[str, Any]:
-        """Configuración de avisos, sin los nombres de los móviles."""
+        """Configuración de avisos de cada coche, sin los nombres de los móviles."""
         return {
-            "tipos": sorted(self._types),
-            "destinos": len(self._targets),
-            "panel": self._persistent,
+            self._vehicles[vehicle_id].info.display_name: {
+                "destinos": {group: len(route.targets.get(group, ())) for group in GROUPS},
+                "avisos_del_coche": sorted(route.car_types),
+            }
+            for vehicle_id, route in self._routes.items()
         }

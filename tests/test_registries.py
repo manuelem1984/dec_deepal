@@ -9,7 +9,13 @@ import pytest
 from custom_components.dec_deepal.api.models import VehicleInfo
 from custom_components.dec_deepal.registries import RegistryError, load_all
 from custom_components.dec_deepal.registries.countries import load_countries
-from custom_components.dec_deepal.registries.vehicles import FEATURE_SEAT_VENT
+from custom_components.dec_deepal.registries.vehicles import (
+    FEATURE_FUEL,
+    FEATURE_POWER_TAILGATE,
+    FEATURE_SEAT_HEAT,
+    FEATURE_SEAT_VENT,
+    FEATURE_WHEEL_HEAT,
+)
 
 INTEGRATION = Path(__file__).parents[1] / "custom_components" / "dec_deepal"
 
@@ -40,8 +46,81 @@ def test_trim_features_and_photos(registries) -> None:  # noqa: ANN001
     assert model.has(FEATURE_SEAT_VENT, "max")
     assert model.photo_for("max_awd", "andromeda_blue").name == "max_andromeda_blue.png"
     assert model.photo_for(None, None).name == "default.png"
-    assert model.display_name("max") == "Deepal S05 Max (2024-25)"
-    assert model.display_name(None) == "Deepal S05 (2024-25)"
+    assert model.display_name("max") == "Deepal S05 EV RWD Max"
+    assert model.display_name("max_awd") == "Deepal S05 EV 4WD Max"
+    assert model.display_name(None) == "Deepal S05 EV"
+
+
+def test_vehicle_sheets(registries) -> None:  # noqa: ANN001
+    """La ficha de cada coche: el modelo, cambiado por su versión; un modelo puede copiar a otro."""
+    vehicles = registries.vehicles
+    ev, phev, generic = vehicles.get("s05_2024"), vehicles.get("s05_phev"), vehicles.generic
+
+    # Las cinco variantes del S05.
+    names = [model.display_name(trim) for model in (ev, phev) for trim in model.trims]
+    assert names == [
+        "Deepal S05 EV RWD Pro",
+        "Deepal S05 EV RWD Max",
+        "Deepal S05 EV 4WD Max",
+        # El PHEV es de tracción delantera y su versión alta no se llama Max.
+        "Deepal S05 PHEV Pro",
+        "Deepal S05 PHEV Limited Edition",
+    ]
+
+    # Equipamiento de cada versión, según los catálogos oficiales de España.
+    comfort = (FEATURE_SEAT_HEAT, FEATURE_SEAT_VENT, FEATURE_WHEEL_HEAT, FEATURE_POWER_TAILGATE)
+    equipped = (
+        (ev, "pro", False),
+        (ev, "max", True),
+        (ev, "max_awd", True),
+        (phev, "pro", False),
+        (phev, "limited_edition", True),
+    )
+    for model, trim, has_it in equipped:
+        for feature in comfort:
+            assert model.has(feature, trim) is has_it, (model.id, trim, feature)
+    # Llantas: 18" en el EV Pro y en los dos PHEV; 20" (a elegir) en los Max.
+    assert ev.wheel_for("pro", "open") == "pro" and ev.wheel_for("max", "open") == "open"
+    assert phev.wheel_for("pro", None) == phev.wheel_for("limited_edition", "open") == "pro"
+    assert ev.colors["ganymade_grey"].name == "Ganymede Grey"
+
+    # Solo está verificada la del coche que se ha probado de verdad.
+    assert ev.sheet("max")["verificada"] is True and ev.sheet("max")["origen"] == "de su versión"
+    assert ev.sheet("pro")["verificada"] is False
+    assert ev.sheet("pro")["funciones"][FEATURE_SEAT_VENT] is False
+
+    # Sin versión, o con una que no está en el catálogo: la ficha del modelo (la del Max).
+    for trim in (None, "no_existe"):
+        sheet = ev.sheet(trim)
+        assert sheet["funciones"] == ev.sheet("max")["funciones"], trim
+        assert sheet["origen"].startswith("del modelo") and sheet["verificada"] is False
+        assert ev.has(FEATURE_SEAT_VENT, trim)
+
+    # El PHEV copia al EV y solo cambia lo suyo.
+    assert phev.based_on == "s05_2024" and phev.sheet("pro")["copia_de"] == "s05_2024"
+    assert phev.has(FEATURE_FUEL) and not ev.has(FEATURE_FUEL)
+    assert phev.colors == ev.colors and phev.views.keys() == ev.views.keys()
+    assert phev.photo_for("limited_edition", "andromeda_blue") == ev.photo_for("max", "andromeda_blue")
+    assert set(phev.trims) == {"pro", "limited_edition"}  # no hay 4WD
+    assert phev.sheet("limited_edition")["verificada"] is False
+    # Lo que no se conoce del PHEV no se inventa: sin manual ni operaciones.
+    assert phev.manual_url == "" and phev.maintenance.operations == ()
+
+    # Testigos que no avisan: salen de la ficha (y son señales que existen).
+    from custom_components.dec_deepal.alert_rules import PROBLEM_SIGNALS
+
+    for model in (ev, phev, generic):
+        assert model.silent_warnings == {"warning_airbag"}, model.id
+        assert model.silent_warnings <= set(PROBLEM_SIGNALS)
+    assert generic.sheet(None)["origen"].startswith("genérica")
+
+
+def test_recognising_ev_and_phev(registries) -> None:  # noqa: ANN001
+    """Si encajan varios modelos, gana el más concreto (PHEV antes que S05)."""
+    ev = VehicleInfo(vehicle_id="1", series_name="S05", model_code="SC6464AAKBEV")
+    phev = VehicleInfo(vehicle_id="2", series_name="S05", model_code="SC6464AAKPHEV")
+    assert registries.vehicles.match(ev, "es").id == "s05_2024"
+    assert registries.vehicles.match(phev, "es").id == "s05_phev"
 
 
 def test_s05_has_no_front_defrost(registries) -> None:  # noqa: ANN001
@@ -54,7 +133,8 @@ def test_s05_has_no_front_defrost(registries) -> None:  # noqa: ANN001
     model = registries.vehicles.get("s05_2024")
     for trim in ("pro", "max", "max_awd"):
         assert not model.has(FEATURE_DEFROST, trim)
-        assert model.has(FEATURE_WHEEL_HEAT, trim)
+        # El volante calefactado es de los Max (catálogo oficial, sep. 2026).
+        assert model.has(FEATURE_WHEEL_HEAT, trim) is (trim != "pro")
 
 
 def test_capabilities_spanish_max_codes() -> None:

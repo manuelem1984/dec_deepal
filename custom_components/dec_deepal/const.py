@@ -93,6 +93,13 @@ OPT_ALERT_TYPES: Final = "types"
 OPT_ALERT_KNOWN: Final = "known_types"
 #: Mostrar también cada aviso en el panel de notificaciones de Home Assistant.
 OPT_ALERT_PERSISTENT: Final = "persistent"
+#: Desde la 2.4.0: a quién se avisa de cada cosa, coche a coche
+#: (``{id del coche: {grupo: [destinos], "car_types": [...]}}``). Las claves
+#: de arriba son las de antes (una lista para toda la cuenta): se siguen
+#: leyendo mientras el usuario no guarde el apartado nuevo.
+OPT_ALERT_VEHICLES: Final = "vehicles"
+OPT_ALERT_CAR_TYPES: Final = "car_types"
+OPT_ALERT_CAR_KNOWN: Final = "car_known"
 DEFAULT_ALERT_PERSISTENT: Final = False
 
 #: Enlace del manual cambiado por el usuario, por modelo: {id del modelo: url}.

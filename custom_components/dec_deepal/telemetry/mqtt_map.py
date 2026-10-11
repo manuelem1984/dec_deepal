@@ -65,7 +65,7 @@ MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
     # --- Clima --------------------------------------------------------------
     MqttField(s.INSIDE_TEMP_C, ("vehicleTemperature",), c.to_float),
     MqttField(s.OUTSIDE_TEMP_C, ("outsideTemperature", "externalTemperature"), c.to_float),
-    MqttField(s.CABIN_HUMIDITY, ("innerHumidity",), c.humidity_tenths),
+    MqttField(s.CABIN_HUMIDITY, ("innerHumidity",), c.humidity),
     MqttField(s.CLIMATE_ON, ("airStatus",), c.to_bool),
     MqttField(s.FAN_LEVEL, ("airConditioningHairRatings",), c.to_int),
     MqttField(s.CLIMATE_TARGET_C, ("airConditioningSetTemperature",), c.to_float),

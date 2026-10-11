@@ -6,13 +6,30 @@ en Home Assistant.
 
 ## Avisos al móvil
 
-**Configurar → Avisos al móvil.** Se elige:
+**Configurar → Avisos al móvil** (uno por coche). Cada coche reparte sus
+avisos en cuatro grupos, y cada grupo tiene su lista de destinos:
 
-- **Avisar a:** los móviles y tabletas con la app de Home Assistant, con el
-  nombre que tienen en *Ajustes → Aplicación móvil*. También vale cualquier
-  otro servicio `notify` (aparece como `notify.nombre`).
-- **Avisos activados:** los que se quieran de la lista.
-- **Mostrar también en las notificaciones de Home Assistant** (la campana).
+| Grupo | Qué avisos lleva |
+|---|---|
+| Avisos del coche | Carga iniciada, interrumpida y terminada, testigos, neumáticos y pila del mando. Se activan uno a uno |
+| Mantenimiento | Los de la revisión |
+| ITV | Los de la ITV |
+| Seguro | Los del seguro |
+
+Así, en una casa con dos coches, cada conductor recibe los avisos de su
+coche, y quien lleva los papeles, los de mantenimiento, ITV y seguro de los
+dos.
+
+- **Destinos:** los móviles y tabletas con la app de Home Assistant, con el
+  nombre que tienen en *Ajustes → Aplicación móvil*; cualquier otro servicio
+  `notify` (aparece como `notify.nombre`), y las **notificaciones de Home
+  Assistant** (la campana).
+- **Un grupo sin destinos no avisa.**
+- **Usar lo mismo en los demás coches:** copia lo elegido a todos.
+- Quien configuró los avisos antes de la 2.4.0 (una sola lista para toda la
+  cuenta) no nota nada al actualizar: todos los coches siguen avisando a esa
+  lista hasta que se guarde este apartado.
+- Un coche que se añada después a la cuenta empieza sin avisos.
 
 Todos los avisos son notificaciones normales (ninguno es crítico) y llevan el
 nombre del coche en el título: **DEC Deepal Changote**.
@@ -34,6 +51,9 @@ Detalles:
   Assistant).
 - **Depende de lo que envíe el coche.** Si un coche no manda testigos, no
   habrá avisos de testigos.
+- **Testigos que no avisan.** El S05 enciende el del airbag unos segundos
+  cada vez que despierta: su ficha (`testigos_sin_aviso` en `vehicles.yaml`)
+  lo silencia, y no avisa ni sale en la tarjeta. La entidad sigue existiendo.
 - ⚠️ **Sin verificar con el coche:** distinguir "terminada" de
   "interrumpida". El coche no dice por qué dejó de cargar; se deduce (ver
   `alert_rules.py`). Los testigos y la pila del mando tampoco se han podido

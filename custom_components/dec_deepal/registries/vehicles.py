@@ -11,6 +11,9 @@ Además de leer el catálogo, este módulo:
   isométrica"...), si tiene (``vistas:``; ver :mod:`.views`).
 - Lee el **plan de mantenimiento** del modelo (``mantenimiento:``): cada
   cuánto toca la revisión y qué operaciones lleva cada una.
+- Compone la **ficha** de cada coche (:meth:`VehicleModel.sheet`): lo que
+  dice el modelo, cambiado por lo que diga su versión. Un modelo puede
+  copiar a otro (``como:``). Ver la cabecera de ``vehicles.yaml``.
 """
 
 from __future__ import annotations
@@ -41,6 +44,7 @@ FEATURE_SEAT_VENT: Final = "asientos_ventilacion"
 FEATURE_WHEEL_HEAT: Final = "volante_calefactado"
 FEATURE_DEFROST: Final = "desempanado"
 FEATURE_PIN_COMMANDS: Final = "comandos_pin"
+FEATURE_POWER_TAILGATE: Final = "porton_electrico"
 FEATURE_FUEL: Final = "combustible"
 
 KNOWN_FEATURES: Final = frozenset(
@@ -53,6 +57,7 @@ KNOWN_FEATURES: Final = frozenset(
         FEATURE_WHEEL_HEAT,
         FEATURE_DEFROST,
         FEATURE_PIN_COMMANDS,
+        FEATURE_POWER_TAILGATE,
         FEATURE_FUEL,
     }
 )
@@ -83,6 +88,8 @@ class Trim:
     features: dict[str, bool] = field(default_factory=dict)
     #: Llanta fija de la versión ("" = la que elija el usuario).
     wheel: str = ""
+    #: ¿Se ha comprobado la ficha de esta versión en un coche real?
+    verified: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -121,6 +128,10 @@ class VehicleModel:
     manual_url: str = ""
     #: Plan de mantenimiento (intervalo y operaciones de cada revisión).
     maintenance: MaintenancePlan = field(default_factory=MaintenancePlan)
+    #: Testigos que el coche enciende sin motivo: ni avisan ni salen en la tarjeta.
+    silent_warnings: frozenset[str] = frozenset()
+    #: Modelo del que se copió lo que este no escribe ("" = ninguno).
+    based_on: str = ""
 
     def display_name(self, trim_id: str | None) -> str:
         """Nombre para mostrar, con la versión si se conoce.
@@ -156,6 +167,31 @@ class VehicleModel:
             result.update(trim.features)
         return result
 
+    def sheet(self, trim_id: str | None) -> dict[str, object]:
+        """Ficha que se le está aplicando a un coche (para los diagnósticos).
+
+        Dice de dónde sale: de su versión, o del modelo tal cual (la versión
+        más equipada) si el coche no tiene versión o no existe en el catálogo.
+        """
+        trim = self.trims.get(trim_id or "")
+        if self.id == GENERIC_MODEL_ID:
+            source = "genérica (coche sin modelo elegido)"
+        elif trim is not None:
+            source = "de su versión"
+        elif trim_id:
+            source = f"del modelo (la versión '{trim_id}' no está en el catálogo)"
+        else:
+            source = "del modelo (sin versión elegida)"
+        return {
+            "modelo": self.id,
+            "version": trim.id if trim is not None else None,
+            "origen": source,
+            "copia_de": self.based_on or None,
+            "verificada": bool(trim is not None and trim.verified),
+            "funciones": dict(sorted(self.features_for(trim_id).items())),
+            "testigos_sin_aviso": sorted(self.silent_warnings),
+        }
+
     def has(self, feature: str, trim_id: str | None = None) -> bool:
         """¿Tiene esta función (con la versión indicada)?"""
         return bool(self.features_for(trim_id).get(feature, False))
@@ -176,14 +212,22 @@ class VehicleModel:
         default = self.photos_dir / self.default_photo
         return default if default.is_file() else None
 
-    def matches(self, vehicle: VehicleInfo) -> bool:
-        """¿Encaja este coche de la cuenta con este modelo?"""
+    def match_score(self, vehicle: VehicleInfo) -> int:
+        """Cuánto encaja este coche con este modelo (0 = nada).
+
+        El código de serie exacto es lo que más pesa; después, el texto más
+        largo de ``nombre_contiene`` que aparezca en sus nombres o códigos.
+        """
         if vehicle.series_code and vehicle.series_code in self.match_series_codes:
-            return True
+            return 1000
         texts = " ".join(
             filter(None, (vehicle.model_name, vehicle.series_name, vehicle.model_code))
         ).upper()
-        return any(name.upper() in texts for name in self.match_names)
+        return max((len(name) for name in self.match_names if name.upper() in texts), default=0)
+
+    def matches(self, vehicle: VehicleInfo) -> bool:
+        """¿Encaja este coche de la cuenta con este modelo?"""
+        return self.match_score(vehicle) > 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -202,15 +246,21 @@ class VehicleRegistry:
         return self.models.get(model_id or "", self.generic)
 
     def match(self, vehicle: VehicleInfo, country_id: str | None = None) -> VehicleModel:
-        """Reconoce el modelo de un coche; el genérico si no encaja ninguno."""
+        """Reconoce el modelo de un coche; el genérico si no encaja ninguno.
+
+        Si encajan varios, gana el que lo hace con el texto más largo: así
+        "PHEV" (S05 PHEV) se prefiere a "S05" (S05 EV) cuando están los dos.
+        """
+        best: tuple[int, VehicleModel] | None = None
         for model in self.models.values():
             if model.id == GENERIC_MODEL_ID:
                 continue
             if country_id and model.countries and country_id not in model.countries:
                 continue
-            if model.matches(vehicle):
-                return model
-        return self.generic
+            score = model.match_score(vehicle)
+            if score and (best is None or score > best[0]):
+                best = (score, model)
+        return best[1] if best else self.generic
 
     def for_country(self, country_id: str) -> list[VehicleModel]:
         """Modelos ofrecidos en un país (para el selector de Configurar)."""
@@ -304,16 +354,42 @@ def _maintenance(raw: object, trims: dict[str, Trim], where: str) -> Maintenance
     )
 
 
+def _resolved(raw_models: dict, model_id: str, file: str, seen: tuple[str, ...] = ()) -> dict:
+    """Datos de un modelo, con lo que copia de otro (``como:``) ya incluido.
+
+    ``funciones`` se mezcla (el modelo solo escribe las que cambian); el resto
+    de campos, si el modelo los escribe, sustituyen a los copiados.
+    """
+    where = f"{file} → modelos.{model_id}"
+    raw = as_dict(raw_models.get(model_id), where)
+    base_id = raw.get("como")
+    if not base_id:
+        return raw
+    base_id = str(base_id)
+    if base_id not in raw_models:
+        raise RegistryError(f"{where}.como: no existe el modelo '{base_id}'")
+    if base_id == model_id or base_id in seen:
+        raise RegistryError(f"{where}.como: los modelos se copian en círculo")
+    base = _resolved(raw_models, base_id, file, (*seen, model_id))
+    merged = {**base, **raw}
+    merged["funciones"] = {
+        **as_dict(base.get("funciones"), f"{where}.funciones"),
+        **as_dict(raw.get("funciones"), f"{where}.funciones"),
+    }
+    return merged
+
+
 def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
     """Lee y valida ``vehicles/vehicles.yaml``."""
     path = vehicles_dir / "vehicles.yaml"
     data = read_yaml(path)
     file = path.name
     models: dict[str, VehicleModel] = {}
+    raw_models = as_dict(data.get("modelos"), f"{file} → modelos")
 
-    for model_id, raw in as_dict(data.get("modelos"), f"{file} → modelos").items():
+    for model_id in raw_models:
         where = f"{file} → modelos.{model_id}"
-        raw = as_dict(raw, where)
+        raw = _resolved(raw_models, str(model_id), file)
         recognise = as_dict(raw.get("reconocer"), f"{where}.reconocer")
         trims: dict[str, Trim] = {}
         for trim_id, trim_raw in as_dict(raw.get("versiones"), f"{where}.versiones").items():
@@ -326,6 +402,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
                 photo_group=str(trim_raw.get("grupo_foto") or trim_id),
                 features=_features(trim_raw.get("funciones"), f"{trim_where}.funciones"),
                 wheel=str(trim_raw.get("llanta") or ""),
+                verified=bool(trim_raw.get("verificada", False)),
             )
         colors: dict[str, Color] = {}
         for color_id, color_raw in as_dict(raw.get("colores"), f"{where}.colores").items():
@@ -354,6 +431,10 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
             wheel_options=as_str_list(raw.get("llantas"), f"{where}.llantas"),
             manual_url=str(raw.get("manual") or "").strip(),
             maintenance=_maintenance(raw.get("mantenimiento"), trims, f"{where}.mantenimiento"),
+            silent_warnings=frozenset(
+                as_str_list(raw.get("testigos_sin_aviso"), f"{where}.testigos_sin_aviso")
+            ),
+            based_on=str(raw.get("como") or ""),
         )
 
     if GENERIC_MODEL_ID not in models:

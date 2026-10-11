@@ -79,11 +79,14 @@
   // Testigos de la línea de estado. "red" = grave; el resto, ámbar.
   const AMBER = "var(--warning-color, #f9a825)";
   const RED = "var(--error-color, #db4437)";
-  // El del airbag no está: el coche lo enciende unos segundos cada vez que
-  // despierta, así que daba avisos falsos. La entidad sigue existiendo.
+  // Algunos coches encienden un testigo sin motivo (el S05, el del airbag al
+  // despertar): la ficha del coche dice cuáles no se enseñan y la tarjeta se
+  // lo pregunta a la integración (SILENT_BY_DEFAULT vale hasta que responde).
+  const SILENT_BY_DEFAULT = ["warning_airbag"];
   const WARNINGS = [
     { keys: ["binary_sensor.warning_brake"], icon: "mdi:car-brake-alert", color: RED },
     { keys: ["binary_sensor.warning_brake_fluid"], icon: "mdi:car-brake-fluid-level", color: RED },
+    { keys: ["binary_sensor.warning_airbag"], icon: "mdi:airbag", color: RED },
     { keys: ["binary_sensor.warning_12v_battery"], icon: "mdi:car-battery", color: RED },
     { keys: ["binary_sensor.warning_coolant_temperature"], icon: "mdi:coolant-temperature", color: RED },
     { keys: ["binary_sensor.warning_power_system"], icon: "mdi:engine", color: RED },
@@ -257,7 +260,8 @@
       "fan": "Ventilador {value}",
       "recirculating": "Recirculando",
       "outside_air": "Aire exterior",
-      "number_copied": "Número copiado: {number}"
+      "number_copied": "Número copiado: {number}",
+      "trunk_manual": "Este coche no tiene portón eléctrico: el maletero se abre y se cierra a mano."
     },
     "en": {
       "card_description": "Your Deepal at a glance: car view, battery, comfort and quick actions.",
@@ -385,7 +389,8 @@
       "fan": "Fan {value}",
       "recirculating": "Recirculating",
       "outside_air": "Outside air",
-      "number_copied": "Number copied: {number}"
+      "number_copied": "Number copied: {number}",
+      "trunk_manual": "This vehicle has no power tailgate: the boot is opened and closed by hand."
     },
     "pt": {
       "card_description": "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
@@ -513,7 +518,8 @@
       "fan": "Ventilador {value}",
       "recirculating": "A recircular",
       "outside_air": "Ar exterior",
-      "number_copied": "Número copiado: {number}"
+      "number_copied": "Número copiado: {number}",
+      "trunk_manual": "Este veículo não tem portão elétrico: a mala abre-se e fecha-se à mão."
     },
     "it": {
       "card_description": "La tua Deepal a colpo d'occhio: vista dell'auto, batteria, comfort e azioni rapide.",
@@ -641,7 +647,8 @@
       "fan": "Ventola {value}",
       "recirculating": "Ricircolo",
       "outside_air": "Aria esterna",
-      "number_copied": "Numero copiato: {number}"
+      "number_copied": "Numero copiato: {number}",
+      "trunk_manual": "Questo veicolo non ha il portellone elettrico: il bagagliaio si apre e si chiude a mano."
     },
     "pl": {
       "card_description": "Twój Deepal w jednym miejscu: widok samochodu, akumulator, komfort i szybkie akcje.",
@@ -769,7 +776,8 @@
       "fan": "Wentylator {value}",
       "recirculating": "Obieg wewnętrzny",
       "outside_air": "Powietrze z zewnątrz",
-      "number_copied": "Skopiowano numer: {number}"
+      "number_copied": "Skopiowano numer: {number}",
+      "trunk_manual": "Ten pojazd nie ma elektrycznej klapy bagażnika: bagażnik otwiera się i zamyka ręcznie."
     }
   };
 
@@ -1013,7 +1021,7 @@
       this._checkManual(deviceId);
     }
 
-    /** Pregunta a la integración (una vez por coche) el enlace del manual y si hay ITV. */
+    /** Pregunta a la integración (una vez por coche): manual, ITV y testigos que no se enseñan. */
     async _checkManual(deviceId) {
       if (!deviceId || this._manualDevice === deviceId || !this._hass.callApi) return;
       this._manualDevice = deviceId;
@@ -1023,6 +1031,12 @@
         const info = await this._hass.callApi("GET", `dec_deepal/manual_info/${deviceId}`);
         // La ITV solo existe en algunos países (hoy, España).
         if (this._manualDevice === deviceId) this._itvAvailable = !(info && info.itv === false);
+        if (this._manualDevice === deviceId && info && Array.isArray(info.silent_warnings)) {
+          this._silent = new Set(info.silent_warnings);
+          this._repaint();
+        }
+        // Equipamiento de la versión del coche (su ficha): { porton_electrico: false, ... }.
+        if (this._manualDevice === deviceId) this._features = (info && info.features) || {};
         const url = (info && info.url) || "";
         if (this._manualDevice === deviceId && /^https?:\/\//.test(url)) this._manualUrl = url;
       } catch (_error) {
@@ -1177,7 +1191,11 @@
 
       // Línea de estado: tic verde, o el icono de cada testigo encendido.
       // Los de vencimiento (mantenimiento, ITV, seguro) van al final y se pueden pulsar.
-      const active = WARNINGS.filter((warning) => warning.keys.some((key) => this._value(key) === "on"));
+      // Un testigo cuenta si está encendido y la ficha del coche no lo silencia.
+      const silent = this._silent || new Set(SILENT_BY_DEFAULT);
+      const active = WARNINGS.filter((warning) =>
+        warning.keys.some((key) => !silent.has(key.split(".")[1]) && this._value(key) === "on")
+      );
       const due = DUE.map((item) => ({ ...item, level: this._dueLevel(item.key) })).filter((item) => item.level);
       const signature = `${active.map((warning) => warning.icon).join("|")}#${due.map((item) => item.action + item.level).join("|")}`;
       if (this._statusSignature !== signature) {
@@ -1393,7 +1411,9 @@
           else this._pinCommand("lock", this._t("unlock_q"), this._t("unlock_do"), "lock", "unlock", "lock.doors");
           break;
         case "trunk":
-          if (tiles.trunk.on) this._pinCommand("trunk", this._t("trunk_close_q"), this._t("close"), "cover", "close_cover", "cover.trunk_control");
+          // Sin portón eléctrico (p. ej. el Pro) no hay nada que mandar: se dice.
+          if ((this._features || {}).porton_electrico === false) this._toast(this._t("trunk_manual"));
+          else if (tiles.trunk.on) this._pinCommand("trunk", this._t("trunk_close_q"), this._t("close"), "cover", "close_cover", "cover.trunk_control");
           else this._pinCommand("trunk", this._t("trunk_open_q"), this._t("open_do"), "cover", "open_cover", "cover.trunk_control");
           break;
         case "vent":

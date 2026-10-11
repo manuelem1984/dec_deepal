@@ -243,9 +243,10 @@ La versión no solo cambia la foto: también decide qué entidades existen.
 | `telemetria_mqtt` | Lectura por MQTT (sin ella, solo REST) |
 | `climatizacion` | Climatización, sensor "Climatizador" |
 | `luces_claxon` | Botones de luces y claxon |
-| `asientos_calefaccion` | Calefacción de asientos (conductor, acompañante) |
-| `asientos_ventilacion` | Ventilación de asientos (en el S05, solo Max) |
-| `volante_calefactado` | Volante calefactado |
+| `asientos_calefaccion` | Calefacción de asientos (conductor, acompañante). En el S05, no en los Pro |
+| `asientos_ventilacion` | Ventilación de asientos. En el S05, no en los Pro |
+| `volante_calefactado` | Volante calefactado. En el S05, no en los Pro |
 | `desempanado` | Desempañado delantero (**desactivado en el S05**: no es compatible) |
 | `comandos_pin` | Puertas, ventanillas, maletero (si además el PIN está activo) |
+| `porton_electrico` | Abrir y cerrar el maletero a distancia (en el S05, no en los Pro). Sin ella, el botón Maletero de la tarjeta solo enseña el estado |
 | `combustible` | Reservado para híbridos (aún sin entidades) |

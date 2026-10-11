@@ -1,5 +1,28 @@
 # Hoja de ruta
 
+## Beta 2.4.0b3 (11-10-2026) — pendiente de probar
+
+- [ ] **Avisos por coche:** al actualizar siguen llegando como antes;
+      después, en Configurar → Avisos al móvil, repartir los de cada coche
+      (los del coche a cada conductor; mantenimiento, ITV y seguro a quien
+      toque) y comprobar que cada aviso llega solo a su destino.
+- [ ] **Humedad interior:** valores creíbles (61 %, no 6,1 %).
+- [ ] **Nombres:** el dispositivo se llama «Deepal S05 EV RWD Max».
+- [ ] **Diagnóstico:** tras usar el coche un rato, el bloque `historial`
+      trae cambios, órdenes y avisos.
+- [ ] Pendiente: con el `historial` de varios días, medir cuánto dura
+      encendido el testigo del airbag al despertar y cambiar "no avisa" por
+      "avisa solo si sigue encendido X minutos".
+- [ ] Pendiente: verificar con el diagnóstico de un coche real las fichas
+      del EV RWD Pro, EV 4WD Max y PHEV (hoy salen del catálogo oficial). Del
+      PHEV faltan además el manual, el plan de mantenimiento, las entidades
+      de combustible, el dibujo de su llanta de 18" (se usa la del EV Pro),
+      los raíles de techo en las vistas y el nombre "Manual BEV" de
+      Configurar → Avanzado (que para él no vale).
+- [ ] **Un Pro:** el dispositivo no tiene asientos, volante ni mando del
+      maletero; en la tarjeta, Confort solo trae el clima y Maletero avisa de
+      que se abre a mano.
+
 ## Beta 2.4.0b2 (11-10-2026) — pendiente de probar
 
 - [ ] La tarjeta hace lo mismo que antes (se partió en módulos): un repaso a
@@ -46,10 +69,16 @@ Pendiente de comprobar:
       compatible todavía"). Decidir qué pasa con el S05 PHEV.
 - [ ] **No enviar el clima con el coche encendido** (el servidor lo rechaza:
       1032 "Power is not off") y decirlo claro en la tarjeta.
-- [ ] **Fichas ligadas al coche:** mantenimiento, ITV y seguro se pierden si
-      se quita y se vuelve a añadir la integración.
-- [ ] Revisar la **humedad interior** (3,4 % no es creíble) y el **despertar**
+- [x] **Fichas ligadas al coche** (2.4.0b1): mantenimiento, ITV, seguro y
+      apariencia van por bastidor.
+- [x] **Humedad interior** (2.4.0b3). Sigue pendiente el **despertar**
       (falló dos veces el 10-10-2026).
+- [ ] **Cargando con "conector AC: no"** (visto el 11-10-2026): el coche
+      dice que carga y a la vez que no tiene la manguera puesta; la tarjeta
+      puede mostrar "Desconectado" mientras carga. Y el **tiempo de carga
+      restante** (1.353 min con 16 A al 56 %) no cuadra.
+- [ ] **Aviso "cargado sin cobertura":** si el coche vuelve a tener cobertura
+      con más batería y no se vio la carga, avisar "Cargado: del 40 % al 80 %".
 - [ ] Guardar la configuración y el permiso de conexión entre lecturas para
       hacer menos llamadas al servidor.
 

@@ -56,6 +56,10 @@ def test_map_mqtt_typos_and_units() -> None:
     assert values[s.WINDOW_FRONT_LEFT] is True
     assert values[s.INDICATOR_LEFT] is False
     assert values[s.CABIN_HUMIDITY] == 45.3
+    # El mismo dato llega a veces ya en % (visto el 11-10-2026): no se divide.
+    assert map_mqtt({"innerHumidity": 61.0})[s.CABIN_HUMIDITY] == 61.0
+    assert map_mqtt({"innerHumidity": 0.0})[s.CABIN_HUMIDITY] == 0.0
+    assert s.CABIN_HUMIDITY not in map_mqtt({"innerHumidity": 1500})
     assert values[s.LOCKED_DRIVER] is True
     assert s.REMAINING_CHARGE_MIN not in values
 

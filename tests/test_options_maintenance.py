@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_mock_service
 
-from custom_components.dec_deepal.alert_rules import ALERT_TYPES
+from custom_components.dec_deepal.alert_rules import CAR_ALERT_TYPES
 from custom_components.dec_deepal.alerts import AlertManager
 from custom_components.dec_deepal.api.models import VehicleInfo
 from custom_components.dec_deepal.const import DOMAIN, OPT_ALERTS, OPT_MANUAL_URLS
@@ -71,28 +71,51 @@ async def test_alerts_and_maintenance_steps(hass: HomeAssistant, freezer) -> Non
         flow.flow_id = "test"
         return flow
 
-    # --- Avisos ------------------------------------------------------------------
+    # --- Avisos: por coche, con sus destinos para cada grupo -------------------------
     flow = new_flow()
     result = await flow.async_step_alerts()
-    assert result["type"] == "form" and result["step_id"] == "alerts", result
+    assert result["type"] == "form" and result["step_id"] == "alerts", result  # qué coche
     _serialize(result)
+    result = await flow.async_step_alerts({"vehicle": "car2"})
+    assert result["type"] == "form" and result["step_id"] == "alerts_setup", result
+    _serialize(result)
+    assert result["description_placeholders"] == {"vehicle": "Changuito"}
+    fields = {str(key): value for key, value in result["data_schema"].schema.items()}
+    assert list(fields) == ["car", "car_types", "maintenance", "itv", "insurance", "all_vehicles"]
     # Se enseña el nombre del dispositivo; lo que se guarda sigue siendo el servicio.
-    targets = next(v for k, v in result["data_schema"].schema.items() if str(k) == "targets")
-    assert {option["value"]: option["label"] for option in targets.config["options"]} == {
+    assert {option["value"]: option["label"] for option in fields["car"].config["options"]} == {
         "mobile_app_iphone_de_manuel": "iPhone de Manuel",
         "mobile_app_test": "notify.mobile_app_test",
+        "persistent_notification": "Home Assistant notifications",
     }
-    result = await flow.async_step_alerts(
-        {"targets": ["mobile_app_test"], "types": ["charge_finished"], "persistent": False}
-    )
+    assert fields["car_types"].config["options"] == list(CAR_ALERT_TYPES)
+    hers = {
+        "car": ["mobile_app_test"],
+        "car_types": ["charge_finished"],
+        "maintenance": ["mobile_app_iphone_de_manuel", "persistent_notification"],
+        "itv": ["mobile_app_iphone_de_manuel"],
+        "insurance": [],
+        "all_vehicles": False,
+    }
+    result = await flow.async_step_alerts_setup(hers)
     assert result["type"] == "create_entry"
+    saved = {key: value for key, value in hers.items() if key != "all_vehicles"}
     assert result["data"][OPT_ALERTS] == {
-        "targets": ["mobile_app_test"],
-        "types": ["charge_finished"],
-        # Se apunta qué tipos existían, para activar solos los que se añadan después.
-        "known_types": list(ALERT_TYPES),
-        "persistent": False,
+        "vehicles": {
+            # El otro coche se escribe como estaba (aquí, sin avisos).
+            "car1": {
+                "car": [], "maintenance": [], "itv": [], "insurance": [],
+                "car_types": [], "car_known": list(CAR_ALERT_TYPES),
+            },
+            # Se apunta qué avisos existían, para activar solos los que se añadan después.
+            "car2": {**saved, "car_known": list(CAR_ALERT_TYPES)},
+        }
     }
+    # "Usar lo mismo en los demás coches".
+    flow = new_flow()
+    await flow.async_step_alerts({"vehicle": "car2"})
+    result = await flow.async_step_alerts_setup({**hers, "all_vehicles": True})
+    assert result["data"][OPT_ALERTS]["vehicles"]["car1"] == result["data"][OPT_ALERTS]["vehicles"]["car2"]
 
     # --- Avanzado: enlace del manual ------------------------------------------------
     advanced = {"scan_minutes": 5, "wake": True, "debug": False}

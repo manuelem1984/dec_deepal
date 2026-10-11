@@ -93,12 +93,27 @@ def test_open_car_and_charging(page: Page) -> None:
 def test_warning_lights(page: Page) -> None:
     mount(page, estados={"binary_sensor.warning_abs": ["on"], "binary_sensor.warning_12v_battery": ["on"]})
     assert page.evaluate("banco.estado()") == ["mdi:car-battery", "mdi:car-brake-abs"]
-    # El del airbag se enciende solo al despertar el coche: no se enseña.
+    # El del airbag se enciende solo al despertar el S05: su ficha lo silencia.
     page.evaluate(
         "banco.cambiar({'binary_sensor.warning_abs': ['off'], 'binary_sensor.warning_12v_battery': ['off'],"
         " 'binary_sensor.warning_airbag': ['on']})"
     )
     assert page.evaluate("banco.estado()") == ["mdi:check-circle"]
+
+
+def test_silent_warnings_come_from_the_vehicle_sheet(page: Page) -> None:
+    """Qué testigos no se enseñan lo dice la ficha del coche, no la tarjeta."""
+    airbag = {"binary_sensor.warning_airbag": ["on"]}
+    # Un coche cuya ficha no silencia nada: el airbag se enseña.
+    mount(page, estados=airbag, manual={"available": False, "url": None, "itv": True, "silent_warnings": []})
+    page.wait_for_function("banco.estado().includes('mdi:airbag')")
+    # Otro que silencia el ABS: ese es el que no sale.
+    mount(
+        page,
+        estados={**airbag, "binary_sensor.warning_abs": ["on"]},
+        manual={"available": False, "url": None, "itv": True, "silent_warnings": ["warning_abs"]},
+    )
+    page.wait_for_function("JSON.stringify(banco.estado()) === '[\"mdi:airbag\"]'")
 
 
 def test_due_indicators_open_their_window(page: Page) -> None:
@@ -256,6 +271,25 @@ def test_cancelling_sends_nothing(page: Page) -> None:
     click_tile(page, "trunk")
     click_window(page, '[data-action="close"]')
     assert page.evaluate("banco.ventanas().length") == 0 and services(page) == []
+
+
+def test_a_version_without_power_tailgate(page: Page) -> None:
+    """Un Pro no tiene portón eléctrico: la tarjeta lo dice en vez de pedir el PIN."""
+    mount(
+        page,
+        sin=["cover.trunk_control"],
+        manual={
+            "available": True, "url": "https://example.com/manual.pdf", "itv": True,
+            "silent_warnings": [], "features": {"porton_electrico": False},
+        },
+    )
+    page.wait_for_function("banco.card._features && banco.card._features.porton_electrico === false")
+    assert tiles(page)["trunk"] == ["Maletero", "Cerrado", ""]  # el estado sí se enseña
+    click_tile(page, "trunk")
+    assert page.evaluate("banco.ventanas().length") == 0 and services(page) == []
+    assert page.evaluate("banco.avisos") == [
+        "Este coche no tiene portón eléctrico: el maletero se abre y se cierra a mano."
+    ]
 
 
 def test_locate_menu(page: Page) -> None:

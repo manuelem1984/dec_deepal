@@ -64,7 +64,8 @@ from .const import (
     PLATFORMS,
 )
 from .coordinator import VehicleCoordinator
-from .debug.recorder import DebugRecorder
+from .debug.history import changes as signal_changes
+from .debug.recorder import DebugRecorder, VehicleRecorder
 from .frontend import async_register_frontend, async_remove_early_loader
 from .manual import async_register_manual
 from .registries import RegistryError
@@ -79,6 +80,9 @@ from .services import async_register_services
 from .vehicle_store import async_get_store, async_register_export
 
 _LOGGER = logging.getLogger(__name__)
+
+#: Registros de depuración de cada cuenta, en ``hass.data[DOMAIN]``.
+_RECORDERS_KEY = "recorders"
 
 # Solo se configura desde la interfaz: una línea "dec_deepal:" en
 # configuration.yaml se rechaza con un aviso claro.
@@ -116,7 +120,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     _set_debug_logging(hass, entry.entry_id, debug)
 
     # --- Cliente de la API ---------------------------------------------------
-    recorder = DebugRecorder(DEBUG_BUFFER_SIZE, verbose=debug)
+    # El registro sobrevive a las recargas de la cuenta (cambiar una opción la
+    # recarga): si no, el historial se perdería justo antes de mirarlo.
+    recorders = hass.data.setdefault(DOMAIN, {}).setdefault(_RECORDERS_KEY, {})
+    recorder = recorders.setdefault(entry.entry_id, DebugRecorder(DEBUG_BUFFER_SIZE))
+    recorder.verbose = debug
     session = DeepalSession.from_dict(entry.data[CONF_SESSION])
     transport = DeepalTransport(
         async_get_clientsession(hass),
@@ -163,12 +171,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
         model = registries.vehicles.get(appearance.get(OPT_MODEL)) if configured else registries.vehicles.generic
         trim = appearance.get(OPT_TRIM)
         _update_setup_issue(hass, entry, info, suggested.name, configured)
+        vehicle_recorder = recorder.for_vehicle(info.display_name)
         coordinator = VehicleCoordinator(
             hass,
             entry,
             account=account,
             client=client,
-            recorder=recorder,
+            recorder=vehicle_recorder,
             vehicle=info,
             use_mqtt=info.uses_mqtt and model.has(FEATURE_MQTT, trim),
             scan_minutes=scan_minutes,
@@ -178,7 +187,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             hass,
             coordinator=coordinator,
             commands=commands,
-            recorder=recorder,
+            recorder=vehicle_recorder,
             pin_mode=options.get(OPT_PIN_MODE, DEFAULT_PIN_MODE),
             arm_seconds=int(options.get(OPT_ARM_SECONDS, DEFAULT_ARM_SECONDS)),
             arm_notify=bool(options.get(OPT_ARM_NOTIFY, DEFAULT_ARM_NOTIFY)),
@@ -198,6 +207,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             # para decidir nada; la primera prueba adivinó mal un Max).
             capabilities=await _fetch_capabilities(client, info),
         )
+        entry.async_on_unload(_track_changes(coordinator, vehicle_recorder))
         _LOGGER.debug(
             "%s: modelo=%s versión=%s mqtt=%s",
             info.display_name,
@@ -225,6 +235,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
         runtime.vehicles,
         country.rules,
         itv_available=country.itv,
+        recorder=recorder,
     )
     await runtime.alerts.async_load()
 
@@ -269,6 +280,7 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
         ir.async_delete_issue(hass, DOMAIN, issue_id(str(raw_vehicle.get("vehicle_id"))))
     # Si la cuenta aún tenía el almacén antiguo (de la 2.3.0), se pasa al de
     # coches antes de perder la relación entre cada coche y su bastidor.
+    hass.data.get(DOMAIN, {}).get(_RECORDERS_KEY, {}).pop(entry.entry_id, None)
     store = async_get_store(hass)
     await store.async_load()
     await store.async_adopt_legacy(
@@ -280,6 +292,23 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     )
     if not hass.config_entries.async_entries(DOMAIN):
         await async_remove_early_loader(hass)
+
+
+def _track_changes(coordinator: VehicleCoordinator, recorder: VehicleRecorder):  # noqa: ANN202
+    """Apunta en el registro qué señales cambian en cada lectura de un coche."""
+    previous: dict[str, object] | None = None
+
+    def on_update() -> None:
+        nonlocal previous
+        if coordinator.data is None:
+            return
+        current = dict(coordinator.data.values)
+        changed = signal_changes(previous, current)
+        previous = current
+        if changed:
+            recorder.record("change", changes=changed)
+
+    return coordinator.async_add_listener(on_update)
 
 
 async def _restore_appearance(

@@ -53,16 +53,36 @@ async def test_manual_link_for_the_card(hass: HomeAssistant, hass_client) -> Non
     # --- Coche con manual en el catálogo ------------------------------------------
     response = await client.get(f"/api/dec_deepal/manual_info/{car1.id}")
     assert response.status == 200
-    assert await response.json() == {"available": True, "url": s05.manual_url, "itv": True}
+    info = await response.json()
+    # De la ficha del coche: equipamiento de su versión (aquí, sin versión
+    # elegida: la del modelo) y testigos que no se enseñan.
+    features = info.pop("features")
+    assert features["porton_electrico"] is True and features["asientos_ventilacion"] is True
+    assert info == {
+        "available": True,
+        "url": s05.manual_url,
+        "itv": True,
+        "silent_warnings": ["warning_airbag"],
+    }
+    # Un Pro: sin portón eléctrico ni asientos calefactados.
+    entry.runtime_data.vehicles["car1"].trim = "pro"
+    pro = (await (await client.get(f"/api/dec_deepal/manual_info/{car1.id}")).json())["features"]
+    assert pro["porton_electrico"] is False and pro["asientos_calefaccion"] is False
 
     # --- Enlace cambiado en Configurar → Avanzado ---------------------------------------
     hass.config_entries.async_update_entry(entry, options={OPT_MANUAL_URLS: {"s05_2024": OTHER_URL}})
     response = await client.get(f"/api/dec_deepal/manual_info/{car1.id}")
-    assert await response.json() == {"available": True, "url": OTHER_URL, "itv": True}
+    assert (await response.json())["url"] == OTHER_URL
 
     # --- Sin manual (modelo genérico) y dispositivo desconocido -----------------------------
     response = await client.get(f"/api/dec_deepal/manual_info/{car2.id}")
-    assert await response.json() == {"available": False, "url": None, "itv": True}
+    assert await response.json() == {
+        "available": False,
+        "url": None,
+        "itv": True,
+        "silent_warnings": ["warning_airbag"],
+        "features": {},  # sin modelo elegido no se sabe qué trae
+    }
     # Un país sin módulo de ITV: la tarjeta lo sabe y oculta la opción.
     entry.runtime_data.alerts = SimpleNamespace(itv_available=False)
     response = await client.get(f"/api/dec_deepal/manual_info/{car1.id}")

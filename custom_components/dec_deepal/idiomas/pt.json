@@ -92,16 +92,28 @@
           }
         },
         "alerts": {
-          "title": "Avisos no telemóvel",
-          "description": "A integração avisa-o quando acontece algo no carro. Cada aviso tem o nome do carro no título (\"DEC Deepal O meu carro\"). São notificações normais, não críticas.",
+          "title": "Avisos — veículo",
+          "description": "Escolha o veículo. Cada veículo tem os seus próprios destinatários.",
           "data": {
-            "targets": "Avisar",
-            "types": "Avisos ativados",
-            "persistent": "Mostrar também nas notificações do Home Assistant"
+            "vehicle": "Veículo"
+          }
+        },
+        "alerts_setup": {
+          "title": "Avisos de {vehicle}",
+          "description": "Escolha quem este veículo avisa de cada coisa. Um grupo sem destinatários não avisa. Cada aviso leva o nome do veículo no título (\"DEC Deepal {vehicle}\"). São notificações normais, não críticas.",
+          "data": {
+            "car": "Avisos do veículo: avisar",
+            "car_types": "Avisos do veículo ativados",
+            "maintenance": "Manutenção: avisar",
+            "itv": "ITV: avisar",
+            "insurance": "Seguro: avisar",
+            "all_vehicles": "Usar o mesmo nos outros veículos"
           },
           "data_description": {
-            "targets": "Os telemóveis e tablets com a app do Home Assistant, com o nome que têm em Definições → Aplicação móvel. Outros serviços de notificação aparecem como notify.nome.",
-            "types": "Os de manutenção, ITV e seguro precisam de que cada um seja ativado antes na respetiva secção de Configurar, e só são enviados entre as 8:00 e as 22:00."
+            "car": "Os telemóveis e tablets com a aplicação do Home Assistant, com o nome que têm em Definições → Aplicação móvel. Outros serviços de notificação aparecem como notify.nome.",
+            "maintenance": "Faltam 2 meses, 1 mês, 15 dias; 3.000, 2.000, 1.000 km; vencida. É preciso ativar antes a manutenção do veículo na sua secção. Apenas entre as 8:00 e as 22:00.",
+            "itv": "Faltam 2 meses, 1 mês, 15 dias; vencida. É preciso ativar antes a ITV do veículo na sua secção. Apenas entre as 8:00 e as 22:00.",
+            "insurance": "30 e 15 dias antes do limite para cancelar, no último dia e ao renovar. É preciso ativar antes o seguro do veículo na sua secção. Apenas entre as 8:00 e as 22:00."
           }
         },
         "itv": {
@@ -348,10 +360,7 @@
           "charge_finished": "Carregamento terminado",
           "warnings": "Luzes de aviso do painel",
           "tires": "Pneus (quando o carro acende o aviso)",
-          "key_battery": "Pilha da chave fraca",
-          "maintenance": "Manutenção (faltam 2 meses, 1 mês, 15 dias; 3.000, 2.000, 1.000 km; vencida)",
-          "itv": "ITV (faltam 2 meses, 1 mês, 15 dias; vencida)",
-          "insurance": "Seguro (30 e 15 dias antes do prazo para cancelar, no último dia e na renovação)"
+          "key_battery": "Pilha da chave fraca"
         }
       },
       "insurance_kind": {
@@ -846,7 +855,8 @@
     "and": " e ",
     "thousands": ".",
     "ordinal": "{number}.ª",
-    "date_format": "%d/%m/%Y"
+    "date_format": "%d/%m/%Y",
+    "panel_target": "Notificações do Home Assistant"
   },
   "tarjeta": {
     "card_description": "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
@@ -974,7 +984,8 @@
     "fan": "Ventilador {value}",
     "recirculating": "A recircular",
     "outside_air": "Ar exterior",
-    "number_copied": "Número copiado: {number}"
+    "number_copied": "Número copiado: {number}",
+    "trunk_manual": "Este veículo não tem portão elétrico: a mala abre-se e fecha-se à mão."
   },
   "catalogo": {
     "operacion_general_inspection": "Inspeção geral (propulsão, bateria, alta tensão, travões e direção)",

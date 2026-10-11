@@ -42,7 +42,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "and": " y ",
         "thousands": ".",
         "ordinal": "{number}ª",
-        "date_format": "%d/%m/%Y"
+        "date_format": "%d/%m/%Y",
+        "panel_target": "Notificaciones de Home Assistant"
     },
     "en": {
         "charge_started": "Charging started{battery}.",
@@ -68,7 +69,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "and": " and ",
         "thousands": ",",
         "ordinal": "{number}",
-        "date_format": "%d/%m/%Y"
+        "date_format": "%d/%m/%Y",
+        "panel_target": "Home Assistant notifications"
     },
     "pt": {
         "charge_started": "Carregamento iniciado{battery}.",
@@ -94,7 +96,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "and": " e ",
         "thousands": ".",
         "ordinal": "{number}.ª",
-        "date_format": "%d/%m/%Y"
+        "date_format": "%d/%m/%Y",
+        "panel_target": "Notificações do Home Assistant"
     },
     "it": {
         "charge_started": "Ricarica avviata{battery}.",
@@ -120,7 +123,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "and": " e ",
         "thousands": ".",
         "ordinal": "{number}º",
-        "date_format": "%d/%m/%Y"
+        "date_format": "%d/%m/%Y",
+        "panel_target": "Notifiche di Home Assistant"
     },
     "pl": {
         "charge_started": "Rozpoczęto ładowanie{battery}.",
@@ -146,7 +150,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "and": " i ",
         "thousands": " ",
         "ordinal": "{number}.",
-        "date_format": "%d.%m.%Y"
+        "date_format": "%d.%m.%Y",
+        "panel_target": "Powiadomienia Home Assistant"
     }
 }
 #: Nombres del catálogo: ``{idioma: {clave: texto}}``.

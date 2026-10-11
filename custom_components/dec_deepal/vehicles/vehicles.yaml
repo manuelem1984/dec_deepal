@@ -6,6 +6,26 @@
 # respuesta del servidor, qué funciones tiene (para crear solo las entidades
 # que tienen sentido), sus versiones (acabados), sus colores y sus fotos.
 #
+# -----------------------------------------------------------------------------
+# LA FICHA DE CADA COCHE
+# -----------------------------------------------------------------------------
+# Todo lo que la integración sabe de un coche sale de aquí: es su FICHA. Se
+# compone por capas, de lo general a lo concreto:
+#
+#   1. El MODELO dice lo común (funciones, testigos, fotos, mantenimiento).
+#      Sus valores son los de la versión más equipada (en el S05, el Max).
+#   2. Cada VERSIÓN solo escribe en qué se diferencia ("funciones:", "llanta:").
+#   3. Un coche sin versión elegida, o con una versión que aquí no existe,
+#      usa la ficha del modelo tal cual (es decir, la del Max).
+#   4. Un modelo puede copiar a otro con "como:" y cambiar solo lo distinto
+#      (el S05 PHEV copia al S05 EV).
+#   5. Un coche sin modelo elegido usa "generico": lo mínimo.
+#
+# "verificada: true" = comprobada en un coche real. Las demás salen de los
+# catálogos oficiales de España (S05 EV, septiembre de 2026; S05 PHEV, 2026) y
+# se afinan con los diagnósticos de quien tenga ese coche (el diagnóstico dice
+# qué ficha se está usando y si está verificada).
+#
 # Tras editarlo, reiniciar Home Assistant.
 # Guía completa: docs/imagenes.md y docs/anadir-pais-vehiculo-idioma.md
 #
@@ -26,9 +46,16 @@
 #                     nombre_contiene:  textos que aparecen en "modelName" o
 #                                       "seriesName" (sin distinguir mayúsculas).
 #                     codigo_serie:     valores exactos de "seriesCode".
+#   como            (opcional) Id de otro modelo del que se copia todo lo que
+#                   aquí no se escriba. "funciones" se mezcla (solo hay que
+#                   poner las que cambian); lo demás, si se escribe, sustituye.
 #   funciones       Qué tiene el coche. Cada función desactivada (false) hace
 #                   que NO se creen sus entidades. Lista de funciones posibles
 #                   en docs/imagenes.md (sección "Funciones").
+#   testigos_sin_aviso
+#                   (opcional) Testigos que este coche enciende sin motivo: no
+#                   mandan aviso ni salen en la tarjeta (su entidad sigue
+#                   existiendo). Son nombres de señal, p. ej. warning_airbag.
 #   carpeta_fotos   Carpeta dentro de vehicles/photos/ con las fotos del modelo.
 #   foto_defecto    Foto que se usa si el usuario no ha elegido versión y color
 #                   (o si falta la foto exacta). Ruta relativa a carpeta_fotos.
@@ -75,6 +102,8 @@
 #                                   para esta versión.
 #                     llanta        (opcional) Llanta fija de esta versión (no
 #                                   se puede elegir otra).
+#                     verificada    (opcional) true si la ficha de esta versión
+#                                   se ha comprobado en un coche real.
 #   colores         Colores oficiales. Clave = id interno.
 #                     nombre        Nombre comercial.
 #                     descripcion   Texto libre.
@@ -98,26 +127,33 @@
 # =============================================================================
 
 modelos:
+  # --- Deepal S05 eléctrico (EV) ----------------------------------------------
+  # El id sigue siendo "s05_2024" (es el que tienen guardado los usuarios).
   s05_2024:
-    nombre: Deepal S05 (2024-25)
-    nombre_con_version: Deepal S05 {version} (2024-25)
+    nombre: Deepal S05 EV
+    nombre_con_version: Deepal S05 EV {version}
     descripcion: >-
       SUV eléctrico compacto. Modelo de referencia del proyecto, probado con
-      coches reales en España.
+      coches reales en España (RWD Max).
     fabricante: Changan Deepal
     paises: [es]
     reconocer:
       nombre_contiene: ["S05"]
       codigo_serie: []
+    # El coche enciende el testigo del airbag unos segundos cada vez que
+    # despierta (visto en dos RWD Max, 10-2026). Hasta saber cuánto dura
+    # (historial de los diagnósticos) y poder filtrarlo, no avisa.
+    testigos_sin_aviso: [warning_airbag]
     funciones:
       telemetria_mqtt: true          # lee el estado por MQTT (rápido y completo)
       climatizacion: true            # encender/apagar y temperatura
       luces_claxon: true             # parpadear luces / tocar claxon
-      asientos_calefaccion: true     # calefacción asientos delanteros 0-3
-      asientos_ventilacion: true     # ventilación asientos delanteros 0-3 (solo Max)
-      volante_calefactado: true
+      asientos_calefaccion: true     # calefacción asientos delanteros 0-3 (el Pro no)
+      asientos_ventilacion: true     # ventilación asientos delanteros 0-3 (el Pro no)
+      volante_calefactado: true      # (el Pro no)
       desempanado: false             # el S05 no es compatible (probado 02-10-2026)
       comandos_pin: true             # puertas, ventanillas y maletero (con PIN)
+      porton_electrico: true         # abrir/cerrar el maletero a distancia (el Pro no)
       combustible: false             # solo híbridos enchufables / autonomía extendida
     carpeta_fotos: s05_2024
     foto_defecto: default.png
@@ -154,21 +190,31 @@ modelos:
           cada: 5
     versiones:
       pro:
-        nombre: Pro
-        descripcion: Versión de acceso. Sin ventilación de asientos.
+        nombre: RWD Pro
+        descripcion: >-
+          Versión de acceso, propulsión trasera. Según el catálogo oficial no
+          lleva asientos calefactados ni ventilados, volante calefactado ni
+          portón eléctrico. Sin verificar en un coche real.
         grupo_foto: pro
         llanta: pro                  # 18" con su tapacubos
         funciones:
+          asientos_calefaccion: false
           asientos_ventilacion: false
+          volante_calefactado: false
+          porton_electrico: false
       max:
-        nombre: Max
-        descripcion: Versión alta, propulsión trasera. Con ventilación de asientos.
-        grupo_foto: max
-      max_awd:
-        nombre: Max AWD
+        nombre: RWD Max
         descripcion: >-
-          Tracción total. Por fuera es idéntica al Max, así que comparte sus
-          fotos (grupo_foto: max).
+          Versión alta, propulsión trasera. Asientos calefactados y
+          ventilados, volante calefactado y portón eléctrico.
+        grupo_foto: max
+        verificada: true             # dos coches reales (10-2026)
+      max_awd:
+        nombre: 4WD Max
+        descripcion: >-
+          Tracción total ("Max AWD" en el catálogo). Mismo equipamiento que el
+          RWD Max y, por fuera, idéntica: comparte sus fotos (grupo_foto: max).
+          Sin verificar en un coche real.
         grupo_foto: max
     colores:
       andromeda_blue:
@@ -177,8 +223,8 @@ modelos:
       deep_space_black:
         nombre: Deep Space Black
         descripcion: Negro.
-      ganymade_grey:
-        nombre: Ganymade Grey
+      ganymade_grey:                 # (el id conserva la errata: lo tienen guardado los usuarios)
+        nombre: Ganymede Grey
         descripcion: Gris.
       mercury_silver:
         nombre: Mercury Silver
@@ -186,6 +232,54 @@ modelos:
       moonlight_white:
         nombre: Moonlight White
         descripcion: Blanco.
+
+  # --- Deepal S05 híbrido enchufable (PHEV) -----------------------------------
+  # Equipamiento según el catálogo oficial (2026): dos versiones, Pro y
+  # Limited Edition (equivale al Max), las dos de tracción delantera y con
+  # llanta de 18". No hay 4WD. Nadie del proyecto tiene uno todavía: lo que
+  # el coche envía de verdad, y lo marcado con (?), hay que confirmarlo con
+  # el diagnóstico de un PHEV.
+  s05_phev:
+    como: s05_2024
+    nombre: Deepal S05 PHEV
+    nombre_con_version: Deepal S05 PHEV {version}
+    descripcion: >-
+      SUV híbrido enchufable, tracción delantera. Equipamiento según el
+      catálogo oficial; sin verificar en un coche real.
+    reconocer:
+      nombre_contiene: ["PHEV"]      # (?) se supone que el código de modelo lo lleva
+      codigo_serie: []
+    funciones:
+      combustible: true              # depósito y autonomía de gasolina (sin entidades todavía)
+    # Su manual es otro y aún no hay enlace oficial: el usuario puede poner el
+    # suyo en Configurar → Avanzado.
+    manual: ""
+    # (?) El plan del PHEV lleva además el motor de gasolina (aceite, filtros,
+    # bujías) y no lo conocemos: se deja solo el intervalo, sin operaciones.
+    mantenimiento:
+      intervalo_km: 20000
+      intervalo_meses: 12
+      operaciones: []
+    versiones:
+      pro:
+        nombre: Pro
+        descripcion: >-
+          Versión de acceso. Como el EV Pro: sin asientos calefactados ni
+          ventilados, volante calefactado ni portón eléctrico.
+        grupo_foto: pro
+        llanta: pro                  # 18"
+        funciones:
+          asientos_calefaccion: false
+          asientos_ventilacion: false
+          volante_calefactado: false
+          porton_electrico: false
+      limited_edition:
+        nombre: Limited Edition
+        descripcion: >-
+          Versión alta (el "Max" del PHEV): asientos calefactados y
+          ventilados, volante calefactado y portón eléctrico.
+        grupo_foto: max
+        llanta: pro                  # también 18" (?: no sabemos si es el mismo dibujo)
 
   generico:
     nombre: Deepal (sin configurar)
@@ -207,7 +301,9 @@ modelos:
       volante_calefactado: false
       desempanado: false
       comandos_pin: false
+      porton_electrico: false
       combustible: false
+    testigos_sin_aviso: [warning_airbag]
     carpeta_fotos: generico
     foto_defecto: default.png
     versiones: {}

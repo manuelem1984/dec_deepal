@@ -100,7 +100,7 @@
      *   idioma    idioma del usuario ("es" por defecto)
      *   estados   cambios sobre el coche base: { clave: [estado, atributos] }
      *   sin       claves de entidades que este coche no tiene
-     *   manual    respuesta de manual_info ({ available, url, itv })
+     *   manual    respuesta de manual_info ({ available, url, itv, silent_warnings })
      *   seguro    respuesta de insurance_info, o null si no hay ficha
      *   textos    textos de Home Assistant para hass.localize ({ clave: texto })
      */
@@ -119,7 +119,9 @@
         entities[id(key)] = { entity_id: id(key), device_id: DEVICE, platform: "dec_deepal", translation_key: name };
         states[id(key)] = state(key, [].concat(value));
       }
-      const manual = opciones.manual || { available: true, url: "https://example.com/manual.pdf", itv: true };
+      const manual = opciones.manual || {
+        available: true, url: "https://example.com/manual.pdf", itv: true, silent_warnings: ["warning_airbag"],
+      };
       const seguro = "seguro" in opciones ? opciones.seguro : { policy: "0123 4567 89", phone_assistance: "900 000 000", phone_company: "910 000 000" };
       const hass = {
         entities,

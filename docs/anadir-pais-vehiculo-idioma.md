@@ -1,7 +1,7 @@
 # Añadir un país, un vehículo o un idioma
 
 La integración está preparada para crecer en tres ejes. Hoy: **España**,
-**Deepal S05 (2024-2025)** y **español**.
+**Deepal S05** (EV y, de forma provisional, PHEV) y **español**.
 
 ---
 
@@ -36,6 +36,44 @@ Mientras solo haya un país activo, el asistente se salta el paso de elegir
 país.
 
 ---
+
+## La ficha de cada coche
+
+Todo lo que la integración sabe de un coche sale de `vehicles/vehicles.yaml`:
+es su **ficha**. Se compone por capas:
+
+1. El **modelo** dice lo común. Sus valores son los de la versión más
+   equipada (en el S05, el Max).
+2. Cada **versión** solo escribe en qué se diferencia.
+3. Un coche **sin versión elegida**, o con una que no está en el catálogo,
+   usa la ficha del modelo tal cual (la del Max).
+4. Un modelo puede **copiar a otro** con `como:` y cambiar solo lo distinto.
+5. Un coche **sin modelo elegido** usa `generico`: lo mínimo.
+
+Fichas de hoy:
+
+| Coche | Modelo / versión | Asientos calefactados y ventilados, volante calefactado, portón eléctrico | Llanta | Estado |
+|---|---|---|---|---|
+| Deepal S05 EV RWD Pro | `s05_2024` / `pro` | No | 18" | Catálogo oficial |
+| Deepal S05 EV RWD Max | `s05_2024` / `max` | Sí | 20" | **Verificada** (dos coches reales) |
+| Deepal S05 EV 4WD Max | `s05_2024` / `max_awd` | Sí | 20" | Catálogo oficial |
+| Deepal S05 PHEV Pro | `s05_phev` / `pro` | No | 18" | Catálogo oficial |
+| Deepal S05 PHEV Limited Edition | `s05_phev` / `limited_edition` | Sí | 18" | Catálogo oficial |
+
+El equipamiento sale de los catálogos oficiales de España (S05 EV,
+septiembre de 2026; S05 PHEV, 2026). El PHEV es de tracción delantera, no
+tiene 4WD y su versión alta se llama Limited Edition. "Catálogo oficial"
+quiere decir que el equipamiento es el publicado, pero nadie ha comprobado
+todavía qué envía de verdad ese coche.
+
+Para verificar una ficha hace falta el **diagnóstico** de un coche de esa
+versión: dice qué ficha se le aplica (`vehiculos → <coche> → ficha`), qué
+funciones declara el servidor (`capacidades`) y qué datos envía de verdad.
+Con eso se corrige la ficha y se marca `verificada: true`.
+
+Del PHEV, lo que no está en el catálogo no se ha inventado: no tiene enlace
+al manual ni operaciones de mantenimiento (su plan lleva el motor de gasolina
+y no lo conocemos), y sus datos de combustible aún no tienen entidades.
 
 ## Añadir un vehículo
 

@@ -71,7 +71,7 @@
       this._checkManual(deviceId);
     }
 
-    /** Pregunta a la integración (una vez por coche) el enlace del manual y si hay ITV. */
+    /** Pregunta a la integración (una vez por coche): manual, ITV y testigos que no se enseñan. */
     async _checkManual(deviceId) {
       if (!deviceId || this._manualDevice === deviceId || !this._hass.callApi) return;
       this._manualDevice = deviceId;
@@ -81,6 +81,12 @@
         const info = await this._hass.callApi("GET", `dec_deepal/manual_info/${deviceId}`);
         // La ITV solo existe en algunos países (hoy, España).
         if (this._manualDevice === deviceId) this._itvAvailable = !(info && info.itv === false);
+        if (this._manualDevice === deviceId && info && Array.isArray(info.silent_warnings)) {
+          this._silent = new Set(info.silent_warnings);
+          this._repaint();
+        }
+        // Equipamiento de la versión del coche (su ficha): { porton_electrico: false, ... }.
+        if (this._manualDevice === deviceId) this._features = (info && info.features) || {};
         const url = (info && info.url) || "";
         if (this._manualDevice === deviceId && /^https?:\/\//.test(url)) this._manualUrl = url;
       } catch (_error) {
@@ -235,7 +241,11 @@
 
       // Línea de estado: tic verde, o el icono de cada testigo encendido.
       // Los de vencimiento (mantenimiento, ITV, seguro) van al final y se pueden pulsar.
-      const active = WARNINGS.filter((warning) => warning.keys.some((key) => this._value(key) === "on"));
+      // Un testigo cuenta si está encendido y la ficha del coche no lo silencia.
+      const silent = this._silent || new Set(SILENT_BY_DEFAULT);
+      const active = WARNINGS.filter((warning) =>
+        warning.keys.some((key) => !silent.has(key.split(".")[1]) && this._value(key) === "on")
+      );
       const due = DUE.map((item) => ({ ...item, level: this._dueLevel(item.key) })).filter((item) => item.level);
       const signature = `${active.map((warning) => warning.icon).join("|")}#${due.map((item) => item.action + item.level).join("|")}`;
       if (this._statusSignature !== signature) {
@@ -451,7 +461,9 @@
           else this._pinCommand("lock", this._t("unlock_q"), this._t("unlock_do"), "lock", "unlock", "lock.doors");
           break;
         case "trunk":
-          if (tiles.trunk.on) this._pinCommand("trunk", this._t("trunk_close_q"), this._t("close"), "cover", "close_cover", "cover.trunk_control");
+          // Sin portón eléctrico (p. ej. el Pro) no hay nada que mandar: se dice.
+          if ((this._features || {}).porton_electrico === false) this._toast(this._t("trunk_manual"));
+          else if (tiles.trunk.on) this._pinCommand("trunk", this._t("trunk_close_q"), this._t("close"), "cover", "close_cover", "cover.trunk_control");
           else this._pinCommand("trunk", this._t("trunk_open_q"), this._t("open_do"), "cover", "open_cover", "cover.trunk_control");
           break;
         case "vent":

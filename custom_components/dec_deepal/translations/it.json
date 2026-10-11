@@ -91,16 +91,28 @@
         }
       },
       "alerts": {
-        "title": "Notifiche sul telefono",
-        "description": "L'integrazione ti avvisa quando succede qualcosa all'auto. Ogni notifica riporta il nome dell'auto nel titolo (\"DEC Deepal La mia auto\"). Sono notifiche normali, non critiche.",
+        "title": "Notifiche — veicolo",
+        "description": "Scegli il veicolo. Ogni veicolo ha i propri destinatari.",
         "data": {
-          "targets": "Avvisa",
-          "types": "Notifiche attive",
-          "persistent": "Mostra anche nelle notifiche di Home Assistant"
+          "vehicle": "Veicolo"
+        }
+      },
+      "alerts_setup": {
+        "title": "Notifiche di {vehicle}",
+        "description": "Scegli chi viene avvisato da questo veicolo per ogni cosa. Un gruppo senza destinatari non avvisa. Ogni notifica riporta il nome del veicolo nel titolo (\"DEC Deepal {vehicle}\"). Sono notifiche normali, non critiche.",
+        "data": {
+          "car": "Notifiche del veicolo: avvisa",
+          "car_types": "Notifiche del veicolo attive",
+          "maintenance": "Manutenzione: avvisa",
+          "itv": "ITV: avvisa",
+          "insurance": "Assicurazione: avvisa",
+          "all_vehicles": "Usa lo stesso per gli altri veicoli"
         },
         "data_description": {
-          "targets": "I telefoni e i tablet con l'app di Home Assistant, con il nome che hanno in Impostazioni → App per dispositivi mobili. Gli altri servizi di notifica appaiono come notify.nome.",
-          "types": "Quelle di manutenzione, ITV e assicurazione richiedono di attivare prima ciascuna voce nella propria sezione di Configura, e vengono inviate solo tra le 8:00 e le 22:00."
+          "car": "I telefoni e i tablet con l'app di Home Assistant, con il nome che hanno in Impostazioni → App per dispositivi mobili. Gli altri servizi di notifica compaiono come notify.nome.",
+          "maintenance": "Mancano 2 mesi, 1 mese, 15 giorni; 3.000, 2.000, 1.000 km; scaduto. Bisogna prima attivare la manutenzione del veicolo nella sua sezione. Solo tra le 8:00 e le 22:00.",
+          "itv": "Mancano 2 mesi, 1 mese, 15 giorni; scaduta. Bisogna prima attivare l'ITV del veicolo nella sua sezione. Solo tra le 8:00 e le 22:00.",
+          "insurance": "30 e 15 giorni prima del termine per la disdetta, l'ultimo giorno e al rinnovo. Bisogna prima attivare l'assicurazione del veicolo nella sua sezione. Solo tra le 8:00 e le 22:00."
         }
       },
       "itv": {
@@ -347,10 +359,7 @@
         "charge_finished": "Ricarica terminata",
         "warnings": "Spie del quadro",
         "tires": "Pneumatici (quando l'auto accende l'avviso)",
-        "key_battery": "Batteria della chiave scarica",
-        "maintenance": "Manutenzione (mancano 2 mesi, 1 mese, 15 giorni; 3.000, 2.000, 1.000 km; scaduta)",
-        "itv": "ITV (mancano 2 mesi, 1 mese, 15 giorni; scaduta)",
-        "insurance": "Assicurazione (30 e 15 giorni prima del termine per disdire, l'ultimo giorno e al rinnovo)"
+        "key_battery": "Batteria della chiave scarica"
       }
     },
     "insurance_kind": {

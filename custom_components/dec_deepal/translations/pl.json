@@ -91,16 +91,28 @@
         }
       },
       "alerts": {
-        "title": "Powiadomienia na telefon",
-        "description": "Integracja powiadamia Cię, gdy coś dzieje się z samochodem. Każde powiadomienie ma w tytule nazwę samochodu („DEC Deepal Mój samochód”). To zwykłe powiadomienia, nie krytyczne.",
+        "title": "Powiadomienia — pojazd",
+        "description": "Wybierz pojazd. Każdy pojazd ma własnych odbiorców.",
         "data": {
-          "targets": "Powiadamiaj",
-          "types": "Włączone powiadomienia",
-          "persistent": "Pokazuj także w powiadomieniach Home Assistant"
+          "vehicle": "Pojazd"
+        }
+      },
+      "alerts_setup": {
+        "title": "Powiadomienia: {vehicle}",
+        "description": "Wybierz, kogo ten pojazd powiadamia o poszczególnych sprawach. Grupa bez odbiorców nie wysyła nic. Każde powiadomienie ma w tytule nazwę pojazdu („DEC Deepal {vehicle}”). To zwykłe powiadomienia, nie krytyczne.",
+        "data": {
+          "car": "Powiadomienia pojazdu: powiadom",
+          "car_types": "Włączone powiadomienia pojazdu",
+          "maintenance": "Serwis: powiadom",
+          "itv": "ITV: powiadom",
+          "insurance": "Ubezpieczenie: powiadom",
+          "all_vehicles": "Użyj tego samego dla pozostałych pojazdów"
         },
         "data_description": {
-          "targets": "Telefony i tablety z aplikacją Home Assistant, pod nazwą widoczną w Ustawienia → Aplikacja mobilna. Inne usługi powiadomień są widoczne jako notify.nazwa.",
-          "types": "Powiadomienia o serwisie, ITV i ubezpieczeniu wymagają wcześniejszego włączenia każdej z tych funkcji w jej sekcji w Konfiguruj i są wysyłane tylko między 8:00 a 22:00."
+          "car": "Telefony i tablety z aplikacją Home Assistant, pod nazwą z Ustawienia → Aplikacja mobilna. Inne usługi powiadomień widać jako notify.nazwa.",
+          "maintenance": "Zostały 2 miesiące, 1 miesiąc, 15 dni; 3 000, 2 000, 1 000 km; po terminie. Najpierw włącz serwis pojazdu w jego sekcji. Tylko między 8:00 a 22:00.",
+          "itv": "Zostały 2 miesiące, 1 miesiąc, 15 dni; po terminie. Najpierw włącz ITV pojazdu w jego sekcji. Tylko między 8:00 a 22:00.",
+          "insurance": "30 i 15 dni przed terminem wypowiedzenia, w ostatnim dniu i po odnowieniu. Najpierw włącz ubezpieczenie pojazdu w jego sekcji. Tylko między 8:00 a 22:00."
         }
       },
       "itv": {
@@ -347,10 +359,7 @@
         "charge_finished": "Zakończono ładowanie",
         "warnings": "Kontrolki na desce rozdzielczej",
         "tires": "Opony (gdy samochód zapali ostrzeżenie)",
-        "key_battery": "Słaba bateria kluczyka",
-        "maintenance": "Serwis (zostały 2 miesiące, 1 miesiąc, 15 dni; 3000, 2000, 1000 km; po terminie)",
-        "itv": "ITV (zostały 2 miesiące, 1 miesiąc, 15 dni; po terminie)",
-        "insurance": "Ubezpieczenie (30 i 15 dni przed terminem wypowiedzenia, w ostatnim dniu i przy odnowieniu)"
+        "key_battery": "Słaba bateria kluczyka"
       }
     },
     "insurance_kind": {

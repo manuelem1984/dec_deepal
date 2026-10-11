@@ -157,6 +157,65 @@ def test_new_alert_types_start_enabled() -> None:
     # Tras guardar con la lista nueva a la vista, manda lo que marque.
     assert ar.enabled_types(old, list(ar.ALERT_TYPES)) == set(old)
     assert ar.enabled_types(None, None) == set(ar.ALERT_TYPES)
+
+
+def test_who_gets_each_alert() -> None:
+    """Cada coche reparte sus avisos en cuatro grupos, cada uno con sus destinos."""
+    me, her = "mobile_app_manuel", "mobile_app_ella"
+    config = {
+        "vehicles": {
+            "changote": {
+                "car": [me],
+                "car_types": ["charge_finished", "warnings"],
+                "car_known": list(ar.CAR_ALERT_TYPES),
+                "maintenance": [me],
+                "itv": [me],
+                "insurance": [me, her],
+            },
+            # El coche de ella: sus avisos son suyos; los papeles, de él.
+            "changuito": {
+                "car": [her],
+                "car_types": list(ar.CAR_ALERT_TYPES),
+                "car_known": list(ar.CAR_ALERT_TYPES),
+                "maintenance": [me],
+                "itv": [me],
+                "insurance": [],
+            },
+        }
+    }
+    mine, hers = ar.route_for(config, "changote"), ar.route_for(config, "changuito")
+    assert mine.targets_for(ar.ALERT_CHARGE_FINISHED) == (me,)
+    assert mine.targets_for(ar.ALERT_CHARGE_STARTED) == ()  # ese aviso está desactivado
+    assert mine.targets_for(ar.ALERT_INSURANCE) == (me, her)
+    assert hers.targets_for(ar.ALERT_CHARGE_STARTED) == (her,)
+    assert hers.targets_for(ar.ALERT_ITV) == (me,) and hers.targets_for(ar.ALERT_MAINTENANCE) == (me,)
+    assert hers.targets_for(ar.ALERT_INSURANCE) == ()  # grupo sin destinos: no avisa
+    # Un coche que no está en la lista, o una cuenta sin avisos: nada.
+    assert ar.route_for(config, "otro") == ar.NO_ROUTE and ar.route_for(None, "x") == ar.NO_ROUTE
+    # Lo que se guarda es lo que se lee.
+    assert ar.route_for({"vehicles": {"c": mine.to_dict()}}, "c") == mine
+    # Un tipo de aviso que no existía al guardar nace activado.
+    old = {"vehicles": {"c": {"car": [me], "car_types": ["warnings"], "car_known": ["warnings", "tires"]}}}
+    assert ar.ALERT_CHARGE_STARTED in ar.route_for(old, "c").car_types
+    assert ar.ALERT_TIRES not in ar.route_for(old, "c").car_types
+
+
+def test_alerts_configured_before_2_4_keep_working() -> None:
+    """Formato anterior (una lista para toda la cuenta): todos los coches avisan igual que antes."""
+    old = {
+        "targets": ["mobile_app_manuel"],
+        "types": ["charge_finished", "maintenance", "itv"],
+        "known_types": list(ar.ALERT_TYPES),
+        "persistent": True,
+    }
+    route = ar.route_for(old, "cualquiera")
+    everyone = ("mobile_app_manuel", ar.TARGET_PANEL)  # el panel pasa a ser un destino más
+    assert route.targets_for(ar.ALERT_CHARGE_FINISHED) == everyone
+    assert route.targets_for(ar.ALERT_CHARGE_STARTED) == ()
+    assert route.targets_for(ar.ALERT_MAINTENANCE) == everyone
+    assert route.targets_for(ar.ALERT_ITV) == everyone
+    assert route.targets_for(ar.ALERT_INSURANCE) == ()
+    assert ar.panel_name("es") == "Notificaciones de Home Assistant"
     assert set(doc.INSURANCE_KINDS) == {
         "third_party",
         "third_party_plus",

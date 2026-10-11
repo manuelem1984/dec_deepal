@@ -15,7 +15,7 @@ import pytest
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import async_mock_service
 
-from custom_components.dec_deepal.alert_rules import ALERT_TYPES
+from custom_components.dec_deepal.alert_rules import ALERT_TYPES, CAR_ALERT_TYPES, TARGET_PANEL
 from custom_components.dec_deepal.alerts import AlertManager
 from custom_components.dec_deepal.api.models import VehicleInfo
 from custom_components.dec_deepal.const import (
@@ -24,6 +24,7 @@ from custom_components.dec_deepal.const import (
     OPT_ALERT_TYPES,
     OPT_ALERTS,
 )
+from custom_components.dec_deepal.debug.recorder import DebugRecorder
 from custom_components.dec_deepal.documents import InsuranceRecord, ItvRecord
 from custom_components.dec_deepal.maintenance import LEVEL_SOON, MaintenanceRecord
 from custom_components.dec_deepal.registries import load_all
@@ -152,6 +153,78 @@ async def test_alerts_and_maintenance(hass: HomeAssistant, freezer) -> None:  # 
     back = AlertManager(hass, "entry1", OPTIONS, vehicles)
     await back.async_load()
     assert back.itv_record("car1").history == ["2027-01-22"]
+
+
+@pytest.mark.usefixtures("enable_custom_integrations", "hass_storage")
+async def test_each_car_notifies_its_own_people(hass: HomeAssistant, freezer) -> None:  # noqa: ANN001
+    """Dos coches: los avisos del coche, a su conductor; los papeles, a quien se elija."""
+    freezer.move_to("2027-01-22 20:00:00+00:00")
+    hass.config.language = "es"
+    mine = async_mock_service(hass, "notify", "mobile_app_manuel")
+    hers = async_mock_service(hass, "notify", "mobile_app_ella")
+    model = load_all(INTEGRATION).vehicles.get("s05_2024")
+    base = {s.CHARGING: False, s.BATTERY_LEVEL: 45, s.ODOMETER_KM: 37500}
+    cars = {name: FakeCoordinator(dict(base)) for name in ("changote", "changuito")}
+    vehicles = {
+        name: SimpleNamespace(
+            info=VehicleInfo(vehicle_id=name, nickname=name.capitalize()),
+            coordinator=coordinator,
+            model=model,
+            trim="max",
+        )
+        for name, coordinator in cars.items()
+    }
+    everything = list(CAR_ALERT_TYPES)
+    options = {
+        OPT_ALERTS: {
+            "vehicles": {
+                "changote": {
+                    "car": ["mobile_app_manuel"], "car_types": everything, "car_known": everything,
+                    "maintenance": ["mobile_app_manuel"], "itv": [], "insurance": [],
+                },
+                "changuito": {
+                    "car": ["mobile_app_ella"], "car_types": ["warnings"], "car_known": everything,
+                    "maintenance": ["mobile_app_manuel", TARGET_PANEL], "itv": [], "insurance": [],
+                },
+            }
+        }
+    }
+    recorder = DebugRecorder(50)
+    manager = AlertManager(hass, "entry1", options, vehicles, recorder=recorder)
+    await manager.async_load()
+    manager.async_start()
+
+    # Cada coche avisa de su carga a su conductor (y el de ella la tiene desactivada).
+    charging = {**base, s.CHARGING: True, s.BATTERY_LEVEL: 46, s.REMAINING_CHARGE_MIN: 200}
+    cars["changote"].push(charging)
+    cars["changuito"].push(charging)
+    await hass.async_block_till_done()
+    assert [call.data["title"] for call in mine] == ["DEC Deepal Changote"] and hers == []
+
+    # Testigos: el ABS avisa a quien toca; el airbag no (lo silencia la ficha del S05).
+    cars["changuito"].push({**charging, s.WARNING_ABS: True, s.WARNING_AIRBAG: True})
+    await hass.async_block_till_done()
+    assert len(hers) == 1 and "ABS" in hers[0].data["message"].upper()
+    assert "AIRBAG" not in hers[0].data["message"].upper() and len(mine) == 1
+
+    # Los papeles del coche de ella le llegan a él (y al panel de Home Assistant).
+    record = MaintenanceRecord(services_done=1, last_date=date(2026, 3, 10), last_km=19500)
+    await manager.async_set_record("changuito", record)
+    await hass.async_block_till_done()
+    assert mine[-1].data["title"] == "DEC Deepal Changuito" and len(hers) == 1
+
+    # Lo enviado queda en el historial de los diagnósticos, sin el texto.
+    sent = recorder.history()["avisos"]
+    assert [(event["vehicle"], event["type"], event["targets"]) for event in sent] == [
+        ("Changote", "charge_started", 1),
+        ("Changuito", "warnings", 1),
+        ("Changuito", "maintenance", 2),
+    ]
+    assert manager.config_summary()["Changuito"] == {
+        "destinos": {"car": 1, "maintenance": 2, "itv": 0, "insurance": 0},
+        "avisos_del_coche": ["warnings"],
+    }
+    await manager.async_stop()
 
 
 VIN = "LS5A3ABE0RA000001"

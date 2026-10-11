@@ -21,11 +21,14 @@
   // Testigos de la línea de estado. "red" = grave; el resto, ámbar.
   const AMBER = "var(--warning-color, #f9a825)";
   const RED = "var(--error-color, #db4437)";
-  // El del airbag no está: el coche lo enciende unos segundos cada vez que
-  // despierta, así que daba avisos falsos. La entidad sigue existiendo.
+  // Algunos coches encienden un testigo sin motivo (el S05, el del airbag al
+  // despertar): la ficha del coche dice cuáles no se enseñan y la tarjeta se
+  // lo pregunta a la integración (SILENT_BY_DEFAULT vale hasta que responde).
+  const SILENT_BY_DEFAULT = ["warning_airbag"];
   const WARNINGS = [
     { keys: ["binary_sensor.warning_brake"], icon: "mdi:car-brake-alert", color: RED },
     { keys: ["binary_sensor.warning_brake_fluid"], icon: "mdi:car-brake-fluid-level", color: RED },
+    { keys: ["binary_sensor.warning_airbag"], icon: "mdi:airbag", color: RED },
     { keys: ["binary_sensor.warning_12v_battery"], icon: "mdi:car-battery", color: RED },
     { keys: ["binary_sensor.warning_coolant_temperature"], icon: "mdi:coolant-temperature", color: RED },
     { keys: ["binary_sensor.warning_power_system"], icon: "mdi:engine", color: RED },

@@ -39,10 +39,19 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
 
 from .api.errors import DeepalConnectionError, DeepalError, DeepalPinError, DeepalRateLimitError
-from .alert_rules import ALERT_ITV, ALERT_TYPES, enabled_types, format_date, maintenance_text
+from .alert_rules import (
+    CAR_ALERT_TYPES,
+    GROUP_CAR,
+    GROUP_ITV,
+    GROUPS,
+    TARGET_PANEL,
+    Route,
+    format_date,
+    maintenance_text,
+    panel_name,
+)
 from .const import (
     ARM_SECONDS_CHOICES,
-    DEFAULT_ALERT_PERSISTENT,
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
     DEFAULT_PIN_MODE,
@@ -50,10 +59,8 @@ from .const import (
     DEFAULT_SCAN_MINUTES,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,
-    OPT_ALERT_KNOWN,
-    OPT_ALERT_PERSISTENT,
-    OPT_ALERT_TARGETS,
-    OPT_ALERT_TYPES,
+    OPT_ALERT_CAR_TYPES,
+    OPT_ALERT_VEHICLES,
     OPT_ALERTS,
     OPT_APPEARANCE,
     OPT_ARM_NOTIFY,
@@ -86,6 +93,7 @@ from .vehicle_store import async_export_url, async_get_store
 _LOGGER = logging.getLogger(__name__)
 
 _VEHICLE = "vehicle"
+_ALL_VEHICLES = "all_vehicles"
 #: Campo "Enlace del manual" de Avanzado (se guarda en OPT_MANUAL_URLS).
 _MANUAL_URL = "manual_url"
 
@@ -354,77 +362,112 @@ class DecDeepalOptionsFlow(OptionsFlow):
     # ------------------------------------------------------------------
 
     async def async_step_alerts(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
-        """A qué móviles avisar y de qué.
+        """Avisos: qué coche."""
+        vehicles = self._runtime.vehicles
+        if user_input is None and len(vehicles) > 1:
+            return self._vehicle_form("alerts")
+        self._vehicle_id = (user_input or {}).get(_VEHICLE) or next(iter(vehicles))
+        return await self.async_step_alerts_setup()
 
-        Los destinos son los servicios ``notify.*`` de Home Assistant (cada
-        móvil con la app tiene el suyo, ``notify.mobile_app_<nombre>``). Se
+    async def async_step_alerts_setup(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """A quién avisa un coche de cada cosa.
+
+        Cuatro grupos, cada uno con sus destinos: los avisos del coche (y
+        cuáles de ellos), mantenimiento, ITV y seguro. Un grupo sin destinos
+        no avisa. Los destinos son los servicios ``notify.*`` de Home
+        Assistant (cada móvil con la app tiene el suyo,
+        ``notify.mobile_app_<nombre>``) y el panel de notificaciones. Se
         guarda el nombre del servicio, pero se enseña el del dispositivo
         ("iPhone de Manuel"), como en Ajustes → Aplicación móvil.
         """
-        stored = self.config_entry.options.get(OPT_ALERTS, {})
+        assert self._vehicle_id is not None
+        alerts = self._runtime.alerts
+        vehicles = self._runtime.vehicles
+        route = alerts.route(self._vehicle_id)
+        groups = [group for group in GROUPS if group != GROUP_ITV or alerts.itv_available]
+
         if user_input is not None:
+            chosen = Route(
+                targets={group: tuple(user_input.get(group, [])) for group in groups},
+                car_types=frozenset(user_input.get(OPT_ALERT_CAR_TYPES, [])),
+            ).to_dict()
+            if GROUP_ITV not in groups:  # país sin ITV: se conserva lo que hubiera
+                chosen[GROUP_ITV] = list(route.targets.get(GROUP_ITV, ()))
+            everyone = bool(user_input.get(_ALL_VEHICLES))
+            # Al guardar se escribe lo de todos los coches: así desaparece el
+            # formato antiguo (una lista para toda la cuenta) sin cambiar nada.
             return self._save(
                 {
                     OPT_ALERTS: {
-                        OPT_ALERT_TARGETS: list(user_input.get(OPT_ALERT_TARGETS, [])),
-                        OPT_ALERT_TYPES: list(user_input.get(OPT_ALERT_TYPES, [])),
-                        OPT_ALERT_KNOWN: list(ALERT_TYPES),
-                        OPT_ALERT_PERSISTENT: bool(user_input[OPT_ALERT_PERSISTENT]),
+                        OPT_ALERT_VEHICLES: {
+                            vehicle_id: (
+                                chosen
+                                if everyone or vehicle_id == self._vehicle_id
+                                else alerts.route(vehicle_id).to_dict()
+                            )
+                            for vehicle_id in vehicles
+                        }
                     }
                 }
             )
 
-        chosen = list(stored.get(OPT_ALERT_TARGETS, []))
+        used = {name for names in route.targets.values() for name in names}
         available = set(self.hass.services.async_services().get("notify", {})) - _NOT_A_TARGET
-        # Los móviles primero; los ya elegidos se mantienen aunque hoy no existan.
-        targets = sorted(
-            available | set(chosen), key=lambda name: (not name.startswith("mobile_app_"), name)
+        # Los móviles primero y el panel al final; los ya elegidos se
+        # mantienen aunque hoy no existan.
+        names = sorted(
+            (available | used) - {TARGET_PANEL},
+            key=lambda name: (not name.startswith("mobile_app_"), name),
         )
         device_names = self._mobile_device_names()
-        schema: dict[Any, Any] = {}
-        if targets:
-            schema[vol.Optional(OPT_ALERT_TARGETS, default=chosen)] = selector.SelectSelector(
-                selector.SelectSelectorConfig(
-                    options=[
-                        selector.SelectOptionDict(
-                            value=name, label=device_names.get(name, f"notify.{name}")
+        options = [
+            selector.SelectOptionDict(value=name, label=device_names.get(name, f"notify.{name}"))
+            for name in names
+        ]
+        options.append(
+            selector.SelectOptionDict(
+                value=TARGET_PANEL, label=panel_name(self.hass.config.language)
+            )
+        )
+
+        def targets(group: str) -> dict[Any, Any]:
+            return {
+                vol.Optional(group, default=list(route.targets.get(group, ()))): (
+                    selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=options, multiple=True, mode=selector.SelectSelectorMode.LIST
                         )
-                        for name in targets
-                    ],
+                    )
+                )
+            }
+
+        schema: dict[Any, Any] = {
+            **targets(GROUP_CAR),
+            vol.Optional(
+                OPT_ALERT_CAR_TYPES,
+                default=[kind for kind in CAR_ALERT_TYPES if kind in route.car_types],
+            ): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=list(CAR_ALERT_TYPES),
+                    translation_key="alert_type",
                     multiple=True,
                     mode=selector.SelectSelectorMode.LIST,
                 )
-            )
-        schema[
-            vol.Optional(
-                OPT_ALERT_TYPES,
-                default=[
-                    kind
-                    for kind in ALERT_TYPES
-                    if kind
-                    in enabled_types(stored.get(OPT_ALERT_TYPES), stored.get(OPT_ALERT_KNOWN))
-                    and (kind != ALERT_ITV or self._runtime.alerts.itv_available)
-                ],
-            )
-        ] = selector.SelectSelector(
-            selector.SelectSelectorConfig(
-                options=[
-                    kind
-                    for kind in ALERT_TYPES
-                    if kind != ALERT_ITV or self._runtime.alerts.itv_available
-                ],
-                translation_key="alert_type",
-                multiple=True,
-                mode=selector.SelectSelectorMode.LIST,
-            )
+            ),
+        }
+        for group in groups[1:]:
+            schema.update(targets(group))
+        if len(vehicles) > 1:
+            schema[vol.Required(_ALL_VEHICLES, default=False)] = selector.BooleanSelector()
+        return self.async_show_form(
+            step_id="alerts_setup",
+            data_schema=vol.Schema(schema),
+            description_placeholders={
+                "vehicle": vehicles[self._vehicle_id].info.display_name
+            },
         )
-        schema[
-            vol.Required(
-                OPT_ALERT_PERSISTENT,
-                default=bool(stored.get(OPT_ALERT_PERSISTENT, DEFAULT_ALERT_PERSISTENT)),
-            )
-        ] = selector.BooleanSelector()
-        return self.async_show_form(step_id="alerts", data_schema=vol.Schema(schema))
 
     def _mobile_device_names(self) -> dict[str, str]:
         """Nombre visible de cada móvil: ``{"mobile_app_iphone_de_x": "iPhone de X"}``.

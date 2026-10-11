@@ -13,15 +13,33 @@ Tipos de aviso (el usuario activa los que quiera en Configurar → Avisos):
 - **Mantenimiento.** Lo calcula ``maintenance.py``.
 - **ITV** y **seguro.** Los calcula ``documents.py``.
 
+A quién se avisa
+----------------
+Cada coche reparte sus avisos en cuatro **grupos**, cada uno con su lista de
+destinos: los del coche (carga, testigos, neumáticos, pila del mando),
+mantenimiento, ITV y seguro. Así, en una casa con dos coches, cada conductor
+recibe los avisos de su coche y uno de los dos, los papeles de ambos. Un
+grupo sin destinos no avisa. Ver :func:`route_for`.
+
 Ningún aviso es crítico: son notificaciones normales.
 """
 
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
 from datetime import date
 from typing import Any, Final
 
+from .const import (
+    OPT_ALERT_CAR_KNOWN,
+    OPT_ALERT_CAR_TYPES,
+    OPT_ALERT_KNOWN,
+    OPT_ALERT_PERSISTENT,
+    OPT_ALERT_TARGETS,
+    OPT_ALERT_TYPES,
+    OPT_ALERT_VEHICLES,
+)
 from .telemetry import signals as s
 from .textos_generados import ALERT_TEXTS, BASE_LANGUAGE, BORROWED_LANGUAGES
 
@@ -53,6 +71,101 @@ ALERT_TYPES: Final = (
 ORIGINAL_ALERT_TYPES: Final = ALERT_TYPES[:7]
 
 
+#: Grupos de avisos: cada uno tiene su lista de destinos en cada coche.
+GROUP_CAR: Final = "car"
+GROUP_MAINTENANCE: Final = "maintenance"
+GROUP_ITV: Final = "itv"
+GROUP_INSURANCE: Final = "insurance"
+GROUPS: Final = (GROUP_CAR, GROUP_MAINTENANCE, GROUP_ITV, GROUP_INSURANCE)
+#: Avisos del grupo "coche": los únicos que se activan uno a uno.
+CAR_ALERT_TYPES: Final = ALERT_TYPES[:6]
+#: Grupo de cada tipo de aviso.
+GROUP_OF: Final[dict[str, str]] = {
+    **dict.fromkeys(CAR_ALERT_TYPES, GROUP_CAR),
+    ALERT_MAINTENANCE: GROUP_MAINTENANCE,
+    ALERT_ITV: GROUP_ITV,
+    ALERT_INSURANCE: GROUP_INSURANCE,
+}
+#: Destino especial: el panel de notificaciones de Home Assistant.
+TARGET_PANEL: Final = "persistent_notification"
+
+
+@dataclass(frozen=True, slots=True)
+class Route:
+    """A quién avisa un coche de cada cosa."""
+
+    #: Destinos de cada grupo (servicios ``notify.*`` o :data:`TARGET_PANEL`).
+    targets: Mapping[str, tuple[str, ...]]
+    #: Avisos del coche activados (carga iniciada, testigos...).
+    car_types: frozenset[str]
+
+    def targets_for(self, alert: str) -> tuple[str, ...]:
+        """Destinos de un tipo de aviso (vacío = no se avisa)."""
+        group = GROUP_OF[alert]
+        if group == GROUP_CAR and alert not in self.car_types:
+            return ()
+        return self.targets.get(group, ())
+
+    def to_dict(self) -> dict[str, list[str]]:
+        """Como se guarda en las opciones."""
+        return {
+            **{group: list(self.targets.get(group, ())) for group in GROUPS},
+            OPT_ALERT_CAR_TYPES: [kind for kind in CAR_ALERT_TYPES if kind in self.car_types],
+            # Para activar solos los tipos que se añadan en versiones futuras.
+            OPT_ALERT_CAR_KNOWN: list(CAR_ALERT_TYPES),
+        }
+
+
+#: Coche sin ningún aviso.
+NO_ROUTE: Final = Route(targets={}, car_types=frozenset())
+
+
+def _unique(names: Iterable[Any]) -> tuple[str, ...]:
+    return tuple(dict.fromkeys(str(name) for name in names if name))
+
+
+def route_for(config: Mapping[str, Any] | None, vehicle_id: str) -> Route:
+    """A quién avisa un coche, según las opciones de la cuenta.
+
+    Args:
+        config: ``options["alerts"]``. Admite el formato por coche (2.4.0) y
+            el anterior, con una sola lista para toda la cuenta: en ese caso
+            todos los coches avisan a esa lista de los tipos que estuvieran
+            activados, que es lo que hacían antes de actualizar.
+        vehicle_id: coche.
+    """
+    if not config:
+        return NO_ROUTE
+    vehicles = config.get(OPT_ALERT_VEHICLES)
+    if isinstance(vehicles, Mapping):
+        stored = vehicles.get(vehicle_id)
+        if not isinstance(stored, Mapping):
+            return NO_ROUTE
+        known = stored.get(OPT_ALERT_CAR_KNOWN)
+        chosen = set(stored.get(OPT_ALERT_CAR_TYPES) or ())
+        # Tipos nuevos (que no existían al guardar) nacen activados.
+        new = set(CAR_ALERT_TYPES) - set(CAR_ALERT_TYPES if known is None else known)
+        return Route(
+            targets={group: _unique(stored.get(group) or ()) for group in GROUPS},
+            car_types=frozenset((chosen & set(CAR_ALERT_TYPES)) | new),
+        )
+
+    targets = list(config.get(OPT_ALERT_TARGETS) or ())
+    if config.get(OPT_ALERT_PERSISTENT):
+        targets.append(TARGET_PANEL)
+    types = enabled_types(config.get(OPT_ALERT_TYPES), config.get(OPT_ALERT_KNOWN))
+    return Route(
+        targets={
+            GROUP_CAR: _unique(targets),
+            **{
+                GROUP_OF[alert]: _unique(targets) if alert in types else ()
+                for alert in (ALERT_MAINTENANCE, ALERT_ITV, ALERT_INSURANCE)
+            },
+        },
+        car_types=frozenset(types & set(CAR_ALERT_TYPES)),
+    )
+
+
 def enabled_types(stored: Iterable[str] | None, known: Iterable[str] | None) -> set[str]:
     """Avisos activados: los elegidos más los tipos nuevos que aún no se han ofrecido.
 
@@ -67,11 +180,13 @@ def enabled_types(stored: Iterable[str] | None, known: Iterable[str] | None) -> 
 
 #: Señal de problema → tipo de aviso. La clave del sensor binario que la
 #: muestra coincide con el nombre de la señal (de ahí sale el nombre visible).
-#: El testigo del airbag (``s.WARNING_AIRBAG``) no está: el coche lo enciende
-#: unos segundos cada vez que despierta y el aviso saltaba sin motivo.
+#: Un coche puede tener testigos que enciende sin motivo (el S05, el del
+#: airbag al despertar): los dice su ficha (``testigos_sin_aviso`` en
+#: ``vehicles.yaml``) y no avisan (ver :func:`new_problems`).
 PROBLEM_SIGNALS: Final[dict[str, str]] = {
     s.WARNING_BRAKE: ALERT_WARNINGS,
     s.WARNING_BRAKE_FLUID: ALERT_WARNINGS,
+    s.WARNING_AIRBAG: ALERT_WARNINGS,
     s.WARNING_12V_BATTERY: ALERT_WARNINGS,
     s.WARNING_COOLANT_TEMPERATURE: ALERT_WARNINGS,
     s.WARNING_POWER_SYSTEM: ALERT_WARNINGS,
@@ -121,14 +236,21 @@ def charge_event(previous: Mapping[str, Any] | None, current: Mapping[str, Any])
     return None
 
 
-def new_problems(current: Mapping[str, Any], active: set[str]) -> list[str]:
+def new_problems(
+    current: Mapping[str, Any], active: set[str], silent: Iterable[str] = ()
+) -> list[str]:
     """Testigos que se acaban de encender; actualiza ``active``.
 
     ``active`` son los que ya estaban encendidos (y avisados). Un testigo sale
-    de ahí al apagarse; sin dato (``None``) se queda como estaba.
+    de ahí al apagarse; sin dato (``None``) se queda como estaba. Los de
+    ``silent`` (los que la ficha del coche dice que no avisan) no cuentan.
     """
     fresh: list[str] = []
+    silent = set(silent)
     for signal in PROBLEM_SIGNALS:
+        if signal in silent:
+            active.discard(signal)
+            continue
         value = current.get(signal)
         if value is True and signal not in active:
             active.add(signal)
@@ -163,6 +285,11 @@ def language_base(language: str) -> str:
 def _texts(language: str) -> dict[str, str]:
     """Textos del idioma; si no está traducido, los del idioma base."""
     return TEXTS.get(language_base(language), TEXTS[BASE_LANGUAGE])
+
+
+def panel_name(language: str) -> str:
+    """Nombre del destino "panel de notificaciones de Home Assistant"."""
+    return _texts(language)["panel_target"]
 
 
 def format_number(value: float, language: str) -> str:
