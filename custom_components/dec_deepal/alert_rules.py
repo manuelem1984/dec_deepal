@@ -292,6 +292,11 @@ def panel_name(language: str) -> str:
     return _texts(language)["panel_target"]
 
 
+def backup_text(key: str, language: str) -> str:
+    """Textos de la copia de los datos: ``download`` (enlace) y ``notification`` (aviso)."""
+    return _texts(language)[f"backup_{key}"]
+
+
 def format_number(value: float, language: str) -> str:
     """Entero con separador de miles del idioma: ``2.000``, ``2,000``, ``2 000``."""
     return f"{round(value):,}".replace(",", _texts(language)["thousands"])

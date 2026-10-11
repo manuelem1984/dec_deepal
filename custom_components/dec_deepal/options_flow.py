@@ -46,6 +46,7 @@ from .alert_rules import (
     GROUPS,
     TARGET_PANEL,
     Route,
+    backup_text,
     format_date,
     maintenance_text,
     panel_name,
@@ -59,6 +60,7 @@ from .const import (
     DEFAULT_SCAN_MINUTES,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,
+    NAME,
     OPT_ALERT_CAR_TYPES,
     OPT_ALERT_VEHICLES,
     OPT_ALERTS,
@@ -89,7 +91,7 @@ from .registries.vehicles import FEATURE_FUEL
 from .manual import is_valid_url
 from . import vehicle_data as vd
 from .runtime import DecDeepalRuntime
-from .vehicle_store import async_export_url, async_get_store
+from .vehicle_store import async_export_url, async_get_store, export_link
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -150,6 +152,7 @@ def _select(options: list[selector.SelectOptionDict]) -> selector.SelectSelector
 _FILE = "file"
 _CARS = "cars"
 _CONFIRM = "confirm"
+_TARGET = "target"
 #: Una copia ocupa unos pocos KB: más que esto no es una copia nuestra.
 _MAX_BACKUP_BYTES = 1_000_000
 
@@ -826,7 +829,8 @@ class DecDeepalOptionsFlow(OptionsFlow):
     async def async_step_data(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Menú: descargar una copia, cargarla o borrar datos."""
         return self.async_show_menu(
-            step_id="data", menu_options=["data_export", "data_import", "data_delete"]
+            step_id="data",
+            menu_options=["data_export", "data_send", "data_import", "data_delete"],
         )
 
     def _account_cars(self) -> dict[str, tuple[Any, str]]:
@@ -908,8 +912,62 @@ class DecDeepalOptionsFlow(OptionsFlow):
             data_schema=vol.Schema({}),
             description_placeholders={
                 "cars": ", ".join(cars.values()),
-                "url": async_export_url(self.hass),
+                # Enlace que se abre fuera de la app del móvil (allí sí se descarga).
+                "link": export_link(
+                    self.hass, backup_text("download", self.hass.config.language)
+                ),
             },
+        )
+
+    async def async_step_data_send(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manda a un móvil una notificación con el enlace de la copia.
+
+        Al tocarla se abre el navegador del teléfono y se descarga el
+        fichero. Sirve cuando se está configurando desde otro dispositivo, o
+        si el enlace de "Descargar una copia" no se abre bien en la app.
+        """
+        for _entry_id, alerts in self._managers():
+            alerts.async_flush()
+        if not self._stored_cars():
+            return self.async_abort(reason="no_data")
+        devices = {
+            service: name
+            for service, name in self._mobile_device_names().items()
+            if self.hass.services.has_service("notify", service)
+        }
+        if not devices:
+            return self.async_abort(reason="no_mobile")
+        if user_input is not None:
+            service = user_input[_TARGET]
+            url = async_export_url(self.hass, absolute=True)
+            await self.hass.services.async_call(
+                "notify",
+                service,
+                {
+                    "title": NAME,
+                    "message": backup_text("notification", self.hass.config.language),
+                    # "url" lo abre el iPhone; "clickAction", Android.
+                    "data": {"url": url, "clickAction": url},
+                },
+                blocking=False,
+            )
+            return self.async_abort(
+                reason="data_sent", description_placeholders={"device": devices[service]}
+            )
+        return self.async_show_form(
+            step_id="data_send",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(_TARGET, default=next(iter(devices))): _select(
+                        [
+                            selector.SelectOptionDict(value=service, label=name)
+                            for service, name in devices.items()
+                        ]
+                    )
+                }
+            ),
         )
 
     async def async_step_data_import(

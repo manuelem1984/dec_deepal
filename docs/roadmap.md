@@ -1,40 +1,23 @@
 # Hoja de ruta
 
-## Beta 2.4.0b3 (11-10-2026) — pendiente de probar
+## 2.4.0 (11-10-2026) — publicada
 
-- [ ] **Avisos por coche:** al actualizar siguen llegando como antes;
-      después, en Configurar → Avisos al móvil, repartir los de cada coche
-      (los del coche a cada conductor; mantenimiento, ITV y seguro a quien
-      toque) y comprobar que cada aviso llega solo a su destino.
-- [ ] **Humedad interior:** valores creíbles (61 %, no 6,1 %).
-- [ ] **Nombres:** el dispositivo se llama «Deepal S05 EV RWD Max».
-- [ ] **Diagnóstico:** tras usar el coche un rato, el bloque `historial`
-      trae cambios, órdenes y avisos.
-- [ ] Pendiente: con el `historial` de varios días, medir cuánto dura
-      encendido el testigo del airbag al despertar y cambiar "no avisa" por
-      "avisa solo si sigue encendido X minutos".
-- [ ] Pendiente: verificar con el diagnóstico de un coche real las fichas
-      del EV RWD Pro, EV 4WD Max y PHEV (hoy salen del catálogo oficial). Del
-      PHEV faltan además las entidades de combustible (depósito de 51 L:
-      nivel y autonomía de gasolina; hay que ver cómo las envía el coche) y
-      los raíles de techo en las vistas.
-- [ ] **Un Pro:** el dispositivo no tiene asientos, volante ni mando del
-      maletero; en la tarjeta, Confort solo trae el clima y Maletero avisa de
-      que se abre a mano.
+Datos por coche, copia de seguridad, avisos por coche y grupo, fichas de las
+cinco versiones del S05, diagnóstico ampliado y tarjeta por módulos.
 
-## Beta 2.4.0b2 (11-10-2026) — pendiente de probar
+Pendiente de comprobar:
 
-- [ ] La tarjeta hace lo mismo que antes (se partió en módulos): un repaso a
-      los seis botones y a las ventanas de Otros.
-
-## Beta 2.4.0b1 (11-10-2026) — pendiente de probar
-
-- [ ] Al actualizar, mantenimiento, ITV y seguro siguen como estaban.
-- [ ] Configurar → Datos de los coches: descargar una copia, borrar los
-      datos de un coche y recuperarlos cargando la copia.
-- [ ] Quitar la cuenta y volver a añadirla: los coches recuperan sus datos
-      y su apariencia. (PIN y avisos sí hay que volver a configurarlos: son
-      opciones de la cuenta.)
+- [ ] **Copia desde el móvil:** que "Descargar una copia" abra el navegador
+      del teléfono y que "Enviar la copia a un móvil" llegue y se descargue
+      (iPhone y Android).
+- [ ] **Avisos por coche:** repartirlos y ver que cada uno llega a su destino.
+- [ ] Con el `historial` de varios días, medir cuánto dura encendido el
+      testigo del airbag al despertar y cambiar "no avisa" por "avisa solo si
+      sigue encendido X minutos".
+- [ ] Verificar con el diagnóstico de un coche real las fichas del EV RWD
+      Pro, EV 4WD Max y PHEV (hoy salen del catálogo oficial). Del PHEV
+      faltan además las entidades de combustible (depósito de 51 L) y los
+      raíles de techo en las vistas.
 
 ## 2.3.0 (10-10-2026) — publicada
 

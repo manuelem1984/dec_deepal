@@ -3,6 +3,54 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.4.0] — 2026-10-11
+
+Versión estable. Reúne las betas `2.4.0b1` a `2.4.0b4`, probadas en una
+instalación real, más la copia desde el móvil.
+
+### Añadido
+
+- **Los datos son del coche, no de la cuenta.** El mantenimiento, la ITV, el
+  seguro y la apariencia se guardan por bastidor: si se quita la cuenta y se
+  vuelve a añadir, cada coche recupera lo suyo. Lo que ya había se pasa solo
+  al formato nuevo.
+- **Configurar → Datos de los coches:** descargar una copia de seguridad,
+  enviarla a un móvil, cargarla (en esta u otra instalación) y borrar los
+  datos de los coches que se elijan.
+- **Avisos por coche y por grupo.** Cada coche elige a quién avisa de cada
+  cosa: los avisos del coche (carga, testigos, neumáticos, pila del mando),
+  mantenimiento, ITV y seguro. Las notificaciones de Home Assistant (la
+  campana) son un destino más. Quien ya tenía avisos no nota nada al
+  actualizar.
+- **Fichas de coche.** Las cinco variantes del S05 en España, con el
+  equipamiento de los catálogos oficiales: EV RWD Pro, EV RWD Max, EV 4WD
+  Max, PHEV Pro y PHEV Limited Edition. Un coche sin ficha propia usa la del
+  Max. Verificada en un coche real solo está la del EV RWD Max.
+- **S05 PHEV:** manual y plan de mantenimiento propios (manual oficial).
+- **Diagnóstico ampliado:** bloque `historial` con los cambios de señales,
+  las órdenes y su respuesta, los avisos enviados y los errores; y, por
+  coche, la ficha que se le aplica y sus entidades.
+- **Pruebas automáticas de la tarjeta en un navegador**, que GitHub ejecuta
+  en cada subida.
+
+### Corregido
+
+- **Humedad interior mal escalada:** se mostraba 6,1 % en vez de 61 %.
+- **La copia no se descargaba desde la app del móvil:** el enlace se abre
+  ahora en el navegador del teléfono.
+
+### Cambiado
+
+- **Los Pro, como son de verdad:** sin asientos calefactados ni ventilados,
+  sin volante calefactado y sin portón eléctrico. Dejan de crearse esas
+  entidades (y se quitan si existían) y la tarjeta no enseña esos mandos.
+- **Quitar la cuenta ya no borra los datos de los coches.**
+- **Nombres:** «Deepal S05 EV RWD Max» en vez de «Deepal S05 Max (2024-25)»;
+  «Max AWD» pasa a ser «4WD Max»; el color se llama «Ganymede Grey».
+- **La tarjeta, por módulos:** su código está repartido en
+  `frontend_card/src/` y se une con `tools/construir_tarjeta.py`.
+- Qué testigos no avisan (hoy, el del airbag) lo dice la ficha del coche.
+
 ## [2.4.0b4] — 2026-10-11
 
 ### Añadido

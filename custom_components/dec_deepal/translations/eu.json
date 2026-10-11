@@ -253,13 +253,21 @@
         "description": "El mantenimiento, la ITV, el seguro y la apariencia (modelo, versión, color) se guardan por coche (por su bastidor), no por cuenta: si quitas la cuenta y la vuelves a añadir, cada coche recupera sus datos.",
         "menu_options": {
           "data_export": "Descargar una copia",
+          "data_send": "Enviar la copia a un móvil",
           "data_import": "Cargar una copia",
           "data_delete": "Borrar datos guardados"
         }
       },
       "data_export": {
         "title": "Descargar una copia",
-        "description": "Coches con datos: {cars}.\n\n[Descargar la copia]({url})\n\nEl enlace caduca en unos minutos. El fichero lleva el número de póliza y los teléfonos del seguro: guárdalo en un sitio seguro. Si la descarga no empieza desde la app del móvil, hazla desde un navegador."
+        "description": "Coches con datos: {cars}.\n\n{link}\n\nEl enlace caduca en unos minutos y se abre en el navegador. El fichero lleva el número de póliza y los teléfonos del seguro: guárdalo en un sitio seguro. Si desde la app del móvil no se descarga, usa «Enviar la copia a un móvil»."
+      },
+      "data_send": {
+        "title": "Enviar la copia a un móvil",
+        "description": "Se manda una notificación al móvil elegido; al tocarla se abre el navegador y se descarga la copia. El enlace caduca en 10 minutos y funciona mientras el móvil pueda entrar en Home Assistant por la misma dirección que estás usando ahora.",
+        "data": {
+          "target": "Móvil"
+        }
       },
       "data_import": {
         "title": "Cargar una copia",
@@ -293,7 +301,9 @@
       "not_loaded": "La integración no está cargada. Revisa el registro y vuelve a intentarlo.",
       "no_data": "No hay datos guardados de ningún coche.",
       "data_imported": "Copia cargada: {cars}.",
-      "data_deleted": "Datos borrados: {cars}."
+      "data_deleted": "Datos borrados: {cars}.",
+      "data_sent": "Notificación enviada a {device}. Tócala en el móvil para descargar la copia.",
+      "no_mobile": "No hay ningún móvil con la app de Home Assistant."
     }
   },
   "issues": {

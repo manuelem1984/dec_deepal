@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import html
+import re
 from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,7 +14,7 @@ import voluptuous_serialize
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import MockConfigEntry, async_mock_service
 
 from custom_components.dec_deepal import vehicle_data as vd
 from custom_components.dec_deepal.alerts import AlertManager
@@ -72,9 +74,10 @@ async def test_backup_and_delete(
 
     result = await new_flow().async_step_data()
     assert result["type"] == "menu"
-    assert result["menu_options"] == ["data_export", "data_import", "data_delete"]
-    # Sin nada guardado no hay copia que descargar ni datos que borrar.
+    assert result["menu_options"] == ["data_export", "data_send", "data_import", "data_delete"]
+    # Sin nada guardado no hay copia que descargar, que enviar ni datos que borrar.
     assert (await new_flow().async_step_data_export())["reason"] == "no_data"
+    assert (await new_flow().async_step_data_send())["reason"] == "no_data"
     assert (await new_flow().async_step_data_delete())["reason"] == "no_data"
 
     await manager.async_set_record(
@@ -89,8 +92,12 @@ async def test_backup_and_delete(
     assert result["type"] == "form" and result["step_id"] == "data_export", result
     voluptuous_serialize.convert(result["data_schema"], custom_serializer=cv.custom_serializer)
     assert result["description_placeholders"]["cars"] == "Changote (…000001)"
-    url = result["description_placeholders"]["url"]
-    # El enlace va firmado: se descarga sin iniciar sesión (y caduca).
+    # El enlace se abre fuera de la app del móvil (target="_blank"): dentro no se descarga.
+    link = result["description_placeholders"]["link"]
+    assert link.startswith('<a href="') and 'target="_blank"' in link
+    assert link.endswith(">Download the backup</a>")
+    url = html.unescape(re.search(r'href="([^"]+)"', link).group(1))
+    # Va firmado: se descarga sin iniciar sesión (y caduca).
     assert url.startswith(f"{EXPORT_API}?authSig=")
     anonymous = await hass_client_no_auth()
     response = await anonymous.get(url)
@@ -102,6 +109,30 @@ async def test_backup_and_delete(
     # Sin la firma (o con una firma tocada) no se descarga nada.
     assert (await anonymous.get(EXPORT_API)).status == 401
     assert (await anonymous.get(url[:-4] + "xxxx")).status == 401
+
+    # --- Enviar la copia a un móvil ----------------------------------------------
+    assert (await new_flow().async_step_data_send())["reason"] == "no_mobile"
+    sent = async_mock_service(hass, "notify", "mobile_app_iphone_de_manuel")
+    MockConfigEntry(
+        domain="mobile_app", title="iPhone de Manuel", data={"device_name": "iPhone de Manuel"}
+    ).add_to_hass(hass)
+    hass.config.internal_url = "http://192.168.1.10:8123"
+    flow = new_flow()
+    result = await flow.async_step_data_send()
+    assert result["type"] == "form" and result["step_id"] == "data_send", result
+    voluptuous_serialize.convert(result["data_schema"], custom_serializer=cv.custom_serializer)
+    result = await flow.async_step_data_send({"target": "mobile_app_iphone_de_manuel"})
+    await hass.async_block_till_done()
+    assert result["type"] == "abort" and result["reason"] == "data_sent"
+    assert result["description_placeholders"] == {"device": "iPhone de Manuel"}
+    notification = sent[0].data
+    assert notification["title"] == "DEC Deepal" and "10 minutes" in notification["message"]
+    # El enlace lleva la dirección de Home Assistant: el móvil lo abre en su navegador.
+    target = notification["data"]["url"]
+    assert target == notification["data"]["clickAction"]
+    assert target.startswith(f"http://192.168.1.10:8123{EXPORT_API}?authSig=")
+    response = await anonymous.get(target.removeprefix("http://192.168.1.10:8123"))
+    assert response.status == 200 and (await response.json())["coches"][VIN]
 
     with patch.object(hass.config_entries, "async_schedule_reload") as reload:
         # --- Borrar: hay que elegir y confirmar -------------------------------------

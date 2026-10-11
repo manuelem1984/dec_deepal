@@ -12,6 +12,7 @@ almacén antiguo (uno por cuenta, hasta la 2.3.0) y la descarga de la copia.
 
 from __future__ import annotations
 
+import html
 import json
 import logging
 from collections.abc import Iterable, Mapping
@@ -22,6 +23,7 @@ from aiohttp import web
 from homeassistant.components.http import KEY_HASS, HomeAssistantView
 from homeassistant.components.http.auth import async_sign_path
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.network import NoURLAvailableError, get_url
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
@@ -180,16 +182,42 @@ class ExportView(HomeAssistantView):
 
 
 @callback
-def async_export_url(hass: HomeAssistant) -> str:
+def async_export_url(hass: HomeAssistant, *, absolute: bool = False) -> str:
     """Enlace de descarga de la copia, válido unos minutos y sin iniciar sesión.
 
     Va firmado (como las descargas de Home Assistant): quien no tenga el
     enlace no puede descargar nada, y el enlace caduca.
+
+    Args:
+        absolute: con la dirección de Home Assistant delante (para mandarlo
+            en una notificación). Se usa la dirección con la que el usuario
+            está entrando ahora; si no se sabe, la configurada en Ajustes →
+            Sistema → Red; y si tampoco hay, el enlace sale sin dirección.
     """
     try:
-        return async_sign_path(hass, EXPORT_API, timedelta(minutes=EXPORT_LINK_MINUTES))
+        path = async_sign_path(hass, EXPORT_API, timedelta(minutes=EXPORT_LINK_MINUTES))
     except (KeyError, RuntimeError):  # sin servidor web (pruebas): enlace sin firmar
-        return EXPORT_API
+        path = EXPORT_API
+    if not absolute:
+        return path
+    for current in (True, False):
+        try:
+            return get_url(hass, require_current_request=current).rstrip("/") + path
+        except NoURLAvailableError:
+            continue
+    return path
+
+
+def export_link(hass: HomeAssistant, text: str) -> str:
+    """El enlace de descarga, como HTML que se abre **fuera** de la app.
+
+    En la app del móvil, un enlace normal se abre dentro de la propia app,
+    que no sabe descargar ficheros. Con ``target="_blank"`` la app se lo pasa
+    al navegador del teléfono, que sí. (Es lo mismo que hace la tarjeta con
+    el manual y con los botones de llamar.)
+    """
+    url = html.escape(async_export_url(hass), quote=True)
+    return f'<a href="{url}" target="_blank" rel="noopener noreferrer">{html.escape(text)}</a>'
 
 
 @callback

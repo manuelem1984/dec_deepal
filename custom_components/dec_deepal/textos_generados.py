@@ -43,7 +43,9 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "thousands": ".",
         "ordinal": "{number}ª",
         "date_format": "%d/%m/%Y",
-        "panel_target": "Notificaciones de Home Assistant"
+        "panel_target": "Notificaciones de Home Assistant",
+        "backup_download": "Descargar la copia",
+        "backup_notification": "Copia de los datos de tus coches. Toca para descargarla (el enlace caduca en 10 minutos)."
     },
     "en": {
         "charge_started": "Charging started{battery}.",
@@ -70,7 +72,9 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "thousands": ",",
         "ordinal": "{number}",
         "date_format": "%d/%m/%Y",
-        "panel_target": "Home Assistant notifications"
+        "panel_target": "Home Assistant notifications",
+        "backup_download": "Download the backup",
+        "backup_notification": "Backup of your vehicles' data. Tap to download it (the link expires in 10 minutes)."
     },
     "pt": {
         "charge_started": "Carregamento iniciado{battery}.",
@@ -97,7 +101,9 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "thousands": ".",
         "ordinal": "{number}.ª",
         "date_format": "%d/%m/%Y",
-        "panel_target": "Notificações do Home Assistant"
+        "panel_target": "Notificações do Home Assistant",
+        "backup_download": "Descarregar a cópia",
+        "backup_notification": "Cópia dos dados dos seus veículos. Toque para a descarregar (a ligação expira em 10 minutos)."
     },
     "it": {
         "charge_started": "Ricarica avviata{battery}.",
@@ -124,7 +130,9 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "thousands": ".",
         "ordinal": "{number}º",
         "date_format": "%d/%m/%Y",
-        "panel_target": "Notifiche di Home Assistant"
+        "panel_target": "Notifiche di Home Assistant",
+        "backup_download": "Scarica la copia",
+        "backup_notification": "Copia dei dati dei tuoi veicoli. Tocca per scaricarla (il link scade tra 10 minuti)."
     },
     "pl": {
         "charge_started": "Rozpoczęto ładowanie{battery}.",
@@ -151,7 +159,9 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "thousands": " ",
         "ordinal": "{number}.",
         "date_format": "%d.%m.%Y",
-        "panel_target": "Powiadomienia Home Assistant"
+        "panel_target": "Powiadomienia Home Assistant",
+        "backup_download": "Pobierz kopię",
+        "backup_notification": "Kopia danych Twoich pojazdów. Dotknij, aby ją pobrać (link wygasa po 10 minutach)."
     }
 }
 #: Nombres del catálogo: ``{idioma: {clave: texto}}``.

@@ -253,13 +253,21 @@
         "description": "Serwis, ITV, ubezpieczenie i wygląd (model, wersja, kolor) są zapisywane dla pojazdu (według numeru VIN), a nie dla konta: po usunięciu konta i ponownym dodaniu każdy pojazd odzyska swoje dane.",
         "menu_options": {
           "data_export": "Pobierz kopię",
+          "data_send": "Wyślij kopię na telefon",
           "data_import": "Wczytaj kopię",
           "data_delete": "Usuń zapisane dane"
         }
       },
       "data_export": {
         "title": "Pobierz kopię",
-        "description": "Pojazdy z danymi: {cars}.\n\n[Pobierz kopię]({url})\n\nLink wygasa po kilku minutach. Plik zawiera numer polisy i telefony ubezpieczyciela: przechowuj go w bezpiecznym miejscu. Jeśli pobieranie nie rozpocznie się w aplikacji mobilnej, użyj przeglądarki."
+        "description": "Pojazdy z danymi: {cars}.\n\n{link}\n\nLink wygasa po kilku minutach i otwiera się w przeglądarce. Plik zawiera numer polisy i telefony ubezpieczyciela: przechowuj go w bezpiecznym miejscu. Jeśli w aplikacji mobilnej plik się nie pobiera, użyj opcji „Wyślij kopię na telefon”."
+      },
+      "data_send": {
+        "title": "Wyślij kopię na telefon",
+        "description": "Na wybrany telefon zostanie wysłane powiadomienie; po jego dotknięciu otworzy się przeglądarka i kopia zostanie pobrana. Link wygasa po 10 minutach i działa, o ile telefon może połączyć się z Home Assistant pod tym samym adresem, którego teraz używasz.",
+        "data": {
+          "target": "Telefon"
+        }
       },
       "data_import": {
         "title": "Wczytaj kopię",
@@ -293,7 +301,9 @@
       "not_loaded": "Integracja nie jest załadowana. Sprawdź dziennik i spróbuj ponownie.",
       "no_data": "Brak zapisanych danych jakiegokolwiek pojazdu.",
       "data_imported": "Wczytano kopię: {cars}.",
-      "data_deleted": "Usunięto dane: {cars}."
+      "data_deleted": "Usunięto dane: {cars}.",
+      "data_sent": "Powiadomienie wysłane na {device}. Dotknij go na telefonie, aby pobrać kopię.",
+      "no_mobile": "Nie ma żadnego telefonu z aplikacją Home Assistant."
     }
   },
   "issues": {

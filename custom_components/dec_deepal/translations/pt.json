@@ -253,13 +253,21 @@
         "description": "A manutenção, a ITV, o seguro e a aparência (modelo, versão, cor) são guardados por veículo (pelo número de chassis), não por conta: se remover a conta e a voltar a adicionar, cada veículo recupera os seus dados.",
         "menu_options": {
           "data_export": "Descarregar uma cópia",
+          "data_send": "Enviar a cópia para um telemóvel",
           "data_import": "Carregar uma cópia",
           "data_delete": "Eliminar dados guardados"
         }
       },
       "data_export": {
         "title": "Descarregar uma cópia",
-        "description": "Veículos com dados: {cars}.\n\n[Descarregar a cópia]({url})\n\nA ligação expira em poucos minutos. O ficheiro contém o número da apólice e os telefones do seguro: guarde-o num local seguro. Se a transferência não começar na aplicação móvel, use um navegador."
+        "description": "Veículos com dados: {cars}.\n\n{link}\n\nA ligação expira em poucos minutos e abre no navegador. O ficheiro contém o número da apólice e os telefones do seguro: guarde-o num local seguro. Se não descarregar na aplicação móvel, use «Enviar a cópia para um telemóvel»."
+      },
+      "data_send": {
+        "title": "Enviar a cópia para um telemóvel",
+        "description": "É enviada uma notificação para o telemóvel escolhido; ao tocar nela abre-se o navegador e a cópia é descarregada. A ligação expira em 10 minutos e funciona enquanto o telemóvel conseguir aceder ao Home Assistant pelo mesmo endereço que está a usar agora.",
+        "data": {
+          "target": "Telemóvel"
+        }
       },
       "data_import": {
         "title": "Carregar uma cópia",
@@ -293,7 +301,9 @@
       "not_loaded": "A integração não está carregada. Consulte o registo e tente novamente.",
       "no_data": "Não há dados guardados de nenhum veículo.",
       "data_imported": "Cópia carregada: {cars}.",
-      "data_deleted": "Dados eliminados: {cars}."
+      "data_deleted": "Dados eliminados: {cars}.",
+      "data_sent": "Notificação enviada para {device}. Toque nela no telemóvel para descarregar a cópia.",
+      "no_mobile": "Não há nenhum telemóvel com a aplicação do Home Assistant."
     }
   },
   "issues": {

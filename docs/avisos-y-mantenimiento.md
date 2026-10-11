@@ -179,7 +179,10 @@ se guardan con el coche.
   recupera su historial, aunque el servidor le dé otro identificador.
 - **Copia de seguridad propia:** Configurar → Datos de los coches →
   *Descargar una copia* genera un fichero con las fichas de todos los coches
-  (el enlace caduca a los 10 minutos). *Cargar una copia* lo restaura en esta
+  (el enlace caduca a los 10 minutos y se abre en el navegador, también
+  desde la app del móvil). *Enviar la copia a un móvil* manda una
+  notificación al móvil elegido: al tocarla se abre el navegador y se
+  descarga. *Cargar una copia* lo restaura en esta
   u otra instalación: deja los coches que trae como estaban en el fichero
   (fichas y apariencia) y no toca los demás. El fichero lleva la póliza y los teléfonos del seguro.
 - **Borrar:** Configurar → Datos de los coches → *Borrar datos guardados*,

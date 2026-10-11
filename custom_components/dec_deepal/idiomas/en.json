@@ -254,13 +254,21 @@
           "description": "Servicing, ITV, insurance and appearance (model, version, colour) are stored per vehicle (by its VIN), not per account: if you remove the account and add it again, each vehicle gets its data back.",
           "menu_options": {
             "data_export": "Download a backup",
+            "data_send": "Send the backup to a phone",
             "data_import": "Load a backup",
             "data_delete": "Delete stored data"
           }
         },
         "data_export": {
           "title": "Download a backup",
-          "description": "Vehicles with data: {cars}.\n\n[Download the backup]({url})\n\nThe link expires in a few minutes. The file contains the policy number and the insurance phone numbers: keep it somewhere safe. If the download does not start from the mobile app, use a browser."
+          "description": "Vehicles with data: {cars}.\n\n{link}\n\nThe link expires in a few minutes and opens in the browser. The file contains the policy number and the insurance phone numbers: keep it somewhere safe. If it does not download from the mobile app, use \"Send the backup to a phone\"."
+        },
+        "data_send": {
+          "title": "Send the backup to a phone",
+          "description": "A notification is sent to the chosen phone; tapping it opens the browser and downloads the backup. The link expires in 10 minutes and works as long as the phone can reach Home Assistant at the same address you are using now.",
+          "data": {
+            "target": "Phone"
+          }
         },
         "data_import": {
           "title": "Load a backup",
@@ -294,7 +302,9 @@
         "not_loaded": "The integration is not loaded. Check the log and try again.",
         "no_data": "There is no stored data for any vehicle.",
         "data_imported": "Backup loaded: {cars}.",
-        "data_deleted": "Data deleted: {cars}."
+        "data_deleted": "Data deleted: {cars}.",
+        "data_sent": "Notification sent to {device}. Tap it on the phone to download the backup.",
+        "no_mobile": "There is no phone with the Home Assistant app."
       }
     },
     "issues": {
@@ -858,7 +868,9 @@
     "thousands": ",",
     "ordinal": "{number}",
     "date_format": "%d/%m/%Y",
-    "panel_target": "Home Assistant notifications"
+    "panel_target": "Home Assistant notifications",
+    "backup_download": "Download the backup",
+    "backup_notification": "Backup of your vehicles' data. Tap to download it (the link expires in 10 minutes)."
   },
   "tarjeta": {
     "card_description": "Your Deepal at a glance: car view, battery, comfort and quick actions.",
