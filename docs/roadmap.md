@@ -1,5 +1,14 @@
 # Hoja de ruta
 
+## Beta 2.4.0b1 (11-10-2026) — pendiente de probar
+
+- [ ] Al actualizar, mantenimiento, ITV y seguro siguen como estaban.
+- [ ] Configurar → Datos de los coches: descargar una copia, borrar los
+      datos de un coche y recuperarlos cargando la copia.
+- [ ] Quitar la cuenta y volver a añadirla: los coches recuperan sus datos
+      y su apariencia. (PIN y avisos sí hay que volver a configurarlos: son
+      opciones de la cuenta.)
+
 ## 2.3.0 (10-10-2026) — publicada
 
 Probado en una instalación real: mantenimiento, ITV, seguro, botón «Otros»,

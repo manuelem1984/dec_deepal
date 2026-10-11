@@ -24,7 +24,6 @@ from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.storage import Store
 from homeassistant.helpers.typing import ConfigType
 
 from .api.account import DeepalAccount
@@ -35,7 +34,8 @@ from .api.models import Capabilities, VehicleInfo
 from .api.session import DeepalSession
 from .appearance import issue_id
 from .api.transport import DeepalTransport
-from .alerts import AlertManager, storage_key
+from . import vehicle_data as vd
+from .alerts import AlertManager
 from .command_runner import CommandRunner
 from .const import (
     CONF_COUNTRY,
@@ -76,6 +76,7 @@ from .runtime import (
     async_get_registries,
 )
 from .services import async_register_services
+from .vehicle_store import async_get_store, async_register_export
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -97,6 +98,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         return False
     await async_register_frontend(hass, registries.icons)
     async_register_manual(hass)
+    async_register_export(hass)
     async_register_services(hass)
     return True
 
@@ -146,6 +148,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
 
     # --- Un contexto por coche -----------------------------------------------
     await _refresh_vehicle_list(hass, entry, client)
+    await _restore_appearance(hass, entry, registries.vehicles.models)
+    options = entry.options
     appearance_by_vehicle: dict = options.get(OPT_APPEARANCE, {})
     scan_minutes = int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES))
     for raw_vehicle in entry.data[CONF_VEHICLES]:
@@ -255,15 +259,56 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     """Al borrar la cuenta, borra sus avisos de Reparaciones.
 
     Si era la última cuenta, quita también el cargador temprano de iconos
-    (recurso de los paneles y copia en ``www``): no debe quedar nada en
-    Home Assistant tras desinstalar.
+    (recurso de los paneles y copia en ``www``).
+
+    Los datos de los coches (mantenimiento, ITV, seguro) **se conservan**:
+    son del coche, y vuelven solos si se añade la cuenta otra vez. Se borran
+    desde Configurar → Datos de los coches.
     """
     for raw_vehicle in entry.data.get(CONF_VEHICLES, []):
         ir.async_delete_issue(hass, DOMAIN, issue_id(str(raw_vehicle.get("vehicle_id"))))
-    # Fichas de mantenimiento y avisos ya enviados de esta cuenta.
-    await Store(hass, 1, storage_key(entry.entry_id)).async_remove()
+    # Si la cuenta aún tenía el almacén antiguo (de la 2.3.0), se pasa al de
+    # coches antes de perder la relación entre cada coche y su bastidor.
+    store = async_get_store(hass)
+    await store.async_load()
+    await store.async_adopt_legacy(
+        entry.entry_id,
+        {
+            str(raw.get("vehicle_id")): vd.car_key(raw.get("vin"), str(raw.get("vehicle_id")))
+            for raw in entry.data.get(CONF_VEHICLES, [])
+        },
+    )
     if not hass.config_entries.async_entries(DOMAIN):
         await async_remove_early_loader(hass)
+
+
+async def _restore_appearance(
+    hass: HomeAssistant, entry: DecDeepalConfigEntry, models: dict
+) -> None:
+    """Devuelve a cada coche sin modelo elegido la apariencia que tenía guardada.
+
+    Pasa al volver a añadir una cuenta que se quitó: la apariencia se guardó
+    con el coche (por bastidor). Se hace antes de vigilar los cambios de
+    opciones, así que no provoca una recarga.
+    """
+    store = async_get_store(hass)
+    await store.async_load()
+    appearance = dict(entry.options.get(OPT_APPEARANCE, {}))
+    restored = False
+    for raw in entry.data.get(CONF_VEHICLES, []):
+        vehicle_id = str(raw.get("vehicle_id"))
+        if appearance.get(vehicle_id, {}).get(OPT_MODEL):
+            continue
+        saved = vd.clean_appearance(
+            store.car(vd.car_key(raw.get("vin"), vehicle_id)).get(vd.APPEARANCE), models
+        )
+        if saved is not None:
+            appearance[vehicle_id] = saved
+            restored = True
+    if restored:
+        hass.config_entries.async_update_entry(
+            entry, options={**entry.options, OPT_APPEARANCE: appearance}
+        )
 
 
 async def _refresh_vehicle_list(

@@ -3,6 +3,26 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.4.0b1] — 2026-10-11
+
+### Cambiado
+
+- **Los datos son del coche, no de la cuenta.** El mantenimiento, la ITV, el
+  seguro y la apariencia (modelo, versión, color y llanta) se guardan por
+  bastidor. Si se quita la cuenta y se vuelve a añadir, cada coche recupera
+  su historial y su apariencia. Los datos que ya había se pasan solos al
+  formato nuevo al actualizar.
+- **Quitar la cuenta ya no borra esos datos.** Se borran desde Configurar →
+  Datos de los coches.
+
+### Añadido
+
+- **Configurar → Datos de los coches:** descargar una copia de seguridad,
+  cargarla (en esta u otra instalación) y borrar los datos guardados de los
+  coches que se elijan. La copia incluye la apariencia de cada coche.
+- El almacén queda preparado para cambiar de formato en versiones futuras sin
+  perder datos.
+
 ## [2.3.0] — 2026-10-10
 
 Versión estable. Reúne las betas `2.3.0b1` a `2.3.0b11`, validadas en una

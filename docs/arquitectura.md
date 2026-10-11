@@ -37,7 +37,9 @@ custom_components/dec_deepal/
 ├── frontend.py            Publica los iconos "dec:" y la tarjeta en el navegador
 ├── frontend_card/         Tarjeta para los paneles (custom:dec-deepal-card)
 ├── services.py/.yaml      Servicios: captura de depuración y registrar mantenimiento
-├── alerts.py              Avisos al móvil y fichas de mantenimiento (almacén y envío)
+├── alerts.py              Avisos al móvil y fichas de mantenimiento, ITV y seguro
+├── vehicle_data.py        Datos por coche: formato, migración y copias (sin HA)
+├── vehicle_store.py       Almacén por bastidor (.storage/dec_deepal.vehicles)
 ├── alert_rules.py         Qué cambios del coche avisan y sus textos (sin HA)
 ├── maintenance.py         Cuánto falta para la revisión y escalones de aviso (sin HA)
 ├── documents.py           ITV y seguro: fechas, niveles y avisos (sin HA)

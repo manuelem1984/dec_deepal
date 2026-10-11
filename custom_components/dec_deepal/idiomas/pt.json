@@ -87,6 +87,7 @@
             "maintenance": "Manutenção",
             "itv": "ITV (inspeção periódica)",
             "insurance": "Seguro",
+            "data": "Dados dos veículos (cópia e eliminação)",
             "advanced": "Avançado (intervalo, depuração, manual)"
           }
         },
@@ -233,6 +234,34 @@
             "wake": "Ao carregar em \"Atualizar dados do veículo\" e antes de portas/janelas/mala, se os dados tiverem mais de 2 minutos, o carro é acordado e espera-se pelo seu relatório. No máximo uma vez a cada 5 minutos, e nunca nas leituras automáticas, para poupar a bateria de 12 V.",
             "debug": "Guarda pedidos e respostas completos (sem dados pessoais) nos diagnósticos e ativa as mensagens DEBUG no registo."
           }
+        },
+        "data": {
+          "title": "Dados dos veículos",
+          "description": "A manutenção, a ITV, o seguro e a aparência (modelo, versão, cor) são guardados por veículo (pelo número de chassis), não por conta: se remover a conta e a voltar a adicionar, cada veículo recupera os seus dados.",
+          "menu_options": {
+            "data_export": "Descarregar uma cópia",
+            "data_import": "Carregar uma cópia",
+            "data_delete": "Eliminar dados guardados"
+          }
+        },
+        "data_export": {
+          "title": "Descarregar uma cópia",
+          "description": "Veículos com dados: {cars}.\n\n[Descarregar a cópia]({url})\n\nA ligação expira em poucos minutos. O ficheiro contém o número da apólice e os telefones do seguro: guarde-o num local seguro. Se a transferência não começar na aplicação móvel, use um navegador."
+        },
+        "data_import": {
+          "title": "Carregar uma cópia",
+          "description": "Escolha um ficheiro descarregado em «Descarregar uma cópia». Substitui a manutenção, a ITV, o seguro e a aparência dos veículos que contém; os restantes veículos não são alterados.",
+          "data": {
+            "file": "Ficheiro da cópia"
+          }
+        },
+        "data_delete": {
+          "title": "Eliminar dados guardados",
+          "description": "Elimina a manutenção, a ITV e o seguro dos veículos escolhidos, estejam ou não numa conta. Não é possível anular: descarregue antes uma cópia se a quiser conservar. A aparência de um veículo que está numa conta não é eliminada: altera-se em Aparência.",
+          "data": {
+            "cars": "Veículos",
+            "confirm": "Sim, eliminar estes dados"
+          }
         }
       },
       "error": {
@@ -240,10 +269,18 @@
         "pin_invalid": "PIN incorreto ou criado com outra conta.",
         "pin_rate_limited": "Demasiadas tentativas de PIN. Aguarde ou reponha-o na app oficial.",
         "invalid_url": "Escreva um endereço web completo (que comece por https://).",
-        "cannot_connect": "Não foi possível ligar ao servidor da Deepal."
+        "cannot_connect": "Não foi possível ligar ao servidor da Deepal.",
+        "invalid_file": "O ficheiro não é uma cópia do DEC Deepal ou está danificado.",
+        "newer_file": "A cópia é de uma versão mais recente da integração. Atualize o DEC Deepal e tente novamente.",
+        "empty_file": "A cópia não contém dados de nenhum veículo.",
+        "no_selection": "Escolha pelo menos um veículo.",
+        "confirm_required": "Marque a caixa para confirmar a eliminação."
       },
       "abort": {
-        "not_loaded": "A integração não está carregada. Consulte o registo e tente novamente."
+        "not_loaded": "A integração não está carregada. Consulte o registo e tente novamente.",
+        "no_data": "Não há dados guardados de nenhum veículo.",
+        "data_imported": "Cópia carregada: {cars}.",
+        "data_deleted": "Dados eliminados: {cars}."
       }
     },
     "issues": {

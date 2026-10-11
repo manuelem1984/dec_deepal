@@ -25,12 +25,15 @@ registrar una revisión o corregir la ficha de mantenimiento).
 
 from __future__ import annotations
 
+import json
 import logging
 from datetime import date
 from typing import Any
 
 import voluptuous as vol
+from homeassistant.components.file_upload import process_uploaded_file
 from homeassistant.config_entries import ConfigEntryState, ConfigFlowResult, OptionsFlow
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers import selector
 from homeassistant.util import dt as dt_util
 from homeassistant.util import slugify
@@ -43,6 +46,7 @@ from .const import (
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
     DEFAULT_PIN_MODE,
+    DOMAIN,
     DEFAULT_SCAN_MINUTES,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,
@@ -75,7 +79,9 @@ from .documents import (
 )
 from .maintenance import MaintenanceRecord
 from .manual import is_valid_url
+from . import vehicle_data as vd
 from .runtime import DecDeepalRuntime
+from .vehicle_store import async_export_url, async_get_store
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -130,6 +136,27 @@ def _select(options: list[selector.SelectOptionDict]) -> selector.SelectSelector
     )
 
 
+#: Campos del apartado "Datos de los coches".
+_FILE = "file"
+_CARS = "cars"
+_CONFIRM = "confirm"
+#: Una copia ocupa unos pocos KB: más que esto no es una copia nuestra.
+_MAX_BACKUP_BYTES = 1_000_000
+
+
+def _read_upload(hass: HomeAssistant, file_id: str) -> Any:
+    """Lee el fichero subido (se borra al terminar). Se ejecuta en un hilo aparte."""
+    try:
+        with process_uploaded_file(hass, file_id) as path:
+            if path.stat().st_size > _MAX_BACKUP_BYTES:
+                raise vd.BackupError(vd.ERROR_INVALID)
+            return json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError) as err:
+        if isinstance(err, vd.BackupError):
+            raise
+        raise vd.BackupError(vd.ERROR_INVALID) from err
+
+
 class DecDeepalOptionsFlow(OptionsFlow):
     """Opciones de una cuenta."""
 
@@ -154,7 +181,7 @@ class DecDeepalOptionsFlow(OptionsFlow):
         """
         if self.config_entry.state is not ConfigEntryState.LOADED:
             return self.async_abort(reason="not_loaded")
-        menu = ["appearance", "pin", "alerts", "maintenance", "itv", "insurance", "advanced"]
+        menu = ["appearance", "pin", "alerts", "maintenance", "itv", "insurance", "data", "advanced"]
         if not self._runtime.alerts.itv_available:
             menu.remove("itv")  # la ITV solo existe en los países que la tienen dada de alta
         return self.async_show_menu(step_id="init", menu_options=menu)
@@ -745,6 +772,174 @@ class DecDeepalOptionsFlow(OptionsFlow):
             description_placeholders={
                 "vehicle": self._runtime.vehicles[self._vehicle_id].info.display_name
             },
+        )
+
+    # ------------------------------------------------------------------
+    # Datos de los coches: copia de seguridad y borrado
+    # ------------------------------------------------------------------
+
+    async def async_step_data(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        """Menú: descargar una copia, cargarla o borrar datos."""
+        return self.async_show_menu(
+            step_id="data", menu_options=["data_export", "data_import", "data_delete"]
+        )
+
+    def _account_cars(self) -> dict[str, tuple[Any, str]]:
+        """Coches que están hoy en una cuenta cargada: clave → (cuenta, id del coche)."""
+        found: dict[str, tuple[Any, str]] = {}
+        for entry in self.hass.config_entries.async_entries(DOMAIN):
+            vehicles = getattr(getattr(entry, "runtime_data", None), "vehicles", None) or {}
+            for vehicle_id, vehicle in vehicles.items():
+                found[vd.car_key(vehicle.info.vin, vehicle_id)] = (entry, vehicle_id)
+        return found
+
+    def _stored_cars(self, *, to_delete: bool = False) -> dict[str, str]:
+        """Coches con datos guardados (clave → nombre), estén o no en una cuenta.
+
+        Para borrar, un coche que está en una cuenta solo cuenta si tiene
+        fichas: su apariencia vive en la cuenta (se cambia en Apariencia).
+        """
+        in_account = self._account_cars() if to_delete else {}
+        return {
+            key: vd.label(key, car)
+            for key, car in async_get_store(self.hass).cars().items()
+            if (vd.has_records(car) if key in in_account else vd.has_data(car))
+        }
+
+    def _apply_appearance(self, cars: dict[str, dict[str, Any]]) -> set[str]:
+        """Pone en su cuenta la apariencia que trae la copia.
+
+        Returns:
+            Cuentas cuyas opciones han cambiado (se recargan solas).
+        """
+        models = self._runtime.registries.vehicles.models
+        changed: dict[str, tuple[Any, dict[str, Any]]] = {}
+        for key, (entry, vehicle_id) in self._account_cars().items():
+            appearance = vd.clean_appearance(cars.get(key, {}).get(vd.APPEARANCE), models)
+            if appearance is None:
+                continue
+            _entry, current = changed.get(
+                entry.entry_id, (entry, dict(entry.options.get(OPT_APPEARANCE, {})))
+            )
+            if current.get(vehicle_id) != appearance:
+                current[vehicle_id] = appearance
+                changed[entry.entry_id] = (entry, current)
+        for entry, appearance_by_vehicle in changed.values():
+            self.hass.config_entries.async_update_entry(
+                entry, options={**entry.options, OPT_APPEARANCE: appearance_by_vehicle}
+            )
+        return set(changed)
+
+    def _managers(self) -> list[tuple[str, Any]]:
+        """Gestor de avisos de cada cuenta cargada: ``(id de la cuenta, gestor)``."""
+        found = []
+        for entry in self.hass.config_entries.async_entries(DOMAIN):
+            alerts = getattr(getattr(entry, "runtime_data", None), "alerts", None)
+            if alerts is not None:
+                found.append((entry.entry_id, alerts))
+        return found
+
+    def _refresh_data(self, already_reloading: set[str] | None = None) -> None:
+        """Tras cambiar el almacén: releerlo y recargar las cuentas (cambian entidades)."""
+        for entry_id, alerts in self._managers():
+            alerts.async_reload_data()
+            if entry_id not in (already_reloading or ()):
+                self.hass.config_entries.async_schedule_reload(entry_id)
+
+    async def async_step_data_export(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Enlace para descargar la copia (caduca a los pocos minutos)."""
+        # Lo que haya pendiente de escribir, al almacén: la copia sale al día.
+        for _entry_id, alerts in self._managers():
+            alerts.async_flush()
+        cars = self._stored_cars()
+        if not cars:
+            return self.async_abort(reason="no_data")
+        if user_input is not None:
+            return self.async_create_entry(data=dict(self.config_entry.options))
+        return self.async_show_form(
+            step_id="data_export",
+            data_schema=vol.Schema({}),
+            description_placeholders={
+                "cars": ", ".join(cars.values()),
+                "url": async_export_url(self.hass),
+            },
+        )
+
+    async def async_step_data_import(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Carga una copia: sustituye las fichas de los coches que trae."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            try:
+                payload = await self.hass.async_add_executor_job(
+                    _read_upload, self.hass, user_input[_FILE]
+                )
+                cars = vd.parse_backup(payload)
+            except vd.BackupError as err:
+                errors[_FILE] = err.code
+            else:
+                await async_get_store(self.hass).async_import(cars)
+                self._refresh_data(self._apply_appearance(cars))
+                return self.async_abort(
+                    reason="data_imported",
+                    description_placeholders={
+                        "cars": ", ".join(vd.label(key, car) for key, car in cars.items())
+                    },
+                )
+        return self.async_show_form(
+            step_id="data_import",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(_FILE): selector.FileSelector(
+                        selector.FileSelectorConfig(accept=".json,application/json")
+                    )
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_data_delete(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Borra los datos guardados de los coches elegidos (con confirmación)."""
+        cars = self._stored_cars(to_delete=True)
+        if not cars:
+            return self.async_abort(reason="no_data")
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            chosen = [key for key in user_input.get(_CARS, []) if key in cars]
+            if not chosen:
+                errors[_CARS] = "no_selection"
+            elif not user_input.get(_CONFIRM):
+                errors[_CONFIRM] = "confirm_required"
+            else:
+                await async_get_store(self.hass).async_delete(chosen)
+                self._refresh_data()
+                return self.async_abort(
+                    reason="data_deleted",
+                    description_placeholders={"cars": ", ".join(cars[key] for key in chosen)},
+                )
+        return self.async_show_form(
+            step_id="data_delete",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(_CARS, default=[]): selector.SelectSelector(
+                        selector.SelectSelectorConfig(
+                            options=[
+                                selector.SelectOptionDict(value=key, label=name)
+                                for key, name in cars.items()
+                            ],
+                            multiple=True,
+                            mode=selector.SelectSelectorMode.LIST,
+                        )
+                    ),
+                    vol.Required(_CONFIRM, default=False): selector.BooleanSelector(),
+                }
+            ),
+            errors=errors,
         )
 
     # ------------------------------------------------------------------

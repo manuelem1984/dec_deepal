@@ -152,3 +152,62 @@ async def test_alerts_and_maintenance(hass: HomeAssistant, freezer) -> None:  # 
     back = AlertManager(hass, "entry1", OPTIONS, vehicles)
     await back.async_load()
     assert back.itv_record("car1").history == ["2027-01-22"]
+
+
+VIN = "LS5A3ABE0RA000001"
+
+
+def _car(vehicle_id: str, model, vin: str | None = VIN):  # noqa: ANN001, ANN202
+    return SimpleNamespace(
+        info=VehicleInfo(vehicle_id=vehicle_id, nickname="Changote", vin=vin),
+        coordinator=FakeCoordinator({s.ODOMETER_KM: 37500}),
+        model=model,
+        trim="max",
+    )
+
+
+@pytest.mark.usefixtures("enable_custom_integrations")
+async def test_data_belongs_to_the_car(hass: HomeAssistant, hass_storage, freezer) -> None:  # noqa: ANN001
+    """Los datos van por bastidor: sobreviven a quitar la cuenta y volver a añadirla."""
+    freezer.move_to("2027-01-22 20:00:00+00:00")
+    model = load_all(INTEGRATION).vehicles.get("s05_2024")
+    record = MaintenanceRecord(services_done=1, last_date=date(2026, 3, 10), last_km=19500)
+    # Almacén antiguo (hasta la 2.3.0): uno por cuenta, con el identificador del coche.
+    hass_storage["dec_deepal.old_entry"] = {
+        "version": 1,
+        "minor_version": 1,
+        "key": "dec_deepal.old_entry",
+        "data": {
+            "maintenance": {"car1": record.to_dict()},
+            "insurance": {
+                "car1": InsuranceRecord(renewal_date=date(2027, 6, 1), company="Mutua").to_dict()
+            },
+            "active": {"car1": ["warning_abs"]},
+            "odometer": {"car1": 37500.0},
+        },
+    }
+    manager = AlertManager(hass, "old_entry", {}, {"car1": _car("car1", model)})
+    await manager.async_load()
+    # Se adopta al arrancar y el antiguo desaparece.
+    assert manager.record("car1").last_km == 19500
+    assert manager.insurance_record("car1").company == "Mutua"
+    assert "dec_deepal.old_entry" not in hass_storage
+    await manager.async_stop()
+    car = hass_storage["dec_deepal.vehicles"]["data"]["cars"][VIN]
+    assert car["vehicle_id"] == "car1" and car["name"] == "Changote"
+    assert car["active"] == ["warning_abs"] and car["odometer"] == 37500.0
+
+    # Cuenta nueva (otro id) y el servidor da otro identificador al coche:
+    # como el bastidor es el mismo, recupera todo.
+    again = AlertManager(hass, "new_entry", {}, {"car9": _car("car9", model)})
+    await again.async_load()
+    assert again.record("car9").services_done == 1
+    assert again.insurance_record("car9").renewal_date == date(2027, 6, 1)
+    assert again.odometer("car9") == 37500.0
+
+    # Otro coche en la misma cuenta no ve nada del primero.
+    other = AlertManager(hass, "third", {}, {"car2": _car("car2", model, vin="LS5A3ABE0RA000002")})
+    await other.async_load()
+    assert other.record("car2") is None and other.insurance_record("car2") is None
+    await other.async_stop()
+    assert hass_storage["dec_deepal.vehicles"]["data"]["cars"][VIN]["maintenance"]["last_km"] == 19500

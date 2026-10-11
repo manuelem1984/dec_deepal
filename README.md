@@ -56,6 +56,7 @@ En **Configurar**:
 | --- | --- |
 | Apariencia | Modelo, versión y color → foto exacta y entidades según versión |
 | Control con PIN | Activar puertas/ventanillas/maletero. El PIN se comprueba al guardar. **Opción A**: directo. **Opción B**: hay que desbloquear antes "Desbloqueo acciones con PIN" durante 10-60 s |
+| Datos de los coches | Copia de seguridad del mantenimiento, la ITV y el seguro (descargar y cargar) y borrado. Los datos son del coche: no se pierden al quitar la cuenta |
 | Avanzado | Intervalo de lectura (5 min por defecto) y modo depuración |
 
 ## 🚗 Qué incluye

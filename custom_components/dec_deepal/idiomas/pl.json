@@ -87,6 +87,7 @@
             "maintenance": "Serwis",
             "itv": "ITV (hiszpański przegląd techniczny)",
             "insurance": "Ubezpieczenie",
+            "data": "Dane pojazdów (kopia i usuwanie)",
             "advanced": "Zaawansowane (interwał, debugowanie, instrukcja)"
           }
         },
@@ -233,6 +234,34 @@
             "wake": "Po naciśnięciu „Odśwież dane pojazdu” oraz przed poleceniami drzwi/szyb/bagażnika, jeśli dane mają ponad 2 minuty, samochód jest budzony i czeka się na jego raport. Najwyżej raz na 5 minut i nigdy przy automatycznych odczytach, aby oszczędzać akumulator 12 V.",
             "debug": "Zapisuje pełne żądania i odpowiedzi (bez danych osobowych) w diagnostyce i włącza komunikaty DEBUG w dzienniku."
           }
+        },
+        "data": {
+          "title": "Dane pojazdów",
+          "description": "Serwis, ITV, ubezpieczenie i wygląd (model, wersja, kolor) są zapisywane dla pojazdu (według numeru VIN), a nie dla konta: po usunięciu konta i ponownym dodaniu każdy pojazd odzyska swoje dane.",
+          "menu_options": {
+            "data_export": "Pobierz kopię",
+            "data_import": "Wczytaj kopię",
+            "data_delete": "Usuń zapisane dane"
+          }
+        },
+        "data_export": {
+          "title": "Pobierz kopię",
+          "description": "Pojazdy z danymi: {cars}.\n\n[Pobierz kopię]({url})\n\nLink wygasa po kilku minutach. Plik zawiera numer polisy i telefony ubezpieczyciela: przechowuj go w bezpiecznym miejscu. Jeśli pobieranie nie rozpocznie się w aplikacji mobilnej, użyj przeglądarki."
+        },
+        "data_import": {
+          "title": "Wczytaj kopię",
+          "description": "Wybierz plik pobrany w „Pobierz kopię”. Zastępuje serwis, ITV, ubezpieczenie i wygląd pojazdów zawartych w pliku; pozostałe pojazdy pozostają bez zmian.",
+          "data": {
+            "file": "Plik kopii"
+          }
+        },
+        "data_delete": {
+          "title": "Usuń zapisane dane",
+          "description": "Usuwa serwis, ITV i ubezpieczenie wybranych pojazdów, niezależnie od tego, czy należą do konta. Tej operacji nie można cofnąć: jeśli chcesz zachować dane, najpierw pobierz kopię. Wygląd pojazdu należącego do konta nie jest usuwany: zmienia się go w sekcji Wygląd.",
+          "data": {
+            "cars": "Pojazdy",
+            "confirm": "Tak, usuń te dane"
+          }
         }
       },
       "error": {
@@ -240,10 +269,18 @@
         "pin_invalid": "Nieprawidłowy PIN lub utworzony na innym koncie.",
         "pin_rate_limited": "Zbyt wiele prób PIN-u. Odczekaj lub zresetuj go w oficjalnej aplikacji.",
         "invalid_url": "Wpisz pełny adres internetowy (zaczynający się od https://).",
-        "cannot_connect": "Nie udało się połączyć z serwerem Deepal."
+        "cannot_connect": "Nie udało się połączyć z serwerem Deepal.",
+        "invalid_file": "Plik nie jest kopią DEC Deepal albo jest uszkodzony.",
+        "newer_file": "Kopia pochodzi z nowszej wersji integracji. Zaktualizuj DEC Deepal i spróbuj ponownie.",
+        "empty_file": "Kopia nie zawiera danych żadnego pojazdu.",
+        "no_selection": "Wybierz co najmniej jeden pojazd.",
+        "confirm_required": "Zaznacz pole, aby potwierdzić usunięcie."
       },
       "abort": {
-        "not_loaded": "Integracja nie jest załadowana. Sprawdź dziennik i spróbuj ponownie."
+        "not_loaded": "Integracja nie jest załadowana. Sprawdź dziennik i spróbuj ponownie.",
+        "no_data": "Brak zapisanych danych jakiegokolwiek pojazdu.",
+        "data_imported": "Wczytano kopię: {cars}.",
+        "data_deleted": "Usunięto dane: {cars}."
       }
     },
     "issues": {

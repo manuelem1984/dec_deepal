@@ -87,6 +87,7 @@
             "maintenance": "Servicing",
             "itv": "ITV (roadworthiness test)",
             "insurance": "Insurance",
+            "data": "Vehicle data (backup and deletion)",
             "advanced": "Advanced (interval, debugging, manual)"
           }
         },
@@ -233,6 +234,34 @@
             "wake": "When you press \"Refresh vehicle data\" and before door/window/boot commands, if the data is more than 2 minutes old, the car is woken up and its report is awaited. At most once every 5 minutes, and never on automatic readings, to protect the 12 V battery.",
             "debug": "Stores full requests and responses (without personal data) in the diagnostics and enables DEBUG messages in the log."
           }
+        },
+        "data": {
+          "title": "Vehicle data",
+          "description": "Servicing, ITV, insurance and appearance (model, version, colour) are stored per vehicle (by its VIN), not per account: if you remove the account and add it again, each vehicle gets its data back.",
+          "menu_options": {
+            "data_export": "Download a backup",
+            "data_import": "Load a backup",
+            "data_delete": "Delete stored data"
+          }
+        },
+        "data_export": {
+          "title": "Download a backup",
+          "description": "Vehicles with data: {cars}.\n\n[Download the backup]({url})\n\nThe link expires in a few minutes. The file contains the policy number and the insurance phone numbers: keep it somewhere safe. If the download does not start from the mobile app, use a browser."
+        },
+        "data_import": {
+          "title": "Load a backup",
+          "description": "Choose a file downloaded from \"Download a backup\". It replaces the servicing, ITV, insurance and appearance of the vehicles it contains; other vehicles are left untouched.",
+          "data": {
+            "file": "Backup file"
+          }
+        },
+        "data_delete": {
+          "title": "Delete stored data",
+          "description": "Deletes the servicing, ITV and insurance of the chosen vehicles, whether or not they belong to an account. This cannot be undone: download a backup first if you want to keep them. The appearance of a vehicle that belongs to an account is not deleted: change it under Appearance.",
+          "data": {
+            "cars": "Vehicles",
+            "confirm": "Yes, delete this data"
+          }
         }
       },
       "error": {
@@ -240,10 +269,18 @@
         "pin_invalid": "Wrong PIN, or created with another account.",
         "pin_rate_limited": "Too many PIN attempts. Wait, or reset it in the official app.",
         "invalid_url": "Enter a full web address (starting with https://).",
-        "cannot_connect": "Could not connect to the Deepal server."
+        "cannot_connect": "Could not connect to the Deepal server.",
+        "invalid_file": "The file is not a DEC Deepal backup, or it is damaged.",
+        "newer_file": "The backup comes from a newer version of the integration. Update DEC Deepal and try again.",
+        "empty_file": "The backup has no data for any vehicle.",
+        "no_selection": "Choose at least one vehicle.",
+        "confirm_required": "Tick the box to confirm the deletion."
       },
       "abort": {
-        "not_loaded": "The integration is not loaded. Check the log and try again."
+        "not_loaded": "The integration is not loaded. Check the log and try again.",
+        "no_data": "There is no stored data for any vehicle.",
+        "data_imported": "Backup loaded: {cars}.",
+        "data_deleted": "Data deleted: {cars}."
       }
     },
     "issues": {

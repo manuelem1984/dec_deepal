@@ -167,6 +167,8 @@ ICONS_BUNDLE_API: Final = "/api/dec_deepal/icons_bundle"
 MANUAL_INFO_API: Final = "/api/dec_deepal/manual_info/{device_id}"
 #: Datos del seguro que solo se enseñan en la tarjeta (póliza y teléfonos).
 INSURANCE_INFO_API: Final = "/api/dec_deepal/insurance_info/{device_id}"
+#: Descarga de la copia de los datos de los coches (enlace firmado).
+EXPORT_API: Final = "/api/dec_deepal/export"
 
 # ---------------------------------------------------------------------------
 # Depuración (ver docs/depuracion.md)

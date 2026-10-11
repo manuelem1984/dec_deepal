@@ -13,9 +13,10 @@ Un :class:`AlertManager` por cuenta. Hace dos cosas:
 
 Dónde se guarda
 ---------------
-En un almacén propio (``.storage/dec_deepal.<id de la cuenta>``), no en las
-opciones: registrar una revisión o apuntar un aviso ya enviado no debe
-recargar la integración. Entra en las copias de seguridad de Home Assistant.
+En el almacén de coches (``vehicle_store.py``), no en las opciones: registrar
+una revisión o apuntar un aviso ya enviado no debe recargar la integración.
+Los datos van por bastidor: son del coche, no de la cuenta, y sobreviven a
+quitar la cuenta y volver a añadirla.
 """
 
 from __future__ import annotations
@@ -29,7 +30,6 @@ from homeassistant.components import persistent_notification
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.event import async_track_time_change
-from homeassistant.helpers.storage import Store
 from homeassistant.helpers.translation import async_get_translations
 from homeassistant.util import dt as dt_util
 
@@ -63,23 +63,23 @@ from .const import (
     OPT_ALERT_TARGETS,
     OPT_ALERT_TYPES,
     OPT_ALERTS,
+    OPT_COLOR,
+    OPT_MODEL,
+    OPT_TRIM,
+    OPT_WHEELS,
 )
+from . import vehicle_data as vd
 from .runtime import VehicleContext
 from .telemetry import signals as s
+from .vehicle_store import VehicleStore, async_get_store
 
 _LOGGER = logging.getLogger(__name__)
 
-STORAGE_VERSION: Final = 1
 #: Los avisos de mantenimiento solo salen a estas horas (hora local).
 QUIET_BEFORE_HOUR: Final = 8
 QUIET_FROM_HOUR: Final = 22
 #: Revisión diaria del mantenimiento (y, a medianoche, de los días que quedan).
 DAILY_CHECK_HOURS: Final = (0, 10)
-
-
-def storage_key(entry_id: str) -> str:
-    """Nombre del almacén de una cuenta."""
-    return f"{DOMAIN}.{entry_id}"
 
 
 class AlertManager:
@@ -93,15 +93,17 @@ class AlertManager:
         vehicles: dict[str, VehicleContext],
         rules: doc.CountryRules = doc.DEFAULT_RULES,
         itv_available: bool = True,
+        store: VehicleStore | None = None,
     ) -> None:
         self.hass = hass
+        self._entry_id = entry_id
         self._vehicles = vehicles
         #: Normas del país de la cuenta (ITV, preaviso del seguro).
         self.rules = rules
         #: La ITV es una norma de cada país: solo existe donde está dada de
         #: alta (hoy, España). En los demás no hay entidades, avisos ni menú.
         self.itv_available = itv_available
-        self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, storage_key(entry_id))
+        self._store = store or async_get_store(hass)
         config = options.get(OPT_ALERTS, {})
         self._targets: list[str] = list(config.get(OPT_ALERT_TARGETS, []))
         self._types: set[str] = (
@@ -126,34 +128,18 @@ class AlertManager:
     # Arranque y parada
     # ------------------------------------------------------------------
 
+    def _key(self, vehicle_id: str) -> str:
+        """Clave del coche en el almacén: su bastidor."""
+        return vd.car_key(self._vehicles[vehicle_id].info.vin, vehicle_id)
+
     async def async_load(self) -> None:
         """Lee lo guardado. Una ficha ilegible se descarta (se avisa en el registro)."""
-        data = await self._store.async_load() or {}
-        for vehicle_id, raw in data.get("maintenance", {}).items():
-            try:
-                self._records[vehicle_id] = mt.MaintenanceRecord.from_dict(raw)
-            except (KeyError, TypeError, ValueError) as err:
-                _LOGGER.warning("Ficha de mantenimiento ilegible (%s): %s", vehicle_id, err)
-        #: Fichas de ITV guardadas que no se usan (país sin ITV): se conservan.
-        self._itv_parked: dict[str, Any] = {}
-        for key, target, loader in (
-            ("itv", self._itv, doc.ItvRecord.from_dict),
-            ("insurance", self._insurance, doc.InsuranceRecord.from_dict),
-        ):
-            if key == "itv" and not self.itv_available:
-                self._itv_parked = dict(data.get(key, {}))
-                continue
-            for vehicle_id, raw in data.get(key, {}).items():
-                try:
-                    target[vehicle_id] = loader(raw)
-                except (KeyError, TypeError, ValueError) as err:
-                    _LOGGER.warning("Ficha de %s ilegible (%s): %s", key, vehicle_id, err)
-        self._active = {
-            vehicle_id: set(signals) for vehicle_id, signals in data.get("active", {}).items()
-        }
-        self._odometer = {
-            vehicle_id: float(km) for vehicle_id, km in data.get("odometer", {}).items()
-        }
+        await self._store.async_load()
+        # Hasta la 2.3.0 había un almacén por cuenta: se pasa al de coches.
+        await self._store.async_adopt_legacy(
+            self._entry_id, {vehicle_id: self._key(vehicle_id) for vehicle_id in self._vehicles}
+        )
+        self._read()
         translations = await async_get_translations(
             self.hass, self.hass.config.language, "entity", [DOMAIN]
         )
@@ -163,6 +149,36 @@ class AlertManager:
             for key, text in translations.items()
             if key.startswith(prefix) and key.endswith(".name")
         }
+
+    def _read(self) -> None:
+        """Pasa a memoria lo guardado de los coches de esta cuenta."""
+        targets: dict[str, dict[str, Any]] = {
+            vd.MAINTENANCE: self._records,
+            vd.ITV: self._itv,
+            vd.INSURANCE: self._insurance,
+        }
+        for target in (*targets.values(), self._active, self._odometer):
+            target.clear()
+        for vehicle_id in self._vehicles:
+            car = self._store.car(self._key(vehicle_id))
+            for section, target in targets.items():
+                # País sin ITV: la ficha se conserva en el almacén, pero no se usa.
+                if not car.get(section) or (section == vd.ITV and not self.itv_available):
+                    continue
+                try:
+                    target[vehicle_id] = vd.RECORDS[section](car[section])
+                except (AttributeError, KeyError, TypeError, ValueError) as err:
+                    _LOGGER.warning("Ficha de %s ilegible (%s): %s", section, vehicle_id, err)
+            if car.get(vd.ACTIVE):
+                self._active[vehicle_id] = set(car[vd.ACTIVE])
+            if car.get(vd.ODOMETER) is not None:
+                self._odometer[vehicle_id] = float(car[vd.ODOMETER])
+
+    @callback
+    def async_reload_data(self) -> None:
+        """Vuelve a leer el almacén (tras cargar una copia o borrar datos)."""
+        self._read()
+        self._notify_listeners()
 
     @callback
     def async_start(self) -> None:
@@ -186,30 +202,64 @@ class AlertManager:
         for unsubscribe in self._unsubscribe:
             unsubscribe()
         self._unsubscribe.clear()
-        await self._store.async_save(self._data_to_save())
-
-    async def async_remove_storage(self) -> None:
-        """Borra el almacén (al quitar la cuenta)."""
-        await self._store.async_remove()
+        await self._async_save()
 
     def _save(self) -> None:
-        self._store.async_delay_save(self._data_to_save, 2)
+        """Guarda dentro de un momento."""
+        self._write()
+        self._store.async_delay_save()
 
-    def _data_to_save(self) -> dict[str, Any]:
-        return {
-            "maintenance": {
-                vehicle_id: record.to_dict() for vehicle_id, record in self._records.items()
-            },
-            "itv": {
-                **getattr(self, "_itv_parked", {}),
-                **{vehicle_id: record.to_dict() for vehicle_id, record in self._itv.items()},
-            },
-            "insurance": {
-                vehicle_id: record.to_dict() for vehicle_id, record in self._insurance.items()
-            },
-            "active": {vehicle_id: sorted(signals) for vehicle_id, signals in self._active.items()},
-            "odometer": dict(self._odometer),
-        }
+    @callback
+    def async_flush(self) -> None:
+        """Pasa al almacén lo que haya en memoria (antes de hacer una copia)."""
+        self._write()
+
+    async def _async_save(self) -> None:
+        """Guarda ya."""
+        self._write()
+        await self._store.async_save()
+
+    def _write(self) -> None:
+        """Pasa al almacén lo que hay en memoria de los coches de esta cuenta."""
+        for vehicle_id in self._vehicles:
+            key = self._key(vehicle_id)
+            car: dict[str, Any] = {
+                vd.VEHICLE_ID: vehicle_id,
+                vd.NAME: self._vehicle_name(vehicle_id),
+            }
+            if vehicle_id in self._records:
+                car[vd.MAINTENANCE] = self._records[vehicle_id].to_dict()
+            if vehicle_id in self._itv:
+                car[vd.ITV] = self._itv[vehicle_id].to_dict()
+            elif not self.itv_available and (parked := self._store.car(key).get(vd.ITV)):
+                car[vd.ITV] = parked  # país sin ITV: se conserva lo que hubiera
+            if vehicle_id in self._insurance:
+                car[vd.INSURANCE] = self._insurance[vehicle_id].to_dict()
+            if self._active.get(vehicle_id):
+                car[vd.ACTIVE] = sorted(self._active[vehicle_id])
+            if vehicle_id in self._odometer:
+                car[vd.ODOMETER] = self._odometer[vehicle_id]
+            if appearance := self._appearance(vehicle_id, key):
+                car[vd.APPEARANCE] = appearance
+            self._store.set_car(key, car)
+
+    def _appearance(self, vehicle_id: str, key: str) -> dict[str, Any] | None:
+        """Apariencia que se guarda con el coche: la elegida en Configurar.
+
+        Mientras el coche no tenga modelo elegido, se conserva la que hubiera
+        guardada (es la que se le devolverá).
+        """
+        vehicle = self._vehicles[vehicle_id]
+        if not getattr(vehicle, "configured", False):
+            return self._store.car(key).get(vd.APPEARANCE)
+        return vd.clean_appearance(
+            {
+                OPT_MODEL: vehicle.model.id,
+                OPT_TRIM: vehicle.trim,
+                OPT_COLOR: getattr(vehicle, "color", None),
+                OPT_WHEELS: getattr(vehicle, "wheels", None),
+            }
+        )
 
     # ------------------------------------------------------------------
     # Mantenimiento
@@ -253,13 +303,13 @@ class AlertManager:
         else:
             self._records[vehicle_id] = record
         self._check_maintenance(vehicle_id)
-        await self._store.async_save(self._data_to_save())
+        await self._async_save()
         self._notify_listeners()
 
     async def async_register_service(self, vehicle_id: str, when: date, km: int) -> None:
         """Anota una revisión hecha y pasa a la siguiente."""
         mt.register_service(self._records[vehicle_id], when, km)
-        await self._store.async_save(self._data_to_save())
+        await self._async_save()
         self._notify_listeners()
 
     @callback
@@ -310,13 +360,13 @@ class AlertManager:
         else:
             self._itv[vehicle_id] = record
         self._check_documents(vehicle_id)
-        await self._store.async_save(self._data_to_save())
+        await self._async_save()
         self._notify_listeners()
 
     async def async_register_itv(self, vehicle_id: str, when: date) -> None:
         """Anota una ITV pasada."""
         doc.register_itv(self._itv[vehicle_id], when)
-        await self._store.async_save(self._data_to_save())
+        await self._async_save()
         self._notify_listeners()
 
     async def async_set_insurance(
@@ -328,7 +378,7 @@ class AlertManager:
         else:
             self._insurance[vehicle_id] = record
         self._check_documents(vehicle_id)
-        await self._store.async_save(self._data_to_save())
+        await self._async_save()
         self._notify_listeners()
 
     def _check_documents(self, vehicle_id: str) -> None:

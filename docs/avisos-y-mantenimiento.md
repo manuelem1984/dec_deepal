@@ -145,9 +145,30 @@ tarjeta, con la sesión del usuario, al abrir la ventana del seguro.
 
 ## Dónde se guarda
 
-Las fichas de mantenimiento y los avisos ya enviados se guardan en
-`.storage/dec_deepal.<id de la cuenta>` (entra en las copias de seguridad).
-Se borran al quitar la cuenta de la integración.
+El mantenimiento, la ITV, el seguro y los avisos ya enviados se guardan en
+`.storage/dec_deepal.vehicles`, **por coche** (por su bastidor), no por
+cuenta. Entra en las copias de seguridad de Home Assistant.
+
+Con ellos se guarda una copia de la **apariencia** (modelo, versión, color y
+llanta). La que manda es la de Configurar → Apariencia; la copia sirve para
+devolvérsela al coche si la cuenta se quita y se vuelve a añadir, y viaja en
+las copias de seguridad. El PIN y los avisos al móvil son de la cuenta: no
+se guardan con el coche.
+
+- **Quitar la cuenta no borra los datos.** Al volver a añadirla, cada coche
+  recupera su historial, aunque el servidor le dé otro identificador.
+- **Copia de seguridad propia:** Configurar → Datos de los coches →
+  *Descargar una copia* genera un fichero con las fichas de todos los coches
+  (el enlace caduca a los 10 minutos). *Cargar una copia* lo restaura en esta
+  u otra instalación: deja los coches que trae como estaban en el fichero
+  (fichas y apariencia) y no toca los demás. El fichero lleva la póliza y los teléfonos del seguro.
+- **Borrar:** Configurar → Datos de los coches → *Borrar datos guardados*,
+  eligiendo los coches (también los que ya no están en ninguna cuenta). Para
+  no dejar nada al desinstalar, hay que borrarlos **antes** de quitar la
+  cuenta.
+
+Hasta la 2.3.0 había un almacén por cuenta (`.storage/dec_deepal.<id de la
+cuenta>`): se pasa al nuevo solo, la primera vez que arranca la 2.4.0.
 
 ## Para quien toque el código
 
@@ -156,8 +177,10 @@ Se borran al quitar la cuenta de la integración.
 | `maintenance.py` | Cálculo de días y kilómetros, escalones de aviso, registro (sin Home Assistant) |
 | `documents.py` | ITV y seguro: fechas, niveles y avisos (sin Home Assistant) |
 | `alert_rules.py` | Qué cambios del coche avisan y los textos (sin Home Assistant) |
-| `alerts.py` | `AlertManager`: almacén, vigilancia de cada lectura y envío |
-| `options_flow.py` | Pasos `alerts` y `maintenance*` |
+| `alerts.py` | `AlertManager`: vigilancia de cada lectura y envío |
+| `vehicle_data.py` | Formato de los datos por coche, migración y copias (sin Home Assistant) |
+| `vehicle_store.py` | Almacén por bastidor, adopción del antiguo y descarga de la copia |
+| `options_flow.py` | Pasos `alerts`, `maintenance*` y `data*` |
 | `services.py` | Acción `register_maintenance` |
 
 Pruebas: `tests/test_maintenance.py` y `tests/test_alert_manager.py`.
