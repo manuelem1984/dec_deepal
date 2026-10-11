@@ -48,7 +48,7 @@ def _vehicle(model, vehicle_id: str, name: str, vin: str):  # noqa: ANN001, ANN2
 
 @pytest.mark.usefixtures("enable_custom_integrations", "hass_storage")
 async def test_backup_and_delete(
-    hass: HomeAssistant, hass_client, hass_client_no_auth, freezer  # noqa: ANN001
+    hass: HomeAssistant, hass_client_no_auth, freezer  # noqa: ANN001
 ) -> None:
     freezer.move_to("2027-01-22 20:00:00+00:00")
     assert await async_setup_component(hass, "http", {})
@@ -89,17 +89,19 @@ async def test_backup_and_delete(
     assert result["type"] == "form" and result["step_id"] == "data_export", result
     voluptuous_serialize.convert(result["data_schema"], custom_serializer=cv.custom_serializer)
     assert result["description_placeholders"]["cars"] == "Changote (…000001)"
-    assert result["description_placeholders"]["url"].startswith(EXPORT_API)
-    client = await hass_client()
-    response = await client.get(EXPORT_API)
+    url = result["description_placeholders"]["url"]
+    # El enlace va firmado: se descarga sin iniciar sesión (y caduca).
+    assert url.startswith(f"{EXPORT_API}?authSig=")
+    anonymous = await hass_client_no_auth()
+    response = await anonymous.get(url)
     assert response.status == 200
     assert "attachment" in response.headers["Content-Disposition"]
     backup = await response.json()
     assert backup["formato"] == vd.EXPORT_FORMAT
     assert backup["coches"][VIN]["insurance"]["policy"] == "0123"
-    # Sin sesión no se descarga nada.
-    anonymous = await hass_client_no_auth()
+    # Sin la firma (o con una firma tocada) no se descarga nada.
     assert (await anonymous.get(EXPORT_API)).status == 401
+    assert (await anonymous.get(url[:-4] + "xxxx")).status == 401
 
     with patch.object(hass.config_entries, "async_schedule_reload") as reload:
         # --- Borrar: hay que elegir y confirmar -------------------------------------
