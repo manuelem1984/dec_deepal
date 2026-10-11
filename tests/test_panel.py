@@ -48,6 +48,8 @@ def _vehicle(model, vehicle_id: str, name: str, vin: str, trim: str):  # noqa: A
 
 @pytest.mark.usefixtures("enable_custom_integrations", "hass_storage")
 async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> None:  # noqa: ANN001
+    # La sesión se abre antes de mover el reloj: su permiso caduca a la media hora.
+    client = await hass_ws_client(hass)
     freezer.move_to("2027-01-22 20:00:00+00:00")
     assert await async_setup_component(hass, "websocket_api", {})
     for command in panel.COMMANDS:
@@ -73,7 +75,6 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> N
     entry.runtime_data = SimpleNamespace(
         vehicles=vehicles, alerts=manager, recorder=recorder, registries=registries
     )
-    client = await hass_ws_client(hass)
     counter = iter(range(1, 1000))
 
     async def call(command: str, **data):  # noqa: ANN003, ANN202
