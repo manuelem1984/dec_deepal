@@ -49,10 +49,10 @@
       const gear = `<button class="gear" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>`;
       const head = `<div class="h"><ha-icon icon="${icon}"></ha-icon><span>${this._t(`section_${kind}`)}</span>${gear}</div>`;
       if (!body) {
-        return `<div class="tile off">${head}<div class="v">${this._t("not_set")}</div>
+        return `<div class="tile off" data-action="info" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${head}<div class="v">${this._t("not_set")}</div>
           <button class="link" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${this._t(`add_${kind}`)}</button></div>`;
       }
-      return `<div class="tile ${level}">${head}${body}</div>`;
+      return `<div class="tile ${level}" data-action="info" data-kind="${kind}" data-car="${escapeHtml(car.id)}" role="button" tabindex="0">${head}${body}</div>`;
     }
 
     _meter(fraction) {

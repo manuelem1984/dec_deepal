@@ -15,16 +15,21 @@ Lo único que queda fuera es añadir la cuenta y volver a iniciar sesión.
 
 Una tarjeta por coche: foto, versión, batería, autonomía y kilómetros; el
 equipamiento de su ficha del catálogo (y si la ficha está verificada), y
-tres recuadros con su **engranaje**:
+tres recuadros. **Pulsar el recuadro abre su ficha**; su **engranaje**, la
+configuración (desde la 2.5.0b3):
 
-| Recuadro | Qué enseña | Engranaje |
+| Recuadro | Ficha (pulsar el recuadro) | Engranaje |
 |---|---|---|
-| Mantenimiento | Próxima revisión y cuánto falta | Datos de la última revisión e intervalo; registrar una revisión hecha |
-| ITV | Fecha límite y días que quedan | Matriculación, última ITV, fecha a mano; registrar una ITV pasada |
-| Seguro | Renovación y límite para desistir | Compañía, póliza, tipo, fechas y teléfonos |
+| Mantenimiento | Qué revisión toca, cuánto falta por tiempo y por kilómetros, las operaciones de esa revisión, lo que se añade en la siguiente, el historial y el enlace al manual. Botón **Registrar revisión hecha** | Revisiones ya pasadas, fecha y kilómetros de la última, y cada cuánto (el del manual u otro) |
+| ITV | Fecha límite, matriculación, última ITV, las normas del país y el historial. Botón **Registrar ITV pasada** | Matriculación, si ya ha pasado alguna, y la próxima (calculada o a mano) |
+| Seguro | Compañía, tipo, póliza (con copiar), la línea del año con el plazo para desistir, y los teléfonos para llamar con un toque | Compañía, póliza, tipo, renovación, días de preaviso (15, 30, 60 u otro) y teléfonos |
 
-Desmarcar "Activado" en la ventana del engranaje desactiva ese apartado (y
-quita sus entidades y avisos).
+Un recuadro sin configurar abre directamente su formulario. Los formularios
+van por bloques, con una explicación en cada uno, y terminan con un recuadro
+verde que adelanta el resultado ("Próxima revisión: 29 jul 2027 o a los
+20.000 km") según se escribe; nada se guarda hasta pulsar "Guardar". Apagar
+"Activado" arriba a la derecha desactiva ese apartado (y quita sus entidades
+y avisos).
 
 El botón **Apariencia** abre una ventana para elegir modelo, versión, color
 y llanta, con la foto del catálogo delante: cambia con lo que se va

@@ -9,7 +9,8 @@
 // Pestañas:
 //   - Coches: una tarjeta por coche con su foto, versión, equipamiento (el de
 //     su ficha del catálogo) y tres recuadros —mantenimiento, ITV y seguro—,
-//     cada uno con un engranaje que abre su configuración. El botón
+//     que al pulsarlos abren su ficha (qué toca en la revisión, fechas del
+//     seguro...) y con un engranaje que abre su configuración. El botón
 //     "Apariencia" elige modelo, versión, color y llanta, con la foto delante.
 //   - Avisos: una tabla por coche. Un apartado plegable por cada cosa (carga,
 //     testigos, mantenimiento, ITV, seguro), una fila por aviso y una casilla
@@ -230,9 +231,6 @@
       "yesterday": "Ayer",
       "enabled": "Activado",
       "mt_services_done": "Revisiones ya pasadas",
-      "mt_services_done_help": "0 si el coche aún no ha pasado ninguna.",
-      "mt_last_date": "Fecha de la última revisión",
-      "mt_last_km": "Kilómetros en esa revisión",
       "mt_interval_km": "Intervalo (km)",
       "mt_interval_months": "Intervalo (meses)",
       "mt_register": "Registrar revisión hecha",
@@ -243,9 +241,7 @@
       "registered": "Registrado",
       "itv_registration": "Fecha de matriculación",
       "itv_last": "Última ITV pasada",
-      "itv_last_help": "Vacío si aún no ha pasado ninguna.",
       "itv_next": "Próxima ITV (a mano)",
-      "itv_next_help": "Vacío para calcularla sola.",
       "itv_register": "Registrar ITV pasada",
       "itv_register_help": "Anota que {name} ha pasado la ITV y calcula la siguiente.",
       "ins_company": "Compañía",
@@ -308,7 +304,76 @@
       "error_pin_rate_limited": "Demasiados intentos con el PIN. Espera unos minutos antes de volver a probar.",
       "error_cannot_connect": "No se ha podido conectar con Deepal. Inténtalo más tarde.",
       "error_invalid_url": "El enlace del manual no es válido: tiene que empezar por http:// o https://.",
-      "error_unknown_model": "Ese modelo no está en el catálogo."
+      "error_unknown_model": "Ese modelo no está en el catálogo.",
+      "close": "Cerrar",
+      "other": "Otro",
+      "history": "Historial",
+      "manual": "Manual",
+      "copied": "Copiado: {text}",
+      "form_maintenance": "Configurar el mantenimiento",
+      "form_itv": "Configurar la ITV",
+      "form_insurance": "Configurar el seguro",
+      "form_maintenance_off": "Desactivado: se quitan sus entidades, su testigo en la tarjeta y sus avisos. El historial se pierde.",
+      "form_itv_off": "Desactivada: se quitan sus entidades, su testigo en la tarjeta y sus avisos.",
+      "form_insurance_off": "Desactivado: se quitan sus entidades, su testigo en la tarjeta y sus avisos.",
+      "first_notice": "El primer aviso, {days} días antes",
+      "mt_last": "Última revisión",
+      "mt_last_help": "Si el coche aún no ha pasado ninguna, pon la fecha de matriculación y 0 km.",
+      "mt_next_is": "La próxima será la {number}ª revisión.",
+      "mt_km_then": "Kilómetros entonces",
+      "mt_use_odometer": "Usar los del coche ahora ({km} km)",
+      "mt_every": "Cada cuánto",
+      "mt_every_help": "El manual pide acortarlo con trayectos cortos repetidos, polvo, barro, frío extremo o sal.",
+      "mt_interval_manual": "El del manual",
+      "mt_interval_value": "{km} km o {months} meses",
+      "mt_interval_other": "Lo eliges tú",
+      "mt_preview": "Próxima revisión: {date} o a los {km} km",
+      "mt_whichever": "Lo que llegue antes: el {date} o a los {km} km.",
+      "by_time": "Por tiempo",
+      "by_km": "Por kilómetros",
+      "mt_km_detail": "Ahora {now} km · toca a los {due}",
+      "mt_this_service": "Qué toca en esta revisión",
+      "n_operations": "{count} operaciones",
+      "mt_no_plan": "Este modelo no tiene plan de mantenimiento en el catálogo.",
+      "mt_next_adds": "En la siguiente ({number}ª) se añade",
+      "mt_history_item": "{number}ª revisión · {date} · {km} km",
+      "mt_no_history": "Todavía no hay revisiones registradas.",
+      "itv_registration_title": "Matriculación",
+      "itv_registration_help": "Viene en el permiso de circulación. Con ella se calcula sola la primera ITV.",
+      "itv_passed_title": "ITV ya pasadas",
+      "itv_passed_help": "Solo si el coche ya ha pasado alguna.",
+      "itv_passed": "Ya ha pasado alguna ITV",
+      "itv_next_title": "Próxima ITV",
+      "itv_next_rules": "Se calcula con las normas del país de la cuenta.",
+      "itv_next_auto": "Calcularla sola",
+      "itv_next_manual": "Poner otra fecha",
+      "itv_next_manual_note": "Si la estación te dio una distinta",
+      "itv_preview": "Próxima ITV: {date}",
+      "itv_manual_date": "fecha puesta a mano",
+      "itv_age": "{years} años",
+      "itv_none_yet": "Ninguna todavía",
+      "itv_first_at": "La primera, a los {years} años",
+      "itv_rules_title": "Cada cuánto",
+      "itv_rules": "La primera a los {first} años; después cada {interval} y, desde los {reduced} años, cada año.",
+      "itv_history_item": "ITV pasada el {date}",
+      "itv_no_history": "Todavía no hay ninguna ITV registrada.",
+      "ins_policy_title": "La póliza",
+      "ins_policy_help": "El número de póliza y los teléfonos solo se ven en la tarjeta y en el panel; no salen en los diagnósticos.",
+      "ins_renewal_title": "Renovación",
+      "ins_renewal_help": "El seguro se renueva solo cada año. Para no renovar hay que avisar antes.",
+      "ins_renews_on": "Se renueva el",
+      "ins_notice_days": "Días de preaviso",
+      "ins_phones_title": "Teléfonos",
+      "ins_phones_help": "Para llamar con un toque desde la tarjeta y desde aquí.",
+      "ins_preview": "Último día para desistir: {date}",
+      "ins_preview_passed": "Ese plazo ya pasó. Se renueva el {date}.",
+      "ins_dates": "Fechas",
+      "ins_to_cancel": "Para desistir",
+      "ins_to_renewal": "Para la renovación",
+      "ins_deadline_passed": "Plazo pasado",
+      "ins_deadline_on": "Último día: {date}",
+      "ins_renews_itself": "Se renueva solo el {date}",
+      "ins_assistance": "Asistencia"
     },
     "en": {
       "tab_cars": "Vehicles",
@@ -450,9 +515,6 @@
       "yesterday": "Yesterday",
       "enabled": "Enabled",
       "mt_services_done": "Services already done",
-      "mt_services_done_help": "0 if the vehicle has not had any yet.",
-      "mt_last_date": "Date of the last service",
-      "mt_last_km": "Kilometres at that service",
       "mt_interval_km": "Interval (km)",
       "mt_interval_months": "Interval (months)",
       "mt_register": "Register a completed service",
@@ -463,9 +525,7 @@
       "registered": "Registered",
       "itv_registration": "Registration date",
       "itv_last": "Last ITV passed",
-      "itv_last_help": "Empty if it has not passed any yet.",
       "itv_next": "Next ITV (manual)",
-      "itv_next_help": "Empty to have it calculated.",
       "itv_register": "Register a passed ITV",
       "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
       "ins_company": "Company",
@@ -528,7 +588,76 @@
       "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
       "error_cannot_connect": "Could not connect to Deepal. Try again later.",
       "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
-      "error_unknown_model": "That model is not in the catalogue."
+      "error_unknown_model": "That model is not in the catalogue.",
+      "close": "Close",
+      "other": "Other",
+      "history": "History",
+      "manual": "Manual",
+      "copied": "Copied: {text}",
+      "form_maintenance": "Set up servicing",
+      "form_itv": "Set up the ITV",
+      "form_insurance": "Set up the insurance",
+      "form_maintenance_off": "Disabled: its entities, its indicator on the card and its notifications are removed. The history is lost.",
+      "form_itv_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "form_insurance_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "first_notice": "First notification {days} days before",
+      "mt_last": "Last service",
+      "mt_last_help": "If the vehicle has not had any yet, enter the registration date and 0 km.",
+      "mt_next_is": "The next one will be service no. {number}.",
+      "mt_km_then": "Kilometres then",
+      "mt_use_odometer": "Use the vehicle's current reading ({km} km)",
+      "mt_every": "How often",
+      "mt_every_help": "The manual asks for a shorter interval with repeated short trips, dust, mud, extreme cold or salt.",
+      "mt_interval_manual": "From the manual",
+      "mt_interval_value": "{km} km or {months} months",
+      "mt_interval_other": "You choose",
+      "mt_preview": "Next service: {date} or at {km} km",
+      "mt_whichever": "Whichever comes first: {date} or at {km} km.",
+      "by_time": "By time",
+      "by_km": "By distance",
+      "mt_km_detail": "Now {now} km · due at {due}",
+      "mt_this_service": "What this service includes",
+      "n_operations": "{count} operations",
+      "mt_no_plan": "This model has no servicing plan in the catalogue.",
+      "mt_next_adds": "The next one (no. {number}) adds",
+      "mt_history_item": "Service no. {number} · {date} · {km} km",
+      "mt_no_history": "No services have been registered yet.",
+      "itv_registration_title": "Registration",
+      "itv_registration_help": "It is on the registration certificate. The first ITV is calculated from it.",
+      "itv_passed_title": "ITVs already passed",
+      "itv_passed_help": "Only if the vehicle has already passed one.",
+      "itv_passed": "It has already passed an ITV",
+      "itv_next_title": "Next ITV",
+      "itv_next_rules": "It is calculated with the rules of the account's country.",
+      "itv_next_auto": "Calculate it",
+      "itv_next_manual": "Set another date",
+      "itv_next_manual_note": "If the station gave you a different one",
+      "itv_preview": "Next ITV: {date}",
+      "itv_manual_date": "date set by hand",
+      "itv_age": "{years} years",
+      "itv_none_yet": "None yet",
+      "itv_first_at": "The first one, at {years} years",
+      "itv_rules_title": "How often",
+      "itv_rules": "The first at {first} years; then every {interval} and, from {reduced} years on, every year.",
+      "itv_history_item": "ITV passed on {date}",
+      "itv_no_history": "No ITV has been registered yet.",
+      "ins_policy_title": "The policy",
+      "ins_policy_help": "The policy number and the phone numbers are only shown on the card and in the panel; they never appear in the diagnostics.",
+      "ins_renewal_title": "Renewal",
+      "ins_renewal_help": "The insurance renews itself every year. To cancel, you have to give notice beforehand.",
+      "ins_renews_on": "It renews on",
+      "ins_notice_days": "Notice days",
+      "ins_phones_title": "Phone numbers",
+      "ins_phones_help": "To call with one tap from the card and from here.",
+      "ins_preview": "Last day to cancel: {date}",
+      "ins_preview_passed": "That deadline has passed. It renews on {date}.",
+      "ins_dates": "Dates",
+      "ins_to_cancel": "To cancel",
+      "ins_to_renewal": "To renewal",
+      "ins_deadline_passed": "Deadline passed",
+      "ins_deadline_on": "Last day: {date}",
+      "ins_renews_itself": "It renews itself on {date}",
+      "ins_assistance": "Assistance"
     },
     "pt": {
       "tab_cars": "Vehicles",
@@ -670,9 +799,6 @@
       "yesterday": "Yesterday",
       "enabled": "Enabled",
       "mt_services_done": "Services already done",
-      "mt_services_done_help": "0 if the vehicle has not had any yet.",
-      "mt_last_date": "Date of the last service",
-      "mt_last_km": "Kilometres at that service",
       "mt_interval_km": "Interval (km)",
       "mt_interval_months": "Interval (months)",
       "mt_register": "Register a completed service",
@@ -683,9 +809,7 @@
       "registered": "Registered",
       "itv_registration": "Registration date",
       "itv_last": "Last ITV passed",
-      "itv_last_help": "Empty if it has not passed any yet.",
       "itv_next": "Next ITV (manual)",
-      "itv_next_help": "Empty to have it calculated.",
       "itv_register": "Register a passed ITV",
       "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
       "ins_company": "Company",
@@ -748,7 +872,76 @@
       "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
       "error_cannot_connect": "Could not connect to Deepal. Try again later.",
       "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
-      "error_unknown_model": "That model is not in the catalogue."
+      "error_unknown_model": "That model is not in the catalogue.",
+      "close": "Close",
+      "other": "Other",
+      "history": "History",
+      "manual": "Manual",
+      "copied": "Copied: {text}",
+      "form_maintenance": "Set up servicing",
+      "form_itv": "Set up the ITV",
+      "form_insurance": "Set up the insurance",
+      "form_maintenance_off": "Disabled: its entities, its indicator on the card and its notifications are removed. The history is lost.",
+      "form_itv_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "form_insurance_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "first_notice": "First notification {days} days before",
+      "mt_last": "Last service",
+      "mt_last_help": "If the vehicle has not had any yet, enter the registration date and 0 km.",
+      "mt_next_is": "The next one will be service no. {number}.",
+      "mt_km_then": "Kilometres then",
+      "mt_use_odometer": "Use the vehicle's current reading ({km} km)",
+      "mt_every": "How often",
+      "mt_every_help": "The manual asks for a shorter interval with repeated short trips, dust, mud, extreme cold or salt.",
+      "mt_interval_manual": "From the manual",
+      "mt_interval_value": "{km} km or {months} months",
+      "mt_interval_other": "You choose",
+      "mt_preview": "Next service: {date} or at {km} km",
+      "mt_whichever": "Whichever comes first: {date} or at {km} km.",
+      "by_time": "By time",
+      "by_km": "By distance",
+      "mt_km_detail": "Now {now} km · due at {due}",
+      "mt_this_service": "What this service includes",
+      "n_operations": "{count} operations",
+      "mt_no_plan": "This model has no servicing plan in the catalogue.",
+      "mt_next_adds": "The next one (no. {number}) adds",
+      "mt_history_item": "Service no. {number} · {date} · {km} km",
+      "mt_no_history": "No services have been registered yet.",
+      "itv_registration_title": "Registration",
+      "itv_registration_help": "It is on the registration certificate. The first ITV is calculated from it.",
+      "itv_passed_title": "ITVs already passed",
+      "itv_passed_help": "Only if the vehicle has already passed one.",
+      "itv_passed": "It has already passed an ITV",
+      "itv_next_title": "Next ITV",
+      "itv_next_rules": "It is calculated with the rules of the account's country.",
+      "itv_next_auto": "Calculate it",
+      "itv_next_manual": "Set another date",
+      "itv_next_manual_note": "If the station gave you a different one",
+      "itv_preview": "Next ITV: {date}",
+      "itv_manual_date": "date set by hand",
+      "itv_age": "{years} years",
+      "itv_none_yet": "None yet",
+      "itv_first_at": "The first one, at {years} years",
+      "itv_rules_title": "How often",
+      "itv_rules": "The first at {first} years; then every {interval} and, from {reduced} years on, every year.",
+      "itv_history_item": "ITV passed on {date}",
+      "itv_no_history": "No ITV has been registered yet.",
+      "ins_policy_title": "The policy",
+      "ins_policy_help": "The policy number and the phone numbers are only shown on the card and in the panel; they never appear in the diagnostics.",
+      "ins_renewal_title": "Renewal",
+      "ins_renewal_help": "The insurance renews itself every year. To cancel, you have to give notice beforehand.",
+      "ins_renews_on": "It renews on",
+      "ins_notice_days": "Notice days",
+      "ins_phones_title": "Phone numbers",
+      "ins_phones_help": "To call with one tap from the card and from here.",
+      "ins_preview": "Last day to cancel: {date}",
+      "ins_preview_passed": "That deadline has passed. It renews on {date}.",
+      "ins_dates": "Dates",
+      "ins_to_cancel": "To cancel",
+      "ins_to_renewal": "To renewal",
+      "ins_deadline_passed": "Deadline passed",
+      "ins_deadline_on": "Last day: {date}",
+      "ins_renews_itself": "It renews itself on {date}",
+      "ins_assistance": "Assistance"
     },
     "it": {
       "tab_cars": "Vehicles",
@@ -890,9 +1083,6 @@
       "yesterday": "Yesterday",
       "enabled": "Enabled",
       "mt_services_done": "Services already done",
-      "mt_services_done_help": "0 if the vehicle has not had any yet.",
-      "mt_last_date": "Date of the last service",
-      "mt_last_km": "Kilometres at that service",
       "mt_interval_km": "Interval (km)",
       "mt_interval_months": "Interval (months)",
       "mt_register": "Register a completed service",
@@ -903,9 +1093,7 @@
       "registered": "Registered",
       "itv_registration": "Registration date",
       "itv_last": "Last ITV passed",
-      "itv_last_help": "Empty if it has not passed any yet.",
       "itv_next": "Next ITV (manual)",
-      "itv_next_help": "Empty to have it calculated.",
       "itv_register": "Register a passed ITV",
       "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
       "ins_company": "Company",
@@ -968,7 +1156,76 @@
       "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
       "error_cannot_connect": "Could not connect to Deepal. Try again later.",
       "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
-      "error_unknown_model": "That model is not in the catalogue."
+      "error_unknown_model": "That model is not in the catalogue.",
+      "close": "Close",
+      "other": "Other",
+      "history": "History",
+      "manual": "Manual",
+      "copied": "Copied: {text}",
+      "form_maintenance": "Set up servicing",
+      "form_itv": "Set up the ITV",
+      "form_insurance": "Set up the insurance",
+      "form_maintenance_off": "Disabled: its entities, its indicator on the card and its notifications are removed. The history is lost.",
+      "form_itv_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "form_insurance_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "first_notice": "First notification {days} days before",
+      "mt_last": "Last service",
+      "mt_last_help": "If the vehicle has not had any yet, enter the registration date and 0 km.",
+      "mt_next_is": "The next one will be service no. {number}.",
+      "mt_km_then": "Kilometres then",
+      "mt_use_odometer": "Use the vehicle's current reading ({km} km)",
+      "mt_every": "How often",
+      "mt_every_help": "The manual asks for a shorter interval with repeated short trips, dust, mud, extreme cold or salt.",
+      "mt_interval_manual": "From the manual",
+      "mt_interval_value": "{km} km or {months} months",
+      "mt_interval_other": "You choose",
+      "mt_preview": "Next service: {date} or at {km} km",
+      "mt_whichever": "Whichever comes first: {date} or at {km} km.",
+      "by_time": "By time",
+      "by_km": "By distance",
+      "mt_km_detail": "Now {now} km · due at {due}",
+      "mt_this_service": "What this service includes",
+      "n_operations": "{count} operations",
+      "mt_no_plan": "This model has no servicing plan in the catalogue.",
+      "mt_next_adds": "The next one (no. {number}) adds",
+      "mt_history_item": "Service no. {number} · {date} · {km} km",
+      "mt_no_history": "No services have been registered yet.",
+      "itv_registration_title": "Registration",
+      "itv_registration_help": "It is on the registration certificate. The first ITV is calculated from it.",
+      "itv_passed_title": "ITVs already passed",
+      "itv_passed_help": "Only if the vehicle has already passed one.",
+      "itv_passed": "It has already passed an ITV",
+      "itv_next_title": "Next ITV",
+      "itv_next_rules": "It is calculated with the rules of the account's country.",
+      "itv_next_auto": "Calculate it",
+      "itv_next_manual": "Set another date",
+      "itv_next_manual_note": "If the station gave you a different one",
+      "itv_preview": "Next ITV: {date}",
+      "itv_manual_date": "date set by hand",
+      "itv_age": "{years} years",
+      "itv_none_yet": "None yet",
+      "itv_first_at": "The first one, at {years} years",
+      "itv_rules_title": "How often",
+      "itv_rules": "The first at {first} years; then every {interval} and, from {reduced} years on, every year.",
+      "itv_history_item": "ITV passed on {date}",
+      "itv_no_history": "No ITV has been registered yet.",
+      "ins_policy_title": "The policy",
+      "ins_policy_help": "The policy number and the phone numbers are only shown on the card and in the panel; they never appear in the diagnostics.",
+      "ins_renewal_title": "Renewal",
+      "ins_renewal_help": "The insurance renews itself every year. To cancel, you have to give notice beforehand.",
+      "ins_renews_on": "It renews on",
+      "ins_notice_days": "Notice days",
+      "ins_phones_title": "Phone numbers",
+      "ins_phones_help": "To call with one tap from the card and from here.",
+      "ins_preview": "Last day to cancel: {date}",
+      "ins_preview_passed": "That deadline has passed. It renews on {date}.",
+      "ins_dates": "Dates",
+      "ins_to_cancel": "To cancel",
+      "ins_to_renewal": "To renewal",
+      "ins_deadline_passed": "Deadline passed",
+      "ins_deadline_on": "Last day: {date}",
+      "ins_renews_itself": "It renews itself on {date}",
+      "ins_assistance": "Assistance"
     },
     "pl": {
       "tab_cars": "Vehicles",
@@ -1110,9 +1367,6 @@
       "yesterday": "Yesterday",
       "enabled": "Enabled",
       "mt_services_done": "Services already done",
-      "mt_services_done_help": "0 if the vehicle has not had any yet.",
-      "mt_last_date": "Date of the last service",
-      "mt_last_km": "Kilometres at that service",
       "mt_interval_km": "Interval (km)",
       "mt_interval_months": "Interval (months)",
       "mt_register": "Register a completed service",
@@ -1123,9 +1377,7 @@
       "registered": "Registered",
       "itv_registration": "Registration date",
       "itv_last": "Last ITV passed",
-      "itv_last_help": "Empty if it has not passed any yet.",
       "itv_next": "Next ITV (manual)",
-      "itv_next_help": "Empty to have it calculated.",
       "itv_register": "Register a passed ITV",
       "itv_register_help": "Records that {name} has passed the ITV and calculates the next one.",
       "ins_company": "Company",
@@ -1188,7 +1440,76 @@
       "error_pin_rate_limited": "Too many PIN attempts. Wait a few minutes before trying again.",
       "error_cannot_connect": "Could not connect to Deepal. Try again later.",
       "error_invalid_url": "The manual link is not valid: it must start with http:// or https://.",
-      "error_unknown_model": "That model is not in the catalogue."
+      "error_unknown_model": "That model is not in the catalogue.",
+      "close": "Close",
+      "other": "Other",
+      "history": "History",
+      "manual": "Manual",
+      "copied": "Copied: {text}",
+      "form_maintenance": "Set up servicing",
+      "form_itv": "Set up the ITV",
+      "form_insurance": "Set up the insurance",
+      "form_maintenance_off": "Disabled: its entities, its indicator on the card and its notifications are removed. The history is lost.",
+      "form_itv_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "form_insurance_off": "Disabled: its entities, its indicator on the card and its notifications are removed.",
+      "first_notice": "First notification {days} days before",
+      "mt_last": "Last service",
+      "mt_last_help": "If the vehicle has not had any yet, enter the registration date and 0 km.",
+      "mt_next_is": "The next one will be service no. {number}.",
+      "mt_km_then": "Kilometres then",
+      "mt_use_odometer": "Use the vehicle's current reading ({km} km)",
+      "mt_every": "How often",
+      "mt_every_help": "The manual asks for a shorter interval with repeated short trips, dust, mud, extreme cold or salt.",
+      "mt_interval_manual": "From the manual",
+      "mt_interval_value": "{km} km or {months} months",
+      "mt_interval_other": "You choose",
+      "mt_preview": "Next service: {date} or at {km} km",
+      "mt_whichever": "Whichever comes first: {date} or at {km} km.",
+      "by_time": "By time",
+      "by_km": "By distance",
+      "mt_km_detail": "Now {now} km · due at {due}",
+      "mt_this_service": "What this service includes",
+      "n_operations": "{count} operations",
+      "mt_no_plan": "This model has no servicing plan in the catalogue.",
+      "mt_next_adds": "The next one (no. {number}) adds",
+      "mt_history_item": "Service no. {number} · {date} · {km} km",
+      "mt_no_history": "No services have been registered yet.",
+      "itv_registration_title": "Registration",
+      "itv_registration_help": "It is on the registration certificate. The first ITV is calculated from it.",
+      "itv_passed_title": "ITVs already passed",
+      "itv_passed_help": "Only if the vehicle has already passed one.",
+      "itv_passed": "It has already passed an ITV",
+      "itv_next_title": "Next ITV",
+      "itv_next_rules": "It is calculated with the rules of the account's country.",
+      "itv_next_auto": "Calculate it",
+      "itv_next_manual": "Set another date",
+      "itv_next_manual_note": "If the station gave you a different one",
+      "itv_preview": "Next ITV: {date}",
+      "itv_manual_date": "date set by hand",
+      "itv_age": "{years} years",
+      "itv_none_yet": "None yet",
+      "itv_first_at": "The first one, at {years} years",
+      "itv_rules_title": "How often",
+      "itv_rules": "The first at {first} years; then every {interval} and, from {reduced} years on, every year.",
+      "itv_history_item": "ITV passed on {date}",
+      "itv_no_history": "No ITV has been registered yet.",
+      "ins_policy_title": "The policy",
+      "ins_policy_help": "The policy number and the phone numbers are only shown on the card and in the panel; they never appear in the diagnostics.",
+      "ins_renewal_title": "Renewal",
+      "ins_renewal_help": "The insurance renews itself every year. To cancel, you have to give notice beforehand.",
+      "ins_renews_on": "It renews on",
+      "ins_notice_days": "Notice days",
+      "ins_phones_title": "Phone numbers",
+      "ins_phones_help": "To call with one tap from the card and from here.",
+      "ins_preview": "Last day to cancel: {date}",
+      "ins_preview_passed": "That deadline has passed. It renews on {date}.",
+      "ins_dates": "Dates",
+      "ins_to_cancel": "To cancel",
+      "ins_to_renewal": "To renewal",
+      "ins_deadline_passed": "Deadline passed",
+      "ins_deadline_on": "Last day: {date}",
+      "ins_renews_itself": "It renews itself on {date}",
+      "ins_assistance": "Assistance"
     }
   };
 
@@ -1213,6 +1534,46 @@
 
   const escapeHtml = (text) =>
     String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+  // ── src/22_fechas.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Fechas: lo justo para que los formularios enseñen el resultado antes de guardar
+  // ---------------------------------------------------------------------------
+  // Las cuentas "de verdad" las hace la integración (maintenance.py y
+  // documents.py); estas son las mismas, para la vista previa.
+
+  /** "2027-03-10" → Date (a medianoche, hora local); `null` si no es una fecha. */
+  const parseDate = (iso) => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ""));
+    if (!match) return null;
+    const [year, month, day] = match.slice(1).map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+  };
+
+  const isoDate = (date) => {
+    const two = (value) => String(value).padStart(2, "0");
+    return `${date.getFullYear()}-${two(date.getMonth() + 1)}-${two(date.getDate())}`;
+  };
+
+  /** Fecha + meses (el 31 pasa al último día si el mes es más corto), como `add_months`. */
+  const addMonths = (date, months) => {
+    const index = date.getMonth() + months;
+    const year = date.getFullYear() + Math.floor(index / 12);
+    const month = ((index % 12) + 12) % 12;
+    return new Date(year, month, Math.min(date.getDate(), new Date(year, month + 1, 0).getDate()));
+  };
+
+  const addDays = (date, days) => new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+
+  /** Días de `from` a `to` (negativo si `to` ya pasó). */
+  const daysBetween = (from, to) =>
+    Math.round((Date.UTC(to.getFullYear(), to.getMonth(), to.getDate()) - Date.UTC(from.getFullYear(), from.getMonth(), from.getDate())) / 86400000);
+
+  const today = () => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  };
 
   // ── src/30_estilos.js ─────────────────────────────────────────────────────
   // ---------------------------------------------------------------------------
@@ -1264,6 +1625,7 @@
     .chip ha-icon { color: var(--primary-color); }
     .grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 10px 20px 18px; }
     .tile { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+    .tile[data-action] { cursor: pointer; }
     .tile .h { display: flex; gap: 8px; align-items: center; color: var(--secondary-text-color); font-size: 13px; --mdc-icon-size: 20px; }
     .tile .h span { flex: 1; }
     .gear { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: -4px -6px -4px 0;
@@ -1392,6 +1754,77 @@
     .tb.left { margin-right: auto; }
     /* Ventana de Apariencia */
     .dlg.wide { max-width: 640px; }
+    /* Fichas y formularios de Coches */
+    .dlg.mid { max-width: 580px; }
+    a.tb { text-decoration: none; display: inline-block; }
+    .thead { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .thead .ic { width: 44px; height: 44px; border-radius: 50%; background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color);
+      display: flex; align-items: center; justify-content: center; flex: none; }
+    .thead h2 { flex: 1; margin: 0; } .thead h2 small { display: block; font-size: 13px; color: var(--secondary-text-color); margin-top: 2px; }
+    .sw2 { display: flex; gap: 8px; align-items: center; font-size: 13px; }
+    .x { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: var(--secondary-text-color); --mdc-icon-size: 20px; flex: none; }
+    .tog { width: 40px; height: 22px; border-radius: 11px; background: var(--disabled-text-color, #bdbdbd); position: relative; flex: none; }
+    .tog::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .15s; }
+    .tog.on { background: var(--primary-color); } .tog.on::after { left: 21px; }
+    .off { padding: 8px 0 4px; }
+    .fsec { border-top: 1px solid var(--divider-color, #e0e0e0); padding: 14px 0 4px; }
+    .fsec h4 { font-size: 13px; font-weight: 500; margin: 0 0 2px; display: flex; gap: 8px; align-items: center; --mdc-icon-size: 18px; }
+    .fsec h4 ha-icon { color: var(--primary-color); }
+    .hp { font-size: 12px; color: var(--secondary-text-color); margin-bottom: 10px; line-height: 1.4; }
+    .fl, .fld > span:first-child { display: block; font-size: 12px; color: var(--secondary-text-color); margin-bottom: 4px; }
+    label.fld { margin: 0; }
+    .fi { display: flex; align-items: center; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 8px; background: var(--card-background-color, #fff); overflow: hidden; }
+    .fi input:not([type=checkbox]) { border: 0; margin: 0; border-radius: 0; background: transparent; min-width: 0; flex: 1; outline: none; }
+    .fi em { font-style: normal; color: var(--secondary-text-color); font-size: 13px; padding: 0 10px; }
+    .fg { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; align-items: start; }
+    .inline { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+    .note { font-size: 13px; color: var(--secondary-text-color); padding-top: 16px; }
+    .stepper { display: inline-flex; align-items: center; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 20px; overflow: hidden; }
+    .stepper button { width: 40px; height: 38px; font-size: 20px; color: var(--primary-color); }
+    .stepper b { min-width: 40px; text-align: center; font-size: 17px; font-weight: 400; }
+    .hint { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; color: var(--primary-color); margin-top: 5px; --mdc-icon-size: 15px; }
+    .opts { margin-bottom: 10px; }
+    .kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .kind { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 10px; padding: 9px 12px; display: flex; gap: 8px; align-items: center; text-align: left; --mdc-icon-size: 18px; }
+    .kind ha-icon { color: var(--secondary-text-color); }
+    .kind.on { border: 2px solid var(--primary-color); padding: 8px 11px; background: rgba(var(--rgb-primary-color, 3, 169, 244), .1); } .kind.on ha-icon { color: var(--primary-color); }
+    .seg { display: inline-flex; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 18px; overflow: hidden; flex-wrap: wrap; }
+    .seg button { padding: 8px 12px; font-size: 13px; border-right: 1px solid var(--divider-color, #e0e0e0); }
+    .seg button:last-child { border: 0; } .seg button.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .preview { border-radius: 12px; background: rgba(67, 160, 71, .14); padding: 12px 14px; display: flex; gap: 12px; align-items: center; margin-top: 6px; }
+    .preview ha-icon { color: var(--success-color, #43a047); flex: none; } .preview b { font-weight: 500; display: block; } .preview small { font-size: 13px; }
+    .big { font-size: 28px; margin: 2px 0; overflow-wrap: anywhere; } .bigsub { color: var(--secondary-text-color); font-size: 13px; margin-bottom: 12px; }
+    .dual { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 6px; }
+    .stat { background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+    .stat .k { font-size: 12px; color: var(--secondary-text-color); display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
+    .stat .n { font-size: 20px; margin: 4px 0 1px; } .stat .d { font-size: 12px; color: var(--secondary-text-color); min-height: 15px; }
+    .meter { height: 6px; border-radius: 3px; background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .1); margin-top: 8px; overflow: hidden; }
+    .meter i { display: block; height: 100%; background: var(--success-color, #43a047); }
+    .h3 { font-size: 13px; font-weight: 500; margin: 16px 0 6px; display: flex; gap: 8px; align-items: center; } .h3 span { font-weight: 400; color: var(--secondary-text-color); }
+    .ops { margin: 0; padding: 0; list-style: none; }
+    .ops li { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; border-bottom: 1px solid var(--divider-color, #e0e0e0); --mdc-icon-size: 20px; }
+    .ops li:last-child { border: 0; } .ops ha-icon { color: var(--success-color, #43a047); flex: none; }
+    .ops small { display: block; color: var(--secondary-text-color); font-size: 12px; }
+    .hist { display: flex; gap: 10px; align-items: center; padding: 5px 0; font-size: 13px; --mdc-icon-size: 18px; } .hist ha-icon { color: var(--secondary-text-color); flex: none; }
+    .chip { display: inline-block; padding: 5px 12px; border-radius: 16px; background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .06); font-size: 13px; margin: 0 6px 6px 0; }
+    .badge { font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 500; }
+    .badge.info { background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color); }
+    .pol { display: flex; align-items: center; gap: 12px; } .pol span { font-size: 13px; color: var(--secondary-text-color); } .pol b { font-weight: 400; flex: 1; }
+    .line { position: relative; height: 34px; margin: 6px 10px 4px; }
+    .line .track, .line .fill, .line .amber { position: absolute; top: 14px; height: 6px; border-radius: 3px; }
+    .line .track { left: 0; right: 0; background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .1); }
+    .line .fill { left: 0; background: var(--success-color, #43a047); } .line .amber { background: var(--warning-color, #f9a825); border-radius: 0; }
+    .line .pt { position: absolute; top: 7px; width: 20px; height: 20px; border-radius: 50%; background: var(--card-background-color, #fff); border: 3px solid var(--primary-color); transform: translateX(-50%); }
+    .line .pt.now { border-color: var(--success-color, #43a047); background: var(--success-color, #43a047); }
+    .calls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .callb { display: flex; gap: 12px; align-items: center; border-radius: 14px; padding: 12px 14px; text-decoration: none;
+      background: rgba(var(--rgb-primary-color, 3, 169, 244), .12); color: var(--primary-color); }
+    .callb b { font-weight: 500; display: block; } .callb small { font-size: 13px; }
+    .ifoot { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--divider-color, #e0e0e0); flex-wrap: wrap; }
+    .ifoot span { flex: 1; }
+    .gearb { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .06); color: var(--secondary-text-color);
+      display: flex; align-items: center; justify-content: center; --mdc-icon-size: 22px; }
+    @media (max-width: 520px) { .fg, .dual, .kinds, .calls { grid-template-columns: 1fr; } }
     .prev { background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05); border-radius: 16px; text-align: center; padding-top: 4px; margin-bottom: 4px; overflow: hidden; }
     .prev img { width: 88%; display: block; margin: 0 auto -4px; }
     .lbl { font-size: 13px; color: var(--secondary-text-color); margin: 14px 0 6px; }
@@ -1644,6 +2077,12 @@
     }
 
     _onKey(event) {
+      // Los recuadros que hacen de botón se abren también con Intro o Espacio.
+      if ((event.key === "Enter" || event.key === " ") && event.target.matches && event.target.matches("[role=button][data-action]")) {
+        event.preventDefault();
+        event.target.click();
+        return;
+      }
       if (!this._editing || !event.target.matches || !event.target.matches(".inp input")) return;
       if (event.key === "Enter") this._do_edit_ok();
       if (event.key === "Escape") this._do_edit_cancel();
@@ -1724,10 +2163,10 @@
       const gear = `<button class="gear" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>`;
       const head = `<div class="h"><ha-icon icon="${icon}"></ha-icon><span>${this._t(`section_${kind}`)}</span>${gear}</div>`;
       if (!body) {
-        return `<div class="tile off">${head}<div class="v">${this._t("not_set")}</div>
+        return `<div class="tile off" data-action="info" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${head}<div class="v">${this._t("not_set")}</div>
           <button class="link" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${this._t(`add_${kind}`)}</button></div>`;
       }
-      return `<div class="tile ${level}">${head}${body}</div>`;
+      return `<div class="tile ${level}" data-action="info" data-kind="${kind}" data-car="${escapeHtml(car.id)}" role="button" tabindex="0">${head}${body}</div>`;
     }
 
     _meter(fraction) {
@@ -2170,165 +2609,268 @@
   // ---------------------------------------------------------------------------
   // Engranajes de "Coches": configurar mantenimiento, ITV y seguro
   // ---------------------------------------------------------------------------
-  // Los mismos datos que piden los apartados de Configurar, en una ventana.
+  // Cada formulario va por bloques y termina con un recuadro que dice qué va a
+  // pasar ("Próxima revisión: ..."), recalculado según se escribe. Lo escrito
+  // vive en un objeto `f`; al pulsar una opción se repinta la ventana entera,
+  // y al teclear solo el recuadro (para no perder el cursor).
   install(class {
     _do_gear(data) {
-      const car = this._car(data.car);
-      this[`_form_${data.kind}`](car);
+      this[`_form_${data.kind}`](this._car(data.car));
     }
 
-    _today() {
-      const now = new Date();
-      const two = (value) => String(value).padStart(2, "0");
-      return `${now.getFullYear()}-${two(now.getMonth() + 1)}-${two(now.getDate())}`;
+    /** Campo de texto, fecha o número. `more`: atributos; `unit`: unidad a la derecha. */
+    _input(f, name, label, type, more, unit) {
+      return `<label class="fld"><span>${this._t(label)}</span>
+        <span class="fi"><input data-f="${name}" type="${type}" value="${escapeHtml(f[name] == null ? "" : f[name])}" ${more || ""}>${unit ? `<em>${unit}</em>` : ""}</span></label>`;
     }
 
-    /** Campo de formulario: etiqueta, control y, si la hay, una ayuda. */
-    _field(name, label, attributes, help) {
-      return `<label>${this._t(label)}<input name="${name}" ${attributes}>${help ? `<small>${this._t(help)}</small>` : ""}</label>`;
+    _section(icon, title, help, body) {
+      return `<div class="fsec"><h4><ha-icon icon="${icon}"></ha-icon>${this._t(title)}</h4><div class="hp">${this._t(help)}</div>${body}</div>`;
+    }
+
+    /** Opción de un grupo (una está elegida): botón con título y, si la hay, una nota. */
+    _choice(f, name, value, title, note) {
+      const on = String(f[name]) === String(value);
+      return `<button class="opt ${on ? "on" : ""}" data-action="set" data-f="${name}" data-v="${escapeHtml(value)}" aria-pressed="${on}">${escapeHtml(title)}${note ? `<small>${escapeHtml(note)}</small>` : ""}</button>`;
     }
 
     /**
-     * Ventana de un apartado. Con "Activado" desmarcado se guarda como
-     * desactivado (y se quitan sus entidades y avisos).
+     * Ventana de un apartado.
+     *
+     * @param parts
+     *   sections(f)  bloques del formulario (HTML)
+     *   preview(f)   `{ icon, title, detail }` del recuadro final, o `null` si aún faltan datos
+     *   check(f)     texto del error que impide guardar ("" = todo bien)
+     *   data(f)      lo que se manda a la integración
      */
-    _form(car, kind, enabled, fields, extra, save) {
-      const dialog = openDialog(
-        `<h2>${this._t(`section_${kind}`)} — ${escapeHtml(car.name)}</h2>
-         <label class="check"><input type="checkbox" name="enabled" ${enabled ? "checked" : ""}>${this._t("enabled")}</label>
-         <div class="fields">${fields}</div>
-         <div class="err"></div>
-         <div class="btns">${extra || ""}<button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div>`,
-        async (action, current) => {
-          if (action === "extra") {
-            current.close();
-            return this[`_register_${kind}`](car);
-          }
-          if (action !== "ok") return undefined;
-          const values = current.values();
-          const message = values.enabled ? save.check(values) : "";
-          if (message) return current.error(message);
-          current.close();
-          return this._run(`set_${kind}`, { vehicle_id: car.id, ...(values.enabled ? save.data(values) : { enabled: false }) }, this._t("saved"));
-        }
-      );
-      const toggle = () => {
-        dialog.root.querySelector(".fields").hidden = !dialog.root.querySelector('[name="enabled"]').checked;
+    _formWindow(car, kind, icon, f, parts) {
+      const preview = () => {
+        const result = f.enabled ? parts.preview(f) : null;
+        return result
+          ? `<div class="preview"><ha-icon icon="${result.icon}"></ha-icon><div><b>${escapeHtml(result.title)}</b><small>${escapeHtml(result.detail)}</small></div></div>`
+          : "";
       };
-      dialog.root.querySelector('[name="enabled"]').addEventListener("change", toggle);
-      toggle();
-    }
-
-    _required(values, names) {
-      return names.every((name) => String(values[name] || "").trim()) ? "" : this._t("error_required");
-    }
-
-    _form_maintenance(car) {
-      const data = car.maintenance;
-      const record = data ? data.record : { services_done: 0, last_date: "", last_km: 0, ...car.plan };
-      const fields = `
-        ${this._field("services_done", "mt_services_done", `type="number" min="0" max="50" value="${record.services_done}"`, "mt_services_done_help")}
-        <div class="two">
-          ${this._field("last_date", "mt_last_date", `type="date" value="${escapeHtml(record.last_date)}"`)}
-          ${this._field("last_km", "mt_last_km", `type="number" min="0" max="2000000" value="${record.last_km}"`)}
-          ${this._field("interval_km", "mt_interval_km", `type="number" min="1000" max="100000" step="500" value="${record.interval_km}"`)}
-          ${this._field("interval_months", "mt_interval_months", `type="number" min="1" max="60" value="${record.interval_months}"`)}
-        </div>`;
-      const extra = data ? `<button class="tb left" data-action="extra">${this._t("mt_register")}</button>` : "";
-      this._form(car, "maintenance", true, fields, extra, {
-        check: (values) => this._required(values, ["last_date", "interval_km", "interval_months"]),
-        data: (values) => ({
-          enabled: true,
-          services_done: Number(values.services_done) || 0,
-          last_date: values.last_date,
-          last_km: Number(values.last_km) || 0,
-          interval_km: Number(values.interval_km),
-          interval_months: Number(values.interval_months),
-        }),
+      const body = () => `
+        <div class="thead"><div class="ic"><ha-icon icon="${icon}"></ha-icon></div>
+          <h2>${this._t(`form_${kind}`)}<small>${escapeHtml(car.name)} · ${escapeHtml(car.model)}</small></h2>
+          <span class="sw2">${this._t("enabled")}<button class="tog ${f.enabled ? "on" : ""}" data-action="set" data-f="enabled" data-v="${!f.enabled}" role="switch" aria-checked="${f.enabled}"></button></span></div>
+        ${f.enabled ? `${parts.sections(f)}<div class="slot">${preview()}</div>` : `<p class="off">${this._t(`form_${kind}_off`)}</p>`}
+        <div class="err"></div>
+        <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div>`;
+      const dialog = openDialog(body(), (action, open, target) => {
+        const data = target.dataset;
+        if (action === "set") f[data.f] = data.v === "true" ? true : data.v === "false" ? false : data.v;
+        else if (action === "step") f[data.f] = Math.max(0, Math.min(50, (Number(f[data.f]) || 0) + Number(data.d)));
+        else if (action === "use") f[data.f] = data.v;
+        else if (action === "ok") {
+          const message = f.enabled ? parts.check(f) : "";
+          if (message) return open.error(message);
+          open.close();
+          return this._run(`set_${kind}`, { vehicle_id: car.id, ...(f.enabled ? parts.data(f) : { enabled: false }) }, this._t("saved"));
+        } else return undefined;
+        open.root.querySelector(".dlg").innerHTML = body();
+        return undefined;
+      });
+      dialog.root.querySelector(".dlg").classList.add("mid");
+      dialog.root.addEventListener("input", (event) => {
+        const name = event.target.dataset && event.target.dataset.f;
+        if (!name) return;
+        f[name] = event.target.value;
+        const slot = dialog.root.querySelector(".slot");
+        if (slot) slot.innerHTML = preview();
       });
     }
 
-    /** Registrar una revisión hecha: fecha y kilómetros (por defecto, hoy y los del coche). */
-    _register_maintenance(car) {
-      openDialog(
-        `<h2>${this._t("mt_register")}</h2><p>${this._t("mt_register_help", { name: escapeHtml(car.name), number: car.maintenance.number })}</p>
-         <div class="two">${this._field("date", "date", `type="date" value="${this._today()}"`)}
-           ${this._field("km", "mt_km", `type="number" min="0" max="2000000" value="${Math.round(car.odometer || 0)}"`)}</div>
-         <div class="err"></div>
-         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`,
-        (action, dialog) => {
-          if (action !== "ok") return undefined;
-          const values = dialog.values();
-          if (!values.date) return dialog.error(this._t("error_required"));
-          dialog.close();
-          return this._run("register_maintenance", { vehicle_id: car.id, date: values.date, km: Number(values.km) || 0 }, this._t("registered"));
-        }
-      );
+    // --- Mantenimiento -------------------------------------------------------------
+
+    _form_maintenance(car) {
+      const record = car.maintenance ? car.maintenance.record : null;
+      const plan = car.plan;
+      const f = {
+        enabled: true,
+        services_done: record ? record.services_done : 0,
+        last_date: record ? record.last_date : "",
+        last_km: record ? record.last_km : 0,
+        interval_km: record ? record.interval_km : plan.interval_km,
+        interval_months: record ? record.interval_months : plan.interval_months,
+      };
+      f.interval = Number(f.interval_km) === plan.interval_km && Number(f.interval_months) === plan.interval_months ? "manual" : "other";
+      const odometer = car.odometer == null ? null : Math.round(car.odometer);
+      /** Intervalo que cuenta: el del manual o el escrito. */
+      const interval = () => (f.interval === "manual"
+        ? { km: plan.interval_km, months: plan.interval_months }
+        : { km: Number(f.interval_km), months: Number(f.interval_months) });
+      this._formWindow(car, "maintenance", "mdi:wrench", f, {
+        sections: () => `
+          ${this._section("mdi:history", "mt_last", "mt_last_help", `
+            <div class="inline"><label class="fld"><span>${this._t("mt_services_done")}</span>
+                <span class="stepper"><button data-action="step" data-f="services_done" data-d="-1" aria-label="−">−</button><b>${Number(f.services_done) || 0}</b><button data-action="step" data-f="services_done" data-d="1" aria-label="+">+</button></span></label>
+              <span class="note">${this._t("mt_next_is", { number: (Number(f.services_done) || 0) + 1 })}</span></div>
+            <div class="fg">${this._input(f, "last_date", "date", "date")}
+              <div>${this._input(f, "last_km", "mt_km_then", "number", 'min="0" max="2000000"', "km")}
+                ${odometer == null ? "" : `<button class="hint" data-action="use" data-f="last_km" data-v="${odometer}"><ha-icon icon="mdi:car-arrow-left"></ha-icon>${this._t("mt_use_odometer", { km: this._number(odometer) })}</button>`}</div></div>`)}
+          ${this._section("mdi:calendar-sync", "mt_every", "mt_every_help", `
+            <div class="opts">${this._choice(f, "interval", "manual", this._t("mt_interval_manual"), this._t("mt_interval_value", { km: this._number(plan.interval_km), months: plan.interval_months }))}
+              ${this._choice(f, "interval", "other", this._t("other"), this._t("mt_interval_other"))}</div>
+            ${f.interval !== "other" ? "" : `<div class="fg">${this._input(f, "interval_km", "mt_interval_km", "number", 'min="1000" max="100000" step="500"', "km")}
+              ${this._input(f, "interval_months", "mt_interval_months", "number", 'min="1" max="60"')}</div>`}`)}`,
+        preview: () => {
+          const last = parseDate(f.last_date);
+          const every = interval();
+          if (!last || !(every.km > 0) || !(every.months > 0)) return null;
+          const due = addMonths(last, every.months);
+          const dueKm = (Number(f.last_km) || 0) + every.km;
+          const days = daysBetween(today(), due);
+          const parts = [days >= 0 ? this._days(days) : ""];
+          if (odometer != null && dueKm - odometer >= 0) parts.push(`${this._number(dueKm - odometer)} km`);
+          const left = parts.filter(Boolean).join(this._t("or"));
+          const overdue = days < 0 || (odometer != null && dueKm - odometer < 0);
+          return {
+            icon: "mdi:calendar-check",
+            title: this._t("mt_preview", { date: this._date(isoDate(due)), km: this._number(dueKm) }),
+            detail: overdue || !left ? this._t("overdue") : this._t("left", { parts: left }),
+          };
+        },
+        check: () => {
+          const every = interval();
+          if (!parseDate(f.last_date) || !(every.km >= 1000) || !(every.months >= 1)) return this._t("error_required");
+          return "";
+        },
+        data: () => {
+          const every = interval();
+          return {
+            enabled: true,
+            services_done: Number(f.services_done) || 0,
+            last_date: f.last_date,
+            last_km: Math.round(Number(f.last_km) || 0),
+            interval_km: Math.round(every.km),
+            interval_months: Math.round(every.months),
+          };
+        },
+      });
+    }
+
+    // --- ITV -------------------------------------------------------------------------
+
+    /** Próxima ITV según las normas del país (igual que `documents.itv_calculated`). */
+    _itvCalculated(car, registration, last) {
+      const rules = car.itv_rules;
+      if (!last) return addMonths(registration, rules.first_months);
+      const old = last >= addMonths(registration, rules.reduced_from_months);
+      return addMonths(last, old ? rules.reduced_interval_months : rules.interval_months);
     }
 
     _form_itv(car) {
-      const data = car.itv;
-      const record = data ? data.record : { registration_date: "", last_date: "", next_override: "" };
-      const fields = `
-        ${this._field("registration_date", "itv_registration", `type="date" value="${escapeHtml(record.registration_date || "")}"`)}
-        ${this._field("last_date", "itv_last", `type="date" value="${escapeHtml(record.last_date || "")}"`, "itv_last_help")}
-        ${this._field("next_date", "itv_next", `type="date" value="${escapeHtml(record.next_override || "")}"`, "itv_next_help")}`;
-      const extra = data ? `<button class="tb left" data-action="extra">${this._t("itv_register")}</button>` : "";
-      this._form(car, "itv", true, fields, extra, {
-        check: (values) => this._required(values, ["registration_date"]),
-        data: (values) => ({
+      const record = car.itv ? car.itv.record : null;
+      const f = {
+        enabled: true,
+        registration_date: record ? record.registration_date : "",
+        passed: Boolean(record && record.last_date),
+        last_date: (record && record.last_date) || "",
+        next: record && record.next_override ? "manual" : "auto",
+        next_date: (record && record.next_override) || "",
+      };
+      const calculated = () => {
+        const registration = parseDate(f.registration_date);
+        const last = f.passed ? parseDate(f.last_date) : null;
+        if (!registration || (f.passed && !last)) return null;
+        return this._itvCalculated(car, registration, last);
+      };
+      const first = car.alerts.thresholds.itv_t1 || 60;
+      this._formWindow(car, "itv", "mdi:clipboard-check-outline", f, {
+        sections: () => {
+          const auto = calculated();
+          return `
+          ${this._section("mdi:card-account-details-outline", "itv_registration_title", "itv_registration_help",
+            `<div class="fg">${this._input(f, "registration_date", "itv_registration", "date")}<div></div></div>`)}
+          ${this._section("mdi:clipboard-text-clock-outline", "itv_passed_title", "itv_passed_help", `
+            <div class="inline"><button class="tog ${f.passed ? "on" : ""}" data-action="set" data-f="passed" data-v="${!f.passed}" role="switch" aria-checked="${f.passed}"></button><span>${this._t("itv_passed")}</span></div>
+            ${f.passed ? `<div class="fg">${this._input(f, "last_date", "itv_last", "date")}<div></div></div>` : ""}`)}
+          ${this._section("mdi:calendar-edit", "itv_next_title", "itv_next_rules", `
+            <div class="opts">${this._choice(f, "next", "auto", this._t("itv_next_auto"), auto ? this._date(isoDate(auto)) : "")}
+              ${this._choice(f, "next", "manual", this._t("itv_next_manual"), this._t("itv_next_manual_note"))}</div>
+            ${f.next === "manual" ? `<div class="fg">${this._input(f, "next_date", "itv_next", "date")}<div></div></div>` : ""}`)}`;
+        },
+        preview: () => {
+          const due = f.next === "manual" ? parseDate(f.next_date) : calculated();
+          if (!due) return null;
+          const days = daysBetween(today(), due);
+          return {
+            icon: "mdi:calendar-check",
+            title: this._t("itv_preview", { date: this._date(isoDate(due)) }),
+            detail: days < 0 ? this._t("overdue_since", { days: this._days(days) }) : `${this._t("left", { parts: this._days(days) })}. ${this._t("first_notice", { days: first })}`,
+          };
+        },
+        check: () => {
+          if (!parseDate(f.registration_date)) return this._t("error_required");
+          if (f.passed && !parseDate(f.last_date)) return this._t("error_required");
+          if (f.next === "manual" && !parseDate(f.next_date)) return this._t("error_required");
+          return "";
+        },
+        data: () => ({
           enabled: true,
-          registration_date: values.registration_date,
-          last_date: values.last_date || null,
-          next_date: values.next_date || null,
+          registration_date: f.registration_date,
+          last_date: f.passed ? f.last_date : null,
+          next_date: f.next === "manual" ? f.next_date : null,
         }),
       });
     }
 
-    _register_itv(car) {
-      openDialog(
-        `<h2>${this._t("itv_register")}</h2><p>${this._t("itv_register_help", { name: escapeHtml(car.name) })}</p>
-         ${this._field("date", "date", `type="date" value="${this._today()}"`)}
-         <div class="err"></div>
-         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`,
-        (action, dialog) => {
-          if (action !== "ok") return undefined;
-          const values = dialog.values();
-          if (!values.date) return dialog.error(this._t("error_required"));
-          dialog.close();
-          return this._run("register_itv", { vehicle_id: car.id, date: values.date }, this._t("registered"));
-        }
-      );
-    }
+    // --- Seguro ----------------------------------------------------------------------
 
     _form_insurance(car) {
-      const data = car.insurance;
-      const record = data ? data.record
-        : { renewal_date: "", company: "", policy: "", kind: this._state.insurance_kinds[0], notice_days: 30, phone_assistance: "", phone_company: "" };
-      const kinds = this._state.insurance_kinds
-        .map((kind) => `<option value="${kind}" ${kind === record.kind ? "selected" : ""}>${this._t(`kind_${kind}`)}</option>`)
-        .join("");
-      const text = (name, label, value, type) => this._field(name, label, `type="${type || "text"}" value="${escapeHtml(value || "")}"`);
-      const fields = `
-        <div class="two">${text("company", "ins_company", record.company)}${text("policy", "ins_policy", record.policy)}</div>
-        <label>${this._t("ins_kind")}<select name="kind">${kinds}</select></label>
-        <div class="two">
-          ${this._field("renewal_date", "ins_renewal", `type="date" value="${escapeHtml(record.renewal_date)}"`)}
-          ${this._field("notice_days", "ins_notice", `type="number" min="1" max="180" value="${record.notice_days}"`)}
-          ${text("phone_assistance", "ins_phone_assistance", record.phone_assistance, "tel")}
-          ${text("phone_company", "ins_phone_company", record.phone_company, "tel")}
-        </div>`;
-      this._form(car, "insurance", true, fields, "", {
-        check: (values) => this._required(values, ["renewal_date", "notice_days"]),
-        data: (values) => ({
+      const record = car.insurance ? car.insurance.record : null;
+      const days = record ? record.notice_days : 30;
+      const f = {
+        enabled: true,
+        company: record ? record.company : "",
+        policy: record ? record.policy : "",
+        kind: record ? record.kind : this._state.insurance_kinds[0],
+        renewal_date: record ? record.renewal_date : "",
+        notice: [15, 30, 60].includes(days) ? String(days) : "other",
+        notice_days: days,
+        phone_assistance: record ? record.phone_assistance : "",
+        phone_company: record ? record.phone_company : "",
+      };
+      const notice = () => (f.notice === "other" ? Math.round(Number(f.notice_days)) : Number(f.notice));
+      const KIND_ICONS = { third_party: "mdi:shield-outline", third_party_plus: "mdi:shield-half-full", comprehensive_excess: "mdi:shield-check", comprehensive: "mdi:shield-star" };
+      const first = car.alerts.thresholds.insurance_c1 || 30;
+      this._formWindow(car, "insurance", "mdi:shield-car", f, {
+        sections: () => `
+          ${this._section("mdi:domain", "ins_policy_title", "ins_policy_help", `
+            <div class="fg">${this._input(f, "company", "ins_company", "text")}${this._input(f, "policy", "ins_policy", "text")}</div>
+            <div class="fl">${this._t("ins_kind")}</div>
+            <div class="kinds">${this._state.insurance_kinds.map((kind) =>
+              `<button class="kind ${f.kind === kind ? "on" : ""}" data-action="set" data-f="kind" data-v="${kind}" aria-pressed="${f.kind === kind}"><ha-icon icon="${KIND_ICONS[kind] || "mdi:shield"}"></ha-icon>${this._t(`kind_${kind}`)}</button>`).join("")}</div>`)}
+          ${this._section("mdi:calendar-refresh", "ins_renewal_title", "ins_renewal_help", `
+            <div class="fg">${this._input(f, "renewal_date", "ins_renews_on", "date")}
+              <div><div class="fl">${this._t("ins_notice")}</div><span class="seg">${["15", "30", "60"].map((value) =>
+                `<button class="${f.notice === value ? "on" : ""}" data-action="set" data-f="notice" data-v="${value}">${this._days(Number(value))}</button>`).join("")}
+                <button class="${f.notice === "other" ? "on" : ""}" data-action="set" data-f="notice" data-v="other">${this._t("other")}</button></span></div></div>
+            ${f.notice === "other" ? `<div class="fg">${this._input(f, "notice_days", "ins_notice_days", "number", 'min="1" max="180"', this._t("unit_days"))}<div></div></div>` : ""}`)}
+          ${this._section("mdi:phone", "ins_phones_title", "ins_phones_help",
+            `<div class="fg">${this._input(f, "phone_assistance", "ins_phone_assistance", "tel")}${this._input(f, "phone_company", "ins_phone_company", "tel")}</div>`)}`,
+        preview: () => {
+          const renewal = parseDate(f.renewal_date);
+          if (!renewal || !(notice() >= 1)) return null;
+          const deadline = addDays(renewal, -notice());
+          const left = daysBetween(today(), deadline);
+          return {
+            icon: "mdi:calendar-alert",
+            title: this._t("ins_preview", { date: this._date(isoDate(deadline)) }),
+            detail: left < 0 ? this._t("ins_preview_passed", { date: this._date(f.renewal_date) }) : `${this._t("left", { parts: this._days(left) })}. ${this._t("first_notice", { days: first })}`,
+          };
+        },
+        check: () => (parseDate(f.renewal_date) && notice() >= 1 && notice() <= 180 ? "" : this._t("error_required")),
+        data: () => ({
           enabled: true,
-          renewal_date: values.renewal_date,
-          company: values.company,
-          policy: values.policy,
-          kind: values.kind,
-          notice_days: Number(values.notice_days),
-          phone_assistance: values.phone_assistance,
-          phone_company: values.phone_company,
+          renewal_date: f.renewal_date,
+          company: f.company,
+          policy: f.policy,
+          kind: f.kind,
+          notice_days: notice(),
+          phone_assistance: f.phone_assistance,
+          phone_company: f.phone_company,
         }),
       });
     }
@@ -2523,6 +3065,200 @@
         if (this._settings) delete this._settings[data.entry];
         this._render();
       }
+    }
+  });
+
+  // ── src/67_fichas.js ──────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Fichas de "Coches": la ventana que se abre al pulsar un recuadro
+  // ---------------------------------------------------------------------------
+  // Pulsar el recuadro (no su engranaje) enseña la información: qué toca en
+  // la revisión, las fechas de la ITV, los datos del seguro. El engranaje de
+  // dentro lleva al formulario. Sin configurar, se abre el formulario directamente.
+  install(class {
+    _do_info(data) {
+      const car = this._car(data.car);
+      if (!car[data.kind]) return this._do_gear(data);
+      return this[`_info_${data.kind}`](car);
+    }
+
+    /**
+     * Ventana de ficha: cabecera, cuerpo y pie con el engranaje.
+     * `actions(action, dialog)` atiende los botones propios de la ficha.
+     */
+    _infoWindow(car, kind, icon, body, buttons, actions) {
+      const dialog = openDialog(
+        `<div class="thead"><div class="ic"><ha-icon icon="${icon}"></ha-icon></div>
+           <h2>${this._t(`section_${kind}`)}<small>${escapeHtml(car.name)} · ${escapeHtml(car.model)}</small></h2>
+           <button class="x" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button></div>
+         ${body}
+         <div class="ifoot"><button class="gearb" data-action="configure" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button><span></span>${buttons || ""}
+           <button class="tb" data-action="close">${this._t("close")}</button></div>`,
+        (action, open, target) => {
+          if (action === "configure") {
+            open.close();
+            return this._do_gear({ car: car.id, kind });
+          }
+          return actions ? actions(action, open, target) : undefined;
+        }
+      );
+      dialog.root.querySelector(".dlg").classList.add("mid");
+      return dialog;
+    }
+
+    _stat(icon, label, value, detail, fraction) {
+      return `<div class="stat"><div class="k"><ha-icon icon="${icon}"></ha-icon>${this._t(label)}</div><div class="n">${escapeHtml(value)}</div><div class="d">${escapeHtml(detail)}</div>
+        ${fraction == null ? "" : `<div class="meter"><i style="width:${Math.round(Math.max(0, Math.min(1, fraction)) * 100)}%"></i></div>`}</div>`;
+    }
+
+    /** "Inspección general (propulsión, frenos)" → título y, debajo, lo del paréntesis. */
+    _operation(name) {
+      const match = /^(.*?)\s*\((.*)\)\s*$/.exec(name);
+      const title = match ? match[1] : name;
+      const note = match ? match[2].charAt(0).toUpperCase() + match[2].slice(1) : "";
+      return `<li><ha-icon icon="mdi:check-circle-outline"></ha-icon><div>${escapeHtml(title)}${note ? `<small>${escapeHtml(note)}</small>` : ""}</div></li>`;
+    }
+
+    // --- Mantenimiento -------------------------------------------------------------
+
+    _info_maintenance(car) {
+      const data = car.maintenance;
+      const record = data.record;
+      const odometer = car.odometer == null ? null : Math.round(car.odometer);
+      const overdueDays = data.days_left < 0;
+      const overdueKm = data.km_left != null && data.km_left < 0;
+      const history = (record.history || []).slice().reverse();
+      const body = `
+        <div class="big">${this._t("service_number", { number: data.number })}</div>
+        <div class="bigsub">${this._t("mt_whichever", { date: this._date(data.due_date), km: this._number(data.due_km) })}</div>
+        <div class="dual">
+          ${this._stat("mdi:calendar", "by_time", overdueDays ? this._t("overdue") : this._days(data.days_left), this._date(data.due_date),
+            1 - data.days_left / (record.interval_months * 30.4))}
+          ${data.km_left == null ? "" : this._stat("mdi:counter", "by_km", overdueKm ? this._t("overdue") : `${this._number(data.km_left)} km`,
+            this._t("mt_km_detail", { now: this._number(odometer == null ? 0 : odometer), due: this._number(data.due_km) }), 1 - data.km_left / record.interval_km)}
+        </div>
+        <div class="h3">${this._t("mt_this_service")}${data.operations.length ? `<span>· ${this._t("n_operations", { count: data.operations.length })}</span>` : ""}</div>
+        ${data.operations.length ? `<ul class="ops">${data.operations.map((name) => this._operation(name)).join("")}</ul>` : `<div class="hist">${this._t("mt_no_plan")}</div>`}
+        ${data.next_extra && data.next_extra.length ? `<div class="h3">${this._t("mt_next_adds", { number: data.number + 1 })}</div>
+          <div>${data.next_extra.map((name) => `<span class="chip">${escapeHtml(name.replace(/\s*\(.*\)\s*$/, ""))}</span>`).join("")}</div>` : ""}
+        <div class="h3">${this._t("history")}</div>
+        ${history.length ? history.map((item) => `<div class="hist"><ha-icon icon="mdi:check"></ha-icon>${this._t("mt_history_item", {
+            number: item.number, date: this._date(item.date), km: this._number(item.km) })}</div>`).join("")
+          : `<div class="hist"><ha-icon icon="mdi:history"></ha-icon>${this._t("mt_no_history")}</div>`}`;
+      const buttons = `${car.manual_url ? `<a class="tb" href="${escapeHtml(car.manual_url)}" target="_blank" rel="noopener noreferrer">${this._t("manual")}</a>` : ""}
+        <button class="tb fill" data-action="register">${this._t("mt_register")}</button>`;
+      this._infoWindow(car, "maintenance", "mdi:wrench", body, buttons, (action, open) => {
+        if (action !== "register") return;
+        open.close();
+        this._register_maintenance(car);
+      });
+    }
+
+    /** Registrar una revisión hecha: fecha y kilómetros (por defecto, hoy y los del coche). */
+    _register_maintenance(car) {
+      openDialog(
+        `<h2>${this._t("mt_register")}</h2><p>${this._t("mt_register_help", { name: escapeHtml(car.name), number: car.maintenance.number })}</p>
+         <div class="two"><label>${this._t("date")}<input name="date" type="date" value="${isoDate(today())}"></label>
+           <label>${this._t("mt_km")}<input name="km" type="number" min="0" max="2000000" value="${Math.round(car.odometer || 0)}"></label></div>
+         <div class="err"></div>
+         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`,
+        (action, dialog) => {
+          if (action !== "ok") return undefined;
+          const values = dialog.values();
+          if (!parseDate(values.date)) return dialog.error(this._t("error_required"));
+          dialog.close();
+          return this._run("register_maintenance", { vehicle_id: car.id, date: values.date, km: Number(values.km) || 0 }, this._t("registered"));
+        }
+      );
+    }
+
+    // --- ITV -------------------------------------------------------------------------
+
+    _info_itv(car) {
+      const data = car.itv;
+      const record = data.record;
+      const overdue = data.days_left < 0;
+      const history = (record.history || []).slice().reverse();
+      const rules = car.itv_rules;
+      // Edad del coche: solo se dice cuando ya son años en plural.
+      const years = Math.floor(daysBetween(parseDate(record.registration_date), today()) / 365.25);
+      const body = `
+        <div class="big">${this._date(data.due_date)}</div>
+        <div class="bigsub">${overdue ? this._t("overdue_since", { days: this._days(data.days_left) }) : this._t("left", { parts: this._days(data.days_left) })}${
+          record.next_override ? ` · ${this._t("itv_manual_date")}` : ""}</div>
+        <div class="dual">
+          ${this._stat("mdi:card-account-details-outline", "itv_registration", this._date(record.registration_date), years >= 2 ? this._t("itv_age", { years }) : "")}
+          ${this._stat("mdi:clipboard-check-outline", "itv_last", record.last_date ? this._date(record.last_date) : this._t("itv_none_yet"),
+            record.last_date ? "" : this._t("itv_first_at", { years: Math.round(rules.first_months / 12) }))}
+        </div>
+        <div class="h3">${this._t("itv_rules_title")}</div>
+        <div class="hist"><ha-icon icon="mdi:information-outline"></ha-icon>${this._t("itv_rules", {
+          first: Math.round(rules.first_months / 12), interval: Math.round(rules.interval_months / 12), reduced: Math.round(rules.reduced_from_months / 12) })}</div>
+        <div class="h3">${this._t("history")}</div>
+        ${history.length ? history.map((date) => `<div class="hist"><ha-icon icon="mdi:check"></ha-icon>${this._t("itv_history_item", { date: this._date(date) })}</div>`).join("")
+          : `<div class="hist"><ha-icon icon="mdi:history"></ha-icon>${this._t("itv_no_history")}</div>`}`;
+      this._infoWindow(car, "itv", "mdi:clipboard-check-outline", body,
+        `<button class="tb fill" data-action="register">${this._t("itv_register")}</button>`, (action, open) => {
+          if (action !== "register") return;
+          open.close();
+          this._register_itv(car);
+        });
+    }
+
+    _register_itv(car) {
+      openDialog(
+        `<h2>${this._t("itv_register")}</h2><p>${this._t("itv_register_help", { name: escapeHtml(car.name) })}</p>
+         <label>${this._t("date")}<input name="date" type="date" value="${isoDate(today())}"></label>
+         <div class="err"></div>
+         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("register")}</button></div>`,
+        (action, dialog) => {
+          if (action !== "ok") return undefined;
+          const values = dialog.values();
+          if (!parseDate(values.date)) return dialog.error(this._t("error_required"));
+          dialog.close();
+          return this._run("register_itv", { vehicle_id: car.id, date: values.date }, this._t("registered"));
+        }
+      );
+    }
+
+    // --- Seguro ----------------------------------------------------------------------
+
+    _info_insurance(car) {
+      const data = car.insurance;
+      const record = data.record;
+      // Línea del año: de la renovación anterior a la próxima.
+      const at = (days) => Math.max(0, Math.min(100, (1 - days / 365) * 100));
+      const now = at(data.days_to_renewal);
+      const deadline = at(record.notice_days);
+      const first = car.alerts.thresholds.insurance_c1 || 30;
+      const amber = at(record.notice_days + first);
+      const passed = data.days_to_cancel < 0;
+      const call = (number, icon, label) => !number ? "" :
+        `<a class="callb" data-action="call" data-number="${escapeHtml(number)}" target="_blank" rel="noopener noreferrer" href="tel:${escapeHtml(String(number).replace(/[^0-9+]/g, ""))}">
+           <ha-icon icon="${icon}"></ha-icon><span><b>${this._t(label)}</b><small>${escapeHtml(number)}</small></span></a>`;
+      const calls = call(record.phone_assistance, "mdi:tow-truck", "ins_assistance") + call(record.phone_company, "mdi:phone", "ins_company");
+      const body = `
+        <div class="big">${escapeHtml(record.company || this._t("section_insurance"))}</div>
+        <div class="bigsub"><span class="badge info">${this._t(`kind_${record.kind}`)}</span></div>
+        ${record.policy ? `<div class="pol"><span>${this._t("ins_policy")}</span><b>${escapeHtml(record.policy)}</b>
+          <button class="x" data-action="copy" data-text="${escapeHtml(record.policy)}" aria-label="${this._t("copy")}"><ha-icon icon="mdi:content-copy"></ha-icon></button></div>` : ""}
+        <div class="h3">${this._t("ins_dates")}</div>
+        <div class="line"><div class="track"></div><div class="fill" style="width:${now}%"></div>
+          <div class="amber" style="left:${amber}%;width:${Math.max(0, deadline - amber)}%"></div>
+          <div class="pt now" style="left:${now}%"></div><div class="pt" style="left:${deadline}%"></div><div class="pt" style="left:100%"></div></div>
+        <div class="dual">
+          ${this._stat("mdi:calendar-alert", "ins_to_cancel", passed ? this._t("ins_deadline_passed") : this._days(data.days_to_cancel),
+            this._t("ins_deadline_on", { date: this._date(data.cancel_deadline) }))}
+          ${this._stat("mdi:autorenew", "ins_to_renewal", this._days(data.days_to_renewal), this._t("ins_renews_itself", { date: this._date(record.renewal_date) }))}
+        </div>
+        ${calls ? `<div class="h3">${this._t("ins_phones_title")}</div><div class="calls">${calls}</div>` : ""}`;
+      this._infoWindow(car, "insurance", "mdi:shield-car", body, "", (action, _open, target) => {
+        // El enlace "tel:" abre el marcador por su cuenta; aquí solo se copia.
+        const text = action === "call" ? target.dataset.number : action === "copy" ? target.dataset.text : "";
+        if (text && navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => this._toast(this._t("copied", { text })), () => undefined);
+        }
+      });
     }
   });
 

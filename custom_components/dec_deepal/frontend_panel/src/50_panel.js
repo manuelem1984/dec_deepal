@@ -193,6 +193,12 @@
     }
 
     _onKey(event) {
+      // Los recuadros que hacen de botón se abren también con Intro o Espacio.
+      if ((event.key === "Enter" || event.key === " ") && event.target.matches && event.target.matches("[role=button][data-action]")) {
+        event.preventDefault();
+        event.target.click();
+        return;
+      }
       if (!this._editing || !event.target.matches || !event.target.matches(".inp input")) return;
       if (event.key === "Enter") this._do_edit_ok();
       if (event.key === "Escape") this._do_edit_cancel();

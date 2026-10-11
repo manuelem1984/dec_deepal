@@ -82,7 +82,7 @@ from .const import (
     PIN_MODE_DIRECT,
     VERSION,
 )
-from .manual import is_valid_url
+from .manual import is_valid_url, manual_url
 from .registries.vehicles import FEATURE_FUEL, GENERIC_MODEL_ID
 from .telemetry import signals as s
 from .vehicle_store import async_export_url, async_get_store
@@ -304,7 +304,15 @@ def _car(hass: HomeAssistant, entry: Any, vehicle_id: str, vehicle: Any) -> dict
             "days_left": current.days_left,
             "km_left": current.km_left,
             "level": current.level,
-            "operations": alerts.operations(vehicle_id),
+            "operations": (now_ops := alerts.operations(vehicle_id)),
+            # Lo que se añade en la siguiente revisión (para prever una más larga).
+            "next_extra": [
+                name
+                for name in plan.operations_for(
+                    current.number + 1, vehicle.trim, hass.config.language
+                )
+                if name not in now_ops
+            ],
         }
     itv = None
     if alerts.itv_available and (itv_record := alerts.itv_record(vehicle_id)) is not None:
@@ -350,6 +358,14 @@ def _car(hass: HomeAssistant, entry: Any, vehicle_id: str, vehicle: Any) -> dict
         "odometer": alerts.odometer(vehicle_id),
         "itv_available": alerts.itv_available,
         "plan": {"interval_km": plan.interval_km, "interval_months": plan.interval_months},
+        # Normas del país para calcular la ITV (el formulario enseña la fecha antes de guardar).
+        "itv_rules": {
+            "first_months": alerts.rules.itv_first_months,
+            "interval_months": alerts.rules.itv_interval_months,
+            "reduced_from_months": alerts.rules.itv_reduced_from_months,
+            "reduced_interval_months": alerts.rules.itv_reduced_interval_months,
+        },
+        "manual_url": manual_url(entry.options, vehicle),
         "maintenance": maintenance,
         "itv": itv,
         "insurance": insurance,

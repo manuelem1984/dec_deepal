@@ -51,6 +51,7 @@
   /** Una foto por combinación, como hace panel.py: "<versión>|<color>". */
   const photos = (trims) => Object.fromEntries(["", ...trims].flatMap((trim) => ["", ...COLORS.map((c) => c.id)].map((color) =>
     [`${trim}|${color}`, trim && color ? `coche.svg?${trim}_${color}` : "coche.svg?default"])));
+  const ITV_RULES = { first_months: 48, interval_months: 24, reduced_from_months: 120, reduced_interval_months: 12 };
   const MODELS = [
     { id: "s05_2024", name: "Deepal S05 EV", fuel: false, colors: COLORS, wheels: ["cover", "open"], photos: photos(["pro", "max", "max_awd"]),
       trims: [{ id: "pro", name: "RWD Pro", wheel: "pro", equipped: 0 }, { id: "max", name: "RWD Max", wheel: "", equipped: 4 }, { id: "max_awd", name: "4WD Max", wheel: "", equipped: 4 }] },
@@ -59,7 +60,7 @@
   ];
 
   const initial = () => ({
-    version: "2.5.0b2",
+    version: "2.5.0b3",
     models: MODELS,
     accounts: [{
       entry_id: "entry1", title: "manuel@example.com", pin_enabled: true, pin_set: true, pin_mode: "armed", arm_seconds: 30, arm_notify: false,
@@ -72,9 +73,11 @@
         appearance: { model: "s05_2024", trim: "max", color: "ganymade_grey", wheels: "open" }, country: "es",
         model: "Deepal S05 EV RWD Max", color: "Ganymede Grey", wheel: "open", configured: true, sheet: SHEET,
         battery: 56, range: 276, odometer: 3498.8, itv_available: true, plan: { interval_km: 20000, interval_months: 12 },
+        itv_rules: ITV_RULES, manual_url: "https://example.com/manual.pdf",
         maintenance: {
           record: { services_done: 0, last_date: "2026-07-29", last_km: 0, interval_km: 20000, interval_months: 12, history: [] },
-          number: 1, due_date: "2027-07-29", due_km: 20000, days_left: 291, km_left: 16501, level: "ok", operations: ["Inspección general"],
+          number: 1, due_date: "2027-07-29", due_km: 20000, days_left: 291, km_left: 16501, level: "ok",
+          operations: ["Inspección general (propulsión, frenos y suspensión)", "Filtro del habitáculo"], next_extra: ["Líquido de frenos (sustitución)"],
         },
         itv: { record: { registration_date: "2026-07-29", last_date: null, next_override: null, history: [] },
           due_date: "2030-07-29", calculated: "2030-07-29", days_left: 1387, level: "ok" },
@@ -92,6 +95,7 @@
         sheet: { ...SHEET, version: "pro", verificada: false,
           funciones: { asientos_calefaccion: false, asientos_ventilacion: false, volante_calefactado: false, porton_electrico: false } },
         battery: 88, range: 430, odometer: 5862.9, itv_available: true, plan: { interval_km: 20000, interval_months: 12 },
+        itv_rules: ITV_RULES, manual_url: null,
         maintenance: null, itv: null, insurance: null,
         alerts: { notices: to([HER], ["charge_finished", "warnings"]), thresholds: {} },
       },
@@ -212,9 +216,10 @@
       } else if (type === "set_maintenance") {
         car.maintenance = message.enabled
           ? { record: { ...message, history: [] }, number: message.services_done + 1, due_date: "2027-10-11", due_km: message.last_km + message.interval_km,
-              days_left: 365, km_left: 14000, level: "ok", operations: [] }
+              days_left: 365, km_left: 14000, level: "ok", operations: [], next_extra: [] }
           : null;
       } else if (type === "register_maintenance") {
+        car.maintenance.record.history.push({ number: car.maintenance.number, date: message.date, km: message.km });
         car.maintenance.number += 1;
       } else if (type === "set_itv") {
         car.itv = message.enabled

@@ -1,5 +1,13 @@
 # Hoja de ruta
 
+## Beta 2.5.0b3 (11-10-2026) — pendiente de probar
+
+- [ ] **Fichas:** pulsar Mantenimiento, ITV y Seguro abre su ventana con los
+      datos del coche; registrar una revisión desde la ficha.
+- [ ] **Formularios nuevos:** el recuadro verde cambia según se escribe y
+      guardar deja el recuadro del coche con lo puesto.
+- [ ] En el móvil: los teléfonos del seguro abren el marcador.
+
 ## Beta 2.5.0b2 (11-10-2026) — pendiente de probar
 
 - [ ] **Configurar** (en la integración) abre el panel.

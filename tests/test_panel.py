@@ -103,6 +103,11 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> N
     assert (first["battery"], first["range"]) == (56, 276)
     assert first["sheet"]["verificada"] is True and second["sheet"]["funciones"]["porton_electrico"] is False
     assert first["maintenance"] is None and first["itv"] is None and first["insurance"] is None
+    # Lo que necesitan las fichas y los formularios: normas de la ITV y manual.
+    assert first["itv_rules"] == {
+        "first_months": 48, "interval_months": 24, "reduced_from_months": 120, "reduced_interval_months": 12,
+    }
+    assert first["manual_url"] == model.manual_url
     # Los avisos de antes se ven ya aviso a aviso, cada uno con los destinos de su grupo.
     assert first["alerts"]["notices"]["charge_finished"] == [ME]
     assert first["alerts"]["notices"]["charge_started"] == []
@@ -183,6 +188,10 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, freezer) -> N
     car = state["cars"][0]
     assert car["maintenance"]["number"] == 3 and car["maintenance"]["record"]["services_done"] == 2
     assert "notified" not in car["maintenance"]["record"]
+    # La ficha enseña qué toca y qué se añade en la siguiente (sin repetir lo de esta).
+    assert car["maintenance"]["operations"] and isinstance(car["maintenance"]["next_extra"], list)
+    assert not set(car["maintenance"]["next_extra"]) & set(car["maintenance"]["operations"])
+    assert [item["number"] for item in car["maintenance"]["record"]["history"]] == [2]
     assert car["itv"]["due_date"] == "2029-01-22" and car["insurance"] is None
 
     # --- Apariencia -----------------------------------------------------------------------

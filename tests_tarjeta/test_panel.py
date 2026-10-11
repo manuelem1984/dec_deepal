@@ -63,33 +63,40 @@ def test_cars_tab(panel: Page) -> None:
     assert panel.evaluate("banco.raiz().querySelectorAll('.gear').length") == 6
 
 
-def test_gear_configures_the_insurance(panel: Page) -> None:
-    mount(panel)
-    click(panel, "[data-action=gear][data-kind=insurance][data-car=car2]")
-    assert "Seguro — Changuito" in window_text(panel)
-    # Sin la fecha de renovación no se guarda.
-    click_window(panel, "ok")
-    assert "Faltan datos" in window_text(panel) and orders(panel) == []
-    fill(panel, "company", " Mutua ")
-    fill(panel, "renewal_date", "2027-03-14")
-    fill(panel, "kind", "comprehensive")
-    click_window(panel, "ok")
-    panel.wait_for_function("banco.ordenes().length === 1")
-    assert orders(panel)[0] == {
-        "type": "dec_deepal/panel/set_insurance", "vehicle_id": "car2", "enabled": True,
-        "renewal_date": "2027-03-14", "company": " Mutua ", "policy": "", "kind": "comprehensive",
-        "notice_days": 30, "phone_assistance": "", "phone_company": "",
-    }
-    # El panel se repinta con lo que dice la integración.
-    panel.wait_for_function("!banco.raiz().querySelectorAll('.card')[1].textContent.includes('Añadir el seguro')")
-    assert panel.evaluate("banco.avisos") == ["Guardado"]
+def window_click(page: Page, selector: str) -> None:
+    page.evaluate("selector => banco.ventana().querySelector(selector).click()", selector)
 
 
-def test_gear_disables_and_registers(panel: Page) -> None:
+def write(page: Page, name: str, value: str) -> None:
+    """Escribe en un campo de los formularios de Coches (los que se recalculan al teclear)."""
+    page.evaluate(
+        """([name, value]) => {
+            const field = banco.ventana().querySelector(`[data-f=${name}]`);
+            field.value = value;
+            field.dispatchEvent(new Event("input", { bubbles: true }));
+        }""",
+        [name, value],
+    )
+
+
+def test_tile_opens_the_maintenance_sheet(panel: Page) -> None:
     mount(panel)
+    click(panel, ".tile[data-kind=maintenance][data-car=car1]")
+    text = window_text(panel)
+    assert "Mantenimiento" in text and "Changote · Deepal S05 EV RWD Max" in text
+    assert "1ª revisión" in text and "Lo que llegue antes: el 29 jul 2027 o a los 20.000 km." in text
+    assert "16.501 km" in text and "Ahora 3.499 km · toca a los 20.000" in text
+    # Las operaciones, con lo del paréntesis debajo; y lo que añade la siguiente.
+    assert "Qué toca en esta revisión· 2 operaciones" in text.replace(" ·", "·")
+    assert panel.evaluate("Array.from(banco.ventana().querySelectorAll('.ops li')).map(li => li.textContent.trim())") == [
+        "Inspección generalPropulsión, frenos y suspensión", "Filtro del habitáculo",
+    ]
+    assert "En la siguiente (2ª) se añade" in text
+    assert panel.evaluate("Array.from(banco.ventana().querySelectorAll('.chip')).map(c => c.textContent)") == ["Líquido de frenos"]
+    assert "Todavía no hay revisiones registradas." in text
+    assert panel.evaluate("banco.ventana().querySelector('a.tb').href") == "https://example.com/manual.pdf"
     # Registrar una revisión hecha: hoy y los kilómetros del coche, por defecto.
-    click(panel, "[data-action=gear][data-kind=maintenance][data-car=car1]")
-    click_window(panel, "extra")
+    click_window(panel, "register")
     assert "1ª revisión de Changote" in window_text(panel)
     assert panel.evaluate("banco.ventana().querySelector('[name=km]').value") == "3499"
     fill(panel, "date", "2026-10-11")
@@ -98,13 +105,126 @@ def test_gear_disables_and_registers(panel: Page) -> None:
     assert orders(panel)[0] == {
         "type": "dec_deepal/panel/register_maintenance", "vehicle_id": "car1", "date": "2026-10-11", "km": 3499,
     }
-    # Desactivar un apartado: basta desmarcar "Activado".
-    click(panel, "[data-action=gear][data-kind=itv][data-car=car1]")
-    panel.evaluate("() => { const box = banco.ventana().querySelector('[name=enabled]'); box.checked = false; box.dispatchEvent(new Event('change')); }")
-    assert panel.evaluate("banco.ventana().querySelector('.fields').hidden") is True
+    # Ya sale en el historial de la ficha.
+    panel.wait_for_function("banco.raiz().querySelector('.tile[data-kind=maintenance]').textContent.includes('2ª revisión')")
+    click(panel, ".tile[data-kind=maintenance][data-car=car1]")
+    assert "1ª revisión · 11 oct 2026 · 3.499 km" in window_text(panel)
+
+
+def test_tiles_of_itv_and_insurance(panel: Page) -> None:
+    mount(panel)
+    click(panel, ".tile[data-kind=itv][data-car=car1]")
+    text = window_text(panel)
+    assert "29 jul 2030" in text and "Ninguna todavía" in text and "La primera, a los 4 años" in text
+    assert "La primera a los 4 años; después cada 2 y, desde los 10 años, cada año." in text
+    click_window(panel, "register")
+    fill(panel, "date", "2030-07-01")
+    click_window(panel, "ok")
+    panel.wait_for_function("banco.ordenes().length === 1")
+    assert orders(panel)[0] == {"type": "dec_deepal/panel/register_itv", "vehicle_id": "car1", "date": "2030-07-01"}
+
+    click(panel, ".tile[data-kind=insurance][data-car=car1]")
+    text = window_text(panel)
+    assert "Mutua Ejemplo" in text and "Todo riesgo con franquicia" in text and "0123 4567 89" in text
+    assert "Último día: 29 jun 2027" in text and "Se renueva solo el 29 jul 2027" in text
+    # Los teléfonos llaman con un toque.
+    assert panel.evaluate("Array.from(banco.ventana().querySelectorAll('a.callb')).map(a => a.getAttribute('href'))") == [
+        "tel:900000000", "tel:910000000",
+    ]
+    # El engranaje de la ficha lleva al formulario, ya relleno.
+    click_window(panel, "configure")
+    assert "Configurar el seguro" in window_text(panel)
+    assert panel.evaluate("banco.ventana().querySelector('[data-f=company]').value") == "Mutua Ejemplo"
+    assert panel.evaluate("banco.ventanas().length") == 1
+    click_window(panel, "close")
+    # Sin configurar, el recuadro abre el formulario directamente.
+    click(panel, ".tile[data-kind=maintenance][data-car=car2]")
+    assert "Configurar el mantenimiento" in window_text(panel) and "Changuito" in window_text(panel)
+
+
+def test_gear_configures_the_insurance(panel: Page) -> None:
+    mount(panel)
+    click(panel, "[data-action=gear][data-kind=insurance][data-car=car2]")
+    assert "Configurar el seguro" in window_text(panel) and "Changuito · Deepal S05 EV RWD Pro" in window_text(panel)
+    # Sin la fecha de renovación no se guarda (ni hay nada que adelantar).
+    assert panel.evaluate("banco.ventana().querySelector('.preview')") is None
+    click_window(panel, "ok")
+    assert "Faltan datos" in window_text(panel) and orders(panel) == []
+    write(panel, "company", " Mutua ")
+    write(panel, "renewal_date", "2027-03-14")
+    # El recuadro verde adelanta el resultado según se escribe...
+    assert "Último día para desistir: 12 feb 2027" in window_text(panel)
+    # ...y al cambiar una opción se conserva lo escrito.
+    window_click(panel, "[data-f=kind][data-v=comprehensive]")
+    window_click(panel, '[data-f=notice][data-v="60"]')
+    assert "Último día para desistir: 13 ene 2027" in window_text(panel)
+    window_click(panel, "[data-f=notice][data-v=other]")
+    write(panel, "notice_days", "45")
+    assert "Último día para desistir: 28 ene 2027" in window_text(panel)
+    click_window(panel, "ok")
+    panel.wait_for_function("banco.ordenes().length === 1")
+    assert orders(panel)[0] == {
+        "type": "dec_deepal/panel/set_insurance", "vehicle_id": "car2", "enabled": True,
+        "renewal_date": "2027-03-14", "company": " Mutua ", "policy": "", "kind": "comprehensive",
+        "notice_days": 45, "phone_assistance": "", "phone_company": "",
+    }
+    # El panel se repinta con lo que dice la integración.
+    panel.wait_for_function("!banco.raiz().querySelectorAll('.card')[1].textContent.includes('Añadir el seguro')")
+    assert panel.evaluate("banco.avisos") == ["Guardado"]
+
+
+def test_gear_configures_maintenance_and_itv(panel: Page) -> None:
+    mount(panel)
+    click(panel, "[data-action=gear][data-kind=maintenance][data-car=car1]")
+    text = window_text(panel)
+    assert "Configurar el mantenimiento" in text and "La próxima será la 1ª revisión." in text
+    assert "El del manual20.000 km o 12 meses" in text and "Uso exigente" not in text
+    assert "Próxima revisión: 29 jul 2027 o a los 20.000 km" in text
+    window_click(panel, "[data-action=step][data-d='1']")
+    assert "La próxima será la 2ª revisión." in window_text(panel)
+    window_click(panel, "[data-action=use]")
+    assert panel.evaluate("banco.ventana().querySelector('[data-f=last_km]').value") == "3499"
+    # "Otro" enseña los dos campos del intervalo.
+    assert panel.evaluate("banco.ventana().querySelector('[data-f=interval_km]')") is None
+    window_click(panel, "[data-f=interval][data-v=other]")
+    write(panel, "interval_km", "10000")
+    write(panel, "interval_months", "6")
+    assert "Próxima revisión: 29 ene 2027 o a los 13.499 km" in window_text(panel)
+    click_window(panel, "ok")
+    panel.wait_for_function("banco.ordenes().length === 1")
+    assert orders(panel)[0] == {
+        "type": "dec_deepal/panel/set_maintenance", "vehicle_id": "car1", "enabled": True, "services_done": 1,
+        "last_date": "2026-07-29", "last_km": 3499, "interval_km": 10000, "interval_months": 6,
+    }
+
+    # ITV: la fecha se calcula sola con las normas del país, o se pone a mano.
+    click(panel, "[data-action=gear][data-kind=itv][data-car=car2]")
+    write(panel, "registration_date", "2020-05-10")
+    assert "Próxima ITV: 10 may 2024" in window_text(panel)
+    window_click(panel, "[data-f=passed]")
+    click_window(panel, "ok")
+    assert "Faltan datos" in window_text(panel)  # falta la fecha de la última
+    write(panel, "last_date", "2024-05-08")
+    assert "Próxima ITV: 8 may 2026" in window_text(panel)
+    window_click(panel, "[data-f=next][data-v=manual]")
+    write(panel, "next_date", "2026-06-01")
+    assert "Próxima ITV: 1 jun 2026" in window_text(panel)
+    window_click(panel, "[data-f=next][data-v=auto]")
     click_window(panel, "ok")
     panel.wait_for_function("banco.ordenes().length === 2")
-    assert orders(panel)[1] == {"type": "dec_deepal/panel/set_itv", "vehicle_id": "car1", "enabled": False}
+    assert orders(panel)[1] == {
+        "type": "dec_deepal/panel/set_itv", "vehicle_id": "car2", "enabled": True,
+        "registration_date": "2020-05-10", "last_date": "2024-05-08", "next_date": None,
+    }
+
+    # Desactivar un apartado: basta apagar "Activado".
+    click(panel, "[data-action=gear][data-kind=itv][data-car=car1]")
+    window_click(panel, "[data-f=enabled]")
+    assert "Desactivada" in window_text(panel)
+    assert panel.evaluate("banco.ventana().querySelector('.fsec')") is None
+    click_window(panel, "ok")
+    panel.wait_for_function("banco.ordenes().length === 3")
+    assert orders(panel)[2] == {"type": "dec_deepal/panel/set_itv", "vehicle_id": "car1", "enabled": False}
 
 
 def test_appearance_window(panel: Page) -> None:

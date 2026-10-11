@@ -3,6 +3,27 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b3] — 2026-10-11
+
+### Añadido
+
+- **Panel → Coches: fichas.** Pulsar el recuadro de Mantenimiento, ITV o
+  Seguro abre una ventana con su información: qué toca en la revisión (y qué
+  se añade en la siguiente), cuánto falta por tiempo y por kilómetros, el
+  historial y el manual; las fechas y normas de la ITV; y del seguro, la
+  póliza, el plazo para desistir sobre la línea del año y los teléfonos para
+  llamar con un toque. El engranaje sigue abriendo la configuración.
+
+### Cambiado
+
+- **Formularios de mantenimiento, ITV y seguro rehechos:** por bloques, con
+  una explicación en cada uno y un recuadro que adelanta el resultado según
+  se escribe. El intervalo de mantenimiento se elige entre el del manual y
+  otro; el preaviso del seguro, entre 15, 30, 60 días u otro; la ITV se
+  calcula sola o se pone a mano.
+- "Registrar revisión hecha" y "Registrar ITV pasada" pasan del formulario a
+  la ficha.
+
 ## [2.5.0b2] — 2026-10-11
 
 ### Añadido

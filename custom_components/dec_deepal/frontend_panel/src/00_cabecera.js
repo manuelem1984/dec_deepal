@@ -7,7 +7,8 @@
 // Pestañas:
 //   - Coches: una tarjeta por coche con su foto, versión, equipamiento (el de
 //     su ficha del catálogo) y tres recuadros —mantenimiento, ITV y seguro—,
-//     cada uno con un engranaje que abre su configuración. El botón
+//     que al pulsarlos abren su ficha (qué toca en la revisión, fechas del
+//     seguro...) y con un engranaje que abre su configuración. El botón
 //     "Apariencia" elige modelo, versión, color y llanta, con la foto delante.
 //   - Avisos: una tabla por coche. Un apartado plegable por cada cosa (carga,
 //     testigos, mantenimiento, ITV, seguro), una fila por aviso y una casilla
