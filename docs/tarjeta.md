@@ -35,6 +35,26 @@ orientation: horizontal              # o "vertical"
 Las dos tarjetas pueden estar a la vez en el mismo panel. Si el modelo no
 tiene vista de planta, se enseña la imagen DEC.
 
+## Ventana de carga
+
+Pulsar la franja de la batería (icono, autonomía, estado de carga y barra)
+abre la ventana de carga, igual en las dos tarjetas (2.5.0b6):
+
+- La **vista de carga**: el coche de lado con el cable en verde si carga, en
+  gris si está enchufado sin cargar, y sin cable si no lo está. Va sobre el
+  fondo de la ventana, en tema claro y en oscuro.
+- El **porcentaje**, la autonomía y la barra (animada mientras carga).
+- **Tiempo restante** y a qué hora termina, **corriente** y **conector**
+  (AC · Tipo 2 o DC · CCS2), cuando hay algo enchufado.
+- **Esta carga**: cuánto ha subido y desde cuándo, mientras carga.
+- **Última carga**: de qué porcentaje a cuál, cuándo y cuánto duró.
+
+"Esta carga" y "Última carga" las apunta la integración desde que se instala
+esta versión (no hay historial anterior) y se conservan al reiniciar. Son
+atributos del sensor "Cargando" (`carga_actual` y `ultima_carga`), por si se
+quieren usar en automatizaciones. La ventana se actualiza sola mientras está
+abierta.
+
 ## Qué muestra
 
 - **Cabecera:** nombre del coche, "Actualizado: hoy, 14:11" (el último informe

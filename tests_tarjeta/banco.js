@@ -28,6 +28,7 @@
     "sensor.range": [378, { unit_of_measurement: "km" }],
     "sensor.charge_status": ["disconnected"],
     "sensor.remaining_charge_time_hhmm": ["unknown"],
+    "sensor.charge_current": [0, { unit_of_measurement: "A" }],
     "sensor.last_update": [new Date().toISOString()],
     "sensor.inside_temperature": [26, { unit_of_measurement: "°C" }],
     "sensor.cabin_humidity": [12, { unit_of_measurement: "%" }],
@@ -65,6 +66,7 @@
     "image.isometric_view": ["2026-10-09T12:00:00", { entity_picture: PIXEL }],
     "image.top_view": ["2026-10-09T12:00:00", { entity_picture: `${PIXEL}#planta` }],
     "image.interior_view": ["2026-10-09T12:00:00", { entity_picture: PIXEL }],
+    "image.charging_view": ["2026-10-09T12:00:00", { entity_picture: `${PIXEL}#carga` }],
     "image.dec_photo": ["2026-10-09T12:00:00", {}],
     "climate.cabin_climate": ["off", { temperature: 22.5, min_temp: 16, max_temp: 32 }],
     "lock.doors": ["locked"],
@@ -129,6 +131,7 @@
         states,
         devices: { [DEVICE]: { name: "Changote" } },
         locale: { language: opciones.idioma || "es" },
+        themes: { darkMode: Boolean(opciones.oscuro) },
         localize: banco._localize(opciones.textos),
         // Como Home Assistant: número con su unidad; los estados de texto, tal cual.
         formatEntityState: (s) => `${String(s.state).replace(".", ",")}${s.attributes.unit_of_measurement ? " " + s.attributes.unit_of_measurement : ""}`,

@@ -78,6 +78,8 @@ def _warning(key: str, signal: str) -> DecBinaryDescription:
 MAINTENANCE_KEY: Final = "maintenance_due"
 ITV_KEY: Final = "itv_due"
 INSURANCE_KEY: Final = "insurance_due"
+#: Sensor "Cargando": lleva de atributos la carga en curso y la última.
+CHARGING_KEY: Final = "charging"
 
 #: Sensores que existieron en alguna beta y se retiraron: se borran del
 #: registro al arrancar para que no queden como "no disponible".
@@ -225,6 +227,13 @@ class DecBinarySensor(DecDeepalEntity, BinarySensorEntity):
         if value is None:
             return None
         return not value if self.entity_description.invert else bool(value)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, object] | None:
+        """En "Cargando": la carga en curso y la última (las enseña la tarjeta)."""
+        if self.entity_description.key != CHARGING_KEY:
+            return None
+        return self.runtime.alerts.charge_info(self.vehicle.info.vehicle_id) or None
 
     def icon_state(self) -> str | None:
         """``"on"`` / ``"off"`` para elegir el icono."""

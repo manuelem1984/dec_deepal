@@ -88,9 +88,14 @@ async def test_alerts_and_maintenance(hass: HomeAssistant, freezer) -> None:  # 
         "title": "DEC Deepal Changote",
         "message": "Carga iniciada (batería al 46 %).",
     }
+    # La carga queda apuntada (la enseña la tarjeta en su ventana de carga).
+    assert manager.charge_info("car1")["carga_actual"]["nivel_inicio"] == 46
     coordinator.push({**base, s.CHARGING: False, s.BATTERY_LEVEL: 63})
     await hass.async_block_till_done()
     assert calls[-1].data["message"] == "Carga interrumpida (batería al 63 %)."
+    charge = manager.charge_info("car1")
+    assert "carga_actual" not in charge
+    assert (charge["ultima_carga"]["nivel_inicio"], charge["ultima_carga"]["nivel_fin"]) == (46, 63)
 
     # --- Testigos: una vez, hasta que se apaguen --------------------------------
     coordinator.push({**base, s.WARNING_ABS: True})

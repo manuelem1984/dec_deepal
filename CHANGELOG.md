@@ -3,6 +3,18 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b6] — 2026-10-12
+
+### Añadido
+
+- **Ventana de carga** en las dos tarjetas: se abre al pulsar la franja de la
+  batería. Enseña la vista de carga, el porcentaje, el tiempo que queda y a
+  qué hora termina, la corriente, el conector, lo que lleva la carga en curso
+  y la última carga.
+- **La integración apunta cada carga** (cuándo y con cuánto empezó y terminó)
+  y lo conserva al reiniciar. Está en los atributos `carga_actual` y
+  `ultima_carga` del sensor "Cargando".
+
 ## [2.5.0b5] — 2026-10-12
 
 ### Añadido

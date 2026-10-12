@@ -19,6 +19,10 @@
 //     Tocarla no hace nada (a propósito).
 //   - Batería: icono según el nivel (verde ≥ 50 %, amarillo < 50 %, rojo
 //     < 15 %; con rayo si carga), autonomía y estado de carga, más la barra.
+//   - Pulsar la franja de la batería (icono, autonomía, estado de carga y
+//     barra) abre la ventana de carga: la vista de carga, el porcentaje, el
+//     tiempo que queda, la corriente, el conector, lo que lleva esta carga y
+//     la última carga (2.5.0b6).
 //   - Línea de estado (encima de la batería, a la derecha): un tic verde si
 //     no hay avisos; si los hay, el icono de cada testigo encendido.
 //   - Testigo de mantenimiento (una llave inglesa en la línea de estado):
@@ -81,6 +85,8 @@
   // mismo con los ejes cambiados.
   const TOP = { size: 750, crop: { x: 120, y: 22, w: 510, h: 720 } };
   const TOP_TAG = "dec-deepal-top-card";
+  // Recorte de la vista de carga (750×500): el coche de lado con su cable.
+  const CHARGING = { width: 750, height: 500, crop: { x: 40, y: 96, w: 680, h: 290 } };
   const HOTSPOTS = [
     { key: "switch.steering_wheel_heat", icon: "mdi:steering", x: 27.4, y: 16, label: "wheel_heat" },
     { key: "number.seat_vent_driver", icon: "mdi:fan", x: 21.3, y: 57.5, label: "seat_vent_driver" },
@@ -161,6 +167,29 @@
       "today": "hoy, {time}",
       "yesterday": "ayer, {time}",
       "comfort": "Confort",
+      "charge_title": "Carga",
+      "charge_open": "Ver la carga",
+      "refresh_short": "Actualizar",
+      "charging_status": "Cargando · {type}",
+      "charge_full_at": "lleno a las {time}",
+      "charge_plugged": "Enchufado · no carga",
+      "charge_unplugged": "Sin enchufar",
+      "range_left": "{value} de autonomía",
+      "time_left": "Tiempo restante",
+      "ends_at": "Termina hacia las {time}",
+      "current": "Corriente",
+      "current_ac": "Corriente alterna",
+      "current_dc": "Corriente continua",
+      "no_charge": "Sin carga en curso",
+      "connector": "Conector",
+      "connector_ac": "AC · Tipo 2",
+      "plugged": "Enchufado",
+      "this_charge": "Esta carga",
+      "since": "Desde las {time} · {duration}",
+      "last_charge": "Última carga",
+      "from_to": "Del {from} % al {to} %",
+      "duration_hm": "{h} h {m} min",
+      "duration_m": "{m} min",
       "lock": "Bloqueo",
       "trunk": "Maletero",
       "vent": "Ventilar",
@@ -295,6 +324,29 @@
       "today": "today, {time}",
       "yesterday": "yesterday, {time}",
       "comfort": "Comfort",
+      "charge_title": "Charging",
+      "charge_open": "Show charging details",
+      "refresh_short": "Refresh",
+      "charging_status": "Charging · {type}",
+      "charge_full_at": "full at {time}",
+      "charge_plugged": "Plugged in · not charging",
+      "charge_unplugged": "Not plugged in",
+      "range_left": "{value} of range",
+      "time_left": "Time remaining",
+      "ends_at": "Finishes around {time}",
+      "current": "Current",
+      "current_ac": "Alternating current",
+      "current_dc": "Direct current",
+      "no_charge": "No charge in progress",
+      "connector": "Connector",
+      "connector_ac": "AC · Type 2",
+      "plugged": "Plugged in",
+      "this_charge": "This charge",
+      "since": "Since {time} · {duration}",
+      "last_charge": "Last charge",
+      "from_to": "From {from}% to {to}%",
+      "duration_hm": "{h} h {m} min",
+      "duration_m": "{m} min",
       "lock": "Lock",
       "trunk": "Boot",
       "vent": "Vent",
@@ -429,6 +481,29 @@
       "today": "hoje, {time}",
       "yesterday": "ontem, {time}",
       "comfort": "Conforto",
+      "charge_title": "Carregamento",
+      "charge_open": "Ver o carregamento",
+      "refresh_short": "Atualizar",
+      "charging_status": "A carregar · {type}",
+      "charge_full_at": "cheio às {time}",
+      "charge_plugged": "Ligado · não carrega",
+      "charge_unplugged": "Desligado da tomada",
+      "range_left": "{value} de autonomia",
+      "time_left": "Tempo restante",
+      "ends_at": "Termina por volta das {time}",
+      "current": "Corrente",
+      "current_ac": "Corrente alternada",
+      "current_dc": "Corrente contínua",
+      "no_charge": "Sem carregamento em curso",
+      "connector": "Conector",
+      "connector_ac": "AC · Tipo 2",
+      "plugged": "Ligado",
+      "this_charge": "Este carregamento",
+      "since": "Desde as {time} · {duration}",
+      "last_charge": "Último carregamento",
+      "from_to": "De {from} % a {to} %",
+      "duration_hm": "{h} h {m} min",
+      "duration_m": "{m} min",
       "lock": "Bloqueio",
       "trunk": "Mala",
       "vent": "Ventilar",
@@ -563,6 +638,29 @@
       "today": "oggi, {time}",
       "yesterday": "ieri, {time}",
       "comfort": "Comfort",
+      "charge_title": "Ricarica",
+      "charge_open": "Mostra la ricarica",
+      "refresh_short": "Aggiorna",
+      "charging_status": "In ricarica · {type}",
+      "charge_full_at": "piena alle {time}",
+      "charge_plugged": "Collegata · non carica",
+      "charge_unplugged": "Non collegata",
+      "range_left": "{value} di autonomia",
+      "time_left": "Tempo rimanente",
+      "ends_at": "Termina verso le {time}",
+      "current": "Corrente",
+      "current_ac": "Corrente alternata",
+      "current_dc": "Corrente continua",
+      "no_charge": "Nessuna ricarica in corso",
+      "connector": "Connettore",
+      "connector_ac": "AC · Tipo 2",
+      "plugged": "Collegato",
+      "this_charge": "Questa ricarica",
+      "since": "Dalle {time} · {duration}",
+      "last_charge": "Ultima ricarica",
+      "from_to": "Dal {from} % al {to} %",
+      "duration_hm": "{h} h {m} min",
+      "duration_m": "{m} min",
       "lock": "Chiusura",
       "trunk": "Bagagliaio",
       "vent": "Ventila",
@@ -697,6 +795,29 @@
       "today": "dziś, {time}",
       "yesterday": "wczoraj, {time}",
       "comfort": "Komfort",
+      "charge_title": "Ładowanie",
+      "charge_open": "Pokaż ładowanie",
+      "refresh_short": "Odśwież",
+      "charging_status": "Ładowanie · {type}",
+      "charge_full_at": "pełna o {time}",
+      "charge_plugged": "Podłączony · nie ładuje",
+      "charge_unplugged": "Niepodłączony",
+      "range_left": "{value} zasięgu",
+      "time_left": "Pozostały czas",
+      "ends_at": "Koniec około {time}",
+      "current": "Prąd",
+      "current_ac": "Prąd przemienny",
+      "current_dc": "Prąd stały",
+      "no_charge": "Brak ładowania",
+      "connector": "Złącze",
+      "connector_ac": "AC · Typ 2",
+      "plugged": "Podłączone",
+      "this_charge": "To ładowanie",
+      "since": "Od {time} · {duration}",
+      "last_charge": "Ostatnie ładowanie",
+      "from_to": "Od {from}% do {to}%",
+      "duration_hm": "{h} godz. {m} min",
+      "duration_m": "{m} min",
       "lock": "Zamek",
       "trunk": "Bagażnik",
       "vent": "Przewietrz",
@@ -831,6 +952,29 @@
       "today": "heute, {time}",
       "yesterday": "gestern, {time}",
       "comfort": "Komfort",
+      "charge_title": "Laden",
+      "charge_open": "Ladedetails anzeigen",
+      "refresh_short": "Aktualisieren",
+      "charging_status": "Lädt · {type}",
+      "charge_full_at": "voll um {time}",
+      "charge_plugged": "Angeschlossen · lädt nicht",
+      "charge_unplugged": "Nicht angeschlossen",
+      "range_left": "{value} Reichweite",
+      "time_left": "Restzeit",
+      "ends_at": "Endet gegen {time}",
+      "current": "Strom",
+      "current_ac": "Wechselstrom",
+      "current_dc": "Gleichstrom",
+      "no_charge": "Kein Ladevorgang",
+      "connector": "Stecker",
+      "connector_ac": "AC · Typ 2",
+      "plugged": "Angeschlossen",
+      "this_charge": "Dieser Ladevorgang",
+      "since": "Seit {time} · {duration}",
+      "last_charge": "Letzter Ladevorgang",
+      "from_to": "Von {from} % auf {to} %",
+      "duration_hm": "{h} h {m} min",
+      "duration_m": "{m} min",
       "lock": "Schloss",
       "trunk": "Kofferraum",
       "vent": "Lüften",
@@ -965,6 +1109,29 @@
       "today": "aujourd'hui, {time}",
       "yesterday": "hier, {time}",
       "comfort": "Confort",
+      "charge_title": "Recharge",
+      "charge_open": "Afficher la recharge",
+      "refresh_short": "Actualiser",
+      "charging_status": "En recharge · {type}",
+      "charge_full_at": "pleine à {time}",
+      "charge_plugged": "Branchée · ne charge pas",
+      "charge_unplugged": "Non branchée",
+      "range_left": "{value} d'autonomie",
+      "time_left": "Temps restant",
+      "ends_at": "Se termine vers {time}",
+      "current": "Courant",
+      "current_ac": "Courant alternatif",
+      "current_dc": "Courant continu",
+      "no_charge": "Aucune recharge en cours",
+      "connector": "Connecteur",
+      "connector_ac": "AC · Type 2",
+      "plugged": "Branché",
+      "this_charge": "Cette recharge",
+      "since": "Depuis {time} · {duration}",
+      "last_charge": "Dernière recharge",
+      "from_to": "De {from} % à {to} %",
+      "duration_hm": "{h} h {m} min",
+      "duration_m": "{m} min",
       "lock": "Verrou",
       "trunk": "Coffre",
       "vent": "Aérer",
@@ -1099,6 +1266,29 @@
       "today": "vandaag, {time}",
       "yesterday": "gisteren, {time}",
       "comfort": "Comfort",
+      "charge_title": "Laden",
+      "charge_open": "Laadgegevens tonen",
+      "refresh_short": "Vernieuwen",
+      "charging_status": "Laadt · {type}",
+      "charge_full_at": "vol om {time}",
+      "charge_plugged": "Aangesloten · laadt niet",
+      "charge_unplugged": "Niet aangesloten",
+      "range_left": "{value} actieradius",
+      "time_left": "Resterende tijd",
+      "ends_at": "Klaar rond {time}",
+      "current": "Stroom",
+      "current_ac": "Wisselstroom",
+      "current_dc": "Gelijkstroom",
+      "no_charge": "Geen laadsessie bezig",
+      "connector": "Stekker",
+      "connector_ac": "AC · Type 2",
+      "plugged": "Aangesloten",
+      "this_charge": "Deze laadsessie",
+      "since": "Sinds {time} · {duration}",
+      "last_charge": "Laatste laadsessie",
+      "from_to": "Van {from}% naar {to}%",
+      "duration_hm": "{h} u {m} min",
+      "duration_m": "{m} min",
       "lock": "Slot",
       "trunk": "Kofferbak",
       "vent": "Ventileren",
@@ -1233,6 +1423,29 @@
       "today": "i dag, {time}",
       "yesterday": "i går, {time}",
       "comfort": "Komfort",
+      "charge_title": "Lading",
+      "charge_open": "Vis ladedetaljer",
+      "refresh_short": "Oppdater",
+      "charging_status": "Lader · {type}",
+      "charge_full_at": "full kl. {time}",
+      "charge_plugged": "Tilkoblet · lader ikke",
+      "charge_unplugged": "Ikke tilkoblet",
+      "range_left": "{value} rekkevidde",
+      "time_left": "Gjenstående tid",
+      "ends_at": "Ferdig rundt kl. {time}",
+      "current": "Strøm",
+      "current_ac": "Vekselstrøm",
+      "current_dc": "Likestrøm",
+      "no_charge": "Ingen lading pågår",
+      "connector": "Kontakt",
+      "connector_ac": "AC · Type 2",
+      "plugged": "Tilkoblet",
+      "this_charge": "Denne ladingen",
+      "since": "Siden kl. {time} · {duration}",
+      "last_charge": "Siste lading",
+      "from_to": "Fra {from} % til {to} %",
+      "duration_hm": "{h} t {m} min",
+      "duration_m": "{m} min",
       "lock": "Lås",
       "trunk": "Bagasjerom",
       "vent": "Luft",
@@ -1367,6 +1580,29 @@
       "today": "i dag, {time}",
       "yesterday": "i går, {time}",
       "comfort": "Komfort",
+      "charge_title": "Opladning",
+      "charge_open": "Vis opladningsdetaljer",
+      "refresh_short": "Opdater",
+      "charging_status": "Oplader · {type}",
+      "charge_full_at": "fuld kl. {time}",
+      "charge_plugged": "Tilsluttet · oplader ikke",
+      "charge_unplugged": "Ikke tilsluttet",
+      "range_left": "{value} rækkevidde",
+      "time_left": "Resterende tid",
+      "ends_at": "Færdig omkring kl. {time}",
+      "current": "Strøm",
+      "current_ac": "Vekselstrøm",
+      "current_dc": "Jævnstrøm",
+      "no_charge": "Ingen opladning i gang",
+      "connector": "Stik",
+      "connector_ac": "AC · Type 2",
+      "plugged": "Tilsluttet",
+      "this_charge": "Denne opladning",
+      "since": "Siden kl. {time} · {duration}",
+      "last_charge": "Seneste opladning",
+      "from_to": "Fra {from} % til {to} %",
+      "duration_hm": "{h} t {m} min",
+      "duration_m": "{m} min",
       "lock": "Lås",
       "trunk": "Bagagerum",
       "vent": "Luft ud",
@@ -1501,6 +1737,29 @@
       "today": "σήμερα, {time}",
       "yesterday": "χθες, {time}",
       "comfort": "Άνεση",
+      "charge_title": "Φόρτιση",
+      "charge_open": "Προβολή της φόρτισης",
+      "refresh_short": "Ανανέωση",
+      "charging_status": "Φορτίζει · {type}",
+      "charge_full_at": "γεμάτη στις {time}",
+      "charge_plugged": "Συνδεδεμένο · δεν φορτίζει",
+      "charge_unplugged": "Χωρίς σύνδεση",
+      "range_left": "{value} αυτονομία",
+      "time_left": "Υπολειπόμενος χρόνος",
+      "ends_at": "Τελειώνει γύρω στις {time}",
+      "current": "Ρεύμα",
+      "current_ac": "Εναλλασσόμενο ρεύμα",
+      "current_dc": "Συνεχές ρεύμα",
+      "no_charge": "Καμία φόρτιση σε εξέλιξη",
+      "connector": "Φις",
+      "connector_ac": "AC · Τύπου 2",
+      "plugged": "Συνδεδεμένο",
+      "this_charge": "Αυτή η φόρτιση",
+      "since": "Από τις {time} · {duration}",
+      "last_charge": "Τελευταία φόρτιση",
+      "from_to": "Από {from}% σε {to}%",
+      "duration_hm": "{h} ώ {m} λ",
+      "duration_m": "{m} λ",
       "lock": "Κλειδαριά",
       "trunk": "Πορτμπαγκάζ",
       "vent": "Αερισμός",
@@ -1635,6 +1894,29 @@
       "today": "danes, {time}",
       "yesterday": "včeraj, {time}",
       "comfort": "Udobje",
+      "charge_title": "Polnjenje",
+      "charge_open": "Prikaži polnjenje",
+      "refresh_short": "Osveži",
+      "charging_status": "Polnjenje · {type}",
+      "charge_full_at": "polna ob {time}",
+      "charge_plugged": "Priklopljeno · ne polni",
+      "charge_unplugged": "Ni priklopljeno",
+      "range_left": "Doseg: {value}",
+      "time_left": "Preostali čas",
+      "ends_at": "Konec okoli {time}",
+      "current": "Tok",
+      "current_ac": "Izmenični tok",
+      "current_dc": "Enosmerni tok",
+      "no_charge": "Polnjenje ne poteka",
+      "connector": "Priključek",
+      "connector_ac": "AC · tip 2",
+      "plugged": "Priklopljeno",
+      "this_charge": "To polnjenje",
+      "since": "Od {time} · {duration}",
+      "last_charge": "Zadnje polnjenje",
+      "from_to": "Od {from} % do {to} %",
+      "duration_hm": "{h} h {m} min",
+      "duration_m": "{m} min",
       "lock": "Ključavnica",
       "trunk": "Prtljažnik",
       "vent": "Prezrači",
@@ -1815,6 +2097,8 @@
       width: ${(ISOMETRIC.width / ISOMETRIC.crop.w) * 100}%;
       left: ${(-ISOMETRIC.crop.x / ISOMETRIC.crop.w) * 100}%;
       top: ${(-ISOMETRIC.crop.y / ISOMETRIC.crop.h) * 100}%; }
+    .energy { cursor: pointer; border-radius: 12px; outline-offset: -2px; }
+    .energy:active { opacity: .7; }
     .range { display: flex; align-items: center; gap: 8px; padding: 0 16px; }
     .range .batt { --mdc-icon-size: 26px; }
     .range .km { font-size: 24px; color: var(--primary-text-color); }
@@ -1867,6 +2151,32 @@
     .power.on ha-icon { color: var(--primary-color); }
     .power.busy { opacity: .5; pointer-events: none; }
     .info { font-size: 12px; color: var(--secondary-text-color); text-align: center; margin: 12px 12px 16px; }
+    /* Ventana de carga. La vista de carga es un coche translúcido y claro:
+       sobre fondo claro se oscurece para que se vea; en tema oscuro va tal cual. */
+    .chg { padding: 4px 16px 6px; }
+    .chg .view { position: relative; overflow: hidden; aspect-ratio: ${CHARGING.crop.w} / ${CHARGING.crop.h}; }
+    .chg .view[hidden] { display: none; }
+    .chg .view img { position: absolute; max-width: none;
+      width: ${(CHARGING.width / CHARGING.crop.w) * 100}%;
+      left: ${(-CHARGING.crop.x / CHARGING.crop.w) * 100}%;
+      top: ${(-CHARGING.crop.y / CHARGING.crop.h) * 100}%;
+      filter: brightness(.62) contrast(1.25); }
+    .chg.dark .view img { filter: none; }
+    .chg .now { font-size: 13px; font-weight: 500; display: flex; gap: 6px; align-items: center; color: var(--secondary-text-color); --mdc-icon-size: 18px; }
+    .chg .now.on { color: var(--success-color, #43a047); }
+    .chg .pct { display: flex; align-items: baseline; gap: 10px; margin: 6px 0; }
+    .chg .pct b { font-size: 34px; font-weight: 400; }
+    .chg .pct span { font-size: 14px; color: var(--secondary-text-color); }
+    .chg .lvl { height: 10px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; }
+    .chg .lvl i { display: block; height: 100%; border-radius: 5px; transition: width .4s; }
+    .chg .lvl.on i { background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .35) 0 8px, transparent 8px 16px); }
+    .chg .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .chg .stats:empty { display: none; }
+    .chg .st { background: ${TILE_BG}; border-radius: 12px; padding: 10px 12px; min-width: 0; }
+    .chg .st.wide { grid-column: 1 / 3; }
+    .chg .st .k { font-size: 12px; color: var(--secondary-text-color); display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
+    .chg .st .n { font-size: 19px; margin-top: 3px; }
+    .chg .st .d { font-size: 12px; color: var(--secondary-text-color); min-height: 14px; }
     .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 12px 16px; }
     /* Menú con menos de tres opciones: centradas, con el mismo ancho que en una fila de tres. */
     .three.center { display: flex; justify-content: center; }
@@ -1947,9 +2257,16 @@
       this._seen = []; // estados usados en el último pintado
       this._busy = new Set();
       this._comfort = null; // ventana de Confort abierta
+      this._charge = null; // ventana de carga abierta
       this._pendingTemp = null;
       this._tempTimer = null;
       this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
+      // La franja de la batería hace de botón: también con Intro o Espacio.
+      this.shadowRoot.addEventListener("keydown", (event) => {
+        if ((event.key !== "Enter" && event.key !== " ") || !event.target.matches || !event.target.matches(".energy")) return;
+        event.preventDefault();
+        event.target.click();
+      });
     }
 
     /** Qué vista del coche enseña: "isometric" (esta) o "top" (la de planta). */
@@ -2001,6 +2318,7 @@
 
     disconnectedCallback() {
       if (this._comfort) this._comfort.close();
+      if (this._charge) this._charge.close();
     }
 
     // --- Entidades -------------------------------------------------------------
@@ -2124,6 +2442,7 @@
       this._dirty = false;
       this._paint();
       if (this._comfort) this._paintComfort();
+      if (this._charge) this._paintCharge();
     }
 
     _build() {
@@ -2142,11 +2461,13 @@
           <div class="carbox" hidden><img class="car" alt=""></div>
           <div class="msg" hidden></div>
           <div class="status"></div>
-          <div class="range">
-            <ha-icon class="batt"></ha-icon><span class="km"></span><span class="grow"></span>
-            <span class="charge"><ha-icon></ha-icon><span></span></span>
+          <div class="energy" data-action="charge" role="button" tabindex="0" aria-label="${this._t("charge_open")}">
+            <div class="range">
+              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="grow"></span>
+              <span class="charge"><ha-icon></ha-icon><span></span></span>
+            </div>
+            <div class="bar"><i></i></div>
           </div>
-          <div class="bar"><i></i></div>
           <div class="tiles">
             ${tile("comfort")}${tile("lock")}${tile("trunk")}
             ${tile("vent")}${tile("locate")}${tile("others")}
@@ -2410,6 +2731,9 @@
           break;
         case "comfort":
           this._openComfort();
+          break;
+        case "charge":
+          this._openCharge();
           break;
         case "lock":
           if (tiles.lock.on) this._pinCommand("lock", this._t("lock_q"), this._t("lock_do"), "lock", "lock", "lock.doors");
@@ -2808,6 +3132,135 @@
           if (this._comfort) this._paintComfort();
         }, 900);
       }
+    }
+  });
+
+  // ── src/66_carga.js ───────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Ventana de carga (se abre al pulsar la franja de la batería)
+  // ---------------------------------------------------------------------------
+  // Enseña la vista de carga y lo que se sabe de la carga: porcentaje,
+  // autonomía, tiempo que queda, corriente, conector, lo que lleva esta carga
+  // y la última. Estas dos las apunta la integración (charging.py) y llegan
+  // como atributos del sensor "Cargando". Se repinta sola mientras está abierta.
+  install(class {
+    _openCharge() {
+      if (this._charge) return;
+      const html = `
+        <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button>
+          <h2>${this._t("charge_title")}</h2></div>
+        <div class="chg">
+          <div class="view" hidden><img alt=""></div>
+          <div class="now"><ha-icon></ha-icon><span></span></div>
+          <div class="pct"><b></b><span></span></div>
+          <div class="lvl"><i></i></div>
+          <div class="stats"></div>
+        </div>
+        <div class="btns"><button class="tb" data-action="refresh">${this._t("refresh_short")}</button><button class="tb" data-action="close">${this._t("close")}</button></div>`;
+      this._charge = openDialog(html, (action) => {
+        if (action === "refresh") this._call("refresh", "button", "press", "button.refresh");
+      });
+      this._charge.onClose = () => {
+        this._charge = null;
+      };
+      this._paintCharge();
+    }
+
+    /** "3 h 25 min" / "45 min". */
+    _duration(minutes) {
+      const total = Math.max(0, Math.round(minutes));
+      const h = Math.floor(total / 60);
+      const m = total % 60;
+      return h ? this._t("duration_hm", { h, m }) : this._t("duration_m", { m });
+    }
+
+    _clock(date) {
+      return date.toLocaleTimeString(this._language(), { hour: "numeric", minute: "2-digit" });
+    }
+
+    /** Minutos que le quedan a la carga, o `undefined` (el coche los da como "H:MM"). */
+    _chargeMinutes() {
+      const match = /^(\d+):(\d{2})$/.exec(this._value("sensor.remaining_charge_time_hhmm") || "");
+      const minutes = match ? Number(match[1]) * 60 + Number(match[2]) : undefined;
+      return minutes > 0 ? minutes : undefined;
+    }
+
+    _chargeStat(icon, label, value, detail, wide) {
+      return `<div class="st${wide ? " wide" : ""}"><div class="k"><ha-icon icon="${icon}"></ha-icon>${this._t(label)}</div>
+        <div class="n">${escapeHtml(value)}</div><div class="d">${escapeHtml(detail || "")}</div></div>`;
+    }
+
+    _paintCharge() {
+      const root = this._charge.root;
+      const $ = (selector) => root.querySelector(selector);
+      const themes = this._hass.themes || {};
+      $(".chg").classList.toggle("dark", Boolean(themes.darkMode));
+
+      const src = this._imageUrl(this._state("image.charging_view"));
+      $(".view").hidden = !src;
+      if (src && $(".view img").getAttribute("src") !== src) $(".view img").setAttribute("src", src);
+
+      const status = this._value("sensor.charge_status") || "disconnected";
+      const charging = this._value("binary_sensor.charging") === "on";
+      const plugged = status !== "disconnected";
+      const dc = status.endsWith("_dc");
+      const minutes = charging ? this._chargeMinutes() : undefined;
+      const end = minutes === undefined ? null : new Date(Date.now() + minutes * 60000);
+
+      // Línea de estado.
+      let now = this._t(plugged ? "charge_plugged" : "charge_unplugged");
+      if (charging) {
+        now = this._t("charging_status", { type: dc ? "DC" : "AC" });
+        if (end) now += ` · ${this._t("charge_full_at", { time: this._clock(end) })}`;
+      }
+      $(".now").classList.toggle("on", charging);
+      $(".now ha-icon").setAttribute("icon", charging ? "mdi:lightning-bolt" : plugged ? "mdi:power-plug" : "mdi:power-plug-off-outline");
+      $(".now span").textContent = now;
+
+      // Porcentaje, autonomía y barra (mismos colores que en la tarjeta).
+      const level = this._number("sensor.battery_level");
+      const range = this._format("sensor.range");
+      $(".pct b").textContent = level === undefined ? "—" : `${Math.round(level)} %`;
+      $(".pct span").textContent = range ? this._t("range_left", { value: range }) : "";
+      const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
+      $(".lvl").classList.toggle("on", charging);
+      $(".lvl i").style.width = `${level === undefined ? 0 : Math.max(0, Math.min(100, level))}%`;
+      $(".lvl i").style.backgroundColor = color;
+
+      // Recuadros de datos: solo los que tienen algo que decir.
+      const stats = [];
+      if (end) stats.push(this._chargeStat("mdi:timer-sand", "time_left", this._duration(minutes), this._t("ends_at", { time: this._clock(end) })));
+      const current = this._format("sensor.charge_current");
+      if (plugged && current) {
+        stats.push(this._chargeStat(dc ? "mdi:current-dc" : "mdi:current-ac", "current", current, this._t(charging ? (dc ? "current_dc" : "current_ac") : "no_charge")));
+      }
+      if (plugged) stats.push(this._chargeStat(dc ? "mdi:ev-plug-ccs2" : "mdi:ev-plug-type2", "connector", dc ? "DC · CCS2" : this._t("connector_ac"), this._t("plugged")));
+
+      const sessions = (this._state("binary_sensor.charging") || { attributes: {} }).attributes;
+      const running = charging && sessions.carga_actual;
+      if (running && running.inicio) {
+        const start = new Date(running.inicio);
+        const gained = [];
+        if (level !== undefined && running.nivel_inicio != null) gained.push(`+${Math.max(0, Math.round(level - running.nivel_inicio))} %`);
+        const km = this._number("sensor.range");
+        if (km !== undefined && running.autonomia_inicio != null) gained.push(`+${Math.max(0, Math.round(km - running.autonomia_inicio))} km`);
+        const since = this._t("since", { time: this._clock(start), duration: this._duration((Date.now() - start.getTime()) / 60000) });
+        stats.push(this._chargeStat("mdi:chart-line", "this_charge", gained.join(" · ") || "—", since, stats.length % 2 === 0));
+      }
+      const last = !charging && sessions.ultima_carga;
+      if (last && last.inicio && last.fin) {
+        const start = new Date(last.inicio);
+        const finish = new Date(last.fin);
+        const levels = last.nivel_inicio != null && last.nivel_fin != null
+          ? this._t("from_to", { from: Math.round(last.nivel_inicio), to: Math.round(last.nivel_fin) })
+          : "—";
+        const day = start.toLocaleDateString(this._dateLanguage(), { day: "numeric", month: "short" });
+        const detail = `${day}, ${this._clock(start)} – ${this._clock(finish)} · ${this._duration((finish - start) / 60000)}`;
+        stats.push(this._chargeStat("mdi:history", "last_charge", levels, detail, true));
+      }
+      const html = stats.join("");
+      if (this._chargeHtml !== html || !$(".stats").childElementCount) $(".stats").innerHTML = html;
+      this._chargeHtml = html;
     }
   });
 

@@ -101,6 +101,83 @@ def test_top_view_card(page: Page) -> None:
     assert page.evaluate("customElements.get('dec-deepal-card').getConfigForm().schema.map(f => f.name)") == ["device_id"]
 
 
+def charge_stats(page: Page) -> list[list[str]]:
+    """Recuadros de la ventana de carga: `[título, valor, detalle]`."""
+    return page.evaluate(
+        "Array.from(banco.ventana().querySelectorAll('.st')).map(st => "
+        "['.k', '.n', '.d'].map(part => st.querySelector(part).textContent.trim()))"
+    )
+
+
+def test_charge_window(page: Page) -> None:
+    """Pulsar la franja de la batería abre la ventana de carga."""
+    energy = "banco.card.shadowRoot.querySelector('.energy')"
+    window = "banco.ventana()"
+
+    # --- Sin enchufar, con una carga anterior apuntada -----------------------
+    last = {"inicio": "2026-10-11T22:10:00", "fin": "2026-10-12T03:40:00", "nivel_inicio": 22, "nivel_fin": 80,
+            "autonomia_inicio": 108, "autonomia_fin": 394}
+    mount(page, estados={"binary_sensor.charging": ["off", {"ultima_carga": last}]})
+    assert page.evaluate(f"{energy}.getAttribute('aria-label')") == "Ver la carga"
+    page.evaluate(f"{energy}.click()")
+    assert "Carga" in window_text(page) and "Sin enchufar" in window_text(page)
+    assert page.evaluate(f"[{window}.querySelector('.pct b').textContent, {window}.querySelector('.pct span').textContent]") == ["78 %", "378 km de autonomía"]
+    assert "#carga" in page.evaluate(f"{window}.querySelector('.view img').src")
+    # Tema claro: el coche (translúcido y claro) se oscurece para que se vea.
+    assert page.evaluate(f"getComputedStyle({window}.querySelector('.view img')).filter") != "none"
+    assert charge_stats(page) == [["Última carga", "Del 22 % al 80 %", "11 oct, 22:10 – 3:40 · 5 h 30 min"]]
+    # No se abre dos veces, y "Actualizar" pide una lectura al coche.
+    page.evaluate(f"{energy}.click()")
+    assert page.evaluate("banco.ventanas().length") == 1
+    click_window(page, '[data-action="refresh"]')
+    assert services(page)[-1].startswith("button.press")
+
+    # --- Se enchufa y empieza a cargar: la ventana abierta se repinta sola ------
+    page.evaluate(
+        """() => banco.cambiar({
+            "sensor.battery_level": [56],
+            "sensor.range": [276, { unit_of_measurement: "km" }],
+            "sensor.charge_status": ["charging_ac"],
+            "sensor.remaining_charge_time_hhmm": ["3:25"],
+            "sensor.charge_current": [16, { unit_of_measurement: "A" }],
+            "binary_sensor.charging": ["on", {
+                carga_actual: { inicio: new Date(Date.now() - 65 * 60000).toISOString(), nivel_inicio: 44, autonomia_inicio: 217 },
+                ultima_carga: { inicio: "2026-10-11T22:10:00", fin: "2026-10-12T03:40:00", nivel_inicio: 22, nivel_fin: 80 },
+            }],
+        })"""
+    )
+    text = window_text(page)
+    assert "Cargando · AC · lleno a las " in text and "56 %" in text and "276 km de autonomía" in text
+    assert page.evaluate(f"{window}.querySelector('.now').classList.contains('on')")
+    stats = charge_stats(page)
+    assert [stat[0] for stat in stats] == ["Tiempo restante", "Corriente", "Conector", "Esta carga"]
+    assert stats[0][1] == "3 h 25 min" and stats[0][2].startswith("Termina hacia las ")
+    assert stats[1][1:] == ["16 A", "Corriente alterna"]
+    assert stats[2][1:] == ["AC · Tipo 2", "Enchufado"]
+    assert stats[3][1] == "+12 % · +59 km" and stats[3][2].startswith("Desde las ") and stats[3][2].endswith("· 1 h 5 min")
+    click_window(page, '[data-action="close"]')
+
+    # --- Enchufado sin cargar (DC), en tema oscuro y sin vista de carga ----------
+    mount(
+        page,
+        oscuro=True,
+        sin=["image.charging_view"],
+        estados={"sensor.battery_level": [100], "sensor.charge_status": ["connected_dc"]},
+    )
+    page.evaluate(f"{energy}.click()")
+    assert "Enchufado · no carga" in window_text(page)
+    assert page.evaluate(f"{window}.querySelector('.view').hidden") is True
+    assert page.evaluate(f"{window}.querySelector('.chg').classList.contains('dark')")
+    assert charge_stats(page) == [["Corriente", "0 A", "Sin carga en curso"], ["Conector", "DC · CCS2", "Enchufado"]]
+    click_window(page, '[data-action="close"]')
+
+    # --- Igual en la tarjeta de planta, y también con el teclado ------------------
+    mount(page, tarjeta="dec-deepal-top-card")
+    page.evaluate(f"{energy}.dispatchEvent(new KeyboardEvent('keydown', {{ key: 'Enter', bubbles: true, composed: true }}))")
+    assert "Sin enchufar" in window_text(page)
+    assert charge_stats(page) == []  # ninguna carga apuntada todavía
+
+
 def test_comfort_is_highlighted_only_when_something_is_on(page: Page) -> None:
     """Fallo de la 2.3.0b11: Confort salía en azul con todo apagado."""
     mount(page)

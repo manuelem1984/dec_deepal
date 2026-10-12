@@ -42,6 +42,9 @@ INSURANCE: Final = "insurance"
 APPEARANCE: Final = "appearance"
 ACTIVE: Final = "active"
 ODOMETER: Final = "odometer"
+#: Carga en curso y última carga (ver ``charging.py``). No va en las copias:
+#: es historial del coche, no algo que haya rellenado el usuario.
+CHARGE: Final = "charge"
 NAME: Final = "name"
 VEHICLE_ID: Final = "vehicle_id"
 

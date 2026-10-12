@@ -10,9 +10,16 @@
       this._seen = []; // estados usados en el último pintado
       this._busy = new Set();
       this._comfort = null; // ventana de Confort abierta
+      this._charge = null; // ventana de carga abierta
       this._pendingTemp = null;
       this._tempTimer = null;
       this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
+      // La franja de la batería hace de botón: también con Intro o Espacio.
+      this.shadowRoot.addEventListener("keydown", (event) => {
+        if ((event.key !== "Enter" && event.key !== " ") || !event.target.matches || !event.target.matches(".energy")) return;
+        event.preventDefault();
+        event.target.click();
+      });
     }
 
     /** Qué vista del coche enseña: "isometric" (esta) o "top" (la de planta). */
@@ -64,6 +71,7 @@
 
     disconnectedCallback() {
       if (this._comfort) this._comfort.close();
+      if (this._charge) this._charge.close();
     }
 
     // --- Entidades -------------------------------------------------------------
@@ -187,6 +195,7 @@
       this._dirty = false;
       this._paint();
       if (this._comfort) this._paintComfort();
+      if (this._charge) this._paintCharge();
     }
 
     _build() {
@@ -205,11 +214,13 @@
           <div class="carbox" hidden><img class="car" alt=""></div>
           <div class="msg" hidden></div>
           <div class="status"></div>
-          <div class="range">
-            <ha-icon class="batt"></ha-icon><span class="km"></span><span class="grow"></span>
-            <span class="charge"><ha-icon></ha-icon><span></span></span>
+          <div class="energy" data-action="charge" role="button" tabindex="0" aria-label="${this._t("charge_open")}">
+            <div class="range">
+              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="grow"></span>
+              <span class="charge"><ha-icon></ha-icon><span></span></span>
+            </div>
+            <div class="bar"><i></i></div>
           </div>
-          <div class="bar"><i></i></div>
           <div class="tiles">
             ${tile("comfort")}${tile("lock")}${tile("trunk")}
             ${tile("vent")}${tile("locate")}${tile("others")}
@@ -473,6 +484,9 @@
           break;
         case "comfort":
           this._openComfort();
+          break;
+        case "charge":
+          this._openCharge();
           break;
         case "lock":
           if (tiles.lock.on) this._pinCommand("lock", this._t("lock_q"), this._t("lock_do"), "lock", "lock", "lock.doors");

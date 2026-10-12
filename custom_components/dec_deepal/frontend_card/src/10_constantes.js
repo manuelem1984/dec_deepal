@@ -17,6 +17,8 @@
   // mismo con los ejes cambiados.
   const TOP = { size: 750, crop: { x: 120, y: 22, w: 510, h: 720 } };
   const TOP_TAG = "dec-deepal-top-card";
+  // Recorte de la vista de carga (750×500): el coche de lado con su cable.
+  const CHARGING = { width: 750, height: 500, crop: { x: 40, y: 96, w: 680, h: 290 } };
   const HOTSPOTS = [
     { key: "switch.steering_wheel_heat", icon: "mdi:steering", x: 27.4, y: 16, label: "wheel_heat" },
     { key: "number.seat_vent_driver", icon: "mdi:fan", x: 21.3, y: 57.5, label: "seat_vent_driver" },

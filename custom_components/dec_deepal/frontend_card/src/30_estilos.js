@@ -33,6 +33,8 @@
       width: ${(ISOMETRIC.width / ISOMETRIC.crop.w) * 100}%;
       left: ${(-ISOMETRIC.crop.x / ISOMETRIC.crop.w) * 100}%;
       top: ${(-ISOMETRIC.crop.y / ISOMETRIC.crop.h) * 100}%; }
+    .energy { cursor: pointer; border-radius: 12px; outline-offset: -2px; }
+    .energy:active { opacity: .7; }
     .range { display: flex; align-items: center; gap: 8px; padding: 0 16px; }
     .range .batt { --mdc-icon-size: 26px; }
     .range .km { font-size: 24px; color: var(--primary-text-color); }
@@ -85,6 +87,32 @@
     .power.on ha-icon { color: var(--primary-color); }
     .power.busy { opacity: .5; pointer-events: none; }
     .info { font-size: 12px; color: var(--secondary-text-color); text-align: center; margin: 12px 12px 16px; }
+    /* Ventana de carga. La vista de carga es un coche translúcido y claro:
+       sobre fondo claro se oscurece para que se vea; en tema oscuro va tal cual. */
+    .chg { padding: 4px 16px 6px; }
+    .chg .view { position: relative; overflow: hidden; aspect-ratio: ${CHARGING.crop.w} / ${CHARGING.crop.h}; }
+    .chg .view[hidden] { display: none; }
+    .chg .view img { position: absolute; max-width: none;
+      width: ${(CHARGING.width / CHARGING.crop.w) * 100}%;
+      left: ${(-CHARGING.crop.x / CHARGING.crop.w) * 100}%;
+      top: ${(-CHARGING.crop.y / CHARGING.crop.h) * 100}%;
+      filter: brightness(.62) contrast(1.25); }
+    .chg.dark .view img { filter: none; }
+    .chg .now { font-size: 13px; font-weight: 500; display: flex; gap: 6px; align-items: center; color: var(--secondary-text-color); --mdc-icon-size: 18px; }
+    .chg .now.on { color: var(--success-color, #43a047); }
+    .chg .pct { display: flex; align-items: baseline; gap: 10px; margin: 6px 0; }
+    .chg .pct b { font-size: 34px; font-weight: 400; }
+    .chg .pct span { font-size: 14px; color: var(--secondary-text-color); }
+    .chg .lvl { height: 10px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; }
+    .chg .lvl i { display: block; height: 100%; border-radius: 5px; transition: width .4s; }
+    .chg .lvl.on i { background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .35) 0 8px, transparent 8px 16px); }
+    .chg .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .chg .stats:empty { display: none; }
+    .chg .st { background: ${TILE_BG}; border-radius: 12px; padding: 10px 12px; min-width: 0; }
+    .chg .st.wide { grid-column: 1 / 3; }
+    .chg .st .k { font-size: 12px; color: var(--secondary-text-color); display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
+    .chg .st .n { font-size: 19px; margin-top: 3px; }
+    .chg .st .d { font-size: 12px; color: var(--secondary-text-color); min-height: 14px; }
     .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 12px 16px; }
     /* Menú con menos de tres opciones: centradas, con el mismo ancho que en una fila de tres. */
     .three.center { display: flex; justify-content: center; }

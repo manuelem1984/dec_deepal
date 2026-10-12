@@ -17,6 +17,10 @@
 //     Tocarla no hace nada (a propósito).
 //   - Batería: icono según el nivel (verde ≥ 50 %, amarillo < 50 %, rojo
 //     < 15 %; con rayo si carga), autonomía y estado de carga, más la barra.
+//   - Pulsar la franja de la batería (icono, autonomía, estado de carga y
+//     barra) abre la ventana de carga: la vista de carga, el porcentaje, el
+//     tiempo que queda, la corriente, el conector, lo que lleva esta carga y
+//     la última carga (2.5.0b6).
 //   - Línea de estado (encima de la batería, a la derecha): un tic verde si
 //     no hay avisos; si los hay, el icono de cada testigo encendido.
 //   - Testigo de mantenimiento (una llave inglesa en la línea de estado):

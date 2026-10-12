@@ -1,5 +1,15 @@
 # Hoja de ruta
 
+## Beta 2.5.0b6 (12-10-2026) — pendiente de probar
+
+- [ ] **Ventana de carga:** pulsar la franja de la batería sin enchufar,
+      enchufado y cargando; en tema claro y en oscuro.
+- [ ] **Cargas apuntadas:** tras una carga completa, "Última carga" enseña
+      de qué porcentaje a cuál y cuánto duró; sigue ahí tras reiniciar.
+- [ ] Pendiente: potencia (kW) en la ventana, si el coche da el voltaje.
+- [ ] Pendiente: imágenes de la vista de carga para fondo claro (hoy se
+      oscurecen con un filtro).
+
 ## Beta 2.5.0b5 (12-10-2026) — pendiente de probar
 
 - [ ] **Tarjeta de planta:** añadir "DEC Deepal · Vista de planta" a un

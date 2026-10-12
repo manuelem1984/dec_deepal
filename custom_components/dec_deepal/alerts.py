@@ -34,6 +34,7 @@ from homeassistant.helpers.event import async_track_time_change
 from homeassistant.helpers.translation import async_get_translations
 from homeassistant.util import dt as dt_util
 
+from . import charging
 from . import documents as doc
 from . import maintenance as mt
 from .alert_rules import (
@@ -120,6 +121,8 @@ class AlertManager:
         #: Última lectura de cada coche (solo las señales que se vigilan).
         self._previous: dict[str, dict[str, Any]] = {}
         self._odometer: dict[str, float] = {}
+        #: Carga en curso y última carga de cada coche (ver ``charging.py``).
+        self._charge: dict[str, dict[str, Any]] = {}
         self._names: dict[str, str] = {}
         self._listeners: list[Callable[[], None]] = []
         self._unsubscribe: list[CALLBACK_TYPE] = []
@@ -157,7 +160,7 @@ class AlertManager:
             vd.ITV: self._itv,
             vd.INSURANCE: self._insurance,
         }
-        for target in (*targets.values(), self._active, self._odometer):
+        for target in (*targets.values(), self._active, self._odometer, self._charge):
             target.clear()
         for vehicle_id in self._vehicles:
             car = self._store.car(self._key(vehicle_id))
@@ -173,6 +176,8 @@ class AlertManager:
                 self._active[vehicle_id] = set(car[vd.ACTIVE])
             if car.get(vd.ODOMETER) is not None:
                 self._odometer[vehicle_id] = float(car[vd.ODOMETER])
+            if stored := charging.clean(car.get(vd.CHARGE)):
+                self._charge[vehicle_id] = stored
 
     @callback
     def async_reload_data(self) -> None:
@@ -239,6 +244,8 @@ class AlertManager:
                 car[vd.ACTIVE] = sorted(self._active[vehicle_id])
             if vehicle_id in self._odometer:
                 car[vd.ODOMETER] = self._odometer[vehicle_id]
+            if self._charge.get(vehicle_id):
+                car[vd.CHARGE] = self._charge[vehicle_id]
             if appearance := self._appearance(vehicle_id, key):
                 car[vd.APPEARANCE] = appearance
             self._store.set_car(key, car)
@@ -545,6 +552,32 @@ class AlertManager:
     # Avisos por cambios del coche
     # ------------------------------------------------------------------
 
+    def _track_charge(self, vehicle_id: str) -> None:
+        """Apunta el principio y el final de cada carga (ver ``charging.py``)."""
+        vehicle = self._vehicles.get(vehicle_id)
+        data = vehicle.coordinator.data if vehicle is not None else None
+        if data is None:
+            return
+        state, changed = charging.update(
+            self._charge.get(vehicle_id),
+            data.get(s.CHARGING),
+            data.get(s.BATTERY_LEVEL),
+            data.get(s.RANGE_KM),
+            dt_util.now(),
+        )
+        if changed:
+            self._charge[vehicle_id] = state
+            self._save()
+
+    def charge_info(self, vehicle_id: str) -> dict[str, Any]:
+        """Carga en curso y última carga, para el sensor "Cargando".
+
+        Se pone al día aquí mismo: así el sensor enseña la carga recién
+        empezada aunque se actualice antes de que este gestor vea la lectura.
+        """
+        self._track_charge(vehicle_id)
+        return charging.attributes(self._charge.get(vehicle_id))
+
     @staticmethod
     def _snapshot(vehicle: VehicleContext) -> dict[str, Any]:
         data = vehicle.coordinator.data
@@ -557,6 +590,7 @@ class AlertManager:
         data = vehicle.coordinator.data
         if data is None:
             return
+        self._track_charge(vehicle_id)
         odometer = data.get(s.ODOMETER_KM)
         if odometer is not None and odometer != self._odometer.get(vehicle_id):
             self._odometer[vehicle_id] = float(odometer)
