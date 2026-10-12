@@ -854,6 +854,11 @@
   },
   "tarjeta": {
     "card_description": "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",
+    "top_view": "Vista de planta",
+    "top_card_description": "Tu Deepal visto desde arriba: puertas, capó y maletero de un vistazo, con la batería, el confort y las acciones rápidas.",
+    "orientation": "Orientación del coche",
+    "orientation_horizontal": "Horizontal (tumbado)",
+    "orientation_vertical": "Vertical (de pie)",
     "car": "Coche",
     "not_found": "No encuentro el coche. Elige uno en la configuración de la tarjeta.",
     "refresh": "Actualizar datos del vehículo",

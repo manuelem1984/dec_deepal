@@ -15,12 +15,32 @@ device_id: <dispositivo del coche>   # opcional: si falta, el primero
 
 Con dos coches, una tarjeta por coche.
 
+### La misma tarjeta, con la vista de planta
+
+Desde la 2.5.0b5 hay una segunda tarjeta, **DEC Deepal · Vista de planta**:
+es la misma (cabecera, testigos, batería, los seis botones y sus ventanas),
+pero con el coche visto desde arriba, que es donde mejor se ve qué puerta o
+ventanilla está abierta. Se añade igual, buscando **DEC Deepal**. En YAML:
+
+```yaml
+type: custom:dec-deepal-top-card
+device_id: <dispositivo del coche>   # opcional: si falta, el primero
+orientation: horizontal              # o "vertical"
+```
+
+- `horizontal` (por defecto): el coche tumbado, con el morro a la izquierda.
+  La tarjeta queda casi igual de alta que la otra.
+- `vertical`: el coche de pie, con el morro arriba. La tarjeta es más alta.
+
+Las dos tarjetas pueden estar a la vez en el mismo panel. Si el modelo no
+tiene vista de planta, se enseña la imagen DEC.
+
 ## Qué muestra
 
 - **Cabecera:** nombre del coche, "Actualizado: hoy, 14:11" (el último informe
   del coche) y el botón de actualizar.
-- **Vista isométrica**, que cambia sola con puertas, capó, maletero,
-  ventanillas y luces. Tocarla no hace nada.
+- **Vista isométrica** (o la de planta, en la otra tarjeta), que cambia sola
+  con puertas, capó, maletero, ventanillas y luces. Tocarla no hace nada.
 - **Línea de estado** (encima de la batería, a la derecha): un tic verde si
   no hay avisos. Si los hay, el icono de cada testigo encendido: en rojo
   los graves (frenos, líquido de frenos, batería de 12 V,

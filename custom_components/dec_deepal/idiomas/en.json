@@ -854,6 +854,11 @@
   },
   "tarjeta": {
     "card_description": "Your Deepal at a glance: car view, battery, comfort and quick actions.",
+    "top_view": "Top view",
+    "top_card_description": "Your Deepal seen from above: doors, bonnet and boot at a glance, with battery, comfort and quick actions.",
+    "orientation": "Vehicle orientation",
+    "orientation_horizontal": "Horizontal (lying down)",
+    "orientation_vertical": "Vertical (upright)",
     "car": "Car",
     "not_found": "I cannot find the car. Choose one in the card settings.",
     "refresh": "Refresh vehicle data",

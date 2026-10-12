@@ -645,6 +645,11 @@
   },
   "tarjeta": {
     "card_description": "Vaš Deepal na prvi pogled: pogled avtomobila, baterija, udobje in hitra dejanja.",
+    "top_view": "Pogled od zgoraj",
+    "top_card_description": "Vaš Deepal od zgoraj: vrata, pokrov motorja in prtljažnik na prvi pogled, z baterijo, udobjem in hitrimi dejanji.",
+    "orientation": "Usmerjenost avtomobila",
+    "orientation_horizontal": "Vodoravno (leže)",
+    "orientation_vertical": "Navpično (pokonci)",
     "car": "Avto",
     "not_found": "Avta ne najdem. Izberite ga v nastavitvah kartice.",
     "refresh": "Osveži podatke vozila",

@@ -18,6 +18,17 @@
     .carbox[hidden] { display: none; }
     .carbox.plain { aspect-ratio: auto; }
     .carbox.plain .car { position: static; width: 100%; }
+    /* Vista de planta: tumbada (morro a la izquierda) o de pie. */
+    .carbox.top { aspect-ratio: ${TOP.crop.h} / ${TOP.crop.w}; }
+    .carbox.top .car { transform: rotate(-90deg);
+      width: ${(TOP.size / TOP.crop.h) * 100}%;
+      left: ${(-TOP.crop.y / TOP.crop.h) * 100}%;
+      top: ${(-TOP.crop.x / TOP.crop.w) * 100}%; }
+    .carbox.top.vertical { aspect-ratio: ${TOP.crop.w} / ${TOP.crop.h}; max-width: 320px; margin: 0 auto; }
+    .carbox.top.vertical .car { transform: none;
+      width: ${(TOP.size / TOP.crop.w) * 100}%;
+      left: ${(-TOP.crop.x / TOP.crop.w) * 100}%;
+      top: ${(-TOP.crop.y / TOP.crop.h) * 100}%; }
     .car { position: absolute; max-width: none; display: block;
       width: ${(ISOMETRIC.width / ISOMETRIC.crop.w) * 100}%;
       left: ${(-ISOMETRIC.crop.x / ISOMETRIC.crop.w) * 100}%;

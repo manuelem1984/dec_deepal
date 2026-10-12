@@ -1,5 +1,12 @@
 # Hoja de ruta
 
+## Beta 2.5.0b5 (12-10-2026) — pendiente de probar
+
+- [ ] **Tarjeta de planta:** añadir "DEC Deepal · Vista de planta" a un
+      panel, en horizontal y en vertical; abrir una puerta y ver que cambia.
+- [ ] Pendiente: la vista de planta solo está dibujada en plata; faltan los
+      demás colores.
+
 ## Beta 2.5.0b4 (12-10-2026) — pendiente de probar
 
 - [ ] **Idiomas nuevos:** alemán, francés, neerlandés, noruego, danés,

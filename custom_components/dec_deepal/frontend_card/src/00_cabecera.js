@@ -5,6 +5,12 @@
 //   type: custom:dec-deepal-card
 //   device_id: <dispositivo del coche>     (opcional: si falta, el primero)
 //
+// Y la misma tarjeta con el coche visto desde arriba (2.5.0b5):
+//
+//   type: custom:dec-deepal-top-card
+//   device_id: <dispositivo del coche>
+//   orientation: horizontal | vertical     (opcional: horizontal)
+//
 // Qué muestra (diseño cerrado con bocetos, 09-10-2026):
 //   - Cabecera: nombre del coche, "Actualizado: ..." y botón de actualizar.
 //   - Vista isométrica del coche (la entidad de imagen de la integración).

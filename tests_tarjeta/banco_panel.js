@@ -60,7 +60,7 @@
   ];
 
   const initial = () => ({
-    version: "2.5.0b4",
+    version: "2.5.0b5",
     models: MODELS,
     accounts: [{
       entry_id: "entry1", title: "manuel@example.com", pin_enabled: true, pin_set: true, pin_mode: "armed", arm_seconds: 30, arm_notify: false,

@@ -645,6 +645,11 @@
   },
   "tarjeta": {
     "card_description": "Din Deepal på et øyeblikk: bilvisning, batteri, komfort og hurtighandlinger.",
+    "top_view": "Sett ovenfra",
+    "top_card_description": "Din Deepal sett ovenfra: dører, panser og bagasjerom på et øyeblikk, med batteri, komfort og hurtighandlinger.",
+    "orientation": "Bilens retning",
+    "orientation_horizontal": "Vannrett (liggende)",
+    "orientation_vertical": "Loddrett (stående)",
     "car": "Bil",
     "not_found": "Jeg finner ikke bilen. Velg en i kortinnstillingene.",
     "refresh": "Oppdater kjøretøydata",

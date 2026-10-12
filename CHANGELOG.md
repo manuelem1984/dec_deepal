@@ -3,6 +3,15 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b5] — 2026-10-12
+
+### Añadido
+
+- **Tarjeta «DEC Deepal · Vista de planta»** (`custom:dec-deepal-top-card`):
+  la misma tarjeta, con el coche visto desde arriba. Se puede poner tumbado
+  (por defecto, morro a la izquierda) o de pie. La tarjeta de siempre no
+  cambia y las dos pueden estar en el mismo panel.
+
 ## [2.5.0b4] — 2026-10-12
 
 ### Añadido

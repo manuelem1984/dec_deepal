@@ -645,6 +645,11 @@
   },
   "tarjeta": {
     "card_description": "Je Deepal in één oogopslag: aanzicht van de auto, batterij, comfort en snelle acties.",
+    "top_view": "Bovenaanzicht",
+    "top_card_description": "Je Deepal van bovenaf: portieren, motorkap en kofferbak in één oogopslag, met batterij, comfort en snelle acties.",
+    "orientation": "Oriëntatie van de auto",
+    "orientation_horizontal": "Horizontaal (liggend)",
+    "orientation_vertical": "Verticaal (staand)",
     "car": "Auto",
     "not_found": "Ik kan de auto niet vinden. Kies er een in de kaartinstellingen.",
     "refresh": "Voertuiggegevens vernieuwen",

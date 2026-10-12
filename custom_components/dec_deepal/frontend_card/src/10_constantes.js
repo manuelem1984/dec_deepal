@@ -10,6 +10,13 @@
   // Recorte de la vista isométrica (750×500): se quita el aire de los lados y
   // de abajo, dejando sitio arriba para el capó y el portón abiertos.
   const ISOMETRIC = { width: 750, height: 500, crop: { x: 10, y: 40, w: 730, h: 405 } };
+  // Recorte de la vista de planta (750×750, el coche con el morro hacia
+  // arriba): lo justo para que quepan las cuatro puertas, el capó y el portón
+  // abiertos. En horizontal la imagen se gira un cuarto de vuelta (morro a la
+  // izquierda); al ser cuadrada, girada ocupa lo mismo y el recorte es el
+  // mismo con los ejes cambiados.
+  const TOP = { size: 750, crop: { x: 120, y: 22, w: 510, h: 720 } };
+  const TOP_TAG = "dec-deepal-top-card";
   const HOTSPOTS = [
     { key: "switch.steering_wheel_heat", icon: "mdi:steering", x: 27.4, y: 16, label: "wheel_heat" },
     { key: "number.seat_vent_driver", icon: "mdi:fan", x: 21.3, y: 57.5, label: "seat_vent_driver" },

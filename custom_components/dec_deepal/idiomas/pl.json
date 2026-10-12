@@ -854,6 +854,11 @@
   },
   "tarjeta": {
     "card_description": "Twój Deepal w jednym miejscu: widok samochodu, akumulator, komfort i szybkie akcje.",
+    "top_view": "Widok z góry",
+    "top_card_description": "Twój Deepal widziany z góry: drzwi, maska i bagażnik na pierwszy rzut oka, z baterią, komfortem i szybkimi akcjami.",
+    "orientation": "Orientacja samochodu",
+    "orientation_horizontal": "Poziomo (na leżąco)",
+    "orientation_vertical": "Pionowo (na stojąco)",
     "car": "Samochód",
     "not_found": "Nie znajduję samochodu. Wybierz go w konfiguracji karty.",
     "refresh": "Odśwież dane pojazdu",

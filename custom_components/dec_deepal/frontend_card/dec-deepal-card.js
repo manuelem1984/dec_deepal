@@ -7,6 +7,12 @@
 //   type: custom:dec-deepal-card
 //   device_id: <dispositivo del coche>     (opcional: si falta, el primero)
 //
+// Y la misma tarjeta con el coche visto desde arriba (2.5.0b5):
+//
+//   type: custom:dec-deepal-top-card
+//   device_id: <dispositivo del coche>
+//   orientation: horizontal | vertical     (opcional: horizontal)
+//
 // Qué muestra (diseño cerrado con bocetos, 09-10-2026):
 //   - Cabecera: nombre del coche, "Actualizado: ..." y botón de actualizar.
 //   - Vista isométrica del coche (la entidad de imagen de la integración).
@@ -68,6 +74,13 @@
   // Recorte de la vista isométrica (750×500): se quita el aire de los lados y
   // de abajo, dejando sitio arriba para el capó y el portón abiertos.
   const ISOMETRIC = { width: 750, height: 500, crop: { x: 10, y: 40, w: 730, h: 405 } };
+  // Recorte de la vista de planta (750×750, el coche con el morro hacia
+  // arriba): lo justo para que quepan las cuatro puertas, el capó y el portón
+  // abiertos. En horizontal la imagen se gira un cuarto de vuelta (morro a la
+  // izquierda); al ser cuadrada, girada ocupa lo mismo y el recorte es el
+  // mismo con los ejes cambiados.
+  const TOP = { size: 750, crop: { x: 120, y: 22, w: 510, h: 720 } };
+  const TOP_TAG = "dec-deepal-top-card";
   const HOTSPOTS = [
     { key: "switch.steering_wheel_heat", icon: "mdi:steering", x: 27.4, y: 16, label: "wheel_heat" },
     { key: "number.seat_vent_driver", icon: "mdi:fan", x: 21.3, y: 57.5, label: "seat_vent_driver" },
@@ -136,6 +149,11 @@
   const TEXTS = {
     "es": {
       "card_description": "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",
+      "top_view": "Vista de planta",
+      "top_card_description": "Tu Deepal visto desde arriba: puertas, capó y maletero de un vistazo, con la batería, el confort y las acciones rápidas.",
+      "orientation": "Orientación del coche",
+      "orientation_horizontal": "Horizontal (tumbado)",
+      "orientation_vertical": "Vertical (de pie)",
       "car": "Coche",
       "not_found": "No encuentro el coche. Elige uno en la configuración de la tarjeta.",
       "refresh": "Actualizar datos del vehículo",
@@ -265,6 +283,11 @@
     },
     "en": {
       "card_description": "Your Deepal at a glance: car view, battery, comfort and quick actions.",
+      "top_view": "Top view",
+      "top_card_description": "Your Deepal seen from above: doors, bonnet and boot at a glance, with battery, comfort and quick actions.",
+      "orientation": "Vehicle orientation",
+      "orientation_horizontal": "Horizontal (lying down)",
+      "orientation_vertical": "Vertical (upright)",
       "car": "Car",
       "not_found": "I cannot find the car. Choose one in the card settings.",
       "refresh": "Refresh vehicle data",
@@ -394,6 +417,11 @@
     },
     "pt": {
       "card_description": "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
+      "top_view": "Vista de cima",
+      "top_card_description": "O seu Deepal visto de cima: portas, capô e mala num relance, com a bateria, o conforto e as ações rápidas.",
+      "orientation": "Orientação do carro",
+      "orientation_horizontal": "Horizontal (deitado)",
+      "orientation_vertical": "Vertical (de pé)",
       "car": "Carro",
       "not_found": "Não encontro o carro. Escolha um na configuração do cartão.",
       "refresh": "Atualizar dados do veículo",
@@ -523,6 +551,11 @@
     },
     "it": {
       "card_description": "La tua Deepal a colpo d'occhio: vista dell'auto, batteria, comfort e azioni rapide.",
+      "top_view": "Vista dall'alto",
+      "top_card_description": "La tua Deepal vista dall'alto: porte, cofano e bagagliaio a colpo d'occhio, con batteria, comfort e azioni rapide.",
+      "orientation": "Orientamento dell'auto",
+      "orientation_horizontal": "Orizzontale (sdraiata)",
+      "orientation_vertical": "Verticale (in piedi)",
       "car": "Auto",
       "not_found": "Non trovo l'auto. Scegline una nella configurazione della scheda.",
       "refresh": "Aggiorna dati del veicolo",
@@ -652,6 +685,11 @@
     },
     "pl": {
       "card_description": "Twój Deepal w jednym miejscu: widok samochodu, akumulator, komfort i szybkie akcje.",
+      "top_view": "Widok z góry",
+      "top_card_description": "Twój Deepal widziany z góry: drzwi, maska i bagażnik na pierwszy rzut oka, z baterią, komfortem i szybkimi akcjami.",
+      "orientation": "Orientacja samochodu",
+      "orientation_horizontal": "Poziomo (na leżąco)",
+      "orientation_vertical": "Pionowo (na stojąco)",
       "car": "Samochód",
       "not_found": "Nie znajduję samochodu. Wybierz go w konfiguracji karty.",
       "refresh": "Odśwież dane pojazdu",
@@ -781,6 +819,11 @@
     },
     "de": {
       "card_description": "Dein Deepal auf einen Blick: Fahrzeugansicht, Batterie, Komfort und Schnellaktionen.",
+      "top_view": "Draufsicht",
+      "top_card_description": "Dein Deepal von oben: Türen, Motorhaube und Kofferraum auf einen Blick, mit Batterie, Komfort und Schnellaktionen.",
+      "orientation": "Ausrichtung des Autos",
+      "orientation_horizontal": "Waagerecht (liegend)",
+      "orientation_vertical": "Senkrecht (stehend)",
       "car": "Auto",
       "not_found": "Ich finde das Auto nicht. Wähle eines in den Karteneinstellungen.",
       "refresh": "Fahrzeugdaten aktualisieren",
@@ -910,6 +953,11 @@
     },
     "fr": {
       "card_description": "Votre Deepal en un coup d'œil : vue de la voiture, batterie, confort et actions rapides.",
+      "top_view": "Vue de dessus",
+      "top_card_description": "Votre Deepal vue de dessus : portes, capot et coffre en un coup d'œil, avec la batterie, le confort et les actions rapides.",
+      "orientation": "Orientation de la voiture",
+      "orientation_horizontal": "Horizontale (couchée)",
+      "orientation_vertical": "Verticale (debout)",
       "car": "Voiture",
       "not_found": "Je ne trouve pas la voiture. Choisissez-en une dans les réglages de la carte.",
       "refresh": "Actualiser les données du véhicule",
@@ -1039,6 +1087,11 @@
     },
     "nl": {
       "card_description": "Je Deepal in één oogopslag: aanzicht van de auto, batterij, comfort en snelle acties.",
+      "top_view": "Bovenaanzicht",
+      "top_card_description": "Je Deepal van bovenaf: portieren, motorkap en kofferbak in één oogopslag, met batterij, comfort en snelle acties.",
+      "orientation": "Oriëntatie van de auto",
+      "orientation_horizontal": "Horizontaal (liggend)",
+      "orientation_vertical": "Verticaal (staand)",
       "car": "Auto",
       "not_found": "Ik kan de auto niet vinden. Kies er een in de kaartinstellingen.",
       "refresh": "Voertuiggegevens vernieuwen",
@@ -1168,6 +1221,11 @@
     },
     "nb": {
       "card_description": "Din Deepal på et øyeblikk: bilvisning, batteri, komfort og hurtighandlinger.",
+      "top_view": "Sett ovenfra",
+      "top_card_description": "Din Deepal sett ovenfra: dører, panser og bagasjerom på et øyeblikk, med batteri, komfort og hurtighandlinger.",
+      "orientation": "Bilens retning",
+      "orientation_horizontal": "Vannrett (liggende)",
+      "orientation_vertical": "Loddrett (stående)",
       "car": "Bil",
       "not_found": "Jeg finner ikke bilen. Velg en i kortinnstillingene.",
       "refresh": "Oppdater kjøretøydata",
@@ -1297,6 +1355,11 @@
     },
     "da": {
       "card_description": "Din Deepal med et enkelt blik: bilvisning, batteri, komfort og hurtige handlinger.",
+      "top_view": "Set ovenfra",
+      "top_card_description": "Din Deepal set ovenfra: døre, motorhjelm og bagagerum med et enkelt blik, med batteri, komfort og hurtige handlinger.",
+      "orientation": "Bilens retning",
+      "orientation_horizontal": "Vandret (liggende)",
+      "orientation_vertical": "Lodret (stående)",
       "car": "Bil",
       "not_found": "Jeg kan ikke finde bilen. Vælg en i kortets indstillinger.",
       "refresh": "Opdater køretøjsdata",
@@ -1426,6 +1489,11 @@
     },
     "el": {
       "card_description": "Το Deepal σας με μια ματιά: όψη αυτοκινήτου, μπαταρία, άνεση και γρήγορες ενέργειες.",
+      "top_view": "Κάτοψη",
+      "top_card_description": "Το Deepal σας από ψηλά: πόρτες, καπό και πορτμπαγκάζ με μια ματιά, με μπαταρία, άνεση και γρήγορες ενέργειες.",
+      "orientation": "Προσανατολισμός αυτοκινήτου",
+      "orientation_horizontal": "Οριζόντια (ξαπλωτό)",
+      "orientation_vertical": "Κάθετα (όρθιο)",
       "car": "Αυτοκίνητο",
       "not_found": "Δεν βρίσκω το αυτοκίνητο. Επιλέξτε ένα στις ρυθμίσεις της κάρτας.",
       "refresh": "Ανανέωση δεδομένων οχήματος",
@@ -1555,6 +1623,11 @@
     },
     "sl": {
       "card_description": "Vaš Deepal na prvi pogled: pogled avtomobila, baterija, udobje in hitra dejanja.",
+      "top_view": "Pogled od zgoraj",
+      "top_card_description": "Vaš Deepal od zgoraj: vrata, pokrov motorja in prtljažnik na prvi pogled, z baterijo, udobjem in hitrimi dejanji.",
+      "orientation": "Usmerjenost avtomobila",
+      "orientation_horizontal": "Vodoravno (leže)",
+      "orientation_vertical": "Navpično (pokonci)",
       "car": "Avto",
       "not_found": "Avta ne najdem. Izberite ga v nastavitvah kartice.",
       "refresh": "Osveži podatke vozila",
@@ -1727,6 +1800,17 @@
     .carbox[hidden] { display: none; }
     .carbox.plain { aspect-ratio: auto; }
     .carbox.plain .car { position: static; width: 100%; }
+    /* Vista de planta: tumbada (morro a la izquierda) o de pie. */
+    .carbox.top { aspect-ratio: ${TOP.crop.h} / ${TOP.crop.w}; }
+    .carbox.top .car { transform: rotate(-90deg);
+      width: ${(TOP.size / TOP.crop.h) * 100}%;
+      left: ${(-TOP.crop.y / TOP.crop.h) * 100}%;
+      top: ${(-TOP.crop.x / TOP.crop.w) * 100}%; }
+    .carbox.top.vertical { aspect-ratio: ${TOP.crop.w} / ${TOP.crop.h}; max-width: 320px; margin: 0 auto; }
+    .carbox.top.vertical .car { transform: none;
+      width: ${(TOP.size / TOP.crop.w) * 100}%;
+      left: ${(-TOP.crop.x / TOP.crop.w) * 100}%;
+      top: ${(-TOP.crop.y / TOP.crop.h) * 100}%; }
     .car { position: absolute; max-width: none; display: block;
       width: ${(ISOMETRIC.width / ISOMETRIC.crop.w) * 100}%;
       left: ${(-ISOMETRIC.crop.x / ISOMETRIC.crop.w) * 100}%;
@@ -1868,6 +1952,11 @@
       this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
     }
 
+    /** Qué vista del coche enseña: "isometric" (esta) o "top" (la de planta). */
+    static get VIEW() {
+      return "isometric";
+    }
+
     // --- API de las tarjetas de Home Assistant --------------------------------
 
     static getStubConfig(hass) {
@@ -1876,10 +1965,13 @@
     }
 
     static getConfigForm() {
-      return {
-        schema: [{ name: "device_id", selector: { device: { filter: [{ integration: DOMAIN }] } } }],
-        computeLabel: () => translate(document.documentElement.lang, "car"),
-      };
+      const text = (key) => translate(document.documentElement.lang, key);
+      const schema = [{ name: "device_id", selector: { device: { filter: [{ integration: DOMAIN }] } } }];
+      if (this.VIEW === "top") {
+        const options = ["horizontal", "vertical"].map((value) => ({ value, label: text(`orientation_${value}`) }));
+        schema.push({ name: "orientation", selector: { select: { mode: "dropdown", options } } });
+      }
+      return { schema, computeLabel: (field) => text(field.name === "orientation" ? "orientation" : "car") };
     }
 
     setConfig(config) {
@@ -1895,7 +1987,12 @@
     }
 
     getCardSize() {
-      return 8;
+      return this._vertical() ? 11 : 8;
+    }
+
+    /** ¿Vista de planta de pie? (solo la tarjeta de planta, y si se pide). */
+    _vertical() {
+      return this.constructor.VIEW === "top" && this._config.orientation === "vertical";
     }
 
     getGridOptions() {
@@ -2066,13 +2163,18 @@
       $(".upd").textContent = this._t("updated", { when: this._updatedText() });
       $('[data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
 
-      // Imagen: vista isométrica (o, si no existe, la imagen DEC).
-      const isometric = this._state("image.isometric_view");
-      const image = isometric || this._state("image.dec_photo");
+      // Imagen: la vista de esta tarjeta (isométrica o de planta) o, si el
+      // coche no la tiene, la imagen DEC.
+      const top = this.constructor.VIEW === "top";
+      const view = this._state(top ? "image.top_view" : "image.isometric_view");
+      const image = view || this._state("image.dec_photo");
       const img = $(".car");
       const src = this._imageUrl(image);
-      $(".carbox").hidden = !src;
-      $(".carbox").classList.toggle("plain", !isometric); // la foto DEC va sin recortar
+      const box = $(".carbox");
+      box.hidden = !src;
+      box.classList.toggle("plain", !view); // la foto DEC va sin recortar
+      box.classList.toggle("top", top && Boolean(view));
+      box.classList.toggle("vertical", Boolean(view) && this._vertical());
       if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
 
       // Batería y autonomía.
@@ -2713,13 +2815,20 @@
   // ---------------------------------------------------------------------------
   // Alta de la tarjeta en Home Assistant
   // ---------------------------------------------------------------------------
+  /** La misma tarjeta, con el coche visto desde arriba. */
+  class DecDeepalTopCard extends DecDeepalCard {
+    static get VIEW() {
+      return "top";
+    }
+  }
+
   customElements.define(TAG, DecDeepalCard);
+  customElements.define(TOP_TAG, DecDeepalTopCard);
+  const cardText = (key) => translate(document.documentElement.lang || navigator.language, key);
+  const documentationURL = "https://github.com/manuelem1984/dec_deepal";
   window.customCards = window.customCards || [];
-  window.customCards.push({
-    type: TAG,
-    name: "DEC Deepal",
-    description: translate(document.documentElement.lang || navigator.language, "card_description"),
-    preview: true,
-    documentationURL: "https://github.com/manuelem1984/dec_deepal",
-  });
+  window.customCards.push(
+    { type: TAG, name: "DEC Deepal", description: cardText("card_description"), preview: true, documentationURL },
+    { type: TOP_TAG, name: `DEC Deepal · ${cardText("top_view")}`, description: cardText("top_card_description"), preview: true, documentationURL }
+  );
 })();

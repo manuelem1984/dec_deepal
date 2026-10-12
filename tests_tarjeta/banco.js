@@ -63,6 +63,7 @@
       compania: "Mutua Ejemplo", tipo: "comprehensive_excess",
     }],
     "image.isometric_view": ["2026-10-09T12:00:00", { entity_picture: PIXEL }],
+    "image.top_view": ["2026-10-09T12:00:00", { entity_picture: `${PIXEL}#planta` }],
     "image.interior_view": ["2026-10-09T12:00:00", { entity_picture: PIXEL }],
     "image.dec_photo": ["2026-10-09T12:00:00", {}],
     "climate.cabin_climate": ["off", { temperature: 22.5, min_temp: 16, max_temp: 32 }],
@@ -146,9 +147,11 @@
         },
       };
       banco.hass = hass;
-      const card = document.createElement("dec-deepal-card");
+      // `tarjeta`: "dec-deepal-card" (por defecto) o "dec-deepal-top-card"; `config`: más opciones.
+      const tag = opciones.tarjeta || "dec-deepal-card";
+      const card = document.createElement(tag);
       card.addEventListener("hass-notification", (event) => banco.avisos.push(event.detail.message));
-      card.setConfig({ type: "custom:dec-deepal-card", device_id: DEVICE });
+      card.setConfig({ type: `custom:${tag}`, device_id: DEVICE, ...(opciones.config || {}) });
       card.hass = hass;
       document.getElementById("mount").append(card);
       banco.card = card;

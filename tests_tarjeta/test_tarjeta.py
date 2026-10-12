@@ -57,6 +57,50 @@ def test_a_parked_car(page: Page) -> None:
     }
 
 
+def test_top_view_card(page: Page) -> None:
+    """La otra tarjeta: lo mismo, con el coche visto desde arriba."""
+    box = "banco.card.shadowRoot.querySelector('.carbox')"
+    car = "banco.card.shadowRoot.querySelector('.car')"
+    # La de siempre sigue con la isométrica.
+    mount(page)
+    assert page.evaluate(f"{box}.className") == "carbox" and "#planta" not in page.evaluate(f"{car}.src")
+
+    mount(page, tarjeta="dec-deepal-top-card")
+    assert page.evaluate("banco.card.localName") == "dec-deepal-top-card"
+    assert "#planta" in page.evaluate(f"{car}.src")
+    assert page.evaluate(f"Array.from({box}.classList)") == ["carbox", "top"]
+    # Tumbada: más ancha que alta, con la imagen girada (morro a la izquierda).
+    wide = page.evaluate(f"(() => {{ const r = {box}.getBoundingClientRect(); return r.width / r.height; }})()")
+    assert abs(wide - 720 / 510) < 0.02
+    assert page.evaluate(f"getComputedStyle({car}).transform") != "none"
+    # El resto es la misma tarjeta: mismos botones y mismas ventanas.
+    assert tiles(page)["lock"] == ["Bloqueo", "Bloqueado", ""] and len(tiles(page)) == 6
+    click_tile(page, "others")
+    assert "Manual" in window_text(page)
+    click_window(page, '[data-action="close"]')
+
+    # De pie: más alta que ancha y sin girar.
+    mount(page, tarjeta="dec-deepal-top-card", config={"orientation": "vertical"})
+    assert page.evaluate(f"Array.from({box}.classList)") == ["carbox", "top", "vertical"]
+    tall = page.evaluate(f"(() => {{ const r = {box}.getBoundingClientRect(); return r.width / r.height; }})()")
+    assert abs(tall - 510 / 720) < 0.02
+    assert page.evaluate(f"getComputedStyle({car}).transform") == "none"
+    assert page.evaluate("banco.card.getCardSize()") == 11
+
+    # Un coche sin vista de planta: la imagen DEC, sin recortar.
+    mount(page, tarjeta="dec-deepal-top-card", sin=["image.top_view"], estados={"image.dec_photo": ["x", {"entity_picture": "coche.svg"}]})
+    assert page.evaluate(f"Array.from({box}.classList)") == ["carbox", "plain"]
+
+    # Las dos salen en el selector de tarjetas, y la de planta deja elegir la orientación.
+    cards = page.evaluate("window.customCards.filter(c => c.type.startsWith('dec-deepal')).map(c => [c.type, c.name])")
+    assert cards == [["dec-deepal-card", "DEC Deepal"], ["dec-deepal-top-card", "DEC Deepal · Vista de planta"]]
+    form = "customElements.get('dec-deepal-top-card').getConfigForm()"
+    assert page.evaluate(f"{form}.schema.map(f => f.name)") == ["device_id", "orientation"]
+    assert page.evaluate(f"{form}.schema[1].selector.select.options.map(o => o.label)") == ["Horizontal (tumbado)", "Vertical (de pie)"]
+    assert page.evaluate(f"[{form}.computeLabel({{name: 'device_id'}}), {form}.computeLabel({{name: 'orientation'}})]") == ["Coche", "Orientación del coche"]
+    assert page.evaluate("customElements.get('dec-deepal-card').getConfigForm().schema.map(f => f.name)") == ["device_id"]
+
+
 def test_comfort_is_highlighted_only_when_something_is_on(page: Page) -> None:
     """Fallo de la 2.3.0b11: Confort salía en azul con todo apagado."""
     mount(page)

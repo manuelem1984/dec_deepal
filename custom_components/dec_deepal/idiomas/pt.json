@@ -854,6 +854,11 @@
   },
   "tarjeta": {
     "card_description": "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
+    "top_view": "Vista de cima",
+    "top_card_description": "O seu Deepal visto de cima: portas, capô e mala num relance, com a bateria, o conforto e as ações rápidas.",
+    "orientation": "Orientação do carro",
+    "orientation_horizontal": "Horizontal (deitado)",
+    "orientation_vertical": "Vertical (de pé)",
     "car": "Carro",
     "not_found": "Não encontro o carro. Escolha um na configuração do cartão.",
     "refresh": "Atualizar dados do veículo",

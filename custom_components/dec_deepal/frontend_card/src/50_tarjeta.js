@@ -15,6 +15,11 @@
       this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
     }
 
+    /** Qué vista del coche enseña: "isometric" (esta) o "top" (la de planta). */
+    static get VIEW() {
+      return "isometric";
+    }
+
     // --- API de las tarjetas de Home Assistant --------------------------------
 
     static getStubConfig(hass) {
@@ -23,10 +28,13 @@
     }
 
     static getConfigForm() {
-      return {
-        schema: [{ name: "device_id", selector: { device: { filter: [{ integration: DOMAIN }] } } }],
-        computeLabel: () => translate(document.documentElement.lang, "car"),
-      };
+      const text = (key) => translate(document.documentElement.lang, key);
+      const schema = [{ name: "device_id", selector: { device: { filter: [{ integration: DOMAIN }] } } }];
+      if (this.VIEW === "top") {
+        const options = ["horizontal", "vertical"].map((value) => ({ value, label: text(`orientation_${value}`) }));
+        schema.push({ name: "orientation", selector: { select: { mode: "dropdown", options } } });
+      }
+      return { schema, computeLabel: (field) => text(field.name === "orientation" ? "orientation" : "car") };
     }
 
     setConfig(config) {
@@ -42,7 +50,12 @@
     }
 
     getCardSize() {
-      return 8;
+      return this._vertical() ? 11 : 8;
+    }
+
+    /** ¿Vista de planta de pie? (solo la tarjeta de planta, y si se pide). */
+    _vertical() {
+      return this.constructor.VIEW === "top" && this._config.orientation === "vertical";
     }
 
     getGridOptions() {
@@ -213,13 +226,18 @@
       $(".upd").textContent = this._t("updated", { when: this._updatedText() });
       $('[data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
 
-      // Imagen: vista isométrica (o, si no existe, la imagen DEC).
-      const isometric = this._state("image.isometric_view");
-      const image = isometric || this._state("image.dec_photo");
+      // Imagen: la vista de esta tarjeta (isométrica o de planta) o, si el
+      // coche no la tiene, la imagen DEC.
+      const top = this.constructor.VIEW === "top";
+      const view = this._state(top ? "image.top_view" : "image.isometric_view");
+      const image = view || this._state("image.dec_photo");
       const img = $(".car");
       const src = this._imageUrl(image);
-      $(".carbox").hidden = !src;
-      $(".carbox").classList.toggle("plain", !isometric); // la foto DEC va sin recortar
+      const box = $(".carbox");
+      box.hidden = !src;
+      box.classList.toggle("plain", !view); // la foto DEC va sin recortar
+      box.classList.toggle("top", top && Boolean(view));
+      box.classList.toggle("vertical", Boolean(view) && this._vertical());
       if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
 
       // Batería y autonomía.

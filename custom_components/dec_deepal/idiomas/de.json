@@ -645,6 +645,11 @@
   },
   "tarjeta": {
     "card_description": "Dein Deepal auf einen Blick: Fahrzeugansicht, Batterie, Komfort und Schnellaktionen.",
+    "top_view": "Draufsicht",
+    "top_card_description": "Dein Deepal von oben: Türen, Motorhaube und Kofferraum auf einen Blick, mit Batterie, Komfort und Schnellaktionen.",
+    "orientation": "Ausrichtung des Autos",
+    "orientation_horizontal": "Waagerecht (liegend)",
+    "orientation_vertical": "Senkrecht (stehend)",
     "car": "Auto",
     "not_found": "Ich finde das Auto nicht. Wähle eines in den Karteneinstellungen.",
     "refresh": "Fahrzeugdaten aktualisieren",
