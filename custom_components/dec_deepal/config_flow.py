@@ -67,6 +67,8 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
     """Asistente de alta de una cuenta."""
 
     VERSION = 1
+    #: 2 = conectores AC/DC desactivados (ver ``async_migrate_entry``).
+    MINOR_VERSION = 2
 
     def __init__(self) -> None:
         self._country: Country | None = None

@@ -148,6 +148,32 @@ def test_charger_plugged() -> None:
     assert charger_plugged({s.AC_CONNECTOR: False, s.DC_CONNECTOR: None}) is False
     assert charger_plugged({s.AC_CONNECTOR: False, s.DC_CONNECTOR: True}) is True
     assert charger_plugged({s.AC_CONNECTOR: True}) is True
+    # Si carga, está enchufado, aunque los conectores digan que no (o no digan nada).
+    assert charger_plugged({s.CHARGING: True, s.AC_CONNECTOR: False, s.DC_CONNECTOR: False}) is True
+    assert charger_plugged({s.CHARGING: True}) is True
+    assert charger_plugged({s.CHARGING: False}) is False
+
+
+def test_charge_status_does_not_trust_the_connectors() -> None:
+    """Manda "cargando": los conectores del S05 no son fiables (visto el 11-10-2026)."""
+    from custom_components.dec_deepal.telemetry.derived import charge_status
+
+    off = {s.AC_CONNECTOR: False, s.DC_CONNECTOR: False}
+    # Cargando con "conector AC: no": antes quedaba sin valor.
+    assert charge_status({**off, s.CHARGING: True}) == "charging_ac"
+    # Un coche que no manda el conector AC (el segundo de la cuenta de pruebas).
+    assert charge_status({s.CHARGING: True}) == "charging_ac"
+    assert charge_status({s.CHARGING: False}) == "disconnected"
+    # Continua: por el conector o por la corriente.
+    assert charge_status({s.CHARGING: True, s.DC_CONNECTOR: True}) == "charging_dc"
+    assert charge_status({**off, s.CHARGING: True, s.DC_CHARGE_CURRENT: 120.0}) == "charging_dc"
+    assert charge_status({**off, s.CHARGING: True, s.DC_CHARGE_CURRENT: 0}) == "charging_ac"
+    # Sin cargar: lo que digan los conectores, si dicen algo.
+    assert charge_status({**off, s.CHARGING: False}) == "disconnected"
+    assert charge_status({s.CHARGING: False, s.AC_CONNECTOR: True, s.DC_CONNECTOR: False}) == "connected_ac"
+    assert charge_status({s.CHARGING: False, s.DC_CONNECTOR: True}) == "connected_dc"
+    # Sin saber si carga, no se adivina.
+    assert charge_status({s.AC_CONNECTOR: True}) is None and charge_status({}) is None
 
 
 def test_extras_2_1_0() -> None:

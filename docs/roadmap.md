@@ -1,5 +1,14 @@
 # Hoja de ruta
 
+## Beta 2.5.0b7 (12-10-2026) — pendiente de probar
+
+- [ ] **Estado de carga sin conectores:** cargando, la tarjeta y el sensor
+      dicen "Cargando AC" y la vista de carga pinta el cable verde.
+- [ ] Tras actualizar, "Conector AC" y "Conector DC" aparecen desactivados.
+- [ ] Pendiente: saber si está enchufado sin cargar cuando el coche no manda
+      el conector. Candidato: `charge.chargeConStatus` del REST (sin
+      verificar qué significa cada valor).
+
 ## Beta 2.5.0b6 (12-10-2026) — pendiente de probar
 
 - [ ] **Ventana de carga:** pulsar la franja de la batería sin enchufar,
@@ -111,10 +120,9 @@ Pendiente de comprobar:
       apariencia van por bastidor.
 - [x] **Humedad interior** (2.4.0b3). Sigue pendiente el **despertar**
       (falló dos veces el 10-10-2026).
-- [ ] **Cargando con "conector AC: no"** (visto el 11-10-2026): el coche
-      dice que carga y a la vez que no tiene la manguera puesta; la tarjeta
-      puede mostrar "Desconectado" mientras carga. Y el **tiempo de carga
-      restante** (1.353 min con 16 A al 56 %) no cuadra.
+- [x] **Cargando con "conector AC: no"** (visto el 11-10-2026): resuelto en
+      la 2.5.0b7, el estado de carga ya no depende de los conectores.
+- [ ] El **tiempo de carga restante** (1.353 min con 16 A al 56 %) no cuadra.
 - [ ] **Aviso "cargado sin cobertura":** si el coche vuelve a tener cobertura
       con más batería y no se vio la carga, avisar "Cargado: del 40 % al 80 %".
 - [ ] Guardar la configuración y el permiso de conexión entre lecturas para

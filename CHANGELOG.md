@@ -3,6 +3,32 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b7] — 2026-10-12
+
+### Corregido
+
+- **«Estado de carga» ya no depende de los conectores.** En el S05 los datos
+  de «Conector AC» y «Conector DC» no son fiables: el coche llega a decir que
+  carga y, a la vez, que no tiene la manguera puesta, y hay coches que no
+  mandan el de AC. Antes, en esos casos el estado de carga se quedaba sin
+  valor o salía «Desconectado» cargando. Ahora manda «cargando»: si carga, es
+  «Cargando AC» (o «Cargando DC» si hay conector o corriente de continua).
+- **Vista de carga:** el cable sale siempre que el coche carga, digan lo que
+  digan los conectores.
+
+### Cambiado
+
+- **«Conector AC» y «Conector DC» pasan a estar desactivados** y a la
+  categoría de diagnóstico. En las instalaciones que ya los tenían se
+  desactivan solos al actualizar (una vez); quien los quiera puede volver a
+  activarlos a mano.
+
+### Limitación conocida
+
+- «Enchufado sin cargar» solo se puede enseñar cuando el coche informa del
+  conector. Si no lo hace, con la carga terminada se verá «Desconectado»
+  aunque el cable siga puesto.
+
 ## [2.5.0b6] — 2026-10-12
 
 ### Añadido

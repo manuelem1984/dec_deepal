@@ -22,6 +22,7 @@ import logging
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
@@ -105,6 +106,29 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     async_register_manual(hass)
     async_register_export(hass)
     async_register_services(hass)
+    return True
+
+
+#: Entidades que pasan a estar desactivadas de fábrica en la versión menor 2.
+_DISABLED_IN_MINOR_2 = ("_binary_sensor_ac_connector", "_binary_sensor_dc_connector")
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -> bool:
+    """Pone al día una cuenta añadida con una versión anterior.
+
+    Versión menor 2 (2.5.0b7): los conectores AC y DC pasan a estar
+    desactivados. En una instalación nueva basta con crearlos así; en una que
+    ya los tenía hay que desactivarlos, y se hace una sola vez (aquí) para no
+    pisar a quien después los vuelva a activar a mano.
+    """
+    if entry.version == 1 and entry.minor_version < 2:
+        registry = er.async_get(hass)
+        for item in er.async_entries_for_config_entry(registry, entry.entry_id):
+            if item.unique_id.endswith(_DISABLED_IN_MINOR_2) and item.disabled_by is None:
+                registry.async_update_entity(
+                    item.entity_id, disabled_by=er.RegistryEntryDisabler.INTEGRATION
+                )
+        hass.config_entries.async_update_entry(entry, minor_version=2)
     return True
 
 
