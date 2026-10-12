@@ -1,0 +1,823 @@
+{
+  "title": "DEC Deepal",
+  "config": {
+    "step": {
+      "user": {
+        "title": "DEC Deepal — Χώρα",
+        "description": "Επιλέξτε τη χώρα του λογαριασμού σας Deepal.",
+        "data": {
+          "country": "Χώρα"
+        }
+      },
+      "email": {
+        "title": "Σύνδεση με email",
+        "description": "Εισαγάγετε τη διεύθυνση email του λογαριασμού σας Deepal. Θα λάβετε έναν κωδικό.\n\nΣυνιστάται: ένας δευτερεύων λογαριασμός με τον οποίο έχει κοινοποιηθεί το αυτοκίνητο, ώστε να μην αποσυνδεθεί η εφαρμογή στο κινητό σας.",
+        "data": {
+          "email": "Διεύθυνση email"
+        }
+      },
+      "code_menu": {
+        "title": "Ο κωδικός στάλθηκε",
+        "description": "Η Deepal δέχτηκε να στείλει τον κωδικό στο {destination}. Μπορεί να χρειαστούν λίγα λεπτά· ελέγξτε και τον φάκελο ανεπιθύμητων. Αν δεν φτάσει, στείλτε τον ξανά ή διορθώστε τη διεύθυνση email.",
+        "menu_options": {
+          "code": "Έχω τον κωδικό",
+          "resend_code": "Αποστολή του κωδικού ξανά",
+          "change_email": "Διόρθωση της διεύθυνσης email"
+        }
+      },
+      "code": {
+        "title": "Κωδικός επαλήθευσης",
+        "description": "Εισαγάγετε τον κωδικό που μόλις λάβατε.",
+        "data": {
+          "auth_code": "Κωδικός"
+        }
+      },
+      "vehicles": {
+        "title": "Οχήματα",
+        "description": "Ο λογαριασμός σας έχει πολλά αυτοκίνητα. Επιλέξτε όσα θέλετε να προσθέσετε.",
+        "data": {
+          "selected_vehicles": "Οχήματα"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Σύνδεση ξανά",
+        "description": "Η συνεδρία της Deepal δεν ισχύει πλέον (πιθανότατα ο ίδιος λογαριασμός συνδέθηκε στην εφαρμογή). Θα ζητηθεί νέος κωδικός."
+      }
+    },
+    "error": {
+      "send_code_failed": "Ο κωδικός δεν μπόρεσε να σταλεί. Ελέγξτε τα στοιχεία που εισαγάγατε.",
+      "too_many_codes": "Ζητήθηκαν πάρα πολλοί κωδικοί. Περιμένετε λίγο και δοκιμάστε ξανά.",
+      "cannot_connect": "Δεν ήταν δυνατή η σύνδεση με τον διακομιστή της Deepal.",
+      "login_failed": "Η σύνδεση απέτυχε. Ελέγξτε τον κωδικό.",
+      "no_vehicles": "Αυτός ο λογαριασμός δεν έχει οχήματα.",
+      "no_vehicle_selected": "Επιλέξτε τουλάχιστον ένα όχημα."
+    },
+    "abort": {
+      "already_configured": "Αυτός ο λογαριασμός έχει ήδη ρυθμιστεί.",
+      "reauth_successful": "Η συνεδρία ανανεώθηκε με επιτυχία.",
+      "reauth_account_mismatch": "Αυτός ο λογαριασμός δεν έχει τα ίδια οχήματα με τον ρυθμισμένο. Συνδεθείτε με τον σωστό λογαριασμό.",
+      "flow_state_lost": "Η διαδικασία έληξε. Ξεκινήστε ξανά.",
+      "catalog_error": "Ένας από τους καταλόγους της ενσωμάτωσης έχει σφάλματα. Ελέγξτε το αρχείο καταγραφής του Home Assistant."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "DEC Deepal options",
+        "menu_options": {
+          "appearance": "Vehicle appearance (model, version, colour)",
+          "pin": "Remote control with PIN",
+          "alerts": "Phone notifications",
+          "maintenance": "Servicing",
+          "itv": "ITV (roadworthiness test)",
+          "insurance": "Insurance",
+          "data": "Vehicle data (backup and deletion)",
+          "advanced": "Advanced (interval, debugging, manual)"
+        }
+      },
+      "alerts": {
+        "title": "Notifications — vehicle",
+        "description": "Choose the vehicle. Each vehicle has its own recipients.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "alerts_setup": {
+        "title": "Notifications for {vehicle}",
+        "description": "Choose who this vehicle notifies about each thing. A group with no recipients sends nothing. Every notification has the vehicle name in its title (\"DEC Deepal {vehicle}\"). They are normal notifications, not critical ones.",
+        "data": {
+          "car": "Vehicle notifications: notify",
+          "car_types": "Vehicle notifications enabled",
+          "maintenance": "Servicing: notify",
+          "itv": "ITV: notify",
+          "insurance": "Insurance: notify",
+          "all_vehicles": "Use the same for the other vehicles"
+        },
+        "data_description": {
+          "car": "Phones and tablets with the Home Assistant app, with the name they have under Settings → Mobile app. Other notification services appear as notify.name.",
+          "maintenance": "2 months, 1 month, 15 days left; 3,000, 2,000, 1,000 km left; overdue. Enable servicing for the vehicle in its own section first. Only between 8:00 and 22:00.",
+          "itv": "2 months, 1 month, 15 days left; overdue. Enable the ITV for the vehicle in its own section first. Only between 8:00 and 22:00.",
+          "insurance": "30 and 15 days before the cancellation deadline, on the last day and when it renews. Enable insurance for the vehicle in its own section first. Only between 8:00 and 22:00."
+        }
+      },
+      "itv": {
+        "title": "ITV — vehicle",
+        "description": "Choose the car.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "itv_setup": {
+        "title": "ITV of {vehicle}",
+        "description": "The next ITV (roadworthiness test) is calculated automatically with the rule for passenger cars in Spain: the first one 4 years after registration, then every 2 years until the car is 10, and every year from then on.\n\nAn ITV warning and sensors with the due date and the days left are created. Notifications: 2 months, 1 month and 15 days left, and overdue.",
+        "data": {
+          "enabled": "Enable ITV for this car",
+          "registration_date": "Registration date",
+          "last_itv_date": "Date of the last ITV",
+          "next_itv_date": "Next ITV"
+        },
+        "data_description": {
+          "last_itv_date": "Leave it empty if the car has not had one yet.",
+          "next_itv_date": "Leave it empty to have it calculated. Fill it in only if your date is different; it is used until you register the next ITV."
+        }
+      },
+      "insurance": {
+        "title": "Insurance — vehicle",
+        "description": "Choose the car.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "insurance_setup": {
+        "title": "Insurance of {vehicle}",
+        "description": "An insurance warning and sensors with the renewal date and the last day to cancel are created. Notifications: 30 and 15 days before that last day, on the day itself and on renewal. When the renewal date arrives, it moves to the following year automatically.\n\nThe policy number and the phone numbers are only shown on the card: no entity is created with them.",
+        "data": {
+          "enabled": "Enable insurance for this car",
+          "company": "Company",
+          "policy": "Policy number",
+          "insurance_kind": "Type of cover",
+          "renewal_date": "Renewal date",
+          "notice_days": "Cancellation: days before renewal",
+          "phone_assistance": "Roadside assistance phone",
+          "phone_company": "Company phone"
+        },
+        "data_description": {
+          "notice_days": "How many days before renewal is the deadline to say that you will not renew. One month is usual in Spain; check your policy.",
+          "phone_assistance": "Optional. If you enter it, the card shows a button to call.",
+          "phone_company": "Optional."
+        }
+      },
+      "maintenance": {
+        "title": "Servicing — vehicle",
+        "description": "Choose the car.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "maintenance_menu": {
+        "title": "Servicing of {vehicle}",
+        "description": "{summary}",
+        "menu_options": {
+          "maintenance_register": "Register a completed service",
+          "maintenance_setup": "Correct the details or disable"
+        }
+      },
+      "maintenance_setup": {
+        "title": "Servicing of {vehicle}",
+        "description": "The next service is counted from the last one done. If the car has not had any yet, enter 0 services, the registration date and 0 km.\n\nA servicing warning and sensors with the days and kilometres left are created. The warning turns on when 2 months or 3,000 km are left.",
+        "data": {
+          "maintenance_enabled": "Enable servicing for this car",
+          "services_done": "Services already done",
+          "last_date": "Date of the last service (or of registration)",
+          "last_km": "Kilometres at the last service",
+          "interval_km": "Service every (km)",
+          "interval_months": "Service every (months)"
+        },
+        "data_description": {
+          "interval_km": "The S05 manual says 20,000 km or 12 months, whichever comes first. Reduce it if you make many short trips or drive in dust, mud, extreme cold or salt."
+        }
+      },
+      "maintenance_register": {
+        "title": "Register a service for {vehicle}",
+        "description": "{summary}\n\nWhen you save, the service is added to the history and the count for the next one starts.",
+        "data": {
+          "service_date": "Date of the service",
+          "service_km": "Kilometres at the service"
+        }
+      },
+      "appearance": {
+        "title": "Appearance — vehicle and model",
+        "description": "The model decides which features (and entities) the car has. Until you choose it, the car works in generic mode.",
+        "data": {
+          "vehicle": "Vehicle",
+          "model": "Model"
+        }
+      },
+      "appearance_details": {
+        "title": "Appearance — version and colour",
+        "description": "Version and colour of your {model}. They are used for the \"DEC image\", for the isometric view (drawn with your colour and wheels) and to create only the entities your version has.",
+        "data": {
+          "trim": "Version",
+          "color": "Colour",
+          "wheels": "Wheels (Max only)"
+        },
+        "data_description": {
+          "wheels": "The Pro always has its 18\" wheel."
+        }
+      },
+      "pin": {
+        "title": "Remote control with PIN",
+        "description": "Enables doors, windows and boot. The PIN must have been created in the official app with the SAME account that Home Assistant uses. It is checked when you save.",
+        "data": {
+          "pin_enabled": "Enable control with PIN",
+          "pin": "Remote control PIN",
+          "pin_mode": "Mode",
+          "arm_seconds": "Unlock duration (Option B)",
+          "arm_notify": "Notify when unlocking (Option B)"
+        }
+      },
+      "advanced": {
+        "title": "Advanced",
+        "data": {
+          "scan_minutes": "Reading interval",
+          "wake": "Wake the car when needed",
+          "debug": "Debug mode",
+          "manual_url": "BEV manual",
+          "manual_url_phev": "PHEV manual"
+        },
+        "data_description": {
+          "manual_url": "Link to the owner's manual (PDF) of the electric car (BEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again.",
+          "scan_minutes": "How often the car's data is read. Very low values can make Deepal limit the account.",
+          "wake": "When you press \"Refresh vehicle data\" and before door/window/boot commands, if the data is more than 2 minutes old, the car is woken up and its report is awaited. At most once every 5 minutes, and never on automatic readings, to protect the 12 V battery.",
+          "debug": "Stores full requests and responses (without personal data) in the diagnostics and enables DEBUG messages in the log.",
+          "manual_url_phev": "Link to the owner's manual (PDF) of the plug-in hybrid car (PHEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again."
+        }
+      },
+      "data": {
+        "title": "Vehicle data",
+        "description": "Servicing, ITV, insurance and appearance (model, version, colour) are stored per vehicle (by its VIN), not per account: if you remove the account and add it again, each vehicle gets its data back.",
+        "menu_options": {
+          "data_export": "Download a backup",
+          "data_send": "Send the backup to a phone",
+          "data_import": "Load a backup",
+          "data_delete": "Delete stored data"
+        }
+      },
+      "data_export": {
+        "title": "Download a backup",
+        "description": "Vehicles with data: {cars}.\n\n{link}\n\nThe link expires in a few minutes and opens in the browser. The file contains the policy number and the insurance phone numbers: keep it somewhere safe. If it does not download from the mobile app, use \"Send the backup to a phone\"."
+      },
+      "data_send": {
+        "title": "Send the backup to a phone",
+        "description": "A notification is sent to the chosen phone; tapping it opens the browser and downloads the backup. The link expires in 10 minutes and works as long as the phone can reach Home Assistant at the same address you are using now.",
+        "data": {
+          "target": "Phone"
+        }
+      },
+      "data_import": {
+        "title": "Load a backup",
+        "description": "Choose a file downloaded from \"Download a backup\". It replaces the servicing, ITV, insurance and appearance of the vehicles it contains; other vehicles are left untouched.",
+        "data": {
+          "file": "Backup file"
+        }
+      },
+      "data_delete": {
+        "title": "Delete stored data",
+        "description": "Deletes the servicing, ITV and insurance of the chosen vehicles, whether or not they belong to an account. This cannot be undone: download a backup first if you want to keep them. The appearance of a vehicle that belongs to an account is not deleted: change it under Appearance.",
+        "data": {
+          "cars": "Vehicles",
+          "confirm": "Yes, delete this data"
+        }
+      }
+    },
+    "error": {
+      "pin_required": "Εισαγάγετε το PIN για να ενεργοποιήσετε τον τηλεχειρισμό.",
+      "pin_invalid": "Λάθος PIN ή δημιουργήθηκε με άλλον λογαριασμό.",
+      "pin_rate_limited": "Πάρα πολλές προσπάθειες PIN. Περιμένετε ή επαναφέρετέ το στην επίσημη εφαρμογή.",
+      "invalid_url": "Εισαγάγετε μια πλήρη διεύθυνση ιστού (που αρχίζει με https://).",
+      "cannot_connect": "Δεν ήταν δυνατή η σύνδεση με τον διακομιστή της Deepal.",
+      "invalid_file": "Το αρχείο δεν είναι αντίγραφο ασφαλείας του DEC Deepal ή είναι κατεστραμμένο.",
+      "newer_file": "Το αντίγραφο ασφαλείας προέρχεται από νεότερη έκδοση της ενσωμάτωσης. Ενημερώστε το DEC Deepal και δοκιμάστε ξανά.",
+      "empty_file": "Το αντίγραφο ασφαλείας δεν έχει δεδομένα για κανένα όχημα.",
+      "no_selection": "Επιλέξτε τουλάχιστον ένα όχημα.",
+      "confirm_required": "Σημειώστε το πλαίσιο για να επιβεβαιώσετε τη διαγραφή."
+    },
+    "abort": {
+      "not_loaded": "Η ενσωμάτωση δεν έχει φορτωθεί. Ελέγξτε το αρχείο καταγραφής και δοκιμάστε ξανά.",
+      "no_data": "Δεν υπάρχουν αποθηκευμένα δεδομένα για κανένα όχημα.",
+      "data_imported": "Το αντίγραφο ασφαλείας φορτώθηκε: {cars}.",
+      "data_deleted": "Τα δεδομένα διαγράφηκαν: {cars}.",
+      "data_sent": "Η ειδοποίηση στάλθηκε στο {device}. Πατήστε την στο κινητό για να κατεβάσετε το αντίγραφο ασφαλείας.",
+      "no_mobile": "Δεν υπάρχει κινητό με την εφαρμογή Home Assistant."
+    }
+  },
+  "issues": {
+    "vehicle_not_configured": {
+      "title": "Ρυθμίστε το όχημά σας: {vehicle}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Μοντέλο του {vehicle}",
+            "description": "Μέχρι να επιλέξετε το μοντέλο, το αυτοκίνητο λειτουργεί σε γενική λειτουργία (μόνο βασικά δεδομένα, χωρίς καθίσματα, τιμόνι ή έλεγχο με PIN). Μοντέλο που αναγνωρίστηκε από το όνομα: {suggestion}.",
+            "data": {
+              "model": "Μοντέλο"
+            }
+          },
+          "details": {
+            "title": "Έκδοση και χρώμα",
+            "description": "Έκδοση και χρώμα του {model} σας. Η έκδοση καθορίζει ποιες οντότητες δημιουργούνται (για παράδειγμα, ο αερισμός καθισμάτων υπάρχει μόνο στο Max) και, μαζί με το χρώμα, την «εικόνα DEC».",
+            "data": {
+              "trim": "Έκδοση",
+              "color": "Χρώμα",
+              "wheels": "Ζάντες (μόνο Max)"
+            },
+            "data_description": {
+              "wheels": "Το Pro έχει πάντα τη ζάντα του 18\"."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "Ο λογαριασμός δεν υπάρχει πλέον."
+        }
+      }
+    }
+  },
+  "selector": {
+    "pin_mode": {
+      "options": {
+        "direct": "Επιλογή Α — άμεσες εντολές",
+        "armed": "Επιλογή Β — πρώτα ξεκλείδωμα (ασφαλέστερο)"
+      }
+    },
+    "arm_seconds": {
+      "options": {
+        "10": "10 δευτερόλεπτα",
+        "20": "20 δευτερόλεπτα",
+        "30": "30 δευτερόλεπτα",
+        "60": "60 δευτερόλεπτα"
+      }
+    },
+    "wheels": {
+      "options": {
+        "cover": "20\" με αεροδυναμικό κάλυμμα",
+        "open": "20\" χωρίς αεροδυναμικό κάλυμμα"
+      }
+    },
+    "alert_type": {
+      "options": {
+        "charge_started": "Η φόρτιση ξεκίνησε",
+        "charge_interrupted": "Η φόρτιση διακόπηκε",
+        "charge_finished": "Η φόρτιση ολοκληρώθηκε",
+        "warnings": "Προειδοποιητικές λυχνίες ταμπλό",
+        "tires": "Ελαστικά (όταν το αυτοκίνητο ανάβει την προειδοποίηση)",
+        "key_battery": "Χαμηλή μπαταρία κλειδιού"
+      }
+    },
+    "insurance_kind": {
+      "options": {
+        "third_party": "Αστική ευθύνη",
+        "third_party_plus": "Αστική ευθύνη με επιπλέον καλύψεις",
+        "comprehensive_excess": "Μικτή με απαλλαγή",
+        "comprehensive": "Μικτή χωρίς απαλλαγή"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery_level": {
+        "name": "Μπαταρία"
+      },
+      "range": {
+        "name": "Αυτονομία"
+      },
+      "charge_status": {
+        "name": "Κατάσταση φόρτισης",
+        "state": {
+          "disconnected": "Αποσυνδεδεμένο",
+          "connected_ac": "Συνδεδεμένο AC",
+          "connected_dc": "Συνδεδεμένο DC",
+          "charging_ac": "Φορτίζει AC",
+          "charging_dc": "Φορτίζει DC"
+        }
+      },
+      "charge_current": {
+        "name": "Ρεύμα φόρτισης"
+      },
+      "ac_charge_current": {
+        "name": "Ρεύμα φόρτισης AC"
+      },
+      "dc_charge_current": {
+        "name": "Ρεύμα φόρτισης DC"
+      },
+      "remaining_charge_time": {
+        "name": "Υπολειπόμενος χρόνος φόρτισης"
+      },
+      "remaining_charge_time_hhmm": {
+        "name": "Υπολειπόμενος χρόνος φόρτισης (Ω:ΛΛ)"
+      },
+      "odometer": {
+        "name": "Χιλιομετρητής"
+      },
+      "last_update": {
+        "name": "Τελευταία αναφορά του αυτοκινήτου"
+      },
+      "power_status": {
+        "name": "Κατάσταση διακόπτη"
+      },
+      "speed": {
+        "name": "Ταχύτητα"
+      },
+      "trip_mileage": {
+        "name": "Απόσταση διαδρομής"
+      },
+      "mileage_yesterday": {
+        "name": "Απόσταση χθες"
+      },
+      "inside_temperature": {
+        "name": "Εσωτερική θερμοκρασία"
+      },
+      "outside_temperature": {
+        "name": "Εξωτερική θερμοκρασία"
+      },
+      "cabin_humidity": {
+        "name": "Υγρασία καμπίνας"
+      },
+      "climate_target_temperature": {
+        "name": "Θερμοκρασία-στόχος κλιματισμού"
+      },
+      "fan_level": {
+        "name": "Ανεμιστήρας κλιματισμού"
+      },
+      "tire_pressure_front_left": {
+        "name": "Πίεση ελαστικού εμπρός αριστερά"
+      },
+      "tire_pressure_front_right": {
+        "name": "Πίεση ελαστικού εμπρός δεξιά"
+      },
+      "tire_pressure_rear_left": {
+        "name": "Πίεση ελαστικού πίσω αριστερά"
+      },
+      "tire_pressure_rear_right": {
+        "name": "Πίεση ελαστικού πίσω δεξιά"
+      },
+      "license_plate": {
+        "name": "Αριθμός κυκλοφορίας"
+      },
+      "window_opening_front_left": {
+        "name": "Άνοιγμα παραθύρου εμπρός αριστερά"
+      },
+      "window_opening_front_right": {
+        "name": "Άνοιγμα παραθύρου εμπρός δεξιά"
+      },
+      "window_opening_rear_left": {
+        "name": "Άνοιγμα παραθύρου πίσω αριστερά"
+      },
+      "window_opening_rear_right": {
+        "name": "Άνοιγμα παραθύρου πίσω δεξιά"
+      },
+      "maintenance_days": {
+        "name": "Ημέρες μέχρι το σέρβις"
+      },
+      "maintenance_km": {
+        "name": "Χιλιόμετρα μέχρι το σέρβις"
+      },
+      "maintenance_date": {
+        "name": "Επόμενο σέρβις"
+      },
+      "itv_date": {
+        "name": "Επόμενο ITV"
+      },
+      "itv_days": {
+        "name": "Ημέρες μέχρι το ITV"
+      },
+      "insurance_renewal_date": {
+        "name": "Ανανέωση ασφάλειας"
+      },
+      "insurance_days": {
+        "name": "Ημέρες μέχρι την ανανέωση της ασφάλειας"
+      },
+      "insurance_cancel_date": {
+        "name": "Προθεσμία ακύρωσης ασφάλειας"
+      }
+    },
+    "binary_sensor": {
+      "cloud_connected": {
+        "name": "Σύνδεση με το cloud"
+      },
+      "engine": {
+        "name": "Διακόπτης ανοιχτός"
+      },
+      "charging": {
+        "name": "Φορτίζει"
+      },
+      "ac_connector": {
+        "name": "Φις AC"
+      },
+      "dc_connector": {
+        "name": "Φις DC"
+      },
+      "door_front_left": {
+        "name": "Πόρτα εμπρός αριστερά"
+      },
+      "door_front_right": {
+        "name": "Πόρτα εμπρός δεξιά"
+      },
+      "door_rear_left": {
+        "name": "Πόρτα πίσω αριστερά"
+      },
+      "door_rear_right": {
+        "name": "Πόρτα πίσω δεξιά"
+      },
+      "trunk": {
+        "name": "Πορτμπαγκάζ"
+      },
+      "hood": {
+        "name": "Καπό"
+      },
+      "any_door_open": {
+        "name": "Κάποια πόρτα ανοιχτή"
+      },
+      "window_front_left": {
+        "name": "Παράθυρο εμπρός αριστερά"
+      },
+      "window_front_right": {
+        "name": "Παράθυρο εμπρός δεξιά"
+      },
+      "window_rear_left": {
+        "name": "Παράθυρο πίσω αριστερά"
+      },
+      "window_rear_right": {
+        "name": "Παράθυρο πίσω δεξιά"
+      },
+      "lock_driver": {
+        "name": "Κλειδαριά οδηγού"
+      },
+      "lock_passenger": {
+        "name": "Κλειδαριά συνοδηγού"
+      },
+      "central_locking": {
+        "name": "Κεντρικό κλείδωμα"
+      },
+      "tire_alarm_front_left": {
+        "name": "Προειδοποίηση ελαστικού εμπρός αριστερά"
+      },
+      "tire_alarm_front_right": {
+        "name": "Προειδοποίηση ελαστικού εμπρός δεξιά"
+      },
+      "tire_alarm_rear_left": {
+        "name": "Προειδοποίηση ελαστικού πίσω αριστερά"
+      },
+      "tire_alarm_rear_right": {
+        "name": "Προειδοποίηση ελαστικού πίσω δεξιά"
+      },
+      "high_beam": {
+        "name": "Μεγάλα φώτα"
+      },
+      "low_beam": {
+        "name": "Μεσαία φώτα"
+      },
+      "position_lamp": {
+        "name": "Φώτα θέσης"
+      },
+      "indicator_left": {
+        "name": "Αριστερό φλας"
+      },
+      "indicator_right": {
+        "name": "Δεξί φλας"
+      },
+      "climate_on": {
+        "name": "Κλιματισμός"
+      },
+      "rear_fog_lamp": {
+        "name": "Φώτα ομίχλης"
+      },
+      "air_recirculation": {
+        "name": "Ανακυκλοφορία αέρα"
+      },
+      "key_battery_low": {
+        "name": "Χαμηλή μπαταρία κλειδιού"
+      },
+      "warning_12v_battery": {
+        "name": "Προειδοποίηση μπαταρίας 12 V"
+      },
+      "warning_tpms": {
+        "name": "Προειδοποίηση πίεσης ελαστικών"
+      },
+      "warning_abs": {
+        "name": "Προειδοποίηση ABS"
+      },
+      "warning_airbag": {
+        "name": "Προειδοποίηση αερόσακου"
+      },
+      "warning_brake_fluid": {
+        "name": "Προειδοποίηση υγρών φρένων"
+      },
+      "warning_brake": {
+        "name": "Προειδοποίηση φρένων"
+      },
+      "warning_eps": {
+        "name": "Προειδοποίηση υδραυλικού τιμονιού"
+      },
+      "warning_power_limit": {
+        "name": "Προειδοποίηση περιορισμένης ισχύος"
+      },
+      "warning_power_system": {
+        "name": "Προειδοποίηση συστήματος κίνησης"
+      },
+      "warning_traction_battery_low": {
+        "name": "Προειδοποίηση χαμηλής μπαταρίας"
+      },
+      "warning_coolant_temperature": {
+        "name": "Προειδοποίηση θερμοκρασίας ψυκτικού"
+      },
+      "maintenance_due": {
+        "name": "Ειδοποίηση σέρβις"
+      },
+      "itv_due": {
+        "name": "Ειδοποίηση ITV"
+      },
+      "insurance_due": {
+        "name": "Ειδοποίηση ασφάλειας"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Ανανέωση δεδομένων οχήματος"
+      },
+      "flash_lights": {
+        "name": "Αναβόσβημα φώτων"
+      },
+      "honk_horn": {
+        "name": "Κόρνα"
+      },
+      "flash_and_honk": {
+        "name": "Φώτα και κόρνα"
+      }
+    },
+    "climate": {
+      "cabin_climate": {
+        "name": "Κλιματισμός"
+      }
+    },
+    "number": {
+      "seat_heat_driver": {
+        "name": "Θέρμανση καθίσματος οδηγού"
+      },
+      "seat_heat_passenger": {
+        "name": "Θέρμανση καθίσματος συνοδηγού"
+      },
+      "seat_vent_driver": {
+        "name": "Αερισμός καθίσματος οδηγού"
+      },
+      "seat_vent_passenger": {
+        "name": "Αερισμός καθίσματος συνοδηγού"
+      }
+    },
+    "switch": {
+      "steering_wheel_heat": {
+        "name": "Θερμαινόμενο τιμόνι"
+      },
+      "front_defrost": {
+        "name": "Αποθάμβωση παρμπρίζ"
+      }
+    },
+    "lock": {
+      "doors": {
+        "name": "Πόρτες"
+      },
+      "pin_arm": {
+        "name": "Ξεκλείδωμα ενεργειών με PIN"
+      }
+    },
+    "cover": {
+      "windows": {
+        "name": "Παράθυρα - Λειτουργία αερισμού",
+        "state": {
+          "open": "Κλειστά",
+          "closed": "Αερισμός",
+          "opening": "Κλείνουν",
+          "closing": "Ανοίγουν λίγο"
+        }
+      },
+      "trunk_control": {
+        "name": "Πορτμπαγκάζ (χειρισμός)"
+      }
+    },
+    "device_tracker": {
+      "location": {
+        "name": "Τοποθεσία"
+      }
+    },
+    "image": {
+      "official_image": {
+        "name": "Επίσημη εικόνα"
+      },
+      "dec_photo": {
+        "name": "Εικόνα DEC"
+      },
+      "top_view": {
+        "name": "Κάτοψη"
+      },
+      "isometric_view": {
+        "name": "Ισομετρική όψη"
+      },
+      "interior_view": {
+        "name": "Όψη εσωτερικού"
+      },
+      "charging_view": {
+        "name": "Όψη φόρτισης"
+      }
+    }
+  },
+  "exceptions": {
+    "session_expired": {
+      "message": "Η συνεδρία της Deepal έληξε και δεν μπόρεσε να ανανεωθεί. Συνδεθείτε ξανά στην ενσωμάτωση. ({error})"
+    },
+    "rate_limited": {
+      "message": "Η Deepal ζητά αναμονή (πάρα πολλά αιτήματα ή προσπάθειες). ({error})"
+    },
+    "pin_problem": {
+      "message": "Πρόβλημα με το PIN του τηλεχειρισμού: ελέγξτε το στον πίνακα DEC Deepal ή στην επίσημη εφαρμογή. ({error})"
+    },
+    "signing_key_invalid": {
+      "message": "Το κλειδί υπογραφής των εντολών δεν ισχύει πλέον. Συνδεθείτε ξανά στην ενσωμάτωση. ({error})"
+    },
+    "command_not_ready": {
+      "message": "Η εντολή δεν μπορεί να σταλεί ακόμη: {error}"
+    },
+    "connection_error": {
+      "message": "Δεν ήταν δυνατή η σύνδεση με τον διακομιστή της Deepal. ({error})"
+    },
+    "command_failed": {
+      "message": "Η εντολή απέτυχε: {error}"
+    },
+    "command_rejected": {
+      "message": "Το αυτοκίνητο απέρριψε την εντολή: {error}"
+    },
+    "command_rejected_asleep": {
+      "message": "Το αυτοκίνητο απέρριψε την εντολή ({error}). Ίσως είναι σε αδράνεια ή απασχολημένο: δοκιμάστε ξανά αφού το χρησιμοποιήσετε για λίγο."
+    },
+    "command_rejected_power_on": {
+      "message": "Το αυτοκίνητο πρέπει να είναι σβηστό για αυτή την εντολή ({error}). Σβήστε το και δοκιμάστε ξανά."
+    },
+    "command_vehicle_asleep": {
+      "message": "Το αυτοκίνητο δεν δέχτηκε την εντολή: ίσως είναι σε αδράνεια ή εκτός σύνδεσης. Πατήστε «Ανανέωση δεδομένων οχήματος» για να το ξυπνήσετε και δοκιμάστε ξανά. ({error})"
+    },
+    "wake_no_report": {
+      "message": "Ζητήθηκε από το αυτοκίνητο να ξυπνήσει, αλλά δεν έστειλε νέα δεδομένα σε 60 δευτερόλεπτα. Ίσως δεν έχει σήμα· διατηρούνται τα τελευταία δεδομένα."
+    },
+    "command_busy": {
+      "message": "Μια άλλη εντολή για αυτό το αυτοκίνητο εκτελείται εδώ και πολλή ώρα. Δοκιμάστε ξανά σε λίγα δευτερόλεπτα."
+    },
+    "command_cooldown": {
+      "message": "Το αυτοκίνητο ολοκληρώνει ακόμη την προηγούμενη εντολή. Περιμένετε {seconds} s."
+    },
+    "pin_not_armed": {
+      "message": "Ξεκλειδώστε πρώτα το «Ξεκλείδωμα ενεργειών με PIN»."
+    },
+    "unknown_device": {
+      "message": "Αυτή η συσκευή δεν είναι όχημα DEC Deepal."
+    },
+    "maintenance_not_configured": {
+      "message": "Ενεργοποιήστε πρώτα το σέρβις για αυτό το αυτοκίνητο στον πίνακα DEC Deepal (Οχήματα)."
+    },
+    "itv_not_configured": {
+      "message": "Ενεργοποιήστε πρώτα το ITV για αυτό το αυτοκίνητο στον πίνακα DEC Deepal (Οχήματα)."
+    },
+    "maintenance_no_odometer": {
+      "message": "Τα χιλιόμετρα του αυτοκινήτου δεν είναι γνωστά. Εισαγάγετε τα χιλιόμετρα ή καταχωρίστε το σέρβις από τον πίνακα DEC Deepal."
+    }
+  },
+  "services": {
+    "capture_snapshot": {
+      "name": "Λήψη αποσφαλμάτωσης",
+      "description": "Αποθηκεύει ένα πλήρες στιγμιότυπο της κατάστασης του αυτοκινήτου (ερμηνευμένα και ακατέργαστα δεδομένα, χωρίς προσωπικά δεδομένα) και το συγκρίνει με την προηγούμενη λήψη. Αποθηκεύεται επίσης στο /config/dec_deepal_capturas/.",
+      "fields": {
+        "device_id": {
+          "name": "Όχημα",
+          "description": "Το αυτοκίνητο προς καταγραφή."
+        },
+        "label": {
+          "name": "Ετικέτα",
+          "description": "Ένα όνομα για να αναγνωρίζετε τη λήψη (για παράδειγμα «A - σε ηρεμία»)."
+        },
+        "refresh": {
+          "name": "Ανάγνωση πρώτα",
+          "description": "Ανάγνωση του αυτοκινήτου ακριβώς πριν από τη λήψη."
+        }
+      }
+    },
+    "register_itv": {
+      "name": "Καταχώριση ITV",
+      "description": "Σημειώνει ότι το αυτοκίνητο πέρασε το ITV (ισπανικό ΚΤΕΟ) και υπολογίζει το επόμενο. Το ITV πρέπει να είναι ενεργοποιημένο για το αυτοκίνητο.",
+      "fields": {
+        "device_id": {
+          "name": "Όχημα",
+          "description": "Το αυτοκίνητο που πέρασε το ITV."
+        },
+        "date": {
+          "name": "Ημερομηνία",
+          "description": "Ημερομηνία του ITV. Κενό = σήμερα."
+        }
+      }
+    },
+    "register_maintenance": {
+      "name": "Καταχώριση σέρβις",
+      "description": "Σημειώνει ότι το αυτοκίνητο έκανε σέρβις και αρχίζει να μετρά για το επόμενο. Το σέρβις πρέπει να είναι ενεργοποιημένο για το αυτοκίνητο.",
+      "fields": {
+        "device_id": {
+          "name": "Όχημα",
+          "description": "Το αυτοκίνητο που έκανε σέρβις."
+        },
+        "date": {
+          "name": "Ημερομηνία",
+          "description": "Ημερομηνία του σέρβις. Κενό = σήμερα."
+        },
+        "km": {
+          "name": "Χιλιόμετρα",
+          "description": "Χιλιόμετρα στο σέρβις. Κενό = η τρέχουσα ένδειξη του αυτοκινήτου."
+        }
+      }
+    }
+  }
+}

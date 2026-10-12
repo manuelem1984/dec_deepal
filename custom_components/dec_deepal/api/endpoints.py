@@ -26,9 +26,7 @@ GATEWAY_SDA: Final = "sda"
 # ---------------------------------------------------------------------------
 # Login y sesión (pasarela intl) — verificado ✅ en España
 # ---------------------------------------------------------------------------
-SEND_SMS_CODE: Final = "/intl-app-gw/intl-app-auth/api/login/send-auth-code"
 SEND_EMAIL_CODE: Final = "/intl-app-gw/intl-app-auth/api/login/email-send-auth-code"
-LOGIN_BY_SMS_CODE: Final = "/intl-app-gw/intl-app-auth/api/login/login-by-mobile-code"
 LOGIN_BY_EMAIL_CODE: Final = "/intl-app-gw/intl-app-auth/api/login/email-code-in"
 REFRESH_TOKEN: Final = "/intl-app-gw/intl-app-auth/api/auth/refresh-token"
 

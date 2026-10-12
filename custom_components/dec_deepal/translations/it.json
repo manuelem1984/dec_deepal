@@ -9,34 +9,20 @@
           "country": "Paese"
         }
       },
-      "login_method": {
-        "title": "Come accedere",
-        "description": "Scegli come vuoi ricevere il codice di accesso ({country}). Consigliato: un account secondario con l'auto condivisa, per non chiudere la sessione dell'app sul tuo telefono.\n\n⚠️ **Usa l'e-mail.** In questo momento Deepal non sta consegnando gli SMS di accesso: il server dice di averlo inviato, ma non arriva.",
-        "data": {
-          "login_method": "Metodo"
-        }
-      },
       "email": {
         "title": "Accesso tramite e-mail",
-        "description": "Scrivi l'e-mail del tuo account Deepal. Riceverai un codice.",
+        "description": "Scrivi l'e-mail del tuo account Deepal. Riceverai un codice.\n\nConsigliato: un account secondario con l'auto condivisa, per non chiudere la sessione dell'app sul tuo telefono.",
         "data": {
           "email": "Indirizzo e-mail"
         }
       },
-      "sms": {
-        "title": "Accesso tramite SMS",
-        "description": "Scrivi il tuo numero di cellulare ({digits} cifre), con o senza il prefisso {prefix}.\n\n⚠️ In questo momento Deepal non sta consegnando gli SMS di accesso. Se non arriva entro un paio di minuti, nel passaggio successivo scegli **Usa un altro metodo** e accedi con l'e-mail.",
-        "data": {
-          "mobile": "Cellulare"
-        }
-      },
       "code_menu": {
         "title": "Codice inviato",
-        "description": "Deepal ha accettato di inviare il codice a {destination}. Può richiedere un paio di minuti. Se non arriva, invialo di nuovo o prova un altro metodo.",
+        "description": "Deepal ha accettato di inviare il codice a {destination}. Possono volerci un paio di minuti; controlla anche la cartella spam. Se non arriva, invialo di nuovo o correggi l'e-mail.",
         "menu_options": {
           "code": "Ho già il codice",
           "resend_code": "Invia di nuovo il codice",
-          "change_method": "Usa un altro metodo o correggi il dato"
+          "change_email": "Correggi l'e-mail"
         }
       },
       "code": {
@@ -59,7 +45,6 @@
       }
     },
     "error": {
-      "invalid_mobile": "Il numero di cellulare non ha il formato previsto.",
       "send_code_failed": "Impossibile inviare il codice. Controlla il dato inserito.",
       "too_many_codes": "Sono stati richiesti troppi codici. Attendi un po' e riprova.",
       "cannot_connect": "Impossibile connettersi al server Deepal.",
@@ -338,12 +323,6 @@
     }
   },
   "selector": {
-    "login_method": {
-      "options": {
-        "sms": "SMS (in questo momento non arriva)",
-        "email": "E-mail (consigliato)"
-      }
-    },
     "pin_mode": {
       "options": {
         "direct": "Opzione A — comandi diretti",
@@ -738,7 +717,7 @@
       "message": "Deepal chiede di attendere (troppe richieste o tentativi). ({error})"
     },
     "pin_problem": {
-      "message": "Problema con il PIN del controllo remoto: controllalo in Configura o nell'app ufficiale. ({error})"
+      "message": "Problema con il PIN del controllo remoto: controllalo nel pannello DEC Deepal (Impostazioni) o nell'app ufficiale. ({error})"
     },
     "signing_key_invalid": {
       "message": "La chiave di firma dei comandi non è più valida. Accedi di nuovo nell'integrazione. ({error})"
@@ -780,13 +759,13 @@
       "message": "Quel dispositivo non è un veicolo DEC Deepal."
     },
     "maintenance_not_configured": {
-      "message": "Attiva prima la manutenzione di quest'auto in Configura → Manutenzione (integrazione DEC Deepal)."
+      "message": "Attiva prima la manutenzione di quest'auto nel pannello DEC Deepal (Veicoli)."
     },
     "itv_not_configured": {
-      "message": "Attiva prima l'ITV di quest'auto in Configura → ITV (integrazione DEC Deepal)."
+      "message": "Attiva prima l'ITV di quest'auto nel pannello DEC Deepal (Veicoli)."
     },
     "maintenance_no_odometer": {
-      "message": "Il chilometraggio dell'auto non è noto. Indica i chilometri o registra il tagliando da Configura → Manutenzione."
+      "message": "Il chilometraggio dell'auto non è noto. Indica i chilometri o registra il tagliando dal pannello DEC Deepal."
     }
   },
   "services": {
@@ -810,7 +789,7 @@
     },
     "register_itv": {
       "name": "Registra ITV",
-      "description": "Annota che l'auto ha superato l'ITV (la revisione periodica spagnola) e calcola la successiva. Occorre aver attivato l'ITV dell'auto in Configura → ITV.",
+      "description": "Annota che l'auto ha superato l'ITV (la revisione periodica spagnola) e calcola la successiva. Occorre aver attivato l'ITV dell'auto nel pannello DEC Deepal.",
       "fields": {
         "device_id": {
           "name": "Veicolo",
@@ -824,7 +803,7 @@
     },
     "register_maintenance": {
       "name": "Registra manutenzione",
-      "description": "Annota che l'auto ha fatto il tagliando e inizia il conteggio per il successivo. Occorre aver attivato la manutenzione dell'auto in Configura → Manutenzione.",
+      "description": "Annota che l'auto ha fatto il tagliando e inizia il conteggio per il successivo. Occorre aver attivato la manutenzione dell'auto nel pannello DEC Deepal.",
       "fields": {
         "device_id": {
           "name": "Veicolo",

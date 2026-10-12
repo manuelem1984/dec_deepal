@@ -51,18 +51,13 @@ VERSION: Final[str] = json.loads(
 # código. Son datos sensibles: diagnostics.py los oculta siempre.
 
 CONF_COUNTRY: Final = "country"  # id del país en countries.yaml (p. ej. "es")
-CONF_LOGIN_METHOD: Final = "login_method"  # "sms" o "email"
 CONF_SESSION: Final = "session"  # dict con tokens y clave privada (ver api/session.py)
 CONF_VEHICLES: Final = "vehicles"  # lista de vehículos elegidos (ver api/models.py)
 
 # Campos que solo existen durante el asistente de configuración (no se guardan).
 CONF_EMAIL: Final = "email"
-CONF_MOBILE: Final = "mobile"
 CONF_AUTH_CODE: Final = "auth_code"
 CONF_SELECTED_VEHICLES: Final = "selected_vehicles"
-
-LOGIN_METHOD_SMS: Final = "sms"
-LOGIN_METHOD_EMAIL: Final = "email"
 
 # ---------------------------------------------------------------------------
 # Claves de las opciones (entry.options) — se cambian en "Configurar"

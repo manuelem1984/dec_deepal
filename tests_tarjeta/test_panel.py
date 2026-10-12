@@ -497,7 +497,11 @@ def test_languages(panel: Page) -> None:
     assert "Verified sheet" in panel.evaluate("banco.texto()")
     assert panel.evaluate("banco.texto('.tabs')") == "VehiclesNotificationsDataDiagnosticsSettings"
     # Catalán, gallego y euskera, en español; un idioma aún sin traducir, en inglés.
-    for language, expected in (("ca", "Coches"), ("pt", "Vehicles"), ("fr", "Vehicles")):
+    for language, expected in (
+        ("ca", "Coches"), ("pt", "VeículosAvisosDadosDiagnósticoDefinições"), ("de", "Fahrzeuge"), ("fr", "Véhicules"),
+        ("nl", "Voertuigen"), ("nb", "Kjøretøy"), ("nn", "Kjøretøy"), ("da", "Køretøjer"), ("el", "Οχήματα"),
+        ("sl", "Vozila"), ("it", "Veicoli"), ("pl", "Pojazdy"), ("sv", "Vehicles"),
+    ):
         mount(panel, idioma=language)
         assert panel.evaluate("banco.texto('.tabs')").startswith(expected), language
 

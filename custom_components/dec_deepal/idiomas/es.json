@@ -10,34 +10,20 @@
             "country": "País"
           }
         },
-        "login_method": {
-          "title": "Cómo iniciar sesión",
-          "description": "Elige cómo quieres recibir el código de acceso ({country}). Recomendado: una cuenta secundaria con el coche compartido, para no cerrar la sesión de la app en tu móvil.\n\n⚠️ **Usa el correo.** Ahora mismo Deepal no está entregando los SMS de acceso: el servidor dice que lo envía, pero no llega.",
-          "data": {
-            "login_method": "Método"
-          }
-        },
         "email": {
           "title": "Acceso por correo",
-          "description": "Escribe el correo de tu cuenta de Deepal. Recibirás un código.",
+          "description": "Escribe el correo de tu cuenta de Deepal. Recibirás un código.\n\nRecomendado: una cuenta secundaria con el coche compartido, para no cerrar la sesión de la app en tu móvil.",
           "data": {
             "email": "Correo electrónico"
           }
         },
-        "sms": {
-          "title": "Acceso por SMS",
-          "description": "Escribe tu móvil ({digits} cifras). Puedes ponerlo con o sin el prefijo {prefix}.\n\n⚠️ Ahora mismo Deepal no está entregando los SMS de acceso. Si no te llega en un par de minutos, en el paso siguiente elige **Usar otro método** y entra con el correo.",
-          "data": {
-            "mobile": "Móvil"
-          }
-        },
         "code_menu": {
           "title": "Código enviado",
-          "description": "Deepal ha aceptado enviar el código a {destination}. Puede tardar un par de minutos. Si no llega, reenvíalo o prueba con otro método.",
+          "description": "Deepal ha aceptado enviar el código a {destination}. Puede tardar un par de minutos; mira también en el correo no deseado. Si no llega, reenvíalo o corrige el correo.",
           "menu_options": {
             "code": "Ya tengo el código",
             "resend_code": "Reenviar el código",
-            "change_method": "Usar otro método o corregir el dato"
+            "change_email": "Corregir el correo"
           }
         },
         "code": {
@@ -60,7 +46,6 @@
         }
       },
       "error": {
-        "invalid_mobile": "El número de móvil no tiene el formato esperado.",
         "send_code_failed": "No se pudo enviar el código. Revisa el dato introducido.",
         "too_many_codes": "Se han pedido demasiados códigos. Espera un rato y vuelve a intentarlo.",
         "cannot_connect": "No se pudo conectar con el servidor de Deepal.",
@@ -339,12 +324,6 @@
       }
     },
     "selector": {
-      "login_method": {
-        "options": {
-          "sms": "SMS (ahora mismo no llega)",
-          "email": "Correo electrónico (recomendado)"
-        }
-      },
       "pin_mode": {
         "options": {
           "direct": "Opción A — comandos directos",
@@ -739,7 +718,7 @@
         "message": "Deepal pide esperar (demasiadas peticiones o intentos). ({error})"
       },
       "pin_problem": {
-        "message": "Problema con el PIN de control remoto: revísalo en Configurar o en la app oficial. ({error})"
+        "message": "Problema con el PIN de control remoto: revísalo en el panel DEC Deepal (Ajustes) o en la app oficial. ({error})"
       },
       "signing_key_invalid": {
         "message": "La clave de firma de comandos ya no vale. Vuelve a iniciar sesión en la integración. ({error})"
@@ -781,13 +760,13 @@
         "message": "Ese dispositivo no es un vehículo de DEC Deepal."
       },
       "maintenance_not_configured": {
-        "message": "Activa antes el mantenimiento de este coche en Configurar → Mantenimiento (integración DEC Deepal)."
+        "message": "Activa antes el mantenimiento de este coche en el panel DEC Deepal (Coches)."
       },
       "itv_not_configured": {
-        "message": "Activa antes la ITV de este coche en Configurar → ITV (integración DEC Deepal)."
+        "message": "Activa antes la ITV de este coche en el panel DEC Deepal (Coches)."
       },
       "maintenance_no_odometer": {
-        "message": "No se conoce el kilometraje del coche. Indica los kilómetros o registra la revisión desde Configurar → Mantenimiento."
+        "message": "No se conoce el kilometraje del coche. Indica los kilómetros o registra la revisión desde el panel DEC Deepal."
       }
     },
     "services": {
@@ -811,7 +790,7 @@
       },
       "register_itv": {
         "name": "Registrar ITV",
-        "description": "Anota que el coche ha pasado la ITV y calcula la siguiente. Hace falta haber activado la ITV del coche en Configurar → ITV.",
+        "description": "Anota que el coche ha pasado la ITV y calcula la siguiente. Hace falta haber activado la ITV del coche en el panel DEC Deepal.",
         "fields": {
           "device_id": {
             "name": "Vehículo",
@@ -825,7 +804,7 @@
       },
       "register_maintenance": {
         "name": "Registrar mantenimiento",
-        "description": "Anota que el coche ha pasado la revisión y empieza a contar para la siguiente. Hace falta haber activado el mantenimiento del coche en Configurar → Mantenimiento.",
+        "description": "Anota que el coche ha pasado la revisión y empieza a contar para la siguiente. Hace falta haber activado el mantenimiento del coche en el panel DEC Deepal.",
         "fields": {
           "device_id": {
             "name": "Vehículo",
@@ -927,9 +906,9 @@
     "maintenance": "Mantenimiento",
     "itv": "ITV",
     "insurance": "Seguro",
-    "no_maintenance": "El mantenimiento de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Mantenimiento.",
-    "no_itv": "La ITV de este coche no está activada. Actívala en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → ITV.",
-    "no_insurance": "El seguro de este coche no está activado. Actívalo en Ajustes → Dispositivos y servicios → DEC Deepal → Configurar → Seguro.",
+    "no_maintenance": "El mantenimiento de este coche no está activado. Actívalo en el panel DEC Deepal → Coches.",
+    "no_itv": "La ITV de este coche no está activada. Actívala en el panel DEC Deepal → Coches.",
+    "no_insurance": "El seguro de este coche no está activado. Actívalo en el panel DEC Deepal → Coches.",
     "ordinal": "{number}ª",
     "nth_service": "{ordinal} revisión",
     "overdue_mark": " · vencida",
@@ -945,7 +924,7 @@
     "history_item": "{ordinal} revisión · {date} · {km} km",
     "register_service": "Registrar mantenimiento",
     "register_service_q": "¿Registrar la {ordinal} revisión?",
-    "register_service_text": "Se anotará que {name} ha pasado la revisión hoy{odometer}, y se empezará a contar para la siguiente. Si la pasó otro día, regístrala desde Configurar → Mantenimiento.",
+    "register_service_text": "Se anotará que {name} ha pasado la revisión hoy{odometer}, y se empezará a contar para la siguiente. Si la pasó otro día, regístrala desde el panel DEC Deepal.",
     "with_odometer": ", con {value}",
     "register": "Registrar",
     "service_registered": "Mantenimiento registrado.",
@@ -965,7 +944,7 @@
     "none_yet": "Aún no ha pasado ninguna",
     "register_itv": "Registrar ITV pasada",
     "register_itv_q": "¿Registrar la ITV?",
-    "register_itv_text": "Se anotará que {name} ha pasado la ITV hoy y se calculará la siguiente. Si la pasó otro día, ponlo en Configurar → ITV.",
+    "register_itv_text": "Se anotará que {name} ha pasado la ITV hoy y se calculará la siguiente. Si la pasó otro día, regístrala desde el panel DEC Deepal.",
     "itv_registered": "ITV registrada.",
     "itv_failed": "No se pudo registrar la ITV.",
     "insurance_last_day": "Seguro: último día",
@@ -1158,7 +1137,6 @@
     "ins_company": "Compañía",
     "ins_policy": "Número de póliza",
     "ins_kind": "Tipo de seguro",
-    "ins_renewal": "Fecha de renovación",
     "ins_notice": "Días de preaviso para desistir",
     "ins_phone_assistance": "Teléfono de asistencia",
     "ins_phone_company": "Teléfono de la compañía",
@@ -1190,7 +1168,7 @@
     "mode_direct": "Directo",
     "mode_direct_help": "La orden se envía al pulsar, tras confirmar. Lo más cómodo.",
     "mode_armed": "Desbloquear antes",
-    "mode_armed_help": "Hay que activar primero «Desbloqueo de acciones» y solo vale durante un rato. Lo más seguro.",
+    "mode_armed_help": "Hay que activar primero «Desbloqueo acciones con PIN» y solo vale durante un rato. Lo más seguro.",
     "arm_seconds": "Cuánto dura el desbloqueo",
     "arm_seconds_help": "Pasado ese tiempo, las órdenes con PIN se vuelven a bloquear solas.",
     "seconds": "{value} s",

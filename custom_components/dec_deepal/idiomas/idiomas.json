@@ -20,11 +20,41 @@
     "pl": {
       "nombre": "Polski",
       "revisor": ""
+    },
+    "de": {
+      "nombre": "Deutsch",
+      "revisor": ""
+    },
+    "fr": {
+      "nombre": "Français",
+      "revisor": ""
+    },
+    "nl": {
+      "nombre": "Nederlands",
+      "revisor": ""
+    },
+    "nb": {
+      "nombre": "Norsk bokmål",
+      "revisor": ""
+    },
+    "da": {
+      "nombre": "Dansk",
+      "revisor": ""
+    },
+    "el": {
+      "nombre": "Ελληνικά",
+      "revisor": ""
+    },
+    "sl": {
+      "nombre": "Slovenščina",
+      "revisor": ""
     }
   },
   "prestados": {
     "ca": "es",
     "gl": "es",
-    "eu": "es"
+    "eu": "es",
+    "nn": "nb",
+    "lb": "fr"
   }
 }

@@ -171,9 +171,10 @@ detectado.
 
 ## Idiomas
 
-La tarjeta está en español, inglés, portugués, italiano y polaco, según el
-idioma de cada usuario en Home Assistant (catalán, gallego y euskera se ven
-en español; cualquier otro, en inglés). Los textos se escriben en
+La tarjeta está en español, inglés, portugués, italiano, polaco, alemán,
+francés, neerlandés, noruego, danés, griego y esloveno, según el idioma de
+cada usuario en Home Assistant (catalán, gallego y euskera se ven en
+español; cualquier otro, en inglés). Los textos se escriben en
 `idiomas/<idioma>.json` (sección `tarjeta`) y la tabla `TEXTS`
 (`src/20_textos.js`) se genera (ver [idiomas.md](idiomas.md)).
 

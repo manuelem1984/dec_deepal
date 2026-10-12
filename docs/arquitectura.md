@@ -58,7 +58,7 @@ custom_components/dec_deepal/
 ├── api/                   Cliente de la nube (sin Home Assistant)
 │   ├── transport.py       Petición HTTP genérica + errores + registro
 │   ├── session.py         Tokens y caducidad (JWT)
-│   ├── auth.py            Código SMS/correo, login, renovación
+│   ├── auth.py            Código por correo, login, renovación
 │   ├── account.py         Sesión compartida, renovación única y con ventana
 │   ├── client.py          Lecturas: vehículos, REST condition, MQTT
 │   ├── commands.py        Comandos firmados y PIN

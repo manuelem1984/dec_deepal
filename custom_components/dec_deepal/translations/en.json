@@ -9,34 +9,20 @@
           "country": "Country"
         }
       },
-      "login_method": {
-        "title": "How to sign in",
-        "description": "Choose how you want to receive the access code ({country}). Recommended: a secondary account with the car shared to it, so the app on your phone is not signed out.\n\n⚠️ **Use email.** Deepal is currently not delivering the access SMS: the server says it was sent, but it never arrives.",
-        "data": {
-          "login_method": "Method"
-        }
-      },
       "email": {
         "title": "Sign in by email",
-        "description": "Enter the email address of your Deepal account. You will receive a code.",
+        "description": "Enter the email address of your Deepal account. You will receive a code.\n\nRecommended: a secondary account with the car shared to it, so the app on your phone is not signed out.",
         "data": {
           "email": "Email address"
         }
       },
-      "sms": {
-        "title": "Sign in by SMS",
-        "description": "Enter your mobile number ({digits} digits), with or without the {prefix} prefix.\n\n⚠️ Deepal is currently not delivering the access SMS. If it has not arrived after a couple of minutes, choose **Use another method** in the next step and sign in by email.",
-        "data": {
-          "mobile": "Mobile number"
-        }
-      },
       "code_menu": {
         "title": "Code sent",
-        "description": "Deepal has accepted to send the code to {destination}. It can take a couple of minutes. If it does not arrive, resend it or try another method.",
+        "description": "Deepal has accepted to send the code to {destination}. It can take a couple of minutes; check the spam folder too. If it does not arrive, resend it or correct the email address.",
         "menu_options": {
           "code": "I have the code",
           "resend_code": "Resend the code",
-          "change_method": "Use another method or correct the details"
+          "change_email": "Correct the email address"
         }
       },
       "code": {
@@ -59,7 +45,6 @@
       }
     },
     "error": {
-      "invalid_mobile": "The mobile number does not have the expected format.",
       "send_code_failed": "The code could not be sent. Check the details you entered.",
       "too_many_codes": "Too many codes have been requested. Wait a while and try again.",
       "cannot_connect": "Could not connect to the Deepal server.",
@@ -338,12 +323,6 @@
     }
   },
   "selector": {
-    "login_method": {
-      "options": {
-        "sms": "SMS (currently not arriving)",
-        "email": "Email (recommended)"
-      }
-    },
     "pin_mode": {
       "options": {
         "direct": "Option A — direct commands",
@@ -738,7 +717,7 @@
       "message": "Deepal asks to wait (too many requests or attempts). ({error})"
     },
     "pin_problem": {
-      "message": "Problem with the remote control PIN: check it in Configure or in the official app. ({error})"
+      "message": "Problem with the remote control PIN: check it in the DEC Deepal panel (Settings) or in the official app. ({error})"
     },
     "signing_key_invalid": {
       "message": "The command signing key is no longer valid. Sign in again in the integration. ({error})"
@@ -780,13 +759,13 @@
       "message": "That device is not a DEC Deepal vehicle."
     },
     "maintenance_not_configured": {
-      "message": "First enable servicing for this car in Configure → Servicing (DEC Deepal integration)."
+      "message": "First enable servicing for this car in the DEC Deepal panel (Vehicles)."
     },
     "itv_not_configured": {
-      "message": "First enable ITV for this car in Configure → ITV (DEC Deepal integration)."
+      "message": "First enable ITV for this car in the DEC Deepal panel (Vehicles)."
     },
     "maintenance_no_odometer": {
-      "message": "The car's mileage is not known. Enter the kilometres, or register the service from Configure → Servicing."
+      "message": "The car's mileage is not known. Enter the kilometres, or register the service from the DEC Deepal panel."
     }
   },
   "services": {
@@ -810,7 +789,7 @@
     },
     "register_itv": {
       "name": "Register ITV",
-      "description": "Records that the car has passed the ITV (roadworthiness test) and calculates the next one. ITV must be enabled for the car in Configure → ITV.",
+      "description": "Records that the car has passed the ITV (roadworthiness test) and calculates the next one. ITV must be enabled for the car in the DEC Deepal panel.",
       "fields": {
         "device_id": {
           "name": "Vehicle",
@@ -824,7 +803,7 @@
     },
     "register_maintenance": {
       "name": "Register service",
-      "description": "Records that the car has been serviced and starts counting for the next one. Servicing must be enabled for the car in Configure → Servicing.",
+      "description": "Records that the car has been serviced and starts counting for the next one. Servicing must be enabled for the car in the DEC Deepal panel.",
       "fields": {
         "device_id": {
           "name": "Vehicle",

@@ -11,8 +11,20 @@ idiomas/
 ├── en.json        Inglés (idioma base)
 ├── pt.json        Portugués de Portugal
 ├── it.json        Italiano
-└── pl.json        Polaco
+├── pl.json        Polaco
+├── de.json        Alemán
+├── fr.json        Francés
+├── nl.json        Neerlandés
+├── nb.json        Noruego (bokmål)
+├── da.json        Danés
+├── el.json        Griego
+└── sl.json        Esloveno
 ```
+
+Son los idiomas de los países donde Changan vende en Europa: Alemania, Reino
+Unido, Países Bajos, Noruega, Grecia, Italia, España, Polonia, Portugal,
+Bélgica (neerlandés, francés y alemán), Luxemburgo (francés y alemán),
+Dinamarca, Malta (inglés) y Eslovenia.
 
 ## Qué hay en cada fichero
 
@@ -52,7 +64,8 @@ Para ver qué le falta a cada idioma: `python tools/generar_idiomas.py --informe
 ## Idiomas que usan los textos de otro
 
 En `idiomas.json` → `prestados`. Hoy: catalán (`ca`), gallego (`gl`) y euskera
-(`eu`) usan el español. No tienen fichero propio. El día que alguien los
+(`eu`) usan el español; el noruego nynorsk (`nn`), el bokmål; y el
+luxemburgués (`lb`), el francés. No tienen fichero propio. El día que alguien los
 traduzca, se quita la línea de `prestados` y se añade su fichero.
 
 Cualquier otro idioma sin traducción ve los textos en el idioma **base**
@@ -103,9 +116,25 @@ palabra para estas piezas. Ampliar la tabla al añadir un idioma.
 
 ## Revisores
 
-Cada idioma tiene un revisor en `idiomas.json`. Las traducciones al inglés,
-portugués, italiano y polaco las hizo el proyecto y están pendientes de
-revisión por alguien nativo.
+Cada idioma tiene un revisor en `idiomas.json`. Todas las traducciones salvo
+el español las hizo el proyecto y están pendientes de revisión por alguien
+nativo.
+
+A los siete idiomas de la 2.5.0b4 (alemán, francés, neerlandés, noruego,
+danés, griego y esloveno) solo les falta `integracion.options.step`: son las
+pantallas antiguas de Configurar, que ya no se abren desde que el panel las
+sustituye. Todo lo que se ve está traducido; la prueba
+`tests/test_translations.py` vigila que a ningún idioma le falte otra cosa.
+
+Comprobaciones hechas a mano en la 2.5.0b4, que conviene repetir al tocar
+textos: que ninguno nombre pantallas que ya no existen ("Configurar → …"),
+que los nombres citados entre comillas coincidan con el de la entidad o la
+pestaña (p. ej. «Desbloqueo acciones con PIN», «Ajustes»), que un mismo
+concepto se llame igual en la tarjeta, el panel y las entidades (tipos de
+seguro), y que no queden textos sin usar.
+
+"ITV" se deja tal cual en todos los idiomas: es la inspección española y el
+módulo solo existe para cuentas de España.
 
 ## Formato de números, ordinales y fechas
 

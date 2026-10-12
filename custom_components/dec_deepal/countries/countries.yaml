@@ -30,14 +30,9 @@
 #   entorno          Clave de la sección "entornos".
 #   pais_venta       Código que espera el servidor en "salesCountry" y en la
 #                    cabecera "selectcountry" (mayúsculas, p. ej. "ES").
-#   prefijo          Prefijo telefónico SIN "+" (España: "34").
-#   digitos_movil    Cifras del móvil sin prefijo, para validar lo que escribe
-#                    el usuario (España: 9). Poner 0 para no validar.
 #   idioma_api       Cabecera "language" que se manda al servidor. La app usa
 #                    "en_US" en Europa; no confundir con el idioma de la
 #                    interfaz de Home Assistant (eso va en translations/).
-#   metodos_login    Lista con "sms" y/o "email". El PRIMERO es el que sale
-#                    marcado por defecto en el asistente.
 #   verificado       true si se ha probado de verdad con una cuenta del país.
 #   notas            Texto libre (opcional).
 # =============================================================================
@@ -55,11 +50,7 @@ paises:
     activo: true
     entorno: eu
     pais_venta: ES
-    prefijo: "34"
-    digitos_movil: 9
     idioma_api: en_US
-    # Correo primero: el SMS no llega en septiembre de 2026 (ver notas).
-    metodos_login: [email, sms]
     verificado: true
     # Módulo de ITV: solo se ofrece en los países que lo ponen a true. La ITV
     # es la inspección española; otros países tienen la suya, con otros plazos.
@@ -74,7 +65,6 @@ paises:
       seguro_preaviso_dias: 30       # plazo habitual para no renovar el seguro
     notas: >-
       País de referencia del proyecto. Login por correo verificado con cuentas
-      reales. Login por SMS: verificado en la v1, pero desde septiembre de
-      2026 el servidor responde "SUC" (enviado) y el SMS no llega; la
-      petición es idéntica a la de v1 y a la de Deepal Alternative, así que
-      el fallo es del lado de Deepal. Ver docs/protocolo.md.
+      reales. El login por SMS se quitó en la 2.5.0b4: desde septiembre de
+      2026 el servidor respondía "SUC" (enviado) y el SMS no llegaba. Ver
+      docs/protocolo.md.

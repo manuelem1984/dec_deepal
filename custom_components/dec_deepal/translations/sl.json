@@ -1,0 +1,823 @@
+{
+  "title": "DEC Deepal",
+  "config": {
+    "step": {
+      "user": {
+        "title": "DEC Deepal — Država",
+        "description": "Izberite državo svojega računa Deepal.",
+        "data": {
+          "country": "Država"
+        }
+      },
+      "email": {
+        "title": "Prijava z e-pošto",
+        "description": "Vnesite e-poštni naslov svojega računa Deepal. Prejeli boste kodo.\n\nPriporočeno: sekundarni račun, s katerim je avto deljen, da se aplikacija na telefonu ne odjavi.",
+        "data": {
+          "email": "E-poštni naslov"
+        }
+      },
+      "code_menu": {
+        "title": "Koda poslana",
+        "description": "Deepal je sprejel pošiljanje kode na {destination}. To lahko traja nekaj minut; preverite tudi mapo z neželeno pošto. Če ne prispe, jo pošljite znova ali popravite e-poštni naslov.",
+        "menu_options": {
+          "code": "Kodo imam",
+          "resend_code": "Znova pošlji kodo",
+          "change_email": "Popravi e-poštni naslov"
+        }
+      },
+      "code": {
+        "title": "Potrditvena koda",
+        "description": "Vnesite kodo, ki ste jo pravkar prejeli.",
+        "data": {
+          "auth_code": "Koda"
+        }
+      },
+      "vehicles": {
+        "title": "Vozila",
+        "description": "Vaš račun ima več avtomobilov. Označite tiste, ki jih želite dodati.",
+        "data": {
+          "selected_vehicles": "Vozila"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Ponovna prijava",
+        "description": "Seja Deepal ni več veljavna (verjetno je bil isti račun prijavljen v aplikaciji). Zahtevana bo nova koda."
+      }
+    },
+    "error": {
+      "send_code_failed": "Kode ni bilo mogoče poslati. Preverite vnesene podatke.",
+      "too_many_codes": "Zahtevanih je bilo preveč kod. Počakajte nekaj časa in poskusite znova.",
+      "cannot_connect": "Povezava s strežnikom Deepal ni uspela.",
+      "login_failed": "Prijava ni uspela. Preverite kodo.",
+      "no_vehicles": "Ta račun nima vozil.",
+      "no_vehicle_selected": "Označite vsaj eno vozilo."
+    },
+    "abort": {
+      "already_configured": "Ta račun je že nastavljen.",
+      "reauth_successful": "Seja je bila uspešno obnovljena.",
+      "reauth_account_mismatch": "Ta račun nima istih vozil kot nastavljeni. Prijavite se s pravim računom.",
+      "flow_state_lost": "Postopek je potekel. Začnite znova.",
+      "catalog_error": "Eden od katalogov integracije vsebuje napake. Preverite dnevnik Home Assistanta."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "DEC Deepal options",
+        "menu_options": {
+          "appearance": "Vehicle appearance (model, version, colour)",
+          "pin": "Remote control with PIN",
+          "alerts": "Phone notifications",
+          "maintenance": "Servicing",
+          "itv": "ITV (roadworthiness test)",
+          "insurance": "Insurance",
+          "data": "Vehicle data (backup and deletion)",
+          "advanced": "Advanced (interval, debugging, manual)"
+        }
+      },
+      "alerts": {
+        "title": "Notifications — vehicle",
+        "description": "Choose the vehicle. Each vehicle has its own recipients.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "alerts_setup": {
+        "title": "Notifications for {vehicle}",
+        "description": "Choose who this vehicle notifies about each thing. A group with no recipients sends nothing. Every notification has the vehicle name in its title (\"DEC Deepal {vehicle}\"). They are normal notifications, not critical ones.",
+        "data": {
+          "car": "Vehicle notifications: notify",
+          "car_types": "Vehicle notifications enabled",
+          "maintenance": "Servicing: notify",
+          "itv": "ITV: notify",
+          "insurance": "Insurance: notify",
+          "all_vehicles": "Use the same for the other vehicles"
+        },
+        "data_description": {
+          "car": "Phones and tablets with the Home Assistant app, with the name they have under Settings → Mobile app. Other notification services appear as notify.name.",
+          "maintenance": "2 months, 1 month, 15 days left; 3,000, 2,000, 1,000 km left; overdue. Enable servicing for the vehicle in its own section first. Only between 8:00 and 22:00.",
+          "itv": "2 months, 1 month, 15 days left; overdue. Enable the ITV for the vehicle in its own section first. Only between 8:00 and 22:00.",
+          "insurance": "30 and 15 days before the cancellation deadline, on the last day and when it renews. Enable insurance for the vehicle in its own section first. Only between 8:00 and 22:00."
+        }
+      },
+      "itv": {
+        "title": "ITV — vehicle",
+        "description": "Choose the car.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "itv_setup": {
+        "title": "ITV of {vehicle}",
+        "description": "The next ITV (roadworthiness test) is calculated automatically with the rule for passenger cars in Spain: the first one 4 years after registration, then every 2 years until the car is 10, and every year from then on.\n\nAn ITV warning and sensors with the due date and the days left are created. Notifications: 2 months, 1 month and 15 days left, and overdue.",
+        "data": {
+          "enabled": "Enable ITV for this car",
+          "registration_date": "Registration date",
+          "last_itv_date": "Date of the last ITV",
+          "next_itv_date": "Next ITV"
+        },
+        "data_description": {
+          "last_itv_date": "Leave it empty if the car has not had one yet.",
+          "next_itv_date": "Leave it empty to have it calculated. Fill it in only if your date is different; it is used until you register the next ITV."
+        }
+      },
+      "insurance": {
+        "title": "Insurance — vehicle",
+        "description": "Choose the car.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "insurance_setup": {
+        "title": "Insurance of {vehicle}",
+        "description": "An insurance warning and sensors with the renewal date and the last day to cancel are created. Notifications: 30 and 15 days before that last day, on the day itself and on renewal. When the renewal date arrives, it moves to the following year automatically.\n\nThe policy number and the phone numbers are only shown on the card: no entity is created with them.",
+        "data": {
+          "enabled": "Enable insurance for this car",
+          "company": "Company",
+          "policy": "Policy number",
+          "insurance_kind": "Type of cover",
+          "renewal_date": "Renewal date",
+          "notice_days": "Cancellation: days before renewal",
+          "phone_assistance": "Roadside assistance phone",
+          "phone_company": "Company phone"
+        },
+        "data_description": {
+          "notice_days": "How many days before renewal is the deadline to say that you will not renew. One month is usual in Spain; check your policy.",
+          "phone_assistance": "Optional. If you enter it, the card shows a button to call.",
+          "phone_company": "Optional."
+        }
+      },
+      "maintenance": {
+        "title": "Servicing — vehicle",
+        "description": "Choose the car.",
+        "data": {
+          "vehicle": "Vehicle"
+        }
+      },
+      "maintenance_menu": {
+        "title": "Servicing of {vehicle}",
+        "description": "{summary}",
+        "menu_options": {
+          "maintenance_register": "Register a completed service",
+          "maintenance_setup": "Correct the details or disable"
+        }
+      },
+      "maintenance_setup": {
+        "title": "Servicing of {vehicle}",
+        "description": "The next service is counted from the last one done. If the car has not had any yet, enter 0 services, the registration date and 0 km.\n\nA servicing warning and sensors with the days and kilometres left are created. The warning turns on when 2 months or 3,000 km are left.",
+        "data": {
+          "maintenance_enabled": "Enable servicing for this car",
+          "services_done": "Services already done",
+          "last_date": "Date of the last service (or of registration)",
+          "last_km": "Kilometres at the last service",
+          "interval_km": "Service every (km)",
+          "interval_months": "Service every (months)"
+        },
+        "data_description": {
+          "interval_km": "The S05 manual says 20,000 km or 12 months, whichever comes first. Reduce it if you make many short trips or drive in dust, mud, extreme cold or salt."
+        }
+      },
+      "maintenance_register": {
+        "title": "Register a service for {vehicle}",
+        "description": "{summary}\n\nWhen you save, the service is added to the history and the count for the next one starts.",
+        "data": {
+          "service_date": "Date of the service",
+          "service_km": "Kilometres at the service"
+        }
+      },
+      "appearance": {
+        "title": "Appearance — vehicle and model",
+        "description": "The model decides which features (and entities) the car has. Until you choose it, the car works in generic mode.",
+        "data": {
+          "vehicle": "Vehicle",
+          "model": "Model"
+        }
+      },
+      "appearance_details": {
+        "title": "Appearance — version and colour",
+        "description": "Version and colour of your {model}. They are used for the \"DEC image\", for the isometric view (drawn with your colour and wheels) and to create only the entities your version has.",
+        "data": {
+          "trim": "Version",
+          "color": "Colour",
+          "wheels": "Wheels (Max only)"
+        },
+        "data_description": {
+          "wheels": "The Pro always has its 18\" wheel."
+        }
+      },
+      "pin": {
+        "title": "Remote control with PIN",
+        "description": "Enables doors, windows and boot. The PIN must have been created in the official app with the SAME account that Home Assistant uses. It is checked when you save.",
+        "data": {
+          "pin_enabled": "Enable control with PIN",
+          "pin": "Remote control PIN",
+          "pin_mode": "Mode",
+          "arm_seconds": "Unlock duration (Option B)",
+          "arm_notify": "Notify when unlocking (Option B)"
+        }
+      },
+      "advanced": {
+        "title": "Advanced",
+        "data": {
+          "scan_minutes": "Reading interval",
+          "wake": "Wake the car when needed",
+          "debug": "Debug mode",
+          "manual_url": "BEV manual",
+          "manual_url_phev": "PHEV manual"
+        },
+        "data_description": {
+          "manual_url": "Link to the owner's manual (PDF) of the electric car (BEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again.",
+          "scan_minutes": "How often the car's data is read. Very low values can make Deepal limit the account.",
+          "wake": "When you press \"Refresh vehicle data\" and before door/window/boot commands, if the data is more than 2 minutes old, the car is woken up and its report is awaited. At most once every 5 minutes, and never on automatic readings, to protect the 12 V battery.",
+          "debug": "Stores full requests and responses (without personal data) in the diagnostics and enables DEBUG messages in the log.",
+          "manual_url_phev": "Link to the owner's manual (PDF) of the plug-in hybrid car (PHEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again."
+        }
+      },
+      "data": {
+        "title": "Vehicle data",
+        "description": "Servicing, ITV, insurance and appearance (model, version, colour) are stored per vehicle (by its VIN), not per account: if you remove the account and add it again, each vehicle gets its data back.",
+        "menu_options": {
+          "data_export": "Download a backup",
+          "data_send": "Send the backup to a phone",
+          "data_import": "Load a backup",
+          "data_delete": "Delete stored data"
+        }
+      },
+      "data_export": {
+        "title": "Download a backup",
+        "description": "Vehicles with data: {cars}.\n\n{link}\n\nThe link expires in a few minutes and opens in the browser. The file contains the policy number and the insurance phone numbers: keep it somewhere safe. If it does not download from the mobile app, use \"Send the backup to a phone\"."
+      },
+      "data_send": {
+        "title": "Send the backup to a phone",
+        "description": "A notification is sent to the chosen phone; tapping it opens the browser and downloads the backup. The link expires in 10 minutes and works as long as the phone can reach Home Assistant at the same address you are using now.",
+        "data": {
+          "target": "Phone"
+        }
+      },
+      "data_import": {
+        "title": "Load a backup",
+        "description": "Choose a file downloaded from \"Download a backup\". It replaces the servicing, ITV, insurance and appearance of the vehicles it contains; other vehicles are left untouched.",
+        "data": {
+          "file": "Backup file"
+        }
+      },
+      "data_delete": {
+        "title": "Delete stored data",
+        "description": "Deletes the servicing, ITV and insurance of the chosen vehicles, whether or not they belong to an account. This cannot be undone: download a backup first if you want to keep them. The appearance of a vehicle that belongs to an account is not deleted: change it under Appearance.",
+        "data": {
+          "cars": "Vehicles",
+          "confirm": "Yes, delete this data"
+        }
+      }
+    },
+    "error": {
+      "pin_required": "Vnesite PIN, da omogočite daljinsko upravljanje.",
+      "pin_invalid": "Napačen PIN ali ustvarjen z drugim računom.",
+      "pin_rate_limited": "Preveč poskusov PIN-a. Počakajte ali ga ponastavite v uradni aplikaciji.",
+      "invalid_url": "Vnesite celoten spletni naslov (ki se začne s https://).",
+      "cannot_connect": "Povezava s strežnikom Deepal ni uspela.",
+      "invalid_file": "Datoteka ni varnostna kopija DEC Deepal ali pa je poškodovana.",
+      "newer_file": "Varnostna kopija izvira iz novejše različice integracije. Posodobite DEC Deepal in poskusite znova.",
+      "empty_file": "Varnostna kopija nima podatkov za nobeno vozilo.",
+      "no_selection": "Izberite vsaj eno vozilo.",
+      "confirm_required": "Označite polje, da potrdite brisanje."
+    },
+    "abort": {
+      "not_loaded": "Integracija ni naložena. Preverite dnevnik in poskusite znova.",
+      "no_data": "Za nobeno vozilo ni shranjenih podatkov.",
+      "data_imported": "Varnostna kopija naložena: {cars}.",
+      "data_deleted": "Podatki izbrisani: {cars}.",
+      "data_sent": "Obvestilo poslano na {device}. Tapnite ga na telefonu, da prenesete varnostno kopijo.",
+      "no_mobile": "Ni telefona z aplikacijo Home Assistant."
+    }
+  },
+  "issues": {
+    "vehicle_not_configured": {
+      "title": "Nastavite svoje vozilo: {vehicle}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Model vozila {vehicle}",
+            "description": "Dokler ne izberete modela, avto deluje v splošnem načinu (samo osnovni podatki, brez sedežev, volana ali upravljanja s PIN-om). Model, prepoznan po imenu: {suggestion}.",
+            "data": {
+              "model": "Model"
+            }
+          },
+          "details": {
+            "title": "Različica in barva",
+            "description": "Različica in barva vašega {model}. Različica določa, katere entitete se ustvarijo (prezračevanje sedežev obstaja na primer samo pri Max) in skupaj z barvo tudi »sliko DEC«.",
+            "data": {
+              "trim": "Različica",
+              "color": "Barva",
+              "wheels": "Platišča (samo Max)"
+            },
+            "data_description": {
+              "wheels": "Pro ima vedno svoje 18\" platišče."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "Račun ne obstaja več."
+        }
+      }
+    }
+  },
+  "selector": {
+    "pin_mode": {
+      "options": {
+        "direct": "Možnost A — neposredni ukazi",
+        "armed": "Možnost B — najprej odkleni (varneje)"
+      }
+    },
+    "arm_seconds": {
+      "options": {
+        "10": "10 sekund",
+        "20": "20 sekund",
+        "30": "30 sekund",
+        "60": "60 sekund"
+      }
+    },
+    "wheels": {
+      "options": {
+        "cover": "20\" z aerodinamičnim pokrovom",
+        "open": "20\" brez aerodinamičnega pokrova"
+      }
+    },
+    "alert_type": {
+      "options": {
+        "charge_started": "Polnjenje se je začelo",
+        "charge_interrupted": "Polnjenje prekinjeno",
+        "charge_finished": "Polnjenje končano",
+        "warnings": "Opozorilne lučke na armaturni plošči",
+        "tires": "Pnevmatike (ko avto vklopi opozorilo)",
+        "key_battery": "Baterija ključa je skoraj prazna"
+      }
+    },
+    "insurance_kind": {
+      "options": {
+        "third_party": "Avtomobilska odgovornost",
+        "third_party_plus": "Delni kasko",
+        "comprehensive_excess": "Polni kasko z odbitno franšizo",
+        "comprehensive": "Polni kasko brez odbitne franšize"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery_level": {
+        "name": "Baterija"
+      },
+      "range": {
+        "name": "Doseg"
+      },
+      "charge_status": {
+        "name": "Stanje polnjenja",
+        "state": {
+          "disconnected": "Odklopljeno",
+          "connected_ac": "Priklopljeno AC",
+          "connected_dc": "Priklopljeno DC",
+          "charging_ac": "Polnjenje AC",
+          "charging_dc": "Polnjenje DC"
+        }
+      },
+      "charge_current": {
+        "name": "Polnilni tok"
+      },
+      "ac_charge_current": {
+        "name": "Polnilni tok AC"
+      },
+      "dc_charge_current": {
+        "name": "Polnilni tok DC"
+      },
+      "remaining_charge_time": {
+        "name": "Preostali čas polnjenja"
+      },
+      "remaining_charge_time_hhmm": {
+        "name": "Preostali čas polnjenja (U:MM)"
+      },
+      "odometer": {
+        "name": "Števec kilometrov"
+      },
+      "last_update": {
+        "name": "Zadnje poročilo avtomobila"
+      },
+      "power_status": {
+        "name": "Stanje kontakta"
+      },
+      "speed": {
+        "name": "Hitrost"
+      },
+      "trip_mileage": {
+        "name": "Razdalja poti"
+      },
+      "mileage_yesterday": {
+        "name": "Razdalja včeraj"
+      },
+      "inside_temperature": {
+        "name": "Notranja temperatura"
+      },
+      "outside_temperature": {
+        "name": "Zunanja temperatura"
+      },
+      "cabin_humidity": {
+        "name": "Vlažnost v kabini"
+      },
+      "climate_target_temperature": {
+        "name": "Ciljna temperatura klime"
+      },
+      "fan_level": {
+        "name": "Ventilator klime"
+      },
+      "tire_pressure_front_left": {
+        "name": "Tlak pnevmatike spredaj levo"
+      },
+      "tire_pressure_front_right": {
+        "name": "Tlak pnevmatike spredaj desno"
+      },
+      "tire_pressure_rear_left": {
+        "name": "Tlak pnevmatike zadaj levo"
+      },
+      "tire_pressure_rear_right": {
+        "name": "Tlak pnevmatike zadaj desno"
+      },
+      "license_plate": {
+        "name": "Registrska številka"
+      },
+      "window_opening_front_left": {
+        "name": "Odprtost okna spredaj levo"
+      },
+      "window_opening_front_right": {
+        "name": "Odprtost okna spredaj desno"
+      },
+      "window_opening_rear_left": {
+        "name": "Odprtost okna zadaj levo"
+      },
+      "window_opening_rear_right": {
+        "name": "Odprtost okna zadaj desno"
+      },
+      "maintenance_days": {
+        "name": "Dni do servisa"
+      },
+      "maintenance_km": {
+        "name": "Kilometrov do servisa"
+      },
+      "maintenance_date": {
+        "name": "Naslednji servis"
+      },
+      "itv_date": {
+        "name": "Naslednji ITV"
+      },
+      "itv_days": {
+        "name": "Dni do ITV"
+      },
+      "insurance_renewal_date": {
+        "name": "Podaljšanje zavarovanja"
+      },
+      "insurance_days": {
+        "name": "Dni do podaljšanja zavarovanja"
+      },
+      "insurance_cancel_date": {
+        "name": "Rok za odpoved zavarovanja"
+      }
+    },
+    "binary_sensor": {
+      "cloud_connected": {
+        "name": "Povezava z oblakom"
+      },
+      "engine": {
+        "name": "Kontakt vklopljen"
+      },
+      "charging": {
+        "name": "Polnjenje"
+      },
+      "ac_connector": {
+        "name": "Priključek AC"
+      },
+      "dc_connector": {
+        "name": "Priključek DC"
+      },
+      "door_front_left": {
+        "name": "Vrata spredaj levo"
+      },
+      "door_front_right": {
+        "name": "Vrata spredaj desno"
+      },
+      "door_rear_left": {
+        "name": "Vrata zadaj levo"
+      },
+      "door_rear_right": {
+        "name": "Vrata zadaj desno"
+      },
+      "trunk": {
+        "name": "Prtljažnik"
+      },
+      "hood": {
+        "name": "Pokrov motorja"
+      },
+      "any_door_open": {
+        "name": "Ena od vrat odprta"
+      },
+      "window_front_left": {
+        "name": "Okno spredaj levo"
+      },
+      "window_front_right": {
+        "name": "Okno spredaj desno"
+      },
+      "window_rear_left": {
+        "name": "Okno zadaj levo"
+      },
+      "window_rear_right": {
+        "name": "Okno zadaj desno"
+      },
+      "lock_driver": {
+        "name": "Ključavnica voznika"
+      },
+      "lock_passenger": {
+        "name": "Ključavnica sovoznika"
+      },
+      "central_locking": {
+        "name": "Centralno zaklepanje"
+      },
+      "tire_alarm_front_left": {
+        "name": "Opozorilo pnevmatike spredaj levo"
+      },
+      "tire_alarm_front_right": {
+        "name": "Opozorilo pnevmatike spredaj desno"
+      },
+      "tire_alarm_rear_left": {
+        "name": "Opozorilo pnevmatike zadaj levo"
+      },
+      "tire_alarm_rear_right": {
+        "name": "Opozorilo pnevmatike zadaj desno"
+      },
+      "high_beam": {
+        "name": "Dolge luči"
+      },
+      "low_beam": {
+        "name": "Kratke luči"
+      },
+      "position_lamp": {
+        "name": "Pozicijske luči"
+      },
+      "indicator_left": {
+        "name": "Levi smernik"
+      },
+      "indicator_right": {
+        "name": "Desni smernik"
+      },
+      "climate_on": {
+        "name": "Klimatska naprava"
+      },
+      "rear_fog_lamp": {
+        "name": "Meglenke"
+      },
+      "air_recirculation": {
+        "name": "Kroženje zraka"
+      },
+      "key_battery_low": {
+        "name": "Baterija ključa je skoraj prazna"
+      },
+      "warning_12v_battery": {
+        "name": "Opozorilo 12 V akumulatorja"
+      },
+      "warning_tpms": {
+        "name": "Opozorilo tlaka v pnevmatikah"
+      },
+      "warning_abs": {
+        "name": "Opozorilo ABS"
+      },
+      "warning_airbag": {
+        "name": "Opozorilo zračne blazine"
+      },
+      "warning_brake_fluid": {
+        "name": "Opozorilo zavorne tekočine"
+      },
+      "warning_brake": {
+        "name": "Opozorilo zavor"
+      },
+      "warning_eps": {
+        "name": "Opozorilo servovolana"
+      },
+      "warning_power_limit": {
+        "name": "Opozorilo omejene moči"
+      },
+      "warning_power_system": {
+        "name": "Opozorilo pogonskega sistema"
+      },
+      "warning_traction_battery_low": {
+        "name": "Opozorilo nizke baterije"
+      },
+      "warning_coolant_temperature": {
+        "name": "Opozorilo temperature hladilne tekočine"
+      },
+      "maintenance_due": {
+        "name": "Opomnik za servis"
+      },
+      "itv_due": {
+        "name": "Opomnik za ITV"
+      },
+      "insurance_due": {
+        "name": "Opomnik za zavarovanje"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Osveži podatke vozila"
+      },
+      "flash_lights": {
+        "name": "Utripni z lučmi"
+      },
+      "honk_horn": {
+        "name": "Zatrobi"
+      },
+      "flash_and_honk": {
+        "name": "Luči in hupa"
+      }
+    },
+    "climate": {
+      "cabin_climate": {
+        "name": "Klima"
+      }
+    },
+    "number": {
+      "seat_heat_driver": {
+        "name": "Ogrevanje voznikovega sedeža"
+      },
+      "seat_heat_passenger": {
+        "name": "Ogrevanje sovoznikovega sedeža"
+      },
+      "seat_vent_driver": {
+        "name": "Prezračevanje voznikovega sedeža"
+      },
+      "seat_vent_passenger": {
+        "name": "Prezračevanje sovoznikovega sedeža"
+      }
+    },
+    "switch": {
+      "steering_wheel_heat": {
+        "name": "Ogrevan volan"
+      },
+      "front_defrost": {
+        "name": "Sušenje vetrobranskega stekla"
+      }
+    },
+    "lock": {
+      "doors": {
+        "name": "Vrata"
+      },
+      "pin_arm": {
+        "name": "Odkleni dejanja s PIN-om"
+      }
+    },
+    "cover": {
+      "windows": {
+        "name": "Okna - Način prezračevanja",
+        "state": {
+          "open": "Zaprta",
+          "closed": "Prezračevanje",
+          "opening": "Zapiranje",
+          "closing": "Odpiranje na režo"
+        }
+      },
+      "trunk_control": {
+        "name": "Prtljažnik (upravljanje)"
+      }
+    },
+    "device_tracker": {
+      "location": {
+        "name": "Lokacija"
+      }
+    },
+    "image": {
+      "official_image": {
+        "name": "Uradna slika"
+      },
+      "dec_photo": {
+        "name": "Slika DEC"
+      },
+      "top_view": {
+        "name": "Pogled od zgoraj"
+      },
+      "isometric_view": {
+        "name": "Izometrični pogled"
+      },
+      "interior_view": {
+        "name": "Pogled notranjosti"
+      },
+      "charging_view": {
+        "name": "Pogled polnjenja"
+      }
+    }
+  },
+  "exceptions": {
+    "session_expired": {
+      "message": "Seja Deepal je potekla in je ni bilo mogoče obnoviti. Znova se prijavite v integraciji. ({error})"
+    },
+    "rate_limited": {
+      "message": "Deepal prosi za počakanje (preveč zahtev ali poskusov). ({error})"
+    },
+    "pin_problem": {
+      "message": "Težava s PIN-om za daljinsko upravljanje: preverite ga na plošči DEC Deepal ali v uradni aplikaciji. ({error})"
+    },
+    "signing_key_invalid": {
+      "message": "Ključ za podpisovanje ukazov ni več veljaven. Znova se prijavite v integraciji. ({error})"
+    },
+    "command_not_ready": {
+      "message": "Ukaza še ni mogoče poslati: {error}"
+    },
+    "connection_error": {
+      "message": "Povezava s strežnikom Deepal ni uspela. ({error})"
+    },
+    "command_failed": {
+      "message": "Ukaz ni uspel: {error}"
+    },
+    "command_rejected": {
+      "message": "Avto je zavrnil ukaz: {error}"
+    },
+    "command_rejected_asleep": {
+      "message": "Avto je zavrnil ukaz ({error}). Morda spi ali je zaseden: poskusite znova, ko ga nekaj časa uporabljate."
+    },
+    "command_rejected_power_on": {
+      "message": "Za ta ukaz mora biti avto ugasnjen ({error}). Ugasnite ga in poskusite znova."
+    },
+    "command_vehicle_asleep": {
+      "message": "Avto ni sprejel ukaza: morda spi ali nima povezave. Pritisnite »Osveži podatke vozila«, da ga zbudite, in poskusite znova. ({error})"
+    },
+    "wake_no_report": {
+      "message": "Avto je bil pozvan, naj se zbudi, a v 60 sekundah ni poslal novih podatkov. Morda nima signala; zadnji podatki se ohranijo."
+    },
+    "command_busy": {
+      "message": "Drug ukaz za ta avto teče že predolgo. Poskusite znova čez nekaj sekund."
+    },
+    "command_cooldown": {
+      "message": "Avto še končuje prejšnji ukaz. Počakajte {seconds} s."
+    },
+    "pin_not_armed": {
+      "message": "Najprej odklenite »Odkleni dejanja s PIN-om«."
+    },
+    "unknown_device": {
+      "message": "Ta naprava ni vozilo DEC Deepal."
+    },
+    "maintenance_not_configured": {
+      "message": "Najprej omogočite servis za ta avto na plošči DEC Deepal (Vozila)."
+    },
+    "itv_not_configured": {
+      "message": "Najprej omogočite ITV za ta avto na plošči DEC Deepal (Vozila)."
+    },
+    "maintenance_no_odometer": {
+      "message": "Stanje kilometrov avtomobila ni znano. Vnesite kilometre ali zabeležite servis na plošči DEC Deepal."
+    }
+  },
+  "services": {
+    "capture_snapshot": {
+      "name": "Razhroščevalni zajem",
+      "description": "Shrani celoten posnetek stanja avtomobila (interpretirani in surovi podatki, brez osebnih podatkov) in ga primerja s prejšnjim zajemom. Shrani se tudi v /config/dec_deepal_capturas/.",
+      "fields": {
+        "device_id": {
+          "name": "Vozilo",
+          "description": "Avto, ki ga želite zajeti."
+        },
+        "label": {
+          "name": "Oznaka",
+          "description": "Ime za prepoznavanje zajema (na primer »A - mirovanje«)."
+        },
+        "refresh": {
+          "name": "Najprej preberi",
+          "description": "Avto preberi tik pred zajemom."
+        }
+      }
+    },
+    "register_itv": {
+      "name": "Zabeleži ITV",
+      "description": "Zabeleži, da je avto opravil ITV (španski tehnični pregled), in izračuna naslednjega. ITV mora biti za avto omogočen.",
+      "fields": {
+        "device_id": {
+          "name": "Vozilo",
+          "description": "Avto, ki je opravil ITV."
+        },
+        "date": {
+          "name": "Datum",
+          "description": "Datum ITV. Prazno = danes."
+        }
+      }
+    },
+    "register_maintenance": {
+      "name": "Zabeleži servis",
+      "description": "Zabeleži, da je bil avto servisiran, in začne šteti do naslednjega. Servis mora biti za avto omogočen.",
+      "fields": {
+        "device_id": {
+          "name": "Vozilo",
+          "description": "Avto, ki je bil servisiran."
+        },
+        "date": {
+          "name": "Datum",
+          "description": "Datum servisa. Prazno = danes."
+        },
+        "km": {
+          "name": "Kilometri",
+          "description": "Kilometri ob servisu. Prazno = trenutno stanje avtomobila."
+        }
+      }
+    }
+  }
+}

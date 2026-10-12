@@ -28,9 +28,8 @@ def registries():  # noqa: ANN201
 def test_spain_profile(registries) -> None:  # noqa: ANN001
     spain = registries.countries.get("es")
     assert spain.profile().sales_country == "ES"
-    assert spain.normalize_mobile("+34 600-000-000") == "600000000"
-    assert spain.is_valid_mobile("600000000")
-    assert not spain.is_valid_mobile("6000")
+    # Solo se entra con correo: el país ya no lleva prefijo ni métodos de acceso.
+    assert not hasattr(spain, "login_methods") and not hasattr(spain.profile(), "dial_code")
 
 
 def test_match_s05_and_generic(registries) -> None:  # noqa: ANN001

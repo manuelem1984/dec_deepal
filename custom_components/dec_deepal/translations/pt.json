@@ -9,34 +9,20 @@
           "country": "País"
         }
       },
-      "login_method": {
-        "title": "Como iniciar sessão",
-        "description": "Escolha como quer receber o código de acesso ({country}). Recomendado: uma conta secundária com o carro partilhado, para não terminar a sessão da app no seu telemóvel.\n\n⚠️ **Use o e-mail.** Neste momento a Deepal não está a entregar os SMS de acesso: o servidor diz que o envia, mas não chega.",
-        "data": {
-          "login_method": "Método"
-        }
-      },
       "email": {
         "title": "Acesso por e-mail",
-        "description": "Escreva o e-mail da sua conta Deepal. Vai receber um código.",
+        "description": "Escreva o e-mail da sua conta Deepal. Vai receber um código.\n\nRecomendado: uma conta secundária com o carro partilhado, para não terminar a sessão da app no seu telemóvel.",
         "data": {
           "email": "Endereço de e-mail"
         }
       },
-      "sms": {
-        "title": "Acesso por SMS",
-        "description": "Escreva o seu telemóvel ({digits} dígitos), com ou sem o prefixo {prefix}.\n\n⚠️ Neste momento a Deepal não está a entregar os SMS de acesso. Se não chegar dentro de um par de minutos, no passo seguinte escolha **Usar outro método** e entre com o e-mail.",
-        "data": {
-          "mobile": "Telemóvel"
-        }
-      },
       "code_menu": {
         "title": "Código enviado",
-        "description": "A Deepal aceitou enviar o código para {destination}. Pode demorar um par de minutos. Se não chegar, reenvie-o ou experimente outro método.",
+        "description": "A Deepal aceitou enviar o código para {destination}. Pode demorar uns minutos; veja também a pasta de spam. Se não chegar, reenvie-o ou corrija o e-mail.",
         "menu_options": {
           "code": "Já tenho o código",
           "resend_code": "Reenviar o código",
-          "change_method": "Usar outro método ou corrigir o dado"
+          "change_email": "Corrigir o e-mail"
         }
       },
       "code": {
@@ -59,7 +45,6 @@
       }
     },
     "error": {
-      "invalid_mobile": "O número de telemóvel não tem o formato esperado.",
       "send_code_failed": "Não foi possível enviar o código. Verifique o dado introduzido.",
       "too_many_codes": "Foram pedidos demasiados códigos. Aguarde um pouco e tente novamente.",
       "cannot_connect": "Não foi possível ligar ao servidor da Deepal.",
@@ -338,12 +323,6 @@
     }
   },
   "selector": {
-    "login_method": {
-      "options": {
-        "sms": "SMS (neste momento não chega)",
-        "email": "E-mail (recomendado)"
-      }
-    },
     "pin_mode": {
       "options": {
         "direct": "Opção A — comandos diretos",
@@ -738,7 +717,7 @@
       "message": "A Deepal pede para aguardar (demasiados pedidos ou tentativas). ({error})"
     },
     "pin_problem": {
-      "message": "Problema com o PIN de controlo remoto: verifique-o em Configurar ou na app oficial. ({error})"
+      "message": "Problema com o PIN de controlo remoto: verifique-o no painel DEC Deepal (Definições) ou na app oficial. ({error})"
     },
     "signing_key_invalid": {
       "message": "A chave de assinatura de comandos já não é válida. Inicie sessão novamente na integração. ({error})"
@@ -780,13 +759,13 @@
       "message": "Esse dispositivo não é um veículo do DEC Deepal."
     },
     "maintenance_not_configured": {
-      "message": "Ative primeiro a manutenção deste carro em Configurar → Manutenção (integração DEC Deepal)."
+      "message": "Ative primeiro a manutenção deste carro no painel DEC Deepal (Veículos)."
     },
     "itv_not_configured": {
-      "message": "Ative primeiro a ITV deste carro em Configurar → ITV (integração DEC Deepal)."
+      "message": "Ative primeiro a ITV deste carro no painel DEC Deepal (Veículos)."
     },
     "maintenance_no_odometer": {
-      "message": "Não se conhece a quilometragem do carro. Indique os quilómetros ou registe a revisão em Configurar → Manutenção."
+      "message": "Não se conhece a quilometragem do carro. Indique os quilómetros ou registe a revisão no painel DEC Deepal."
     }
   },
   "services": {
@@ -810,7 +789,7 @@
     },
     "register_itv": {
       "name": "Registar ITV",
-      "description": "Anota que o carro passou na ITV (inspeção periódica) e calcula a seguinte. É preciso ter ativado a ITV do carro em Configurar → ITV.",
+      "description": "Anota que o carro passou na ITV (inspeção periódica) e calcula a seguinte. É preciso ter ativado a ITV do carro no painel DEC Deepal.",
       "fields": {
         "device_id": {
           "name": "Veículo",
@@ -824,7 +803,7 @@
     },
     "register_maintenance": {
       "name": "Registar manutenção",
-      "description": "Anota que o carro fez a revisão e começa a contar para a seguinte. É preciso ter ativado a manutenção do carro em Configurar → Manutenção.",
+      "description": "Anota que o carro fez a revisão e começa a contar para a seguinte. É preciso ter ativado a manutenção do carro no painel DEC Deepal.",
       "fields": {
         "device_id": {
           "name": "Veículo",

@@ -1,0 +1,1073 @@
+{
+  "integracion": {
+    "title": "DEC Deepal",
+    "config": {
+      "step": {
+        "user": {
+          "title": "DEC Deepal — Land",
+          "description": "Vælg landet for din Deepal-konto.",
+          "data": {
+            "country": "Land"
+          }
+        },
+        "email": {
+          "title": "Log ind med e-mail",
+          "description": "Indtast e-mailadressen til din Deepal-konto. Du modtager en kode.\n\nAnbefalet: en sekundær konto, som bilen er delt med, så appen på din telefon ikke bliver logget ud.",
+          "data": {
+            "email": "E-mailadresse"
+          }
+        },
+        "code_menu": {
+          "title": "Kode sendt",
+          "description": "Deepal har accepteret at sende koden til {destination}. Det kan tage et par minutter; tjek også spammappen. Hvis den ikke kommer, så send den igen eller ret e-mailadressen.",
+          "menu_options": {
+            "code": "Jeg har koden",
+            "resend_code": "Send koden igen",
+            "change_email": "Ret e-mailadressen"
+          }
+        },
+        "code": {
+          "title": "Bekræftelseskode",
+          "description": "Indtast den kode, du lige har modtaget.",
+          "data": {
+            "auth_code": "Kode"
+          }
+        },
+        "vehicles": {
+          "title": "Køretøjer",
+          "description": "Din konto har flere biler. Sæt kryds ved dem, du vil tilføje.",
+          "data": {
+            "selected_vehicles": "Køretøjer"
+          }
+        },
+        "reauth_confirm": {
+          "title": "Log ind igen",
+          "description": "Deepal-sessionen er ikke længere gyldig (den samme konto er sandsynligvis blevet logget ind i appen). Der bliver bedt om en ny kode."
+        }
+      },
+      "error": {
+        "send_code_failed": "Koden kunne ikke sendes. Tjek de indtastede oplysninger.",
+        "too_many_codes": "Der er bedt om for mange koder. Vent lidt og prøv igen.",
+        "cannot_connect": "Kunne ikke oprette forbindelse til Deepal-serveren.",
+        "login_failed": "Kunne ikke logge ind. Tjek koden.",
+        "no_vehicles": "Denne konto har ingen køretøjer.",
+        "no_vehicle_selected": "Sæt kryds ved mindst ét køretøj."
+      },
+      "abort": {
+        "already_configured": "Denne konto er allerede sat op.",
+        "reauth_successful": "Sessionen blev fornyet.",
+        "reauth_account_mismatch": "Den konto har ikke de samme køretøjer som den, der er sat op. Log ind med den rigtige konto.",
+        "flow_state_lost": "Processen er udløbet. Start forfra.",
+        "catalog_error": "Et af integrationens kataloger indeholder fejl. Tjek Home Assistant-loggen."
+      }
+    },
+    "options": {
+      "error": {
+        "pin_required": "Indtast pinkoden for at aktivere fjernbetjening.",
+        "pin_invalid": "Forkert pinkode, eller den er oprettet med en anden konto.",
+        "pin_rate_limited": "For mange pinkodeforsøg. Vent, eller nulstil den i den officielle app.",
+        "invalid_url": "Indtast en fuld webadresse (der begynder med https://).",
+        "cannot_connect": "Kunne ikke oprette forbindelse til Deepal-serveren.",
+        "invalid_file": "Filen er ikke en DEC Deepal-sikkerhedskopi, eller den er beskadiget.",
+        "newer_file": "Sikkerhedskopien kommer fra en nyere version af integrationen. Opdater DEC Deepal og prøv igen.",
+        "empty_file": "Sikkerhedskopien har ikke data for noget køretøj.",
+        "no_selection": "Vælg mindst ét køretøj.",
+        "confirm_required": "Sæt kryds i feltet for at bekræfte sletningen."
+      },
+      "abort": {
+        "not_loaded": "Integrationen er ikke indlæst. Tjek loggen og prøv igen.",
+        "no_data": "Der er ikke gemt data for noget køretøj.",
+        "data_imported": "Sikkerhedskopi indlæst: {cars}.",
+        "data_deleted": "Data slettet: {cars}.",
+        "data_sent": "Notifikation sendt til {device}. Tryk på den på telefonen for at hente sikkerhedskopien.",
+        "no_mobile": "Der er ingen telefon med Home Assistant-appen."
+      }
+    },
+    "issues": {
+      "vehicle_not_configured": {
+        "title": "Sæt dit køretøj op: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "model": {
+              "title": "Model for {vehicle}",
+              "description": "Indtil du vælger model, kører bilen i generel tilstand (kun grunddata, uden sæder, rat eller pinkodestyring). Model genkendt ud fra navnet: {suggestion}.",
+              "data": {
+                "model": "Model"
+              }
+            },
+            "details": {
+              "title": "Version og farve",
+              "description": "Version og farve på din {model}. Versionen afgør, hvilke entiteter der oprettes (sædeventilation findes for eksempel kun på Max) og, sammen med farven, »DEC-billedet«.",
+              "data": {
+                "trim": "Version",
+                "color": "Farve",
+                "wheels": "Fælge (kun Max)"
+              },
+              "data_description": {
+                "wheels": "Pro har altid sin 18\"-fælg."
+              }
+            }
+          },
+          "abort": {
+            "entry_not_found": "Kontoen findes ikke længere."
+          }
+        }
+      }
+    },
+    "selector": {
+      "pin_mode": {
+        "options": {
+          "direct": "Mulighed A — direkte kommandoer",
+          "armed": "Mulighed B — lås op først (sikrere)"
+        }
+      },
+      "arm_seconds": {
+        "options": {
+          "10": "10 sekunder",
+          "20": "20 sekunder",
+          "30": "30 sekunder",
+          "60": "60 sekunder"
+        }
+      },
+      "wheels": {
+        "options": {
+          "cover": "20\" med aerokapsel",
+          "open": "20\" uden aerokapsel"
+        }
+      },
+      "alert_type": {
+        "options": {
+          "charge_started": "Opladning startet",
+          "charge_interrupted": "Opladning afbrudt",
+          "charge_finished": "Opladning færdig",
+          "warnings": "Advarselslamper i instrumentbrættet",
+          "tires": "Dæk (når bilen tænder advarslen)",
+          "key_battery": "Lavt batteri i nøglen"
+        }
+      },
+      "insurance_kind": {
+        "options": {
+          "third_party": "Ansvar",
+          "third_party_plus": "Udvidet ansvar",
+          "comprehensive_excess": "Kasko med selvrisiko",
+          "comprehensive": "Kasko uden selvrisiko"
+        }
+      }
+    },
+    "entity": {
+      "sensor": {
+        "battery_level": {
+          "name": "Batteri"
+        },
+        "range": {
+          "name": "Rækkevidde"
+        },
+        "charge_status": {
+          "name": "Opladningsstatus",
+          "state": {
+            "disconnected": "Frakoblet",
+            "connected_ac": "Tilsluttet AC",
+            "connected_dc": "Tilsluttet DC",
+            "charging_ac": "Oplader AC",
+            "charging_dc": "Oplader DC"
+          }
+        },
+        "charge_current": {
+          "name": "Ladestrøm"
+        },
+        "ac_charge_current": {
+          "name": "AC-ladestrøm"
+        },
+        "dc_charge_current": {
+          "name": "DC-ladestrøm"
+        },
+        "remaining_charge_time": {
+          "name": "Resterende ladetid"
+        },
+        "remaining_charge_time_hhmm": {
+          "name": "Resterende ladetid (T:MM)"
+        },
+        "odometer": {
+          "name": "Kilometerstand"
+        },
+        "last_update": {
+          "name": "Seneste rapport fra bilen"
+        },
+        "power_status": {
+          "name": "Tændingsstatus"
+        },
+        "speed": {
+          "name": "Hastighed"
+        },
+        "trip_mileage": {
+          "name": "Turdistance"
+        },
+        "mileage_yesterday": {
+          "name": "Distance i går"
+        },
+        "inside_temperature": {
+          "name": "Indetemperatur"
+        },
+        "outside_temperature": {
+          "name": "Udetemperatur"
+        },
+        "cabin_humidity": {
+          "name": "Luftfugtighed i kabinen"
+        },
+        "climate_target_temperature": {
+          "name": "Ønsket temperatur for klimaanlægget"
+        },
+        "fan_level": {
+          "name": "Blæser for klimaanlægget"
+        },
+        "tire_pressure_front_left": {
+          "name": "Dæktryk venstre for"
+        },
+        "tire_pressure_front_right": {
+          "name": "Dæktryk højre for"
+        },
+        "tire_pressure_rear_left": {
+          "name": "Dæktryk venstre bag"
+        },
+        "tire_pressure_rear_right": {
+          "name": "Dæktryk højre bag"
+        },
+        "license_plate": {
+          "name": "Nummerplade"
+        },
+        "window_opening_front_left": {
+          "name": "Rudeåbning venstre for"
+        },
+        "window_opening_front_right": {
+          "name": "Rudeåbning højre for"
+        },
+        "window_opening_rear_left": {
+          "name": "Rudeåbning venstre bag"
+        },
+        "window_opening_rear_right": {
+          "name": "Rudeåbning højre bag"
+        },
+        "maintenance_days": {
+          "name": "Dage til service"
+        },
+        "maintenance_km": {
+          "name": "Kilometer til service"
+        },
+        "maintenance_date": {
+          "name": "Næste service"
+        },
+        "itv_date": {
+          "name": "Næste ITV"
+        },
+        "itv_days": {
+          "name": "Dage til ITV"
+        },
+        "insurance_renewal_date": {
+          "name": "Fornyelse af forsikring"
+        },
+        "insurance_days": {
+          "name": "Dage til fornyelse af forsikring"
+        },
+        "insurance_cancel_date": {
+          "name": "Opsigelsesfrist for forsikring"
+        }
+      },
+      "binary_sensor": {
+        "cloud_connected": {
+          "name": "Cloudforbindelse"
+        },
+        "engine": {
+          "name": "Tænding slået til"
+        },
+        "charging": {
+          "name": "Oplader"
+        },
+        "ac_connector": {
+          "name": "AC-stik"
+        },
+        "dc_connector": {
+          "name": "DC-stik"
+        },
+        "door_front_left": {
+          "name": "Dør venstre for"
+        },
+        "door_front_right": {
+          "name": "Dør højre for"
+        },
+        "door_rear_left": {
+          "name": "Dør venstre bag"
+        },
+        "door_rear_right": {
+          "name": "Dør højre bag"
+        },
+        "trunk": {
+          "name": "Bagagerum"
+        },
+        "hood": {
+          "name": "Motorhjelm"
+        },
+        "any_door_open": {
+          "name": "En dør åben"
+        },
+        "window_front_left": {
+          "name": "Rude venstre for"
+        },
+        "window_front_right": {
+          "name": "Rude højre for"
+        },
+        "window_rear_left": {
+          "name": "Rude venstre bag"
+        },
+        "window_rear_right": {
+          "name": "Rude højre bag"
+        },
+        "lock_driver": {
+          "name": "Lås førerside"
+        },
+        "lock_passenger": {
+          "name": "Lås passagerside"
+        },
+        "central_locking": {
+          "name": "Centrallås"
+        },
+        "tire_alarm_front_left": {
+          "name": "Dækadvarsel venstre for"
+        },
+        "tire_alarm_front_right": {
+          "name": "Dækadvarsel højre for"
+        },
+        "tire_alarm_rear_left": {
+          "name": "Dækadvarsel venstre bag"
+        },
+        "tire_alarm_rear_right": {
+          "name": "Dækadvarsel højre bag"
+        },
+        "high_beam": {
+          "name": "Fjernlys"
+        },
+        "low_beam": {
+          "name": "Nærlys"
+        },
+        "position_lamp": {
+          "name": "Positionslys"
+        },
+        "indicator_left": {
+          "name": "Blinklys venstre"
+        },
+        "indicator_right": {
+          "name": "Blinklys højre"
+        },
+        "climate_on": {
+          "name": "Klimaanlæg"
+        },
+        "rear_fog_lamp": {
+          "name": "Tågelygter"
+        },
+        "air_recirculation": {
+          "name": "Recirkulation af luft"
+        },
+        "key_battery_low": {
+          "name": "Lavt batteri i nøglen"
+        },
+        "warning_12v_battery": {
+          "name": "Advarsel 12 V-batteri"
+        },
+        "warning_tpms": {
+          "name": "Dæktryksadvarsel"
+        },
+        "warning_abs": {
+          "name": "ABS-advarsel"
+        },
+        "warning_airbag": {
+          "name": "Airbagadvarsel"
+        },
+        "warning_brake_fluid": {
+          "name": "Bremsevæskeadvarsel"
+        },
+        "warning_brake": {
+          "name": "Bremseadvarsel"
+        },
+        "warning_eps": {
+          "name": "Servostyringsadvarsel"
+        },
+        "warning_power_limit": {
+          "name": "Advarsel om begrænset effekt"
+        },
+        "warning_power_system": {
+          "name": "Advarsel for drivsystemet"
+        },
+        "warning_traction_battery_low": {
+          "name": "Advarsel om lavt batteri"
+        },
+        "warning_coolant_temperature": {
+          "name": "Advarsel om kølevæsketemperatur"
+        },
+        "maintenance_due": {
+          "name": "Servicepåmindelse"
+        },
+        "itv_due": {
+          "name": "ITV-påmindelse"
+        },
+        "insurance_due": {
+          "name": "Forsikringspåmindelse"
+        }
+      },
+      "button": {
+        "refresh": {
+          "name": "Opdater køretøjsdata"
+        },
+        "flash_lights": {
+          "name": "Blink med lygterne"
+        },
+        "honk_horn": {
+          "name": "Brug hornet"
+        },
+        "flash_and_honk": {
+          "name": "Lygter og horn"
+        }
+      },
+      "climate": {
+        "cabin_climate": {
+          "name": "Klima"
+        }
+      },
+      "number": {
+        "seat_heat_driver": {
+          "name": "Sædevarme fører"
+        },
+        "seat_heat_passenger": {
+          "name": "Sædevarme passager"
+        },
+        "seat_vent_driver": {
+          "name": "Sædeventilation fører"
+        },
+        "seat_vent_passenger": {
+          "name": "Sædeventilation passager"
+        }
+      },
+      "switch": {
+        "steering_wheel_heat": {
+          "name": "Ratvarme"
+        },
+        "front_defrost": {
+          "name": "Afdugning for"
+        }
+      },
+      "lock": {
+        "doors": {
+          "name": "Døre"
+        },
+        "pin_arm": {
+          "name": "Lås pinkodehandlinger op"
+        }
+      },
+      "cover": {
+        "windows": {
+          "name": "Ruder - Udluftningstilstand",
+          "state": {
+            "open": "Lukket",
+            "closed": "Lufter ud",
+            "opening": "Lukker",
+            "closing": "Åbner på klem"
+          }
+        },
+        "trunk_control": {
+          "name": "Bagagerum (styring)"
+        }
+      },
+      "device_tracker": {
+        "location": {
+          "name": "Placering"
+        }
+      },
+      "image": {
+        "official_image": {
+          "name": "Officielt billede"
+        },
+        "dec_photo": {
+          "name": "DEC-billede"
+        },
+        "top_view": {
+          "name": "Set ovenfra"
+        },
+        "isometric_view": {
+          "name": "Isometrisk visning"
+        },
+        "interior_view": {
+          "name": "Kabinevisning"
+        },
+        "charging_view": {
+          "name": "Ladevisning"
+        }
+      }
+    },
+    "exceptions": {
+      "session_expired": {
+        "message": "Deepal-sessionen er udløbet og kunne ikke fornyes. Log ind igen i integrationen. ({error})"
+      },
+      "rate_limited": {
+        "message": "Deepal beder om at vente (for mange forespørgsler eller forsøg). ({error})"
+      },
+      "pin_problem": {
+        "message": "Problem med pinkoden til fjernbetjening: tjek den i DEC Deepal-panelet eller i den officielle app. ({error})"
+      },
+      "signing_key_invalid": {
+        "message": "Signeringsnøglen til kommandoer er ikke længere gyldig. Log ind igen i integrationen. ({error})"
+      },
+      "command_not_ready": {
+        "message": "Kommandoen kan ikke sendes endnu: {error}"
+      },
+      "connection_error": {
+        "message": "Kunne ikke oprette forbindelse til Deepal-serveren. ({error})"
+      },
+      "command_failed": {
+        "message": "Kommandoen mislykkedes: {error}"
+      },
+      "command_rejected": {
+        "message": "Bilen afviste kommandoen: {error}"
+      },
+      "command_rejected_asleep": {
+        "message": "Bilen afviste kommandoen ({error}). Den sover måske eller er optaget: prøv igen, når du har brugt den et stykke tid."
+      },
+      "command_rejected_power_on": {
+        "message": "Bilen skal være slukket til denne kommando ({error}). Sluk den og prøv igen."
+      },
+      "command_vehicle_asleep": {
+        "message": "Bilen accepterede ikke kommandoen: den sover måske eller er offline. Tryk på »Opdater køretøjsdata« for at vække den, og prøv igen. ({error})"
+      },
+      "wake_no_report": {
+        "message": "Bilen blev bedt om at vågne, men har ikke sendt nye data i 60 sekunder. Den har måske ingen dækning; de seneste data beholdes."
+      },
+      "command_busy": {
+        "message": "En anden kommando til denne bil har kørt for længe. Prøv igen om et par sekunder."
+      },
+      "command_cooldown": {
+        "message": "Bilen er stadig ved at afslutte den forrige kommando. Vent {seconds} s."
+      },
+      "pin_not_armed": {
+        "message": "Lås først »Lås pinkodehandlinger op« op."
+      },
+      "unknown_device": {
+        "message": "Den enhed er ikke et DEC Deepal-køretøj."
+      },
+      "maintenance_not_configured": {
+        "message": "Aktivér først service for denne bil i DEC Deepal-panelet (Køretøjer)."
+      },
+      "itv_not_configured": {
+        "message": "Aktivér først ITV for denne bil i DEC Deepal-panelet (Køretøjer)."
+      },
+      "maintenance_no_odometer": {
+        "message": "Bilens kilometerstand kendes ikke. Angiv kilometerne, eller registrér servicen fra DEC Deepal-panelet."
+      }
+    },
+    "services": {
+      "capture_snapshot": {
+        "name": "Fejlsøgningsoptagelse",
+        "description": "Gemmer et fuldt øjebliksbillede af bilens tilstand (fortolkede data og rådata, uden personoplysninger) og sammenligner det med den forrige optagelse. Det gemmes også i /config/dec_deepal_capturas/.",
+        "fields": {
+          "device_id": {
+            "name": "Køretøj",
+            "description": "Bilen, der skal optages."
+          },
+          "label": {
+            "name": "Etiket",
+            "description": "Et navn til at genkende optagelsen (for eksempel »A - i ro«)."
+          },
+          "refresh": {
+            "name": "Læs først",
+            "description": "Aflæs bilen lige før optagelsen."
+          }
+        }
+      },
+      "register_itv": {
+        "name": "Registrér ITV",
+        "description": "Noterer, at bilen har bestået ITV (spansk periodisk syn), og beregner det næste. ITV skal være aktiveret for bilen.",
+        "fields": {
+          "device_id": {
+            "name": "Køretøj",
+            "description": "Bilen, der har bestået ITV."
+          },
+          "date": {
+            "name": "Dato",
+            "description": "Dato for ITV. Tomt = i dag."
+          }
+        }
+      },
+      "register_maintenance": {
+        "name": "Registrér service",
+        "description": "Noterer, at bilen har været til service, og begynder at tælle mod den næste. Service skal være aktiveret for bilen.",
+        "fields": {
+          "device_id": {
+            "name": "Køretøj",
+            "description": "Bilen, der har været til service."
+          },
+          "date": {
+            "name": "Dato",
+            "description": "Dato for servicen. Tomt = i dag."
+          },
+          "km": {
+            "name": "Kilometer",
+            "description": "Kilometerstand ved servicen. Tomt = bilens aktuelle stand."
+          }
+        }
+      }
+    }
+  },
+  "avisos": {
+    "charge_started": "Opladning startet{battery}.",
+    "charge_interrupted": "Opladning afbrudt{battery}.",
+    "charge_finished": "Opladning færdig{battery}.",
+    "battery": " (batteri på {level} %)",
+    "warnings": "Advarselslampe tændt: {names}.",
+    "tires": "Dækadvarsel: {names}.",
+    "key_battery": "Lavt batteri i nøglen. Skift det med et CR2032.",
+    "maintenance_remaining": "{parts} tilbage til {ordinal} service.",
+    "maintenance_overdue": "Service overskredet: {ordinal} service skulle være lavet {date} eller ved {km} km.",
+    "itv_remaining": "{days} tilbage til periodisk syn (ITV), med frist {date}.",
+    "itv_today": "I dag er sidste dag for periodisk syn (ITV).",
+    "itv_overdue": "Periodisk syn (ITV) overskredet siden {date}.",
+    "insurance_cancel": "Forsikring: {days} tilbage til at opsige (til {deadline}). Den fornyes {renewal}.",
+    "insurance_last_day": "Forsikring: i dag er sidste dag for at give {company} besked om, at du ikke vil forny.",
+    "insurance_renewal": "Forsikring: {days} til den fornyes ({renewal}).",
+    "insurance_renewed": "Forsikringen blev fornyet i dag. Næste fornyelse: {renewal}.",
+    "your_insurer": "dit forsikringsselskab",
+    "km": "{value} km",
+    "days": "{value} dage",
+    "day": "1 dag",
+    "or": " eller ",
+    "and": " og ",
+    "thousands": ".",
+    "ordinal": "{number}.",
+    "date_format": "%d.%m.%Y",
+    "panel_target": "Home Assistant-notifikationer",
+    "backup_download": "Hent sikkerhedskopien",
+    "backup_notification": "Sikkerhedskopi af dine køretøjers data. Tryk for at hente den (linket udløber om 10 minutter)."
+  },
+  "tarjeta": {
+    "card_description": "Din Deepal med et enkelt blik: bilvisning, batteri, komfort og hurtige handlinger.",
+    "car": "Bil",
+    "not_found": "Jeg kan ikke finde bilen. Vælg en i kortets indstillinger.",
+    "refresh": "Opdater køretøjsdata",
+    "updated": "Opdateret: {when}",
+    "today": "i dag, {time}",
+    "yesterday": "i går, {time}",
+    "comfort": "Komfort",
+    "lock": "Lås",
+    "trunk": "Bagagerum",
+    "vent": "Luft ud",
+    "locate": "Find køretøjet",
+    "others": "Mere",
+    "on": "Til",
+    "off": "Fra",
+    "seats": "Sæder",
+    "unlocked": "Ulåst",
+    "locked": "Låst",
+    "trunk_open": "Åbent",
+    "trunk_closed": "Lukket",
+    "venting": "Lufter ud",
+    "windows_open": "Åbne",
+    "windows_closed": "Lukket",
+    "lights_horn": "Lygter og horn",
+    "others_default": "Instruktionsbog og dokumenter",
+    "day": "1 dag",
+    "days": "{count} dage",
+    "close": "Luk",
+    "cancel": "Annuller",
+    "understood": "Forstået",
+    "command_failed": "Kommandoen kunne ikke sendes til bilen.",
+    "no_pin": "Aktivér pinkodestyring i DEC Deepal-panelet (fanen Indstillinger) for at bruge denne knap.",
+    "pin_confirm": "Kommandoen sendes til {name} med din gemte pinkode. Bilen kan være et par sekunder om at svare.",
+    "lock_q": "Lås dørene?",
+    "lock_do": "Lås",
+    "unlock_q": "Lås dørene op?",
+    "unlock_do": "Lås op",
+    "trunk_close_q": "Luk bagagerummet?",
+    "trunk_open_q": "Åbn bagagerummet?",
+    "open_do": "Åbn",
+    "windows_close_q": "Luk ruderne?",
+    "vent_q": "Åbn ruderne på klem for at lufte ud?",
+    "lights": "Lygter",
+    "flash": "Blink",
+    "horn": "Horn",
+    "honk": "Dyt",
+    "both": "Begge",
+    "manual": "Instruktionsbog",
+    "open_pdf": "Åbn PDF",
+    "not_enabled": "Ikke aktiveret",
+    "maintenance": "Service",
+    "itv": "ITV",
+    "insurance": "Forsikring",
+    "no_maintenance": "Service er ikke aktiveret for denne bil. Aktivér det i DEC Deepal-panelet → Køretøjer.",
+    "no_itv": "ITV er ikke aktiveret for denne bil. Aktivér det i DEC Deepal-panelet → Køretøjer.",
+    "no_insurance": "Forsikring er ikke aktiveret for denne bil. Aktivér det i DEC Deepal-panelet → Køretøjer.",
+    "ordinal": "{number}.",
+    "nth_service": "{ordinal} service",
+    "overdue_mark": " · overskredet",
+    "service_overdue": "Service overskredet",
+    "service_in": "Service om {value}",
+    "days_left": "dage tilbage",
+    "days_late": "dage over tid",
+    "km_left": "km tilbage",
+    "km_late": "km over",
+    "service_planned": "Forfalder {date} eller ved {km} km, alt efter hvad der kommer først.",
+    "includes": "Hvad den omfatter",
+    "history": "Historik",
+    "history_item": "{ordinal} service · {date} · {km} km",
+    "register_service": "Registrér service",
+    "register_service_q": "Registrér {ordinal} service?",
+    "register_service_text": "Det bliver noteret, at {name} var til service i dag{odometer}, og tællingen mod den næste starter. Var det en anden dag, så registrér det fra DEC Deepal-panelet.",
+    "with_odometer": ", ved {value}",
+    "register": "Registrér",
+    "service_registered": "Service registreret.",
+    "service_failed": "Servicen kunne ikke registreres.",
+    "itv_overdue": "ITV overskredet",
+    "itv_last_day": "ITV: sidste dag",
+    "itv_in": "ITV om {days}",
+    "left": "{days} tilbage",
+    "overdue": "Overskredet",
+    "last_day": "Sidste dag",
+    "next_itv": "Næste ITV",
+    "due_date": "frist",
+    "itv_rule": "Første ITV (periodisk syn) 4 år efter registreringen. Derefter hvert 2. år, til bilen er 10 år, og derefter hvert år.",
+    "details": "Detaljer",
+    "registration": "Registrering",
+    "last_itv": "Seneste ITV",
+    "none_yet": "Ingen endnu",
+    "register_itv": "Registrér bestået ITV",
+    "register_itv_q": "Registrér ITV?",
+    "register_itv_text": "Det bliver noteret, at {name} bestod ITV i dag, og det næste beregnes. Var det en anden dag, så angiv det i DEC Deepal-panelet.",
+    "itv_registered": "ITV registreret.",
+    "itv_failed": "ITV kunne ikke registreres.",
+    "insurance_last_day": "Forsikring: sidste dag",
+    "insurance_cancel": "Forsikring: {days} til at opsige",
+    "to_cancel": "{days} til at opsige",
+    "renews_on": "Fornyes {date}",
+    "days_to_renewal": "dage til fornyelse",
+    "days_to_cancel": "dage til at opsige",
+    "cancel_passed": "opsigelsesfristen er overskredet",
+    "renewal_text": "Fornyelse {renewal}. For ikke at forny skal du give besked inden {deadline} ({days} dage før).",
+    "policy": "Police",
+    "company": "Selskab",
+    "policy_number": "Policenummer",
+    "kind": "Type",
+    "assistance": "Vejhjælp",
+    "kind_third_party": "Ansvar",
+    "kind_third_party_plus": "Udvidet ansvar",
+    "kind_comprehensive_excess": "Kasko med selvrisiko",
+    "kind_comprehensive": "Kasko uden selvrisiko",
+    "wheel_heat": "Ratvarme",
+    "seat_vent_driver": "Sædeventilation fører",
+    "seat_heat_driver": "Sædevarme fører",
+    "seat_vent_passenger": "Sædeventilation passager",
+    "seat_heat_passenger": "Sædevarme passager",
+    "temp_down": "Sænk temperaturen",
+    "temp_up": "Hæv temperaturen",
+    "climate_on": "Klimaanlæg tændt",
+    "climate_off": "Klimaanlæg slukket",
+    "inside": "Inde {value}",
+    "humidity": "Fugtighed {value}",
+    "fan": "Blæser {value}",
+    "recirculating": "Recirkulation",
+    "outside_air": "Udeluft",
+    "number_copied": "Nummer kopieret: {number}",
+    "trunk_manual": "Dette køretøj har ikke elektrisk bagklap: bagagerummet åbnes og lukkes med hånden."
+  },
+  "panel": {
+    "tab_cars": "Køretøjer",
+    "tab_alerts": "Notifikationer",
+    "tab_data": "Data",
+    "tab_diagnostics": "Diagnostik",
+    "loading": "Indlæser…",
+    "retry": "Prøv igen",
+    "no_cars": "Der er ingen køretøjer. Tilføj din Deepal-konto under Indstillinger → Enheder og tjenester.",
+    "error_generic": "Det kunne ikke gennemføres. Prøv igen.",
+    "day": "{value} dag",
+    "days": "{value} dage",
+    "or": " eller ",
+    "not_configured": "Ingen model valgt",
+    "sheet_verified": "Verificeret datablad",
+    "sheet_catalogue": "Datablad fra kataloget",
+    "battery": "Batteri",
+    "range": "Rækkevidde",
+    "odometer": "Kilometerstand",
+    "appearance": "Udseende",
+    "configure": "Konfigurer",
+    "section_charge": "Opladning",
+    "section_warnings": "Advarselslamper",
+    "section_maintenance": "Service",
+    "section_itv": "ITV",
+    "section_insurance": "Forsikring",
+    "section_appearance": "Udseende",
+    "not_set": "Ikke sat op",
+    "add_maintenance": "Aktivér service",
+    "add_itv": "Tilføj ITV",
+    "add_insurance": "Tilføj forsikring",
+    "feature_seat_heat": "Sædevarme",
+    "feature_seat_vent": "Sædeventilation",
+    "feature_wheel_heat": "Ratvarme",
+    "feature_power_tailgate": "Elektrisk bagklap",
+    "wheel_pro": "18\"-fælge",
+    "wheel_cover": "20\"-fælge med aerokapsler",
+    "wheel_open": "20\"-fælge uden kapsler",
+    "service_number": "{number}. service",
+    "overdue": "Overskredet",
+    "left": "{parts} tilbage",
+    "overdue_since": "Overskredet med {days}",
+    "cancel_until": "Frist for opsigelse: {date}",
+    "renews_in": "Fornyes om {days}",
+    "notify_to": "Giv besked til",
+    "n_notices": "{count} notifikationer",
+    "edit_threshold": "Ændr fristen",
+    "accept": "Acceptér",
+    "cancel": "Annuller",
+    "unit_km": "km",
+    "unit_days": "dage",
+    "when_km": "{value} km tilbage",
+    "when_days": "{value} dage tilbage",
+    "when_days_deadline": "{value} dage før fristen",
+    "when_maintenance_overdue": "på dagen, eller når km er nået",
+    "when_itv_overdue": "på dagen",
+    "when_insurance_last_day": "sidste dag for opsigelse",
+    "when_insurance_renewed": "på dagen",
+    "notice_charge_started": "Opladning startet",
+    "notice_charge_interrupted": "Opladning afbrudt",
+    "notice_charge_finished": "Opladning færdig",
+    "notice_warnings": "Advarselslamper",
+    "notice_tires": "Dæk",
+    "notice_key_battery": "Lavt batteri i nøglen",
+    "notice_maintenance_t1": "Tidspåmindelse 1",
+    "notice_maintenance_t2": "Tidspåmindelse 2",
+    "notice_maintenance_t3": "Tidspåmindelse 3",
+    "notice_maintenance_k1": "Kilometerpåmindelse 1",
+    "notice_maintenance_k2": "Kilometerpåmindelse 2",
+    "notice_maintenance_k3": "Kilometerpåmindelse 3",
+    "notice_maintenance_overdue": "Service forfalden",
+    "notice_itv_t1": "Påmindelse 1",
+    "notice_itv_t2": "Påmindelse 2",
+    "notice_itv_t3": "Påmindelse 3",
+    "notice_itv_overdue": "ITV forfalden",
+    "notice_insurance_c1": "Opsigelsespåmindelse 1",
+    "notice_insurance_c2": "Opsigelsespåmindelse 2",
+    "notice_insurance_last_day": "Opsigelsesfrist",
+    "notice_insurance_r1": "Fornyelsespåmindelse 1",
+    "notice_insurance_r2": "Fornyelsespåmindelse 2",
+    "notice_insurance_renewed": "Forsikring fornyet",
+    "unsaved": "Dette køretøj har ændringer, der ikke er gemt.",
+    "alerts_help": "Sæt kryds ved, hvem der får hver notifikation. Blyanten ændrer dagene eller kilometerne for den notifikation; fristerne hører til dette køretøj.",
+    "factory_thresholds": "Standardfrister",
+    "discard": "Kassér",
+    "save": "Gem",
+    "saved": "Gemt",
+    "copy_from": "Kopiér fra et andet køretøj",
+    "car": "Køretøj",
+    "copy": "Kopiér",
+    "error_threshold_range_limits": "Fristen skal være mellem {low} og {high}.",
+    "error_threshold_range": "En frist er uden for området.",
+    "error_threshold_order": "Fristerne skal gå fra længst til kortest: påmindelse 1 før 2, og 2 før 3.",
+    "error_not_found": "Det køretøj er ikke længere i kontoen.",
+    "error_invalid": "Nogle af oplysningerne er ikke gyldige.",
+    "error_invalid_file": "Filen er ikke en DEC Deepal-sikkerhedskopi, eller den er beskadiget.",
+    "error_newer_file": "Sikkerhedskopien kommer fra en nyere version af integrationen. Opdater DEC Deepal og prøv igen.",
+    "error_empty_file": "Sikkerhedskopien har ikke data for noget køretøj.",
+    "error_required": "Der mangler oplysninger.",
+    "backup_title": "Sikkerhedskopi",
+    "backup_help": "Service, ITV, forsikring og udseende for dine køretøjer. Dataene hører til køretøjet: de går ikke tabt, når kontoen fjernes.",
+    "download_title": "Hent en sikkerhedskopi",
+    "download_help": "En fil med data for alle køretøjer. Den indeholder policenummeret og forsikringens telefonnumre: opbevar den et sikkert sted.",
+    "download": "Hent",
+    "send_title": "Send sikkerhedskopien til en telefon",
+    "send_help": "Der kommer en notifikation; når du trykker på den, åbner browseren og henter filen. Linket udløber om 10 minutter.",
+    "send": "Send",
+    "sent_to": "Notifikation sendt til {device}.",
+    "upload_title": "Indlæs en sikkerhedskopi",
+    "upload_help": "Sætter køretøjerne i filen tilbage, som de står i den. Andre køretøjer røres ikke.",
+    "choose_file": "Vælg fil",
+    "imported": "Sikkerhedskopi indlæst: {cars}.",
+    "stored_title": "Gemte data",
+    "stored_help": "Pr. køretøj, identificeret ved dets stelnummer.",
+    "stored_none": "Der er ikke gemt data for noget køretøj.",
+    "in_account": "I kontoen",
+    "no_account": "Ingen konto",
+    "no_account_note": "Ikke længere i nogen konto",
+    "delete": "Slet",
+    "delete_title": "Slet gemte data",
+    "delete_confirm": "Service, ITV og forsikring for {name} bliver slettet. Det kan ikke fortrydes: hent en sikkerhedskopi først, hvis du vil beholde dem.",
+    "deleted": "Data slettet.",
+    "history_title": "Hvad der er sket",
+    "history_help": "Ændringer, kommandoer og notifikationer siden sidste genstart. Det samme kommer med i diagnostikfilen.",
+    "history_none": "Intet at vise endnu.",
+    "filter_all": "Alle",
+    "filter_orders": "Kommandoer",
+    "filter_alerts": "Notifikationer",
+    "filter_errors": "Fejl",
+    "sheets_title": "Datablad for hvert køretøj",
+    "sheets_help": "Hvilket udstyr integrationen går ud fra, og hvor den har det fra.",
+    "diagnostics_file": "Diagnostik",
+    "ev_alert": "Notifikation sendt: {name}",
+    "ev_targets": "{count} modtagere",
+    "ev_wake": "Køretøjet vækket",
+    "ev_command": "Kommando: {name}",
+    "ev_code": "kode",
+    "today": "I dag",
+    "yesterday": "I går",
+    "enabled": "Aktiveret",
+    "mt_services_done": "Servicer, der allerede er lavet",
+    "mt_interval_km": "Interval (km)",
+    "mt_interval_months": "Interval (måneder)",
+    "mt_register": "Registrér udført service",
+    "mt_register_help": "Noterer {number}. service for {name} og begynder at tælle mod den næste.",
+    "date": "Dato",
+    "mt_km": "Kilometer",
+    "register": "Registrér",
+    "registered": "Registreret",
+    "itv_registration": "Registreringsdato",
+    "itv_last": "Seneste beståede ITV",
+    "itv_next": "Næste ITV (manuel)",
+    "itv_register": "Registrér bestået ITV",
+    "itv_register_help": "Noterer, at {name} har bestået ITV, og beregner det næste.",
+    "ins_company": "Selskab",
+    "ins_policy": "Policenummer",
+    "ins_kind": "Type forsikring",
+    "ins_notice": "Dages varsel for opsigelse",
+    "ins_phone_assistance": "Telefon vejhjælp",
+    "ins_phone_company": "Telefon selskab",
+    "kind_third_party": "Ansvar",
+    "kind_third_party_plus": "Udvidet ansvar",
+    "kind_comprehensive_excess": "Kasko med selvrisiko",
+    "kind_comprehensive": "Kasko uden selvrisiko",
+    "tab_settings": "Indstillinger",
+    "appearance_title": "Udseende for {name}",
+    "appearance_help": "Bestemmer billedet, visningen af køretøjet, og hvilket udstyr der antages.",
+    "model": "Model",
+    "trim": "Version",
+    "color": "Farve",
+    "wheels": "Fælge",
+    "model_ev": "Elektrisk",
+    "model_phev": "Plug-in-hybrid",
+    "trim_full": "Sæde- og ratvarme, elektrisk bagklap",
+    "trim_basic": "Uden sæde- og ratvarme",
+    "account": "Konto: {name}",
+    "pin_title": "Fjernbetjening med pinkode",
+    "pin_help": "Til at låse og låse op, ruder og bagagerum. Det er pinkoden fra den officielle Deepal-app, med samme konto. Den gælder for alle køretøjer i kontoen.",
+    "pin_enabled": "Pinkodekommandoer",
+    "pin_enabled_help": "Uden dette viser kortet kun tilstanden for døre, ruder og bagagerum.",
+    "pin": "Pinkode",
+    "pin_field_help": "Den tjekkes hos Deepal, når du gemmer. Lad feltet stå tomt for at beholde den nuværende.",
+    "pin_checked": "Tjekket",
+    "show_pin": "Vis pinkoden",
+    "pin_mode_title": "Hvordan kommandoer bruges",
+    "mode_direct": "Direkte",
+    "mode_direct_help": "Kommandoen sendes, når du trykker, efter bekræftelse. Det nemmeste.",
+    "mode_armed": "Lås op først",
+    "mode_armed_help": "Du skal først aktivere »Lås pinkodehandlinger op«, og det varer kun et stykke tid. Det sikreste.",
+    "arm_seconds": "Hvor længe oplåsningen varer",
+    "arm_seconds_help": "Efter den tid låses pinkodekommandoerne af sig selv igen.",
+    "seconds": "{value} s",
+    "arm_notify": "Giv besked ved oplåsning",
+    "arm_notify_help": "En notifikation i Home Assistant, hver gang kommandoer tillades.",
+    "reading_title": "Dataaflæsning",
+    "reading_help": "Hvordan og hvor ofte køretøjet spørges.",
+    "scan_title": "Aflæsningsinterval",
+    "scan_help": "Hvor ofte køretøjets data læses. Meget lave værdier kan få Deepal til at drosle kontoen.",
+    "minutes": "{value} min",
+    "wake_title": "Væk køretøjet efter behov",
+    "wake_help": "Når du trykker Opdater, og før en pinkodekommando. Aldrig ved automatiske aflæsninger, for at skåne 12 V-batteriet.",
+    "manual_bev": "BEV-instruktionsbog",
+    "manual_phev": "PHEV-instruktionsbog",
+    "manual_help": "Det link, kortet åbner under Mere → Instruktionsbog. Tomt = den officielle.",
+    "debug_title": "Fejlsøgningstilstand",
+    "debug_help": "Gemmer fulde forespørgsler og svar (uden personoplysninger) i diagnostikken.",
+    "save_check": "Gem",
+    "unsaved_settings": "Der er ændringer, der ikke er gemt.",
+    "error_pin_required": "Indtast pinkoden.",
+    "error_pin_invalid": "Pinkoden er ikke korrekt. Det er den fra den officielle Deepal-app, med denne samme konto.",
+    "error_pin_rate_limited": "For mange pinkodeforsøg. Vent et par minutter, før du prøver igen.",
+    "error_cannot_connect": "Kunne ikke oprette forbindelse til Deepal. Prøv igen senere.",
+    "error_invalid_url": "Linket til instruktionsbogen er ikke gyldigt: det skal begynde med http:// eller https://.",
+    "error_unknown_model": "Den model findes ikke i kataloget.",
+    "close": "Luk",
+    "other": "Andet",
+    "history": "Historik",
+    "manual": "Instruktionsbog",
+    "copied": "Kopieret: {text}",
+    "form_maintenance": "Sæt service op",
+    "form_itv": "Sæt ITV op",
+    "form_insurance": "Sæt forsikring op",
+    "form_maintenance_off": "Deaktiveret: entiteterne, lampen på kortet og notifikationerne fjernes. Historikken går tabt.",
+    "form_itv_off": "Deaktiveret: entiteterne, lampen på kortet og notifikationerne fjernes.",
+    "form_insurance_off": "Deaktiveret: entiteterne, lampen på kortet og notifikationerne fjernes.",
+    "first_notice": "Første notifikation {days} dage før",
+    "mt_last": "Seneste service",
+    "mt_last_help": "Hvis køretøjet ikke har haft nogen endnu, så angiv registreringsdatoen og 0 km.",
+    "mt_next_is": "Den næste bliver {number}. service.",
+    "mt_km_then": "Kilometer dengang",
+    "mt_use_odometer": "Brug køretøjets aktuelle stand ({km} km)",
+    "mt_every": "Hvor ofte",
+    "mt_every_help": "Instruktionsbogen beder om kortere interval ved gentagne korte ture, støv, mudder, ekstrem kulde eller salt.",
+    "mt_interval_manual": "Fra instruktionsbogen",
+    "mt_interval_value": "{km} km eller {months} måneder",
+    "mt_interval_other": "Du vælger",
+    "mt_preview": "Næste service: {date} eller ved {km} km",
+    "mt_whichever": "Alt efter hvad der kommer først: {date} eller ved {km} km.",
+    "by_time": "Efter tid",
+    "by_km": "Efter kilometer",
+    "mt_km_detail": "Nu {now} km · service ved {due}",
+    "mt_this_service": "Hvad denne service omfatter",
+    "n_operations": "{count} punkter",
+    "mt_no_plan": "Denne model har ingen serviceplan i kataloget.",
+    "mt_next_adds": "Ved den næste ({number}.) kommer der desuden",
+    "mt_history_item": "{number}. service · {date} · {km} km",
+    "mt_no_history": "Der er ikke registreret nogen service endnu.",
+    "itv_registration_title": "Registrering",
+    "itv_registration_help": "Den står i registreringsattesten. Første ITV beregnes ud fra den.",
+    "itv_passed_title": "ITV, der allerede er bestået",
+    "itv_passed_help": "Kun hvis køretøjet allerede har bestået et.",
+    "itv_passed": "Det har allerede bestået et ITV",
+    "itv_next_title": "Næste ITV",
+    "itv_next_rules": "Det beregnes efter reglerne i kontoens land.",
+    "itv_next_auto": "Beregn det",
+    "itv_next_manual": "Angiv en anden dato",
+    "itv_next_manual_note": "Hvis synshallen gav dig en anden",
+    "itv_preview": "Næste ITV: {date}",
+    "itv_manual_date": "dato angivet i hånden",
+    "itv_age": "{years} år",
+    "itv_none_yet": "Ingen endnu",
+    "itv_first_at": "Det første efter {years} år",
+    "itv_rules_title": "Hvor ofte",
+    "itv_rules": "Det første efter {first} år; derefter hvert {interval}. år og, fra {reduced} år, hvert år.",
+    "itv_history_item": "ITV bestået {date}",
+    "itv_no_history": "Der er ikke registreret noget ITV endnu.",
+    "ins_policy_title": "Policen",
+    "ins_policy_help": "Policenummeret og telefonnumrene vises kun på kortet og i panelet; de kommer aldrig med i diagnostikken.",
+    "ins_renewal_title": "Fornyelse",
+    "ins_renewal_help": "Forsikringen fornyes af sig selv hvert år. For at opsige skal du give besked på forhånd.",
+    "ins_renews_on": "Fornyes",
+    "ins_notice_days": "Dages varsel",
+    "ins_phones_title": "Telefonnumre",
+    "ins_phones_help": "Til at ringe med ét tryk fra kortet og herfra.",
+    "ins_preview": "Sidste dag for opsigelse: {date}",
+    "ins_preview_passed": "Den frist er overskredet. Den fornyes {date}.",
+    "ins_dates": "Datoer",
+    "ins_to_cancel": "Til at opsige",
+    "ins_to_renewal": "Til fornyelsen",
+    "ins_deadline_passed": "Fristen er overskredet",
+    "ins_deadline_on": "Sidste dag: {date}",
+    "ins_renews_itself": "Fornyes af sig selv {date}",
+    "ins_assistance": "Vejhjælp"
+  },
+  "catalogo": {
+    "operacion_general_inspection": "Generelt eftersyn (drivenhed, batteri, højspænding, bremser og styretøj)",
+    "operacion_tyres": "Dæk (kontrol og justering)",
+    "operacion_cabin_filter": "Kabinefilter (kontrollér eller udskift)",
+    "operacion_condenser_cleaning": "Rengøring af kondensator og fordamper",
+    "operacion_electrics_inspection": "Kontrol af elektrisk anlæg, klimaanlæg og kølevæskeslanger",
+    "operacion_brake_fluid": "Skift af bremsevæske (hvert 2. år eller 40.000 km)",
+    "operacion_coolant": "Skift af kølevæske (hvert 3. år eller 80.000 km)",
+    "operacion_front_gear_oil": "Olieskift i forreste reduktionsgear (hvert 3. år eller 60.000 km)",
+    "operacion_rear_gear_oil": "Olieskift i bageste reduktionsgear (hvert 5. år eller 100.000 km)",
+    "operacion_engine_oil": "Skift af motorolie og oliefilter",
+    "operacion_fuel_system": "Kontrol af brændstofsystemet (tank, rør, kulfilter og gasspjældhus)",
+    "operacion_spark_plugs": "Udskiftning af tændrør (hvert 2. år eller 40.000 km)",
+    "operacion_engine_air_filter": "Udskiftning af motorens luftfilter (hvert 2. år eller 40.000 km)"
+  }
+}

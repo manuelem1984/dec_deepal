@@ -3,6 +3,43 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b4] — 2026-10-12
+
+### Añadido
+
+- **Siete idiomas nuevos:** alemán, francés, neerlandés, noruego, danés,
+  griego y esloveno. Con los que ya había (español, inglés, portugués,
+  italiano y polaco) quedan cubiertos los países donde Changan vende en
+  Europa. Traducido todo lo que se ve: entidades, avisos al móvil, tarjeta,
+  panel y operaciones de mantenimiento.
+- **El panel, también en portugués, italiano y polaco** (hasta ahora se veía
+  en inglés).
+- El noruego nynorsk se ve en bokmål y el luxemburgués en francés, igual que
+  catalán, gallego y euskera se ven en español.
+
+### Cambiado
+
+- **El alta es solo con correo electrónico.** Se quita el acceso con teléfono
+  (SMS): Deepal dejó de entregar esos SMS en septiembre de 2026 y solo servía
+  para confundir. El asistente pide directamente el correo; tras pedir el
+  código se puede reenviar o corregir el correo. Las cuentas ya añadidas
+  siguen funcionando igual; al volver a iniciar sesión se pide el correo.
+
+### Corregido
+
+- Mensajes que seguían mandando a «Configurar → Mantenimiento / ITV / Seguro»
+  (pantallas sustituidas por el panel en la 2.5.0b2): ahora dicen dónde está
+  en el panel DEC Deepal. Afectaba a la tarjeta, a los errores y a las
+  acciones, en español, inglés, portugués, italiano y polaco.
+- En portugués, italiano y polaco, el aviso de la tarjeta para activar el PIN
+  nombraba la pestaña "Settings" en inglés.
+- En español, la ayuda de «Desbloquear antes» citaba mal el nombre de la
+  entidad; en inglés, «Terceros ampliado» se llamaba de dos formas.
+
+### Quitado
+
+- Del catálogo de países: `prefijo`, `digitos_movil` y `metodos_login`.
+
 ## [2.5.0b3] — 2026-10-11
 
 ### Añadido

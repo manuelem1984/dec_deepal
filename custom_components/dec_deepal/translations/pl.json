@@ -9,34 +9,20 @@
           "country": "Kraj"
         }
       },
-      "login_method": {
-        "title": "Sposób logowania",
-        "description": "Wybierz, jak chcesz otrzymać kod dostępu ({country}). Zalecane: dodatkowe konto, któremu udostępniono samochód, aby nie wylogować aplikacji na telefonie.\n\n⚠️ **Użyj e-maila.** Obecnie Deepal nie dostarcza SMS-ów z kodem: serwer twierdzi, że go wysłał, ale wiadomość nie dociera.",
-        "data": {
-          "login_method": "Metoda"
-        }
-      },
       "email": {
         "title": "Logowanie przez e-mail",
-        "description": "Wpisz adres e-mail swojego konta Deepal. Otrzymasz kod.",
+        "description": "Wpisz adres e-mail swojego konta Deepal. Otrzymasz kod.\n\nZalecane: dodatkowe konto, któremu udostępniono samochód, aby nie wylogować aplikacji na telefonie.",
         "data": {
           "email": "Adres e-mail"
         }
       },
-      "sms": {
-        "title": "Logowanie przez SMS",
-        "description": "Wpisz numer telefonu komórkowego ({digits} cyfr), z prefiksem {prefix} lub bez niego.\n\n⚠️ Obecnie Deepal nie dostarcza SMS-ów z kodem. Jeśli nie dotrze w ciągu kilku minut, w następnym kroku wybierz **Użyj innej metody** i zaloguj się przez e-mail.",
-        "data": {
-          "mobile": "Telefon komórkowy"
-        }
-      },
       "code_menu": {
         "title": "Kod wysłany",
-        "description": "Deepal przyjął prośbę o wysłanie kodu na {destination}. Może to potrwać kilka minut. Jeśli nie dotrze, wyślij go ponownie lub spróbuj innej metody.",
+        "description": "Deepal przyjął wysyłkę kodu na {destination}. Może to potrwać kilka minut; sprawdź też folder spam. Jeśli kod nie dotrze, wyślij go ponownie lub popraw adres e-mail.",
         "menu_options": {
           "code": "Mam już kod",
           "resend_code": "Wyślij kod ponownie",
-          "change_method": "Użyj innej metody lub popraw dane"
+          "change_email": "Popraw adres e-mail"
         }
       },
       "code": {
@@ -59,7 +45,6 @@
       }
     },
     "error": {
-      "invalid_mobile": "Numer telefonu ma nieprawidłowy format.",
       "send_code_failed": "Nie udało się wysłać kodu. Sprawdź wprowadzone dane.",
       "too_many_codes": "Poproszono o zbyt wiele kodów. Odczekaj chwilę i spróbuj ponownie.",
       "cannot_connect": "Nie udało się połączyć z serwerem Deepal.",
@@ -338,12 +323,6 @@
     }
   },
   "selector": {
-    "login_method": {
-      "options": {
-        "sms": "SMS (obecnie nie dociera)",
-        "email": "E-mail (zalecane)"
-      }
-    },
     "pin_mode": {
       "options": {
         "direct": "Opcja A — polecenia bezpośrednie",
@@ -738,7 +717,7 @@
       "message": "Deepal prosi o odczekanie (zbyt wiele żądań lub prób). ({error})"
     },
     "pin_problem": {
-      "message": "Problem z PIN-em zdalnego sterowania: sprawdź go w Konfiguruj lub w oficjalnej aplikacji. ({error})"
+      "message": "Problem z PIN-em zdalnego sterowania: sprawdź go w panelu DEC Deepal (Ustawienia) lub w oficjalnej aplikacji. ({error})"
     },
     "signing_key_invalid": {
       "message": "Klucz podpisu poleceń nie jest już ważny. Zaloguj się ponownie w integracji. ({error})"
@@ -780,13 +759,13 @@
       "message": "To urządzenie nie jest pojazdem DEC Deepal."
     },
     "maintenance_not_configured": {
-      "message": "Najpierw włącz serwis dla tego samochodu w Konfiguruj → Serwis (integracja DEC Deepal)."
+      "message": "Najpierw włącz serwis dla tego samochodu w panelu DEC Deepal (Pojazdy)."
     },
     "itv_not_configured": {
-      "message": "Najpierw włącz ITV dla tego samochodu w Konfiguruj → ITV (integracja DEC Deepal)."
+      "message": "Najpierw włącz ITV dla tego samochodu w panelu DEC Deepal (Pojazdy)."
     },
     "maintenance_no_odometer": {
-      "message": "Przebieg samochodu nie jest znany. Podaj kilometry lub zarejestruj przegląd w Konfiguruj → Serwis."
+      "message": "Przebieg samochodu nie jest znany. Podaj kilometry lub zarejestruj przegląd w panelu DEC Deepal."
     }
   },
   "services": {
@@ -810,7 +789,7 @@
     },
     "register_itv": {
       "name": "Zarejestruj ITV",
-      "description": "Zapisuje, że samochód przeszedł ITV (hiszpański przegląd techniczny), i oblicza następne. Wymaga włączenia ITV dla samochodu w Konfiguruj → ITV.",
+      "description": "Zapisuje, że samochód przeszedł ITV (hiszpański przegląd techniczny), i oblicza następne. Wymaga włączenia ITV dla samochodu w panelu DEC Deepal.",
       "fields": {
         "device_id": {
           "name": "Pojazd",
@@ -824,7 +803,7 @@
     },
     "register_maintenance": {
       "name": "Zarejestruj serwis",
-      "description": "Zapisuje, że samochód przeszedł przegląd, i zaczyna odliczanie do następnego. Wymaga włączenia serwisu dla samochodu w Konfiguruj → Serwis.",
+      "description": "Zapisuje, że samochód przeszedł przegląd, i zaczyna odliczanie do następnego. Wymaga włączenia serwisu dla samochodu w panelu DEC Deepal.",
       "fields": {
         "device_id": {
           "name": "Pojazd",

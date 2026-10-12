@@ -61,7 +61,6 @@ class CountryProfile:
 
     country_id: str  # id interno ("es")
     sales_country: str  # código que espera el servidor ("ES")
-    dial_code: str  # prefijo telefónico sin "+" ("34")
     api_language: str  # cabecera "language" ("en_US")
     intl_base_url: str
     ca_base_url: str

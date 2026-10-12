@@ -1,0 +1,1073 @@
+{
+  "integracion": {
+    "title": "DEC Deepal",
+    "config": {
+      "step": {
+        "user": {
+          "title": "DEC Deepal — Land",
+          "description": "Kies het land van je Deepal-account.",
+          "data": {
+            "country": "Land"
+          }
+        },
+        "email": {
+          "title": "Inloggen via e-mail",
+          "description": "Voer het e-mailadres van je Deepal-account in. Je ontvangt een code.\n\nAanbevolen: een tweede account waarmee de auto is gedeeld, zodat de app op je telefoon niet wordt uitgelogd.",
+          "data": {
+            "email": "E-mailadres"
+          }
+        },
+        "code_menu": {
+          "title": "Code verstuurd",
+          "description": "Deepal heeft het versturen van de code naar {destination} geaccepteerd. Dat kan een paar minuten duren; kijk ook in de spammap. Komt hij niet aan, stuur hem dan opnieuw of corrigeer het e-mailadres.",
+          "menu_options": {
+            "code": "Ik heb de code",
+            "resend_code": "Code opnieuw versturen",
+            "change_email": "E-mailadres corrigeren"
+          }
+        },
+        "code": {
+          "title": "Verificatiecode",
+          "description": "Voer de code in die je zojuist hebt ontvangen.",
+          "data": {
+            "auth_code": "Code"
+          }
+        },
+        "vehicles": {
+          "title": "Voertuigen",
+          "description": "Je account heeft meerdere auto's. Vink aan welke je wilt toevoegen.",
+          "data": {
+            "selected_vehicles": "Voertuigen"
+          }
+        },
+        "reauth_confirm": {
+          "title": "Opnieuw inloggen",
+          "description": "De Deepal-sessie is niet meer geldig (waarschijnlijk is hetzelfde account in de app ingelogd). Er wordt een nieuwe code aangevraagd."
+        }
+      },
+      "error": {
+        "send_code_failed": "De code kon niet worden verstuurd. Controleer de ingevoerde gegevens.",
+        "too_many_codes": "Er zijn te veel codes aangevraagd. Wacht even en probeer het opnieuw.",
+        "cannot_connect": "Kan geen verbinding maken met de Deepal-server.",
+        "login_failed": "Inloggen mislukt. Controleer de code.",
+        "no_vehicles": "Dit account heeft geen voertuigen.",
+        "no_vehicle_selected": "Vink minstens één voertuig aan."
+      },
+      "abort": {
+        "already_configured": "Dit account is al ingesteld.",
+        "reauth_successful": "Sessie succesvol vernieuwd.",
+        "reauth_account_mismatch": "Dat account heeft niet dezelfde voertuigen als het ingestelde. Log in met het juiste account.",
+        "flow_state_lost": "Het proces is verlopen. Begin opnieuw.",
+        "catalog_error": "Een van de catalogi van de integratie bevat fouten. Bekijk het logboek van Home Assistant."
+      }
+    },
+    "options": {
+      "error": {
+        "pin_required": "Voer de pincode in om de afstandsbediening in te schakelen.",
+        "pin_invalid": "Onjuiste pincode, of aangemaakt met een ander account.",
+        "pin_rate_limited": "Te veel pincodepogingen. Wacht, of stel hem opnieuw in via de officiële app.",
+        "invalid_url": "Voer een volledig webadres in (beginnend met https://).",
+        "cannot_connect": "Kan geen verbinding maken met de Deepal-server.",
+        "invalid_file": "Het bestand is geen DEC Deepal-back-up, of het is beschadigd.",
+        "newer_file": "De back-up komt uit een nieuwere versie van de integratie. Werk DEC Deepal bij en probeer het opnieuw.",
+        "empty_file": "De back-up bevat van geen enkel voertuig gegevens.",
+        "no_selection": "Kies minstens één voertuig.",
+        "confirm_required": "Vink het vakje aan om het verwijderen te bevestigen."
+      },
+      "abort": {
+        "not_loaded": "De integratie is niet geladen. Bekijk het logboek en probeer het opnieuw.",
+        "no_data": "Er zijn van geen enkel voertuig gegevens opgeslagen.",
+        "data_imported": "Back-up geladen: {cars}.",
+        "data_deleted": "Gegevens verwijderd: {cars}.",
+        "data_sent": "Melding verstuurd naar {device}. Tik erop op de telefoon om de back-up te downloaden.",
+        "no_mobile": "Er is geen telefoon met de Home Assistant-app."
+      }
+    },
+    "issues": {
+      "vehicle_not_configured": {
+        "title": "Stel je voertuig in: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "model": {
+              "title": "Model van {vehicle}",
+              "description": "Zolang je het model niet kiest, werkt de auto in algemene modus (alleen basisgegevens, zonder stoelen, stuur of pincodebediening). Model herkend aan de naam: {suggestion}.",
+              "data": {
+                "model": "Model"
+              }
+            },
+            "details": {
+              "title": "Uitvoering en kleur",
+              "description": "Uitvoering en kleur van je {model}. De uitvoering bepaalt welke entiteiten worden aangemaakt (stoelventilatie bestaat bijvoorbeeld alleen op de Max) en, samen met de kleur, de ‘DEC-afbeelding’.",
+              "data": {
+                "trim": "Uitvoering",
+                "color": "Kleur",
+                "wheels": "Velgen (alleen Max)"
+              },
+              "data_description": {
+                "wheels": "De Pro heeft altijd zijn 18\"-velg."
+              }
+            }
+          },
+          "abort": {
+            "entry_not_found": "Het account bestaat niet meer."
+          }
+        }
+      }
+    },
+    "selector": {
+      "pin_mode": {
+        "options": {
+          "direct": "Optie A — directe opdrachten",
+          "armed": "Optie B — eerst ontgrendelen (veiliger)"
+        }
+      },
+      "arm_seconds": {
+        "options": {
+          "10": "10 seconden",
+          "20": "20 seconden",
+          "30": "30 seconden",
+          "60": "60 seconden"
+        }
+      },
+      "wheels": {
+        "options": {
+          "cover": "20\" met aerokap",
+          "open": "20\" zonder aerokap"
+        }
+      },
+      "alert_type": {
+        "options": {
+          "charge_started": "Laden gestart",
+          "charge_interrupted": "Laden onderbroken",
+          "charge_finished": "Laden voltooid",
+          "warnings": "Waarschuwingslampjes op het dashboard",
+          "tires": "Banden (wanneer de auto de waarschuwing aanzet)",
+          "key_battery": "Batterij van de sleutel bijna leeg"
+        }
+      },
+      "insurance_kind": {
+        "options": {
+          "third_party": "WA",
+          "third_party_plus": "WA beperkt casco",
+          "comprehensive_excess": "Allrisk met eigen risico",
+          "comprehensive": "Allrisk zonder eigen risico"
+        }
+      }
+    },
+    "entity": {
+      "sensor": {
+        "battery_level": {
+          "name": "Batterij"
+        },
+        "range": {
+          "name": "Actieradius"
+        },
+        "charge_status": {
+          "name": "Laadstatus",
+          "state": {
+            "disconnected": "Losgekoppeld",
+            "connected_ac": "Aangesloten AC",
+            "connected_dc": "Aangesloten DC",
+            "charging_ac": "Laadt AC",
+            "charging_dc": "Laadt DC"
+          }
+        },
+        "charge_current": {
+          "name": "Laadstroom"
+        },
+        "ac_charge_current": {
+          "name": "AC-laadstroom"
+        },
+        "dc_charge_current": {
+          "name": "DC-laadstroom"
+        },
+        "remaining_charge_time": {
+          "name": "Resterende laadtijd"
+        },
+        "remaining_charge_time_hhmm": {
+          "name": "Resterende laadtijd (U:MM)"
+        },
+        "odometer": {
+          "name": "Kilometerstand"
+        },
+        "last_update": {
+          "name": "Laatste melding van de auto"
+        },
+        "power_status": {
+          "name": "Contactstatus"
+        },
+        "speed": {
+          "name": "Snelheid"
+        },
+        "trip_mileage": {
+          "name": "Ritafstand"
+        },
+        "mileage_yesterday": {
+          "name": "Afstand gisteren"
+        },
+        "inside_temperature": {
+          "name": "Binnentemperatuur"
+        },
+        "outside_temperature": {
+          "name": "Buitentemperatuur"
+        },
+        "cabin_humidity": {
+          "name": "Luchtvochtigheid in het interieur"
+        },
+        "climate_target_temperature": {
+          "name": "Ingestelde temperatuur klimaatregeling"
+        },
+        "fan_level": {
+          "name": "Ventilator klimaatregeling"
+        },
+        "tire_pressure_front_left": {
+          "name": "Bandenspanning linksvoor"
+        },
+        "tire_pressure_front_right": {
+          "name": "Bandenspanning rechtsvoor"
+        },
+        "tire_pressure_rear_left": {
+          "name": "Bandenspanning linksachter"
+        },
+        "tire_pressure_rear_right": {
+          "name": "Bandenspanning rechtsachter"
+        },
+        "license_plate": {
+          "name": "Kenteken"
+        },
+        "window_opening_front_left": {
+          "name": "Raamopening linksvoor"
+        },
+        "window_opening_front_right": {
+          "name": "Raamopening rechtsvoor"
+        },
+        "window_opening_rear_left": {
+          "name": "Raamopening linksachter"
+        },
+        "window_opening_rear_right": {
+          "name": "Raamopening rechtsachter"
+        },
+        "maintenance_days": {
+          "name": "Dagen tot onderhoud"
+        },
+        "maintenance_km": {
+          "name": "Kilometers tot onderhoud"
+        },
+        "maintenance_date": {
+          "name": "Volgend onderhoud"
+        },
+        "itv_date": {
+          "name": "Volgende ITV"
+        },
+        "itv_days": {
+          "name": "Dagen tot ITV"
+        },
+        "insurance_renewal_date": {
+          "name": "Verlenging verzekering"
+        },
+        "insurance_days": {
+          "name": "Dagen tot verlenging verzekering"
+        },
+        "insurance_cancel_date": {
+          "name": "Opzegtermijn verzekering"
+        }
+      },
+      "binary_sensor": {
+        "cloud_connected": {
+          "name": "Cloudverbinding"
+        },
+        "engine": {
+          "name": "Contact aan"
+        },
+        "charging": {
+          "name": "Laadt"
+        },
+        "ac_connector": {
+          "name": "AC-stekker"
+        },
+        "dc_connector": {
+          "name": "DC-stekker"
+        },
+        "door_front_left": {
+          "name": "Portier linksvoor"
+        },
+        "door_front_right": {
+          "name": "Portier rechtsvoor"
+        },
+        "door_rear_left": {
+          "name": "Portier linksachter"
+        },
+        "door_rear_right": {
+          "name": "Portier rechtsachter"
+        },
+        "trunk": {
+          "name": "Kofferbak"
+        },
+        "hood": {
+          "name": "Motorkap"
+        },
+        "any_door_open": {
+          "name": "Een portier open"
+        },
+        "window_front_left": {
+          "name": "Raam linksvoor"
+        },
+        "window_front_right": {
+          "name": "Raam rechtsvoor"
+        },
+        "window_rear_left": {
+          "name": "Raam linksachter"
+        },
+        "window_rear_right": {
+          "name": "Raam rechtsachter"
+        },
+        "lock_driver": {
+          "name": "Slot bestuurder"
+        },
+        "lock_passenger": {
+          "name": "Slot passagier"
+        },
+        "central_locking": {
+          "name": "Centrale vergrendeling"
+        },
+        "tire_alarm_front_left": {
+          "name": "Bandenwaarschuwing linksvoor"
+        },
+        "tire_alarm_front_right": {
+          "name": "Bandenwaarschuwing rechtsvoor"
+        },
+        "tire_alarm_rear_left": {
+          "name": "Bandenwaarschuwing linksachter"
+        },
+        "tire_alarm_rear_right": {
+          "name": "Bandenwaarschuwing rechtsachter"
+        },
+        "high_beam": {
+          "name": "Grootlicht"
+        },
+        "low_beam": {
+          "name": "Dimlicht"
+        },
+        "position_lamp": {
+          "name": "Stadslicht"
+        },
+        "indicator_left": {
+          "name": "Richtingaanwijzer links"
+        },
+        "indicator_right": {
+          "name": "Richtingaanwijzer rechts"
+        },
+        "climate_on": {
+          "name": "Klimaatregeling"
+        },
+        "rear_fog_lamp": {
+          "name": "Mistlampen"
+        },
+        "air_recirculation": {
+          "name": "Luchtrecirculatie"
+        },
+        "key_battery_low": {
+          "name": "Batterij van de sleutel bijna leeg"
+        },
+        "warning_12v_battery": {
+          "name": "Waarschuwing 12V-accu"
+        },
+        "warning_tpms": {
+          "name": "Waarschuwing bandenspanning"
+        },
+        "warning_abs": {
+          "name": "ABS-waarschuwing"
+        },
+        "warning_airbag": {
+          "name": "Airbagwaarschuwing"
+        },
+        "warning_brake_fluid": {
+          "name": "Waarschuwing remvloeistof"
+        },
+        "warning_brake": {
+          "name": "Remwaarschuwing"
+        },
+        "warning_eps": {
+          "name": "Waarschuwing stuurbekrachtiging"
+        },
+        "warning_power_limit": {
+          "name": "Waarschuwing beperkt vermogen"
+        },
+        "warning_power_system": {
+          "name": "Waarschuwing aandrijfsysteem"
+        },
+        "warning_traction_battery_low": {
+          "name": "Waarschuwing batterij bijna leeg"
+        },
+        "warning_coolant_temperature": {
+          "name": "Waarschuwing koelvloeistoftemperatuur"
+        },
+        "maintenance_due": {
+          "name": "Onderhoudsmelding"
+        },
+        "itv_due": {
+          "name": "ITV-melding"
+        },
+        "insurance_due": {
+          "name": "Verzekeringsmelding"
+        }
+      },
+      "button": {
+        "refresh": {
+          "name": "Voertuiggegevens vernieuwen"
+        },
+        "flash_lights": {
+          "name": "Lichten knipperen"
+        },
+        "honk_horn": {
+          "name": "Claxonneren"
+        },
+        "flash_and_honk": {
+          "name": "Lichten en claxon"
+        }
+      },
+      "climate": {
+        "cabin_climate": {
+          "name": "Klimaat"
+        }
+      },
+      "number": {
+        "seat_heat_driver": {
+          "name": "Stoelverwarming bestuurder"
+        },
+        "seat_heat_passenger": {
+          "name": "Stoelverwarming passagier"
+        },
+        "seat_vent_driver": {
+          "name": "Stoelventilatie bestuurder"
+        },
+        "seat_vent_passenger": {
+          "name": "Stoelventilatie passagier"
+        }
+      },
+      "switch": {
+        "steering_wheel_heat": {
+          "name": "Stuurverwarming"
+        },
+        "front_defrost": {
+          "name": "Voorruit ontwasemen"
+        }
+      },
+      "lock": {
+        "doors": {
+          "name": "Portieren"
+        },
+        "pin_arm": {
+          "name": "Pincode-acties ontgrendelen"
+        }
+      },
+      "cover": {
+        "windows": {
+          "name": "Ramen - Ventilatiemodus",
+          "state": {
+            "open": "Gesloten",
+            "closed": "Ventileert",
+            "opening": "Sluit",
+            "closing": "Gaat op een kier"
+          }
+        },
+        "trunk_control": {
+          "name": "Kofferbak (bediening)"
+        }
+      },
+      "device_tracker": {
+        "location": {
+          "name": "Locatie"
+        }
+      },
+      "image": {
+        "official_image": {
+          "name": "Officiële afbeelding"
+        },
+        "dec_photo": {
+          "name": "DEC-afbeelding"
+        },
+        "top_view": {
+          "name": "Bovenaanzicht"
+        },
+        "isometric_view": {
+          "name": "Isometrisch aanzicht"
+        },
+        "interior_view": {
+          "name": "Interieuraanzicht"
+        },
+        "charging_view": {
+          "name": "Laadaanzicht"
+        }
+      }
+    },
+    "exceptions": {
+      "session_expired": {
+        "message": "De Deepal-sessie is verlopen en kon niet worden vernieuwd. Log opnieuw in bij de integratie. ({error})"
+      },
+      "rate_limited": {
+        "message": "Deepal vraagt om te wachten (te veel verzoeken of pogingen). ({error})"
+      },
+      "pin_problem": {
+        "message": "Probleem met de pincode van de afstandsbediening: controleer hem in het DEC Deepal-paneel of in de officiële app. ({error})"
+      },
+      "signing_key_invalid": {
+        "message": "De ondertekeningssleutel voor opdrachten is niet meer geldig. Log opnieuw in bij de integratie. ({error})"
+      },
+      "command_not_ready": {
+        "message": "De opdracht kan nog niet worden verstuurd: {error}"
+      },
+      "connection_error": {
+        "message": "Kan geen verbinding maken met de Deepal-server. ({error})"
+      },
+      "command_failed": {
+        "message": "De opdracht is mislukt: {error}"
+      },
+      "command_rejected": {
+        "message": "De auto heeft de opdracht geweigerd: {error}"
+      },
+      "command_rejected_asleep": {
+        "message": "De auto heeft de opdracht geweigerd ({error}). Hij slaapt misschien of is bezig: probeer het opnieuw nadat je hem een tijdje hebt gebruikt."
+      },
+      "command_rejected_power_on": {
+        "message": "Voor deze opdracht moet de auto uit staan ({error}). Zet hem uit en probeer het opnieuw."
+      },
+      "command_vehicle_asleep": {
+        "message": "De auto heeft de opdracht niet aangenomen: hij slaapt misschien of is offline. Druk op ‘Voertuiggegevens vernieuwen’ om hem te wekken en probeer het opnieuw. ({error})"
+      },
+      "wake_no_report": {
+        "message": "De auto is gevraagd wakker te worden, maar heeft in 60 seconden geen nieuwe gegevens gestuurd. Misschien heeft hij geen bereik; de laatste gegevens blijven bewaard."
+      },
+      "command_busy": {
+        "message": "Er loopt al te lang een andere opdracht voor deze auto. Probeer het over een paar seconden opnieuw."
+      },
+      "command_cooldown": {
+        "message": "De auto is nog bezig met de vorige opdracht. Wacht {seconds} s."
+      },
+      "pin_not_armed": {
+        "message": "Ontgrendel eerst ‘Pincode-acties ontgrendelen’."
+      },
+      "unknown_device": {
+        "message": "Dat apparaat is geen DEC Deepal-voertuig."
+      },
+      "maintenance_not_configured": {
+        "message": "Schakel eerst het onderhoud voor deze auto in via het DEC Deepal-paneel (Voertuigen)."
+      },
+      "itv_not_configured": {
+        "message": "Schakel eerst de ITV voor deze auto in via het DEC Deepal-paneel (Voertuigen)."
+      },
+      "maintenance_no_odometer": {
+        "message": "De kilometerstand van de auto is niet bekend. Vul de kilometers in, of registreer het onderhoud via het DEC Deepal-paneel."
+      }
+    },
+    "services": {
+      "capture_snapshot": {
+        "name": "Debug-opname",
+        "description": "Slaat een volledige momentopname van de toestand van de auto op (geïnterpreteerde en ruwe gegevens, zonder persoonsgegevens) en vergelijkt die met de vorige opname. Ze wordt ook opgeslagen in /config/dec_deepal_capturas/.",
+        "fields": {
+          "device_id": {
+            "name": "Voertuig",
+            "description": "De auto om vast te leggen."
+          },
+          "label": {
+            "name": "Label",
+            "description": "Een naam om de opname te herkennen (bijvoorbeeld ‘A - in rust’)."
+          },
+          "refresh": {
+            "name": "Eerst uitlezen",
+            "description": "De auto vlak voor de opname uitlezen."
+          }
+        }
+      },
+      "register_itv": {
+        "name": "ITV registreren",
+        "description": "Noteert dat de auto de ITV (Spaanse apk) heeft doorstaan en berekent de volgende. De ITV moet voor de auto zijn ingeschakeld.",
+        "fields": {
+          "device_id": {
+            "name": "Voertuig",
+            "description": "De auto die de ITV heeft doorstaan."
+          },
+          "date": {
+            "name": "Datum",
+            "description": "Datum van de ITV. Leeg = vandaag."
+          }
+        }
+      },
+      "register_maintenance": {
+        "name": "Onderhoud registreren",
+        "description": "Noteert dat de auto een onderhoudsbeurt heeft gehad en begint te tellen voor de volgende. Het onderhoud moet voor de auto zijn ingeschakeld.",
+        "fields": {
+          "device_id": {
+            "name": "Voertuig",
+            "description": "De auto die een beurt heeft gehad."
+          },
+          "date": {
+            "name": "Datum",
+            "description": "Datum van de beurt. Leeg = vandaag."
+          },
+          "km": {
+            "name": "Kilometers",
+            "description": "Kilometerstand bij de beurt. Leeg = de huidige stand van de auto."
+          }
+        }
+      }
+    }
+  },
+  "avisos": {
+    "charge_started": "Laden gestart{battery}.",
+    "charge_interrupted": "Laden onderbroken{battery}.",
+    "charge_finished": "Laden voltooid{battery}.",
+    "battery": " (batterij op {level}%)",
+    "warnings": "Waarschuwingslampje aan: {names}.",
+    "tires": "Bandenwaarschuwing: {names}.",
+    "key_battery": "Batterij van de sleutel bijna leeg. Vervang hem door een CR2032.",
+    "maintenance_remaining": "Nog {parts} tot de {ordinal} onderhoudsbeurt.",
+    "maintenance_overdue": "Onderhoud verlopen: de {ordinal} beurt had op {date} of bij {km} km moeten plaatsvinden.",
+    "itv_remaining": "Nog {days} tot de periodieke keuring (ITV), uiterlijk {date}.",
+    "itv_today": "Vandaag is de laatste dag voor de periodieke keuring (ITV).",
+    "itv_overdue": "Periodieke keuring (ITV) verlopen sinds {date}.",
+    "insurance_cancel": "Verzekering: nog {days} om op te zeggen (tot {deadline}). Ze wordt verlengd op {renewal}.",
+    "insurance_last_day": "Verzekering: vandaag is de laatste dag om {company} te laten weten dat je niet wilt verlengen.",
+    "insurance_renewal": "Verzekering: nog {days} tot de verlenging ({renewal}).",
+    "insurance_renewed": "Verzekering vandaag verlengd. Volgende verlenging: {renewal}.",
+    "your_insurer": "je verzekeraar",
+    "km": "{value} km",
+    "days": "{value} dagen",
+    "day": "1 dag",
+    "or": " of ",
+    "and": " en ",
+    "thousands": ".",
+    "ordinal": "{number}e",
+    "date_format": "%d-%m-%Y",
+    "panel_target": "Home Assistant-meldingen",
+    "backup_download": "Back-up downloaden",
+    "backup_notification": "Back-up van de gegevens van je voertuigen. Tik om te downloaden (de link verloopt over 10 minuten)."
+  },
+  "tarjeta": {
+    "card_description": "Je Deepal in één oogopslag: aanzicht van de auto, batterij, comfort en snelle acties.",
+    "car": "Auto",
+    "not_found": "Ik kan de auto niet vinden. Kies er een in de kaartinstellingen.",
+    "refresh": "Voertuiggegevens vernieuwen",
+    "updated": "Bijgewerkt: {when}",
+    "today": "vandaag, {time}",
+    "yesterday": "gisteren, {time}",
+    "comfort": "Comfort",
+    "lock": "Slot",
+    "trunk": "Kofferbak",
+    "vent": "Ventileren",
+    "locate": "Voertuig zoeken",
+    "others": "Meer",
+    "on": "Aan",
+    "off": "Uit",
+    "seats": "Stoelen",
+    "unlocked": "Ontgrendeld",
+    "locked": "Vergrendeld",
+    "trunk_open": "Open",
+    "trunk_closed": "Dicht",
+    "venting": "Ventileert",
+    "windows_open": "Open",
+    "windows_closed": "Dicht",
+    "lights_horn": "Lichten en claxon",
+    "others_default": "Handleiding en documenten",
+    "day": "1 dag",
+    "days": "{count} dagen",
+    "close": "Sluiten",
+    "cancel": "Annuleren",
+    "understood": "Begrepen",
+    "command_failed": "De opdracht kon niet naar de auto worden verstuurd.",
+    "no_pin": "Schakel pincodebediening in via het DEC Deepal-paneel (tabblad Instellingen) om deze knop te gebruiken.",
+    "pin_confirm": "De opdracht wordt met je opgeslagen pincode naar {name} verstuurd. De auto kan er een paar seconden over doen.",
+    "lock_q": "Portieren vergrendelen?",
+    "lock_do": "Vergrendelen",
+    "unlock_q": "Portieren ontgrendelen?",
+    "unlock_do": "Ontgrendelen",
+    "trunk_close_q": "Kofferbak sluiten?",
+    "trunk_open_q": "Kofferbak openen?",
+    "open_do": "Openen",
+    "windows_close_q": "Ramen sluiten?",
+    "vent_q": "Ramen op een kier zetten om te ventileren?",
+    "lights": "Lichten",
+    "flash": "Knipperen",
+    "horn": "Claxon",
+    "honk": "Claxonneren",
+    "both": "Beide",
+    "manual": "Handleiding",
+    "open_pdf": "Pdf openen",
+    "not_enabled": "Niet ingeschakeld",
+    "maintenance": "Onderhoud",
+    "itv": "ITV",
+    "insurance": "Verzekering",
+    "no_maintenance": "Onderhoud is voor deze auto niet ingeschakeld. Schakel het in via het DEC Deepal-paneel → Voertuigen.",
+    "no_itv": "De ITV is voor deze auto niet ingeschakeld. Schakel hem in via het DEC Deepal-paneel → Voertuigen.",
+    "no_insurance": "De verzekering is voor deze auto niet ingeschakeld. Schakel ze in via het DEC Deepal-paneel → Voertuigen.",
+    "ordinal": "{number}e",
+    "nth_service": "{ordinal} beurt",
+    "overdue_mark": " · verlopen",
+    "service_overdue": "Onderhoud verlopen",
+    "service_in": "Onderhoud over {value}",
+    "days_left": "dagen te gaan",
+    "days_late": "dagen te laat",
+    "km_left": "km te gaan",
+    "km_late": "km te laat",
+    "service_planned": "Gepland op {date} of bij {km} km, wat het eerst komt.",
+    "includes": "Wat erbij hoort",
+    "history": "Geschiedenis",
+    "history_item": "{ordinal} beurt · {date} · {km} km",
+    "register_service": "Onderhoud registreren",
+    "register_service_q": "{ordinal} beurt registreren?",
+    "register_service_text": "Er wordt genoteerd dat {name} vandaag een beurt heeft gehad{odometer}, en het tellen voor de volgende begint. Was het op een andere dag, registreer het dan via het DEC Deepal-paneel.",
+    "with_odometer": ", bij {value}",
+    "register": "Registreren",
+    "service_registered": "Onderhoud geregistreerd.",
+    "service_failed": "Het onderhoud kon niet worden geregistreerd.",
+    "itv_overdue": "ITV verlopen",
+    "itv_last_day": "ITV: laatste dag",
+    "itv_in": "ITV over {days}",
+    "left": "Nog {days}",
+    "overdue": "Verlopen",
+    "last_day": "Laatste dag",
+    "next_itv": "Volgende ITV",
+    "due_date": "uiterste datum",
+    "itv_rule": "Eerste ITV (periodieke keuring) 4 jaar na de registratie. Daarna om de 2 jaar tot de auto 10 jaar is, en vanaf dan elk jaar.",
+    "details": "Details",
+    "registration": "Registratie",
+    "last_itv": "Laatste ITV",
+    "none_yet": "Nog geen",
+    "register_itv": "Doorstane ITV registreren",
+    "register_itv_q": "ITV registreren?",
+    "register_itv_text": "Er wordt genoteerd dat {name} vandaag de ITV heeft doorstaan en de volgende wordt berekend. Was het op een andere dag, vul het dan in via het DEC Deepal-paneel.",
+    "itv_registered": "ITV geregistreerd.",
+    "itv_failed": "De ITV kon niet worden geregistreerd.",
+    "insurance_last_day": "Verzekering: laatste dag",
+    "insurance_cancel": "Verzekering: {days} om op te zeggen",
+    "to_cancel": "{days} om op te zeggen",
+    "renews_on": "Wordt verlengd op {date}",
+    "days_to_renewal": "dagen tot verlenging",
+    "days_to_cancel": "dagen om op te zeggen",
+    "cancel_passed": "opzegtermijn verstreken",
+    "renewal_text": "Verlenging op {renewal}. Om niet te verlengen moet je vóór {deadline} opzeggen ({days} dagen eerder).",
+    "policy": "Polis",
+    "company": "Maatschappij",
+    "policy_number": "Polisnummer",
+    "kind": "Soort",
+    "assistance": "Pechhulp",
+    "kind_third_party": "WA",
+    "kind_third_party_plus": "WA beperkt casco",
+    "kind_comprehensive_excess": "Allrisk met eigen risico",
+    "kind_comprehensive": "Allrisk zonder eigen risico",
+    "wheel_heat": "Stuurverwarming",
+    "seat_vent_driver": "Stoelventilatie bestuurder",
+    "seat_heat_driver": "Stoelverwarming bestuurder",
+    "seat_vent_passenger": "Stoelventilatie passagier",
+    "seat_heat_passenger": "Stoelverwarming passagier",
+    "temp_down": "Temperatuur lager",
+    "temp_up": "Temperatuur hoger",
+    "climate_on": "Klimaatregeling aan",
+    "climate_off": "Klimaatregeling uit",
+    "inside": "Binnen {value}",
+    "humidity": "Vochtigheid {value}",
+    "fan": "Ventilator {value}",
+    "recirculating": "Recirculatie",
+    "outside_air": "Buitenlucht",
+    "number_copied": "Nummer gekopieerd: {number}",
+    "trunk_manual": "Dit voertuig heeft geen elektrische achterklep: de kofferbak gaat met de hand open en dicht."
+  },
+  "panel": {
+    "tab_cars": "Voertuigen",
+    "tab_alerts": "Meldingen",
+    "tab_data": "Gegevens",
+    "tab_diagnostics": "Diagnose",
+    "loading": "Laden…",
+    "retry": "Opnieuw proberen",
+    "no_cars": "Er zijn geen voertuigen. Voeg je Deepal-account toe via Instellingen → Apparaten en diensten.",
+    "error_generic": "Dat kon niet worden voltooid. Probeer het opnieuw.",
+    "day": "{value} dag",
+    "days": "{value} dagen",
+    "or": " of ",
+    "not_configured": "Geen model gekozen",
+    "sheet_verified": "Geverifieerde fiche",
+    "sheet_catalogue": "Catalogusfiche",
+    "battery": "Batterij",
+    "range": "Actieradius",
+    "odometer": "Kilometerstand",
+    "appearance": "Uiterlijk",
+    "configure": "Instellen",
+    "section_charge": "Laden",
+    "section_warnings": "Waarschuwingen",
+    "section_maintenance": "Onderhoud",
+    "section_itv": "ITV",
+    "section_insurance": "Verzekering",
+    "section_appearance": "Uiterlijk",
+    "not_set": "Niet ingesteld",
+    "add_maintenance": "Onderhoud inschakelen",
+    "add_itv": "ITV toevoegen",
+    "add_insurance": "Verzekering toevoegen",
+    "feature_seat_heat": "Stoelverwarming",
+    "feature_seat_vent": "Stoelventilatie",
+    "feature_wheel_heat": "Stuurverwarming",
+    "feature_power_tailgate": "Elektrische achterklep",
+    "wheel_pro": "18\"-velgen",
+    "wheel_cover": "20\"-velgen met aerokappen",
+    "wheel_open": "20\"-velgen zonder kappen",
+    "service_number": "{number}e beurt",
+    "overdue": "Verlopen",
+    "left": "Nog {parts}",
+    "overdue_since": "{days} te laat",
+    "cancel_until": "Opzeggen tot: {date}",
+    "renews_in": "Wordt verlengd over {days}",
+    "notify_to": "Melden aan",
+    "n_notices": "{count} meldingen",
+    "edit_threshold": "Termijn wijzigen",
+    "accept": "Toepassen",
+    "cancel": "Annuleren",
+    "unit_km": "km",
+    "unit_days": "dagen",
+    "when_km": "nog {value} km",
+    "when_days": "nog {value} dagen",
+    "when_days_deadline": "{value} dagen vóór de uiterste datum",
+    "when_maintenance_overdue": "op de dag zelf of wanneer de km bereikt zijn",
+    "when_itv_overdue": "op de dag zelf",
+    "when_insurance_last_day": "laatste dag om op te zeggen",
+    "when_insurance_renewed": "op de dag zelf",
+    "notice_charge_started": "Laden gestart",
+    "notice_charge_interrupted": "Laden onderbroken",
+    "notice_charge_finished": "Laden voltooid",
+    "notice_warnings": "Waarschuwingslampjes",
+    "notice_tires": "Banden",
+    "notice_key_battery": "Batterij van de sleutel bijna leeg",
+    "notice_maintenance_t1": "Melding op tijd 1",
+    "notice_maintenance_t2": "Melding op tijd 2",
+    "notice_maintenance_t3": "Melding op tijd 3",
+    "notice_maintenance_k1": "Melding op afstand 1",
+    "notice_maintenance_k2": "Melding op afstand 2",
+    "notice_maintenance_k3": "Melding op afstand 3",
+    "notice_maintenance_overdue": "Onderhoud bereikt",
+    "notice_itv_t1": "Melding 1",
+    "notice_itv_t2": "Melding 2",
+    "notice_itv_t3": "Melding 3",
+    "notice_itv_overdue": "ITV bereikt",
+    "notice_insurance_c1": "Opzegmelding 1",
+    "notice_insurance_c2": "Opzegmelding 2",
+    "notice_insurance_last_day": "Uiterste opzegdatum",
+    "notice_insurance_r1": "Verlengingsmelding 1",
+    "notice_insurance_r2": "Verlengingsmelding 2",
+    "notice_insurance_renewed": "Verzekering verlengd",
+    "unsaved": "Dit voertuig heeft niet-opgeslagen wijzigingen.",
+    "alerts_help": "Vink aan wie welke melding krijgt. Het potlood wijzigt de dagen of kilometers van die melding; de termijnen horen bij dit voertuig.",
+    "factory_thresholds": "Standaardtermijnen",
+    "discard": "Verwerpen",
+    "save": "Opslaan",
+    "saved": "Opgeslagen",
+    "copy_from": "Kopiëren van een ander voertuig",
+    "car": "Voertuig",
+    "copy": "Kopiëren",
+    "error_threshold_range_limits": "De termijn moet tussen {low} en {high} liggen.",
+    "error_threshold_range": "Een termijn valt buiten het bereik.",
+    "error_threshold_order": "De termijnen moeten van lang naar kort gaan: melding 1 vóór 2, en 2 vóór 3.",
+    "error_not_found": "Dat voertuig zit niet meer in het account.",
+    "error_invalid": "Sommige gegevens zijn niet geldig.",
+    "error_invalid_file": "Het bestand is geen DEC Deepal-back-up, of het is beschadigd.",
+    "error_newer_file": "De back-up komt uit een nieuwere versie van de integratie. Werk DEC Deepal bij en probeer het opnieuw.",
+    "error_empty_file": "De back-up bevat van geen enkel voertuig gegevens.",
+    "error_required": "Er ontbreken gegevens.",
+    "backup_title": "Back-up",
+    "backup_help": "Onderhoud, ITV, verzekering en uiterlijk van je voertuigen. De gegevens horen bij het voertuig: ze gaan niet verloren als het account wordt verwijderd.",
+    "download_title": "Een back-up downloaden",
+    "download_help": "Een bestand met de gegevens van alle voertuigen. Het bevat het polisnummer en de telefoonnummers van de verzekering: bewaar het op een veilige plek.",
+    "download": "Downloaden",
+    "send_title": "De back-up naar een telefoon sturen",
+    "send_help": "Er komt een melding; als je erop tikt, opent de browser en wordt het bestand gedownload. De link verloopt over 10 minuten.",
+    "send": "Versturen",
+    "sent_to": "Melding verstuurd naar {device}.",
+    "upload_title": "Een back-up laden",
+    "upload_help": "Zet de voertuigen uit het bestand terug zoals ze erin staan. Andere voertuigen blijven ongemoeid.",
+    "choose_file": "Bestand kiezen",
+    "imported": "Back-up geladen: {cars}.",
+    "stored_title": "Opgeslagen gegevens",
+    "stored_help": "Per voertuig, herkend aan zijn VIN.",
+    "stored_none": "Er zijn van geen enkel voertuig gegevens opgeslagen.",
+    "in_account": "In het account",
+    "no_account": "Geen account",
+    "no_account_note": "Zit in geen enkel account meer",
+    "delete": "Verwijderen",
+    "delete_title": "Opgeslagen gegevens verwijderen",
+    "delete_confirm": "Het onderhoud, de ITV en de verzekering van {name} worden verwijderd. Dit kan niet ongedaan worden gemaakt: download eerst een back-up als je ze wilt bewaren.",
+    "deleted": "Gegevens verwijderd.",
+    "history_title": "Wat er is gebeurd",
+    "history_help": "Wijzigingen, opdrachten en meldingen sinds de laatste herstart. Hetzelfde staat in het diagnosebestand.",
+    "history_none": "Nog niets om te tonen.",
+    "filter_all": "Alles",
+    "filter_orders": "Opdrachten",
+    "filter_alerts": "Meldingen",
+    "filter_errors": "Fouten",
+    "sheets_title": "Fiche van elk voertuig",
+    "sheets_help": "Welke uitrusting de integratie aanneemt, en waar ze dat vandaan haalt.",
+    "diagnostics_file": "Diagnose",
+    "ev_alert": "Melding verstuurd: {name}",
+    "ev_targets": "{count} ontvangers",
+    "ev_wake": "Voertuig gewekt",
+    "ev_command": "Opdracht: {name}",
+    "ev_code": "code",
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "enabled": "Ingeschakeld",
+    "mt_services_done": "Reeds uitgevoerde beurten",
+    "mt_interval_km": "Interval (km)",
+    "mt_interval_months": "Interval (maanden)",
+    "mt_register": "Uitgevoerde beurt registreren",
+    "mt_register_help": "Noteert de {number}e beurt van {name} en begint te tellen voor de volgende.",
+    "date": "Datum",
+    "mt_km": "Kilometers",
+    "register": "Registreren",
+    "registered": "Geregistreerd",
+    "itv_registration": "Registratiedatum",
+    "itv_last": "Laatste doorstane ITV",
+    "itv_next": "Volgende ITV (handmatig)",
+    "itv_register": "Doorstane ITV registreren",
+    "itv_register_help": "Noteert dat {name} de ITV heeft doorstaan en berekent de volgende.",
+    "ins_company": "Maatschappij",
+    "ins_policy": "Polisnummer",
+    "ins_kind": "Soort verzekering",
+    "ins_notice": "Opzegtermijn in dagen",
+    "ins_phone_assistance": "Telefoon pechhulp",
+    "ins_phone_company": "Telefoon maatschappij",
+    "kind_third_party": "WA",
+    "kind_third_party_plus": "WA beperkt casco",
+    "kind_comprehensive_excess": "Allrisk met eigen risico",
+    "kind_comprehensive": "Allrisk zonder eigen risico",
+    "tab_settings": "Instellingen",
+    "appearance_title": "Uiterlijk van {name}",
+    "appearance_help": "Bepaalt de foto, het aanzicht van het voertuig en welke uitrusting wordt aangenomen.",
+    "model": "Model",
+    "trim": "Uitvoering",
+    "color": "Kleur",
+    "wheels": "Velgen",
+    "model_ev": "Elektrisch",
+    "model_phev": "Plug-in hybride",
+    "trim_full": "Stoel- en stuurverwarming, elektrische achterklep",
+    "trim_basic": "Zonder stoel- en stuurverwarming",
+    "account": "Account: {name}",
+    "pin_title": "Afstandsbediening met pincode",
+    "pin_help": "Voor vergrendelen en ontgrendelen, ramen en kofferbak. Het is de pincode van de officiële Deepal-app, met hetzelfde account. Hij geldt voor alle voertuigen van het account.",
+    "pin_enabled": "Pincode-opdrachten",
+    "pin_enabled_help": "Zonder dit toont de kaart alleen de toestand van portieren, ramen en kofferbak.",
+    "pin": "Pincode",
+    "pin_field_help": "Hij wordt bij het opslaan bij Deepal gecontroleerd. Laat leeg om de huidige te behouden.",
+    "pin_checked": "Gecontroleerd",
+    "show_pin": "Pincode tonen",
+    "pin_mode_title": "Hoe opdrachten worden gebruikt",
+    "mode_direct": "Direct",
+    "mode_direct_help": "De opdracht wordt verstuurd als je tikt, na een bevestiging. Het handigst.",
+    "mode_armed": "Eerst ontgrendelen",
+    "mode_armed_help": "Je moet eerst ‘Pincode-acties ontgrendelen’ inschakelen, en dat duurt maar even. Het veiligst.",
+    "arm_seconds": "Hoe lang de ontgrendeling duurt",
+    "arm_seconds_help": "Na die tijd vergrendelen de pincode-opdrachten vanzelf weer.",
+    "seconds": "{value} s",
+    "arm_notify": "Melden bij ontgrendelen",
+    "arm_notify_help": "Een melding in Home Assistant telkens wanneer opdrachten worden toegestaan.",
+    "reading_title": "Gegevens uitlezen",
+    "reading_help": "Hoe en hoe vaak het voertuig wordt bevraagd.",
+    "scan_title": "Uitleesinterval",
+    "scan_help": "Hoe vaak de voertuiggegevens worden gelezen. Bij heel lage waarden kan Deepal het account afknijpen.",
+    "minutes": "{value} min",
+    "wake_title": "Voertuig wekken als dat nodig is",
+    "wake_help": "Wanneer je op Vernieuwen tikt en vóór een pincode-opdracht. Nooit bij automatische uitlezingen, om de 12V-accu te sparen.",
+    "manual_bev": "BEV-handleiding",
+    "manual_phev": "PHEV-handleiding",
+    "manual_help": "De link die de kaart opent onder Meer → Handleiding. Leeg = de officiële.",
+    "debug_title": "Debugmodus",
+    "debug_help": "Bewaart volledige verzoeken en antwoorden (zonder persoonsgegevens) in de diagnose.",
+    "save_check": "Opslaan",
+    "unsaved_settings": "Er zijn niet-opgeslagen wijzigingen.",
+    "error_pin_required": "Voer de pincode in.",
+    "error_pin_invalid": "De pincode is niet juist. Het is die van de officiële Deepal-app, met ditzelfde account.",
+    "error_pin_rate_limited": "Te veel pincodepogingen. Wacht een paar minuten voordat je het opnieuw probeert.",
+    "error_cannot_connect": "Kan geen verbinding maken met Deepal. Probeer het later opnieuw.",
+    "error_invalid_url": "De link naar de handleiding is niet geldig: hij moet beginnen met http:// of https://.",
+    "error_unknown_model": "Dat model staat niet in de catalogus.",
+    "close": "Sluiten",
+    "other": "Anders",
+    "history": "Geschiedenis",
+    "manual": "Handleiding",
+    "copied": "Gekopieerd: {text}",
+    "form_maintenance": "Onderhoud instellen",
+    "form_itv": "ITV instellen",
+    "form_insurance": "Verzekering instellen",
+    "form_maintenance_off": "Uitgeschakeld: de entiteiten, het lampje op de kaart en de meldingen worden verwijderd. De geschiedenis gaat verloren.",
+    "form_itv_off": "Uitgeschakeld: de entiteiten, het lampje op de kaart en de meldingen worden verwijderd.",
+    "form_insurance_off": "Uitgeschakeld: de entiteiten, het lampje op de kaart en de meldingen worden verwijderd.",
+    "first_notice": "Eerste melding {days} dagen ervoor",
+    "mt_last": "Laatste beurt",
+    "mt_last_help": "Heeft het voertuig er nog geen gehad, vul dan de registratiedatum en 0 km in.",
+    "mt_next_is": "De volgende wordt de {number}e beurt.",
+    "mt_km_then": "Kilometers toen",
+    "mt_use_odometer": "De huidige stand van het voertuig gebruiken ({km} km)",
+    "mt_every": "Hoe vaak",
+    "mt_every_help": "De handleiding vraagt een korter interval bij veel korte ritten, stof, modder, extreme kou of zout.",
+    "mt_interval_manual": "Volgens de handleiding",
+    "mt_interval_value": "{km} km of {months} maanden",
+    "mt_interval_other": "Kies je zelf",
+    "mt_preview": "Volgende beurt: {date} of bij {km} km",
+    "mt_whichever": "Wat het eerst komt: op {date} of bij {km} km.",
+    "by_time": "Op tijd",
+    "by_km": "Op afstand",
+    "mt_km_detail": "Nu {now} km · beurt bij {due}",
+    "mt_this_service": "Wat bij deze beurt hoort",
+    "n_operations": "{count} werkzaamheden",
+    "mt_no_plan": "Dit model heeft geen onderhoudsplan in de catalogus.",
+    "mt_next_adds": "Bij de volgende ({number}e) komt erbij",
+    "mt_history_item": "{number}e beurt · {date} · {km} km",
+    "mt_no_history": "Er zijn nog geen beurten geregistreerd.",
+    "itv_registration_title": "Registratie",
+    "itv_registration_help": "Ze staat op het kentekenbewijs. Daarmee wordt de eerste ITV berekend.",
+    "itv_passed_title": "Reeds doorstane ITV's",
+    "itv_passed_help": "Alleen als het voertuig er al een heeft doorstaan.",
+    "itv_passed": "Het heeft al een ITV doorstaan",
+    "itv_next_title": "Volgende ITV",
+    "itv_next_rules": "Ze wordt berekend volgens de regels van het land van het account.",
+    "itv_next_auto": "Laten berekenen",
+    "itv_next_manual": "Een andere datum invullen",
+    "itv_next_manual_note": "Als het keuringsstation je een andere gaf",
+    "itv_preview": "Volgende ITV: {date}",
+    "itv_manual_date": "datum met de hand ingevuld",
+    "itv_age": "{years} jaar",
+    "itv_none_yet": "Nog geen",
+    "itv_first_at": "De eerste na {years} jaar",
+    "itv_rules_title": "Hoe vaak",
+    "itv_rules": "De eerste na {first} jaar; daarna om de {interval} jaar en vanaf {reduced} jaar elk jaar.",
+    "itv_history_item": "ITV doorstaan op {date}",
+    "itv_no_history": "Er is nog geen ITV geregistreerd.",
+    "ins_policy_title": "De polis",
+    "ins_policy_help": "Het polisnummer en de telefoonnummers zijn alleen te zien op de kaart en in het paneel; ze komen nooit in de diagnose.",
+    "ins_renewal_title": "Verlenging",
+    "ins_renewal_help": "De verzekering wordt elk jaar vanzelf verlengd. Om op te zeggen moet je dat vooraf melden.",
+    "ins_renews_on": "Wordt verlengd op",
+    "ins_notice_days": "Dagen opzegtermijn",
+    "ins_phones_title": "Telefoonnummers",
+    "ins_phones_help": "Om met één tik te bellen, vanaf de kaart en vanaf hier.",
+    "ins_preview": "Laatste dag om op te zeggen: {date}",
+    "ins_preview_passed": "Die termijn is verstreken. Ze wordt verlengd op {date}.",
+    "ins_dates": "Datums",
+    "ins_to_cancel": "Om op te zeggen",
+    "ins_to_renewal": "Tot de verlenging",
+    "ins_deadline_passed": "Termijn verstreken",
+    "ins_deadline_on": "Laatste dag: {date}",
+    "ins_renews_itself": "Wordt vanzelf verlengd op {date}",
+    "ins_assistance": "Pechhulp"
+  },
+  "catalogo": {
+    "operacion_general_inspection": "Algemene inspectie (aandrijving, batterij, hoogspanning, remmen en stuurinrichting)",
+    "operacion_tyres": "Banden (controle en afstelling)",
+    "operacion_cabin_filter": "Interieurfilter (controleren of vervangen)",
+    "operacion_condenser_cleaning": "Reiniging van condensor en verdamper",
+    "operacion_electrics_inspection": "Controle van elektrische installatie, airco en koelvloeistofslangen",
+    "operacion_brake_fluid": "Remvloeistof verversen (elke 2 jaar of 40.000 km)",
+    "operacion_coolant": "Koelvloeistof verversen (elke 3 jaar of 80.000 km)",
+    "operacion_front_gear_oil": "Olie van de voorste reductiekast verversen (elke 3 jaar of 60.000 km)",
+    "operacion_rear_gear_oil": "Olie van de achterste reductiekast verversen (elke 5 jaar of 100.000 km)",
+    "operacion_engine_oil": "Motorolie en oliefilter vervangen",
+    "operacion_fuel_system": "Controle van het brandstofsysteem (tank, leidingen, koolstoffilter en gasklephuis)",
+    "operacion_spark_plugs": "Bougies vervangen (elke 2 jaar of 40.000 km)",
+    "operacion_engine_air_filter": "Luchtfilter van de motor vervangen (elke 2 jaar of 40.000 km)"
+  }
+}

@@ -22,7 +22,11 @@ Cabeceras: las de la app Android (`appid: ca`, `apptype: Android`,
 
 Los errores llegan con HTTP 200 y `{"success": false, "code", "msg"}`.
 
-## Login por SMS ⚠️ no llega el código
+## Login por SMS ⚠️ quitado en la 2.5.0b4
+
+> La integración ya **no ofrece** el acceso con teléfono: solo con correo. Lo
+> que sigue se conserva como referencia del protocolo, por si Deepal vuelve a
+> entregar los SMS.
 
 Desde septiembre de 2026 (probado con la b1-b5), `send-auth-code` responde
 éxito completo pero el SMS no llega al móvil (con el teléfono bien asociado a
@@ -41,17 +45,16 @@ Descartado en la integración:
   constancia de que les llegue.
 - Un número, prefijo o cifrado incorrecto produce `success: false`, no `SUC`.
 
-Conclusión: fallo de entrega del lado de Deepal. El asistente recomienda el
-correo y lo propone por defecto. Pendiente: comprobar si en la app oficial
-llega el SMS (si llegara, capturar su tráfico para comparar).
+Conclusión: fallo de entrega del lado de Deepal. Por eso el asistente solo
+pide el correo.
 
 ## Login ✅
 
 | Paso | Endpoint | Cuerpo |
 | --- | --- | --- |
-| Código SMS | `/intl-app-gw/intl-app-auth/api/login/send-auth-code` | `countryCode`, `mobile` (RSA) |
+| Código SMS (sin uso) | `/intl-app-gw/intl-app-auth/api/login/send-auth-code` | `countryCode`, `mobile` (RSA) |
 | Código correo | `…/login/email-send-auth-code` | `type: "0"`, `email` (RSA) |
-| Entrar SMS | `…/login/login-by-mobile-code` | `authCode`, `countryCode`, `mobile` (RSA), `salesCountry`, `pubKey` |
+| Entrar SMS (sin uso) | `…/login/login-by-mobile-code` | `authCode`, `countryCode`, `mobile` (RSA), `salesCountry`, `pubKey` |
 | Entrar correo | `…/login/email-code-in` | `authCode`, `salesCountry`, `email` (RSA), `pubKey` |
 | Renovar | `/intl-app-gw/intl-app-auth/api/auth/refresh-token` | `refreshToken` |
 

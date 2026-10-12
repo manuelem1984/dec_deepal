@@ -20,10 +20,7 @@ Todo en `custom_components/dec_deepal/countries/countries.yaml`.
      activo: false          # poner true cuando se haya probado
      entorno: eu
      pais_venta: PT
-     prefijo: "351"
-     digitos_movil: 9
      idioma_api: en_US
-     metodos_login: [sms, email]
      verificado: false
    ```
 3. Añade el país a `paises:` de los modelos que se vendan allí

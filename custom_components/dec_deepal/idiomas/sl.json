@@ -1,0 +1,1073 @@
+{
+  "integracion": {
+    "title": "DEC Deepal",
+    "config": {
+      "step": {
+        "user": {
+          "title": "DEC Deepal — Država",
+          "description": "Izberite državo svojega računa Deepal.",
+          "data": {
+            "country": "Država"
+          }
+        },
+        "email": {
+          "title": "Prijava z e-pošto",
+          "description": "Vnesite e-poštni naslov svojega računa Deepal. Prejeli boste kodo.\n\nPriporočeno: sekundarni račun, s katerim je avto deljen, da se aplikacija na telefonu ne odjavi.",
+          "data": {
+            "email": "E-poštni naslov"
+          }
+        },
+        "code_menu": {
+          "title": "Koda poslana",
+          "description": "Deepal je sprejel pošiljanje kode na {destination}. To lahko traja nekaj minut; preverite tudi mapo z neželeno pošto. Če ne prispe, jo pošljite znova ali popravite e-poštni naslov.",
+          "menu_options": {
+            "code": "Kodo imam",
+            "resend_code": "Znova pošlji kodo",
+            "change_email": "Popravi e-poštni naslov"
+          }
+        },
+        "code": {
+          "title": "Potrditvena koda",
+          "description": "Vnesite kodo, ki ste jo pravkar prejeli.",
+          "data": {
+            "auth_code": "Koda"
+          }
+        },
+        "vehicles": {
+          "title": "Vozila",
+          "description": "Vaš račun ima več avtomobilov. Označite tiste, ki jih želite dodati.",
+          "data": {
+            "selected_vehicles": "Vozila"
+          }
+        },
+        "reauth_confirm": {
+          "title": "Ponovna prijava",
+          "description": "Seja Deepal ni več veljavna (verjetno je bil isti račun prijavljen v aplikaciji). Zahtevana bo nova koda."
+        }
+      },
+      "error": {
+        "send_code_failed": "Kode ni bilo mogoče poslati. Preverite vnesene podatke.",
+        "too_many_codes": "Zahtevanih je bilo preveč kod. Počakajte nekaj časa in poskusite znova.",
+        "cannot_connect": "Povezava s strežnikom Deepal ni uspela.",
+        "login_failed": "Prijava ni uspela. Preverite kodo.",
+        "no_vehicles": "Ta račun nima vozil.",
+        "no_vehicle_selected": "Označite vsaj eno vozilo."
+      },
+      "abort": {
+        "already_configured": "Ta račun je že nastavljen.",
+        "reauth_successful": "Seja je bila uspešno obnovljena.",
+        "reauth_account_mismatch": "Ta račun nima istih vozil kot nastavljeni. Prijavite se s pravim računom.",
+        "flow_state_lost": "Postopek je potekel. Začnite znova.",
+        "catalog_error": "Eden od katalogov integracije vsebuje napake. Preverite dnevnik Home Assistanta."
+      }
+    },
+    "options": {
+      "error": {
+        "pin_required": "Vnesite PIN, da omogočite daljinsko upravljanje.",
+        "pin_invalid": "Napačen PIN ali ustvarjen z drugim računom.",
+        "pin_rate_limited": "Preveč poskusov PIN-a. Počakajte ali ga ponastavite v uradni aplikaciji.",
+        "invalid_url": "Vnesite celoten spletni naslov (ki se začne s https://).",
+        "cannot_connect": "Povezava s strežnikom Deepal ni uspela.",
+        "invalid_file": "Datoteka ni varnostna kopija DEC Deepal ali pa je poškodovana.",
+        "newer_file": "Varnostna kopija izvira iz novejše različice integracije. Posodobite DEC Deepal in poskusite znova.",
+        "empty_file": "Varnostna kopija nima podatkov za nobeno vozilo.",
+        "no_selection": "Izberite vsaj eno vozilo.",
+        "confirm_required": "Označite polje, da potrdite brisanje."
+      },
+      "abort": {
+        "not_loaded": "Integracija ni naložena. Preverite dnevnik in poskusite znova.",
+        "no_data": "Za nobeno vozilo ni shranjenih podatkov.",
+        "data_imported": "Varnostna kopija naložena: {cars}.",
+        "data_deleted": "Podatki izbrisani: {cars}.",
+        "data_sent": "Obvestilo poslano na {device}. Tapnite ga na telefonu, da prenesete varnostno kopijo.",
+        "no_mobile": "Ni telefona z aplikacijo Home Assistant."
+      }
+    },
+    "issues": {
+      "vehicle_not_configured": {
+        "title": "Nastavite svoje vozilo: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "model": {
+              "title": "Model vozila {vehicle}",
+              "description": "Dokler ne izberete modela, avto deluje v splošnem načinu (samo osnovni podatki, brez sedežev, volana ali upravljanja s PIN-om). Model, prepoznan po imenu: {suggestion}.",
+              "data": {
+                "model": "Model"
+              }
+            },
+            "details": {
+              "title": "Različica in barva",
+              "description": "Različica in barva vašega {model}. Različica določa, katere entitete se ustvarijo (prezračevanje sedežev obstaja na primer samo pri Max) in skupaj z barvo tudi »sliko DEC«.",
+              "data": {
+                "trim": "Različica",
+                "color": "Barva",
+                "wheels": "Platišča (samo Max)"
+              },
+              "data_description": {
+                "wheels": "Pro ima vedno svoje 18\" platišče."
+              }
+            }
+          },
+          "abort": {
+            "entry_not_found": "Račun ne obstaja več."
+          }
+        }
+      }
+    },
+    "selector": {
+      "pin_mode": {
+        "options": {
+          "direct": "Možnost A — neposredni ukazi",
+          "armed": "Možnost B — najprej odkleni (varneje)"
+        }
+      },
+      "arm_seconds": {
+        "options": {
+          "10": "10 sekund",
+          "20": "20 sekund",
+          "30": "30 sekund",
+          "60": "60 sekund"
+        }
+      },
+      "wheels": {
+        "options": {
+          "cover": "20\" z aerodinamičnim pokrovom",
+          "open": "20\" brez aerodinamičnega pokrova"
+        }
+      },
+      "alert_type": {
+        "options": {
+          "charge_started": "Polnjenje se je začelo",
+          "charge_interrupted": "Polnjenje prekinjeno",
+          "charge_finished": "Polnjenje končano",
+          "warnings": "Opozorilne lučke na armaturni plošči",
+          "tires": "Pnevmatike (ko avto vklopi opozorilo)",
+          "key_battery": "Baterija ključa je skoraj prazna"
+        }
+      },
+      "insurance_kind": {
+        "options": {
+          "third_party": "Avtomobilska odgovornost",
+          "third_party_plus": "Delni kasko",
+          "comprehensive_excess": "Polni kasko z odbitno franšizo",
+          "comprehensive": "Polni kasko brez odbitne franšize"
+        }
+      }
+    },
+    "entity": {
+      "sensor": {
+        "battery_level": {
+          "name": "Baterija"
+        },
+        "range": {
+          "name": "Doseg"
+        },
+        "charge_status": {
+          "name": "Stanje polnjenja",
+          "state": {
+            "disconnected": "Odklopljeno",
+            "connected_ac": "Priklopljeno AC",
+            "connected_dc": "Priklopljeno DC",
+            "charging_ac": "Polnjenje AC",
+            "charging_dc": "Polnjenje DC"
+          }
+        },
+        "charge_current": {
+          "name": "Polnilni tok"
+        },
+        "ac_charge_current": {
+          "name": "Polnilni tok AC"
+        },
+        "dc_charge_current": {
+          "name": "Polnilni tok DC"
+        },
+        "remaining_charge_time": {
+          "name": "Preostali čas polnjenja"
+        },
+        "remaining_charge_time_hhmm": {
+          "name": "Preostali čas polnjenja (U:MM)"
+        },
+        "odometer": {
+          "name": "Števec kilometrov"
+        },
+        "last_update": {
+          "name": "Zadnje poročilo avtomobila"
+        },
+        "power_status": {
+          "name": "Stanje kontakta"
+        },
+        "speed": {
+          "name": "Hitrost"
+        },
+        "trip_mileage": {
+          "name": "Razdalja poti"
+        },
+        "mileage_yesterday": {
+          "name": "Razdalja včeraj"
+        },
+        "inside_temperature": {
+          "name": "Notranja temperatura"
+        },
+        "outside_temperature": {
+          "name": "Zunanja temperatura"
+        },
+        "cabin_humidity": {
+          "name": "Vlažnost v kabini"
+        },
+        "climate_target_temperature": {
+          "name": "Ciljna temperatura klime"
+        },
+        "fan_level": {
+          "name": "Ventilator klime"
+        },
+        "tire_pressure_front_left": {
+          "name": "Tlak pnevmatike spredaj levo"
+        },
+        "tire_pressure_front_right": {
+          "name": "Tlak pnevmatike spredaj desno"
+        },
+        "tire_pressure_rear_left": {
+          "name": "Tlak pnevmatike zadaj levo"
+        },
+        "tire_pressure_rear_right": {
+          "name": "Tlak pnevmatike zadaj desno"
+        },
+        "license_plate": {
+          "name": "Registrska številka"
+        },
+        "window_opening_front_left": {
+          "name": "Odprtost okna spredaj levo"
+        },
+        "window_opening_front_right": {
+          "name": "Odprtost okna spredaj desno"
+        },
+        "window_opening_rear_left": {
+          "name": "Odprtost okna zadaj levo"
+        },
+        "window_opening_rear_right": {
+          "name": "Odprtost okna zadaj desno"
+        },
+        "maintenance_days": {
+          "name": "Dni do servisa"
+        },
+        "maintenance_km": {
+          "name": "Kilometrov do servisa"
+        },
+        "maintenance_date": {
+          "name": "Naslednji servis"
+        },
+        "itv_date": {
+          "name": "Naslednji ITV"
+        },
+        "itv_days": {
+          "name": "Dni do ITV"
+        },
+        "insurance_renewal_date": {
+          "name": "Podaljšanje zavarovanja"
+        },
+        "insurance_days": {
+          "name": "Dni do podaljšanja zavarovanja"
+        },
+        "insurance_cancel_date": {
+          "name": "Rok za odpoved zavarovanja"
+        }
+      },
+      "binary_sensor": {
+        "cloud_connected": {
+          "name": "Povezava z oblakom"
+        },
+        "engine": {
+          "name": "Kontakt vklopljen"
+        },
+        "charging": {
+          "name": "Polnjenje"
+        },
+        "ac_connector": {
+          "name": "Priključek AC"
+        },
+        "dc_connector": {
+          "name": "Priključek DC"
+        },
+        "door_front_left": {
+          "name": "Vrata spredaj levo"
+        },
+        "door_front_right": {
+          "name": "Vrata spredaj desno"
+        },
+        "door_rear_left": {
+          "name": "Vrata zadaj levo"
+        },
+        "door_rear_right": {
+          "name": "Vrata zadaj desno"
+        },
+        "trunk": {
+          "name": "Prtljažnik"
+        },
+        "hood": {
+          "name": "Pokrov motorja"
+        },
+        "any_door_open": {
+          "name": "Ena od vrat odprta"
+        },
+        "window_front_left": {
+          "name": "Okno spredaj levo"
+        },
+        "window_front_right": {
+          "name": "Okno spredaj desno"
+        },
+        "window_rear_left": {
+          "name": "Okno zadaj levo"
+        },
+        "window_rear_right": {
+          "name": "Okno zadaj desno"
+        },
+        "lock_driver": {
+          "name": "Ključavnica voznika"
+        },
+        "lock_passenger": {
+          "name": "Ključavnica sovoznika"
+        },
+        "central_locking": {
+          "name": "Centralno zaklepanje"
+        },
+        "tire_alarm_front_left": {
+          "name": "Opozorilo pnevmatike spredaj levo"
+        },
+        "tire_alarm_front_right": {
+          "name": "Opozorilo pnevmatike spredaj desno"
+        },
+        "tire_alarm_rear_left": {
+          "name": "Opozorilo pnevmatike zadaj levo"
+        },
+        "tire_alarm_rear_right": {
+          "name": "Opozorilo pnevmatike zadaj desno"
+        },
+        "high_beam": {
+          "name": "Dolge luči"
+        },
+        "low_beam": {
+          "name": "Kratke luči"
+        },
+        "position_lamp": {
+          "name": "Pozicijske luči"
+        },
+        "indicator_left": {
+          "name": "Levi smernik"
+        },
+        "indicator_right": {
+          "name": "Desni smernik"
+        },
+        "climate_on": {
+          "name": "Klimatska naprava"
+        },
+        "rear_fog_lamp": {
+          "name": "Meglenke"
+        },
+        "air_recirculation": {
+          "name": "Kroženje zraka"
+        },
+        "key_battery_low": {
+          "name": "Baterija ključa je skoraj prazna"
+        },
+        "warning_12v_battery": {
+          "name": "Opozorilo 12 V akumulatorja"
+        },
+        "warning_tpms": {
+          "name": "Opozorilo tlaka v pnevmatikah"
+        },
+        "warning_abs": {
+          "name": "Opozorilo ABS"
+        },
+        "warning_airbag": {
+          "name": "Opozorilo zračne blazine"
+        },
+        "warning_brake_fluid": {
+          "name": "Opozorilo zavorne tekočine"
+        },
+        "warning_brake": {
+          "name": "Opozorilo zavor"
+        },
+        "warning_eps": {
+          "name": "Opozorilo servovolana"
+        },
+        "warning_power_limit": {
+          "name": "Opozorilo omejene moči"
+        },
+        "warning_power_system": {
+          "name": "Opozorilo pogonskega sistema"
+        },
+        "warning_traction_battery_low": {
+          "name": "Opozorilo nizke baterije"
+        },
+        "warning_coolant_temperature": {
+          "name": "Opozorilo temperature hladilne tekočine"
+        },
+        "maintenance_due": {
+          "name": "Opomnik za servis"
+        },
+        "itv_due": {
+          "name": "Opomnik za ITV"
+        },
+        "insurance_due": {
+          "name": "Opomnik za zavarovanje"
+        }
+      },
+      "button": {
+        "refresh": {
+          "name": "Osveži podatke vozila"
+        },
+        "flash_lights": {
+          "name": "Utripni z lučmi"
+        },
+        "honk_horn": {
+          "name": "Zatrobi"
+        },
+        "flash_and_honk": {
+          "name": "Luči in hupa"
+        }
+      },
+      "climate": {
+        "cabin_climate": {
+          "name": "Klima"
+        }
+      },
+      "number": {
+        "seat_heat_driver": {
+          "name": "Ogrevanje voznikovega sedeža"
+        },
+        "seat_heat_passenger": {
+          "name": "Ogrevanje sovoznikovega sedeža"
+        },
+        "seat_vent_driver": {
+          "name": "Prezračevanje voznikovega sedeža"
+        },
+        "seat_vent_passenger": {
+          "name": "Prezračevanje sovoznikovega sedeža"
+        }
+      },
+      "switch": {
+        "steering_wheel_heat": {
+          "name": "Ogrevan volan"
+        },
+        "front_defrost": {
+          "name": "Sušenje vetrobranskega stekla"
+        }
+      },
+      "lock": {
+        "doors": {
+          "name": "Vrata"
+        },
+        "pin_arm": {
+          "name": "Odkleni dejanja s PIN-om"
+        }
+      },
+      "cover": {
+        "windows": {
+          "name": "Okna - Način prezračevanja",
+          "state": {
+            "open": "Zaprta",
+            "closed": "Prezračevanje",
+            "opening": "Zapiranje",
+            "closing": "Odpiranje na režo"
+          }
+        },
+        "trunk_control": {
+          "name": "Prtljažnik (upravljanje)"
+        }
+      },
+      "device_tracker": {
+        "location": {
+          "name": "Lokacija"
+        }
+      },
+      "image": {
+        "official_image": {
+          "name": "Uradna slika"
+        },
+        "dec_photo": {
+          "name": "Slika DEC"
+        },
+        "top_view": {
+          "name": "Pogled od zgoraj"
+        },
+        "isometric_view": {
+          "name": "Izometrični pogled"
+        },
+        "interior_view": {
+          "name": "Pogled notranjosti"
+        },
+        "charging_view": {
+          "name": "Pogled polnjenja"
+        }
+      }
+    },
+    "exceptions": {
+      "session_expired": {
+        "message": "Seja Deepal je potekla in je ni bilo mogoče obnoviti. Znova se prijavite v integraciji. ({error})"
+      },
+      "rate_limited": {
+        "message": "Deepal prosi za počakanje (preveč zahtev ali poskusov). ({error})"
+      },
+      "pin_problem": {
+        "message": "Težava s PIN-om za daljinsko upravljanje: preverite ga na plošči DEC Deepal ali v uradni aplikaciji. ({error})"
+      },
+      "signing_key_invalid": {
+        "message": "Ključ za podpisovanje ukazov ni več veljaven. Znova se prijavite v integraciji. ({error})"
+      },
+      "command_not_ready": {
+        "message": "Ukaza še ni mogoče poslati: {error}"
+      },
+      "connection_error": {
+        "message": "Povezava s strežnikom Deepal ni uspela. ({error})"
+      },
+      "command_failed": {
+        "message": "Ukaz ni uspel: {error}"
+      },
+      "command_rejected": {
+        "message": "Avto je zavrnil ukaz: {error}"
+      },
+      "command_rejected_asleep": {
+        "message": "Avto je zavrnil ukaz ({error}). Morda spi ali je zaseden: poskusite znova, ko ga nekaj časa uporabljate."
+      },
+      "command_rejected_power_on": {
+        "message": "Za ta ukaz mora biti avto ugasnjen ({error}). Ugasnite ga in poskusite znova."
+      },
+      "command_vehicle_asleep": {
+        "message": "Avto ni sprejel ukaza: morda spi ali nima povezave. Pritisnite »Osveži podatke vozila«, da ga zbudite, in poskusite znova. ({error})"
+      },
+      "wake_no_report": {
+        "message": "Avto je bil pozvan, naj se zbudi, a v 60 sekundah ni poslal novih podatkov. Morda nima signala; zadnji podatki se ohranijo."
+      },
+      "command_busy": {
+        "message": "Drug ukaz za ta avto teče že predolgo. Poskusite znova čez nekaj sekund."
+      },
+      "command_cooldown": {
+        "message": "Avto še končuje prejšnji ukaz. Počakajte {seconds} s."
+      },
+      "pin_not_armed": {
+        "message": "Najprej odklenite »Odkleni dejanja s PIN-om«."
+      },
+      "unknown_device": {
+        "message": "Ta naprava ni vozilo DEC Deepal."
+      },
+      "maintenance_not_configured": {
+        "message": "Najprej omogočite servis za ta avto na plošči DEC Deepal (Vozila)."
+      },
+      "itv_not_configured": {
+        "message": "Najprej omogočite ITV za ta avto na plošči DEC Deepal (Vozila)."
+      },
+      "maintenance_no_odometer": {
+        "message": "Stanje kilometrov avtomobila ni znano. Vnesite kilometre ali zabeležite servis na plošči DEC Deepal."
+      }
+    },
+    "services": {
+      "capture_snapshot": {
+        "name": "Razhroščevalni zajem",
+        "description": "Shrani celoten posnetek stanja avtomobila (interpretirani in surovi podatki, brez osebnih podatkov) in ga primerja s prejšnjim zajemom. Shrani se tudi v /config/dec_deepal_capturas/.",
+        "fields": {
+          "device_id": {
+            "name": "Vozilo",
+            "description": "Avto, ki ga želite zajeti."
+          },
+          "label": {
+            "name": "Oznaka",
+            "description": "Ime za prepoznavanje zajema (na primer »A - mirovanje«)."
+          },
+          "refresh": {
+            "name": "Najprej preberi",
+            "description": "Avto preberi tik pred zajemom."
+          }
+        }
+      },
+      "register_itv": {
+        "name": "Zabeleži ITV",
+        "description": "Zabeleži, da je avto opravil ITV (španski tehnični pregled), in izračuna naslednjega. ITV mora biti za avto omogočen.",
+        "fields": {
+          "device_id": {
+            "name": "Vozilo",
+            "description": "Avto, ki je opravil ITV."
+          },
+          "date": {
+            "name": "Datum",
+            "description": "Datum ITV. Prazno = danes."
+          }
+        }
+      },
+      "register_maintenance": {
+        "name": "Zabeleži servis",
+        "description": "Zabeleži, da je bil avto servisiran, in začne šteti do naslednjega. Servis mora biti za avto omogočen.",
+        "fields": {
+          "device_id": {
+            "name": "Vozilo",
+            "description": "Avto, ki je bil servisiran."
+          },
+          "date": {
+            "name": "Datum",
+            "description": "Datum servisa. Prazno = danes."
+          },
+          "km": {
+            "name": "Kilometri",
+            "description": "Kilometri ob servisu. Prazno = trenutno stanje avtomobila."
+          }
+        }
+      }
+    }
+  },
+  "avisos": {
+    "charge_started": "Polnjenje se je začelo{battery}.",
+    "charge_interrupted": "Polnjenje prekinjeno{battery}.",
+    "charge_finished": "Polnjenje končano{battery}.",
+    "battery": " (baterija na {level} %)",
+    "warnings": "Opozorilna lučka sveti: {names}.",
+    "tires": "Opozorilo pnevmatik: {names}.",
+    "key_battery": "Baterija ključa je skoraj prazna. Zamenjajte jo z baterijo CR2032.",
+    "maintenance_remaining": "Do {ordinal} servisa: še {parts}.",
+    "maintenance_overdue": "Servis je zamujen: {ordinal} servis bi moral biti opravljen {date} ali pri {km} km.",
+    "itv_remaining": "Do tehničnega pregleda (ITV): še {days}, rok je {date}.",
+    "itv_today": "Danes je zadnji dan za tehnični pregled (ITV).",
+    "itv_overdue": "Tehnični pregled (ITV) je zamujen od {date}.",
+    "insurance_cancel": "Zavarovanje: za odpoved je še {days} (do {deadline}). Podaljša se {renewal}.",
+    "insurance_last_day": "Zavarovanje: danes je zadnji dan, da zavarovalnici ({company}) sporočite, da ne želite podaljšanja.",
+    "insurance_renewal": "Zavarovanje: do podaljšanja še {days} ({renewal}).",
+    "insurance_renewed": "Zavarovanje je bilo danes podaljšano. Naslednje podaljšanje: {renewal}.",
+    "your_insurer": "vaša zavarovalnica",
+    "km": "{value} km",
+    "days": "{value} dni",
+    "day": "1 dan",
+    "or": " ali ",
+    "and": " in ",
+    "thousands": ".",
+    "ordinal": "{number}.",
+    "date_format": "%d. %m. %Y",
+    "panel_target": "Obvestila Home Assistanta",
+    "backup_download": "Prenesi varnostno kopijo",
+    "backup_notification": "Varnostna kopija podatkov vaših vozil. Tapnite za prenos (povezava poteče čez 10 minut)."
+  },
+  "tarjeta": {
+    "card_description": "Vaš Deepal na prvi pogled: pogled avtomobila, baterija, udobje in hitra dejanja.",
+    "car": "Avto",
+    "not_found": "Avta ne najdem. Izberite ga v nastavitvah kartice.",
+    "refresh": "Osveži podatke vozila",
+    "updated": "Posodobljeno: {when}",
+    "today": "danes, {time}",
+    "yesterday": "včeraj, {time}",
+    "comfort": "Udobje",
+    "lock": "Ključavnica",
+    "trunk": "Prtljažnik",
+    "vent": "Prezrači",
+    "locate": "Poišči vozilo",
+    "others": "Več",
+    "on": "Vklopljeno",
+    "off": "Izklopljeno",
+    "seats": "Sedeži",
+    "unlocked": "Odklenjeno",
+    "locked": "Zaklenjeno",
+    "trunk_open": "Odprt",
+    "trunk_closed": "Zaprt",
+    "venting": "Prezračevanje",
+    "windows_open": "Odprta",
+    "windows_closed": "Zaprta",
+    "lights_horn": "Luči in hupa",
+    "others_default": "Priročnik in dokumenti",
+    "day": "1 dan",
+    "days": "{count} dni",
+    "close": "Zapri",
+    "cancel": "Prekliči",
+    "understood": "Razumem",
+    "command_failed": "Ukaza ni bilo mogoče poslati avtomobilu.",
+    "no_pin": "Za uporabo tega gumba omogočite upravljanje s PIN-om na plošči DEC Deepal (zavihek Nastavitve).",
+    "pin_confirm": "Ukaz bo poslan vozilu {name} z vašim shranjenim PIN-om. Avto lahko za odziv potrebuje nekaj sekund.",
+    "lock_q": "Zaklenem vrata?",
+    "lock_do": "Zakleni",
+    "unlock_q": "Odklenem vrata?",
+    "unlock_do": "Odkleni",
+    "trunk_close_q": "Zaprem prtljažnik?",
+    "trunk_open_q": "Odprem prtljažnik?",
+    "open_do": "Odpri",
+    "windows_close_q": "Zaprem okna?",
+    "vent_q": "Odprem okna na režo za prezračevanje?",
+    "lights": "Luči",
+    "flash": "Utripni",
+    "horn": "Hupa",
+    "honk": "Zatrobi",
+    "both": "Oboje",
+    "manual": "Priročnik",
+    "open_pdf": "Odpri PDF",
+    "not_enabled": "Ni omogočeno",
+    "maintenance": "Servis",
+    "itv": "ITV",
+    "insurance": "Zavarovanje",
+    "no_maintenance": "Servis za ta avto ni omogočen. Omogočite ga na plošči DEC Deepal → Vozila.",
+    "no_itv": "ITV za ta avto ni omogočen. Omogočite ga na plošči DEC Deepal → Vozila.",
+    "no_insurance": "Zavarovanje za ta avto ni omogočeno. Omogočite ga na plošči DEC Deepal → Vozila.",
+    "ordinal": "{number}.",
+    "nth_service": "{ordinal} servis",
+    "overdue_mark": " · zamujeno",
+    "service_overdue": "Servis je zamujen",
+    "service_in": "Servis čez {value}",
+    "days_left": "dni še",
+    "days_late": "dni zamude",
+    "km_left": "km še",
+    "km_late": "km čez",
+    "service_planned": "Predviden {date} ali pri {km} km, kar nastopi prej.",
+    "includes": "Kaj vključuje",
+    "history": "Zgodovina",
+    "history_item": "{ordinal} servis · {date} · {km} km",
+    "register_service": "Zabeleži servis",
+    "register_service_q": "Zabeležim {ordinal} servis?",
+    "register_service_text": "Zabeleženo bo, da je bilo vozilo {name} danes servisirano{odometer}, in začelo se bo štetje do naslednjega. Če je bilo to drug dan, ga zabeležite na plošči DEC Deepal.",
+    "with_odometer": ", pri {value}",
+    "register": "Zabeleži",
+    "service_registered": "Servis zabeležen.",
+    "service_failed": "Servisa ni bilo mogoče zabeležiti.",
+    "itv_overdue": "ITV je zamujen",
+    "itv_last_day": "ITV: zadnji dan",
+    "itv_in": "ITV čez {days}",
+    "left": "Še {days}",
+    "overdue": "Zamujeno",
+    "last_day": "Zadnji dan",
+    "next_itv": "Naslednji ITV",
+    "due_date": "rok",
+    "itv_rule": "Prvi ITV (tehnični pregled) 4 leta po registraciji. Nato vsaki 2 leti, dokler avto ni star 10 let, potem pa vsako leto.",
+    "details": "Podrobnosti",
+    "registration": "Registracija",
+    "last_itv": "Zadnji ITV",
+    "none_yet": "Še nobenega",
+    "register_itv": "Zabeleži opravljen ITV",
+    "register_itv_q": "Zabeležim ITV?",
+    "register_itv_text": "Zabeleženo bo, da je vozilo {name} danes opravilo ITV, in izračunan bo naslednji. Če je bilo to drug dan, to vnesite na plošči DEC Deepal.",
+    "itv_registered": "ITV zabeležen.",
+    "itv_failed": "ITV ni bilo mogoče zabeležiti.",
+    "insurance_last_day": "Zavarovanje: zadnji dan",
+    "insurance_cancel": "Zavarovanje: {days} za odpoved",
+    "to_cancel": "{days} za odpoved",
+    "renews_on": "Podaljša se {date}",
+    "days_to_renewal": "dni do podaljšanja",
+    "days_to_cancel": "dni za odpoved",
+    "cancel_passed": "rok za odpoved je minil",
+    "renewal_text": "Podaljšanje {renewal}. Če ne želite podaljšati, morate to sporočiti pred {deadline} ({days} dni prej).",
+    "policy": "Polica",
+    "company": "Zavarovalnica",
+    "policy_number": "Številka police",
+    "kind": "Vrsta",
+    "assistance": "Pomoč na cesti",
+    "kind_third_party": "Avtomobilska odgovornost",
+    "kind_third_party_plus": "Delni kasko",
+    "kind_comprehensive_excess": "Polni kasko z odbitno franšizo",
+    "kind_comprehensive": "Polni kasko brez odbitne franšize",
+    "wheel_heat": "Ogrevan volan",
+    "seat_vent_driver": "Prezračevanje voznikovega sedeža",
+    "seat_heat_driver": "Ogrevanje voznikovega sedeža",
+    "seat_vent_passenger": "Prezračevanje sovoznikovega sedeža",
+    "seat_heat_passenger": "Ogrevanje sovoznikovega sedeža",
+    "temp_down": "Znižaj temperaturo",
+    "temp_up": "Zvišaj temperaturo",
+    "climate_on": "Klima vklopljena",
+    "climate_off": "Klima izklopljena",
+    "inside": "Znotraj {value}",
+    "humidity": "Vlažnost {value}",
+    "fan": "Ventilator {value}",
+    "recirculating": "Kroženje",
+    "outside_air": "Zunanji zrak",
+    "number_copied": "Številka kopirana: {number}",
+    "trunk_manual": "To vozilo nima električnih prtljažnih vrat: prtljažnik se odpira in zapira ročno."
+  },
+  "panel": {
+    "tab_cars": "Vozila",
+    "tab_alerts": "Obvestila",
+    "tab_data": "Podatki",
+    "tab_diagnostics": "Diagnostika",
+    "loading": "Nalaganje…",
+    "retry": "Poskusi znova",
+    "no_cars": "Ni vozil. Dodajte svoj račun Deepal v Nastavitve → Naprave in storitve.",
+    "error_generic": "Tega ni bilo mogoče dokončati. Poskusite znova.",
+    "day": "{value} dan",
+    "days": "{value} dni",
+    "or": " ali ",
+    "not_configured": "Model ni izbran",
+    "sheet_verified": "Preverjen list",
+    "sheet_catalogue": "List iz kataloga",
+    "battery": "Baterija",
+    "range": "Doseg",
+    "odometer": "Števec kilometrov",
+    "appearance": "Videz",
+    "configure": "Nastavi",
+    "section_charge": "Polnjenje",
+    "section_warnings": "Opozorila",
+    "section_maintenance": "Servis",
+    "section_itv": "ITV",
+    "section_insurance": "Zavarovanje",
+    "section_appearance": "Videz",
+    "not_set": "Ni nastavljeno",
+    "add_maintenance": "Omogoči servis",
+    "add_itv": "Dodaj ITV",
+    "add_insurance": "Dodaj zavarovanje",
+    "feature_seat_heat": "Ogrevani sedeži",
+    "feature_seat_vent": "Prezračevani sedeži",
+    "feature_wheel_heat": "Ogrevan volan",
+    "feature_power_tailgate": "Električna prtljažna vrata",
+    "wheel_pro": "18\" platišča",
+    "wheel_cover": "20\" platišča z aerodinamičnimi pokrovi",
+    "wheel_open": "20\" platišča brez pokrovov",
+    "service_number": "{number}. servis",
+    "overdue": "Zamujeno",
+    "left": "Še {parts}",
+    "overdue_since": "Zamuda: {days}",
+    "cancel_until": "Rok za odpoved: {date}",
+    "renews_in": "Podaljša se čez {days}",
+    "notify_to": "Obvesti",
+    "n_notices": "Obvestil: {count}",
+    "edit_threshold": "Spremeni rok obvestila",
+    "accept": "Sprejmi",
+    "cancel": "Prekliči",
+    "unit_km": "km",
+    "unit_days": "dni",
+    "when_km": "ko ostane {value} km",
+    "when_days": "ko ostane {value} dni",
+    "when_days_deadline": "{value} dni pred rokom",
+    "when_maintenance_overdue": "na dan roka ali ko so km doseženi",
+    "when_itv_overdue": "na dan roka",
+    "when_insurance_last_day": "zadnji dan za odpoved",
+    "when_insurance_renewed": "na dan podaljšanja",
+    "notice_charge_started": "Polnjenje se je začelo",
+    "notice_charge_interrupted": "Polnjenje prekinjeno",
+    "notice_charge_finished": "Polnjenje končano",
+    "notice_warnings": "Opozorilne lučke",
+    "notice_tires": "Pnevmatike",
+    "notice_key_battery": "Baterija ključa je skoraj prazna",
+    "notice_maintenance_t1": "Časovno obvestilo 1",
+    "notice_maintenance_t2": "Časovno obvestilo 2",
+    "notice_maintenance_t3": "Časovno obvestilo 3",
+    "notice_maintenance_k1": "Kilometrsko obvestilo 1",
+    "notice_maintenance_k2": "Kilometrsko obvestilo 2",
+    "notice_maintenance_k3": "Kilometrsko obvestilo 3",
+    "notice_maintenance_overdue": "Rok za servis",
+    "notice_itv_t1": "Obvestilo 1",
+    "notice_itv_t2": "Obvestilo 2",
+    "notice_itv_t3": "Obvestilo 3",
+    "notice_itv_overdue": "Rok za ITV",
+    "notice_insurance_c1": "Obvestilo o odpovedi 1",
+    "notice_insurance_c2": "Obvestilo o odpovedi 2",
+    "notice_insurance_last_day": "Rok za odpoved",
+    "notice_insurance_r1": "Obvestilo o podaljšanju 1",
+    "notice_insurance_r2": "Obvestilo o podaljšanju 2",
+    "notice_insurance_renewed": "Zavarovanje podaljšano",
+    "unsaved": "To vozilo ima neshranjene spremembe.",
+    "alerts_help": "Označite, kdo prejme katero obvestilo. Svinčnik spremeni dneve ali kilometre tega obvestila; roki veljajo za to vozilo.",
+    "factory_thresholds": "Privzeti roki",
+    "discard": "Zavrzi",
+    "save": "Shrani",
+    "saved": "Shranjeno",
+    "copy_from": "Kopiraj iz drugega vozila",
+    "car": "Vozilo",
+    "copy": "Kopiraj",
+    "error_threshold_range_limits": "Rok mora biti med {low} in {high}.",
+    "error_threshold_range": "Eden od rokov je zunaj dovoljenega obsega.",
+    "error_threshold_order": "Roki morajo iti od najdaljšega do najkrajšega: obvestilo 1 pred 2 in 2 pred 3.",
+    "error_not_found": "Tega vozila ni več v računu.",
+    "error_invalid": "Nekateri podatki niso veljavni.",
+    "error_invalid_file": "Datoteka ni varnostna kopija DEC Deepal ali pa je poškodovana.",
+    "error_newer_file": "Varnostna kopija izvira iz novejše različice integracije. Posodobite DEC Deepal in poskusite znova.",
+    "error_empty_file": "Varnostna kopija nima podatkov za nobeno vozilo.",
+    "error_required": "Manjkajo podatki.",
+    "backup_title": "Varnostna kopija",
+    "backup_help": "Servis, ITV, zavarovanje in videz vaših vozil. Podatki pripadajo vozilu: ne izgubijo se, ko se račun odstrani.",
+    "download_title": "Prenos varnostne kopije",
+    "download_help": "Datoteka s podatki vseh vozil. Vsebuje številko police in telefonske številke zavarovalnice: hranite jo na varnem.",
+    "download": "Prenesi",
+    "send_title": "Pošlji varnostno kopijo na telefon",
+    "send_help": "Prispe obvestilo; ko ga tapnete, se odpre brskalnik in prenese datoteko. Povezava poteče čez 10 minut.",
+    "send": "Pošlji",
+    "sent_to": "Obvestilo poslano na {device}.",
+    "upload_title": "Naloži varnostno kopijo",
+    "upload_help": "Vozila iz datoteke povrne v stanje, zapisano v njej. Druga vozila ostanejo nedotaknjena.",
+    "choose_file": "Izberi datoteko",
+    "imported": "Varnostna kopija naložena: {cars}.",
+    "stored_title": "Shranjeni podatki",
+    "stored_help": "Po vozilih, prepoznanih po številki VIN.",
+    "stored_none": "Za nobeno vozilo ni shranjenih podatkov.",
+    "in_account": "V računu",
+    "no_account": "Brez računa",
+    "no_account_note": "Ni več v nobenem računu",
+    "delete": "Izbriši",
+    "delete_title": "Izbriši shranjene podatke",
+    "delete_confirm": "Servis, ITV in zavarovanje vozila {name} bodo izbrisani. Tega ni mogoče razveljaviti: če jih želite ohraniti, najprej prenesite varnostno kopijo.",
+    "deleted": "Podatki izbrisani.",
+    "history_title": "Kaj se je zgodilo",
+    "history_help": "Spremembe, ukazi in obvestila od zadnjega ponovnega zagona. Enako je zapisano v diagnostični datoteki.",
+    "history_none": "Zaenkrat ni ničesar za prikaz.",
+    "filter_all": "Vse",
+    "filter_orders": "Ukazi",
+    "filter_alerts": "Obvestila",
+    "filter_errors": "Napake",
+    "sheets_title": "List posameznega vozila",
+    "sheets_help": "Katero opremo integracija predpostavlja in od kod jo ima.",
+    "diagnostics_file": "Diagnostika",
+    "ev_alert": "Obvestilo poslano: {name}",
+    "ev_targets": "Prejemnikov: {count}",
+    "ev_wake": "Prebujanje vozila",
+    "ev_command": "Ukaz: {name}",
+    "ev_code": "koda",
+    "today": "Danes",
+    "yesterday": "Včeraj",
+    "enabled": "Omogočeno",
+    "mt_services_done": "Že opravljeni servisi",
+    "mt_interval_km": "Interval (km)",
+    "mt_interval_months": "Interval (meseci)",
+    "mt_register": "Zabeleži opravljen servis",
+    "mt_register_help": "Zabeleži {number}. servis vozila {name} in začne šteti do naslednjega.",
+    "date": "Datum",
+    "mt_km": "Kilometri",
+    "register": "Zabeleži",
+    "registered": "Zabeleženo",
+    "itv_registration": "Datum registracije",
+    "itv_last": "Zadnji opravljeni ITV",
+    "itv_next": "Naslednji ITV (ročno)",
+    "itv_register": "Zabeleži opravljen ITV",
+    "itv_register_help": "Zabeleži, da je vozilo {name} opravilo ITV, in izračuna naslednjega.",
+    "ins_company": "Zavarovalnica",
+    "ins_policy": "Številka police",
+    "ins_kind": "Vrsta zavarovanja",
+    "ins_notice": "Odpovedni rok v dneh",
+    "ins_phone_assistance": "Telefon pomoči na cesti",
+    "ins_phone_company": "Telefon zavarovalnice",
+    "kind_third_party": "Avtomobilska odgovornost",
+    "kind_third_party_plus": "Delni kasko",
+    "kind_comprehensive_excess": "Polni kasko z odbitno franšizo",
+    "kind_comprehensive": "Polni kasko brez odbitne franšize",
+    "tab_settings": "Nastavitve",
+    "appearance_title": "Videz vozila {name}",
+    "appearance_help": "Določa fotografijo, pogled vozila in katera oprema se predpostavlja.",
+    "model": "Model",
+    "trim": "Različica",
+    "color": "Barva",
+    "wheels": "Platišča",
+    "model_ev": "Električni",
+    "model_phev": "Priključni hibrid",
+    "trim_full": "Ogrevani sedeži in volan, električna prtljažna vrata",
+    "trim_basic": "Brez ogrevanih sedežev in volana",
+    "account": "Račun: {name}",
+    "pin_title": "Daljinsko upravljanje s PIN-om",
+    "pin_help": "Za zaklepanje in odklepanje, okna in prtljažnik. To je PIN uradne aplikacije Deepal z istim računom. Velja za vsa vozila v računu.",
+    "pin_enabled": "Ukazi s PIN-om",
+    "pin_enabled_help": "Brez tega kartica prikazuje samo stanje vrat, oken in prtljažnika.",
+    "pin": "PIN",
+    "pin_field_help": "Ob shranjevanju se preveri pri Deepalu. Pustite prazno, da ohranite trenutnega.",
+    "pin_checked": "Preverjeno",
+    "show_pin": "Pokaži PIN",
+    "pin_mode_title": "Kako se uporabljajo ukazi",
+    "mode_direct": "Neposredno",
+    "mode_direct_help": "Ukaz se pošlje, ko tapnete, po potrditvi. Najbolj priročno.",
+    "mode_armed": "Najprej odkleni",
+    "mode_armed_help": "Najprej morate omogočiti »Odkleni dejanja s PIN-om«, in to traja le nekaj časa. Najvarneje.",
+    "arm_seconds": "Kako dolgo traja odklep",
+    "arm_seconds_help": "Po tem času se ukazi s PIN-om sami znova zaklenejo.",
+    "seconds": "{value} s",
+    "arm_notify": "Obvesti ob odklepu",
+    "arm_notify_help": "Obvestilo v Home Assistantu vsakič, ko so ukazi dovoljeni.",
+    "reading_title": "Branje podatkov",
+    "reading_help": "Kako in kako pogosto se vozilo poizveduje.",
+    "scan_title": "Interval branja",
+    "scan_help": "Kako pogosto se berejo podatki vozila. Zelo nizke vrednosti lahko povzročijo, da Deepal omeji račun.",
+    "minutes": "{value} min",
+    "wake_title": "Zbudi vozilo, ko je treba",
+    "wake_help": "Ko tapnete Osveži in pred ukazom s PIN-om. Nikoli pri samodejnih branjih, da se zaščiti 12 V akumulator.",
+    "manual_bev": "Priročnik BEV",
+    "manual_phev": "Priročnik PHEV",
+    "manual_help": "Povezava, ki jo kartica odpre pod Več → Priročnik. Prazno = uradni.",
+    "debug_title": "Razhroščevalni način",
+    "debug_help": "V diagnostiko shranjuje celotne zahteve in odgovore (brez osebnih podatkov).",
+    "save_check": "Shrani",
+    "unsaved_settings": "Obstajajo neshranjene spremembe.",
+    "error_pin_required": "Vnesite PIN.",
+    "error_pin_invalid": "PIN ni pravilen. To je PIN uradne aplikacije Deepal s tem istim računom.",
+    "error_pin_rate_limited": "Preveč poskusov PIN-a. Počakajte nekaj minut, preden poskusite znova.",
+    "error_cannot_connect": "Povezava z Deepalom ni uspela. Poskusite znova pozneje.",
+    "error_invalid_url": "Povezava do priročnika ni veljavna: začeti se mora s http:// ali https://.",
+    "error_unknown_model": "Tega modela ni v katalogu.",
+    "close": "Zapri",
+    "other": "Drugo",
+    "history": "Zgodovina",
+    "manual": "Priročnik",
+    "copied": "Kopirano: {text}",
+    "form_maintenance": "Nastavi servis",
+    "form_itv": "Nastavi ITV",
+    "form_insurance": "Nastavi zavarovanje",
+    "form_maintenance_off": "Onemogočeno: odstranijo se entitete, lučka na kartici in obvestila. Zgodovina se izgubi.",
+    "form_itv_off": "Onemogočeno: odstranijo se entitete, lučka na kartici in obvestila.",
+    "form_insurance_off": "Onemogočeno: odstranijo se entitete, lučka na kartici in obvestila.",
+    "first_notice": "Prvo obvestilo {days} dni prej",
+    "mt_last": "Zadnji servis",
+    "mt_last_help": "Če vozilo še ni imelo nobenega, vnesite datum registracije in 0 km.",
+    "mt_next_is": "Naslednji bo {number}. servis.",
+    "mt_km_then": "Kilometri takrat",
+    "mt_use_odometer": "Uporabi trenutno stanje vozila ({km} km)",
+    "mt_every": "Kako pogosto",
+    "mt_every_help": "Priročnik zahteva krajši interval pri pogostih kratkih vožnjah, prahu, blatu, hudem mrazu ali soli.",
+    "mt_interval_manual": "Po priročniku",
+    "mt_interval_value": "{km} km ali {months} mesecev",
+    "mt_interval_other": "Izberete sami",
+    "mt_preview": "Naslednji servis: {date} ali pri {km} km",
+    "mt_whichever": "Kar nastopi prej: {date} ali pri {km} km.",
+    "by_time": "Po času",
+    "by_km": "Po kilometrih",
+    "mt_km_detail": "Zdaj {now} km · servis pri {due}",
+    "mt_this_service": "Kaj vključuje ta servis",
+    "n_operations": "Opravil: {count}",
+    "mt_no_plan": "Ta model v katalogu nima načrta vzdrževanja.",
+    "mt_next_adds": "Pri naslednjem ({number}.) se doda",
+    "mt_history_item": "{number}. servis · {date} · {km} km",
+    "mt_no_history": "Zabeležen še ni noben servis.",
+    "itv_registration_title": "Registracija",
+    "itv_registration_help": "Zapisana je v prometnem dovoljenju. Iz nje se izračuna prvi ITV.",
+    "itv_passed_title": "Že opravljeni ITV",
+    "itv_passed_help": "Samo če je vozilo že opravilo katerega.",
+    "itv_passed": "ITV je že opravilo",
+    "itv_next_title": "Naslednji ITV",
+    "itv_next_rules": "Izračuna se po pravilih države računa.",
+    "itv_next_auto": "Izračunaj samodejno",
+    "itv_next_manual": "Vnesi drug datum",
+    "itv_next_manual_note": "Če so vam na pregledu dali drugačnega",
+    "itv_preview": "Naslednji ITV: {date}",
+    "itv_manual_date": "datum vnesen ročno",
+    "itv_age": "Starost v letih: {years}",
+    "itv_none_yet": "Še nobenega",
+    "itv_first_at": "Prvi pri starosti {years} let",
+    "itv_rules_title": "Kako pogosto",
+    "itv_rules": "Prvi pri {first} letih; nato na vsaka {interval} leta in od {reduced} let naprej vsako leto.",
+    "itv_history_item": "ITV opravljen {date}",
+    "itv_no_history": "Zabeležen še ni noben ITV.",
+    "ins_policy_title": "Polica",
+    "ins_policy_help": "Številka police in telefonske številke so vidne samo na kartici in na plošči; v diagnostiki se nikoli ne pojavijo.",
+    "ins_renewal_title": "Podaljšanje",
+    "ins_renewal_help": "Zavarovanje se vsako leto podaljša samo. Za odpoved morate to sporočiti vnaprej.",
+    "ins_renews_on": "Podaljša se",
+    "ins_notice_days": "Dni odpovednega roka",
+    "ins_phones_title": "Telefonske številke",
+    "ins_phones_help": "Za klic z enim dotikom s kartice in od tukaj.",
+    "ins_preview": "Zadnji dan za odpoved: {date}",
+    "ins_preview_passed": "Ta rok je minil. Podaljša se {date}.",
+    "ins_dates": "Datumi",
+    "ins_to_cancel": "Za odpoved",
+    "ins_to_renewal": "Do podaljšanja",
+    "ins_deadline_passed": "Rok je minil",
+    "ins_deadline_on": "Zadnji dan: {date}",
+    "ins_renews_itself": "Samo se podaljša {date}",
+    "ins_assistance": "Pomoč na cesti"
+  },
+  "catalogo": {
+    "operacion_general_inspection": "Splošni pregled (pogonska enota, baterija, visoka napetost, zavore in krmiljenje)",
+    "operacion_tyres": "Pnevmatike (pregled in nastavitev)",
+    "operacion_cabin_filter": "Filter kabine (pregled ali zamenjava)",
+    "operacion_condenser_cleaning": "Čiščenje kondenzatorja in uparjalnika",
+    "operacion_electrics_inspection": "Pregled električne napeljave, klimatske naprave in cevi hladilne tekočine",
+    "operacion_brake_fluid": "Menjava zavorne tekočine (vsaki 2 leti ali 40.000 km)",
+    "operacion_coolant": "Menjava hladilne tekočine (vsaka 3 leta ali 80.000 km)",
+    "operacion_front_gear_oil": "Menjava olja sprednjega reduktorja (vsaka 3 leta ali 60.000 km)",
+    "operacion_rear_gear_oil": "Menjava olja zadnjega reduktorja (vsakih 5 let ali 100.000 km)",
+    "operacion_engine_oil": "Menjava motornega olja in oljnega filtra",
+    "operacion_fuel_system": "Pregled sistema za gorivo (rezervoar, cevi, filter z aktivnim ogljem in ohišje lopute)",
+    "operacion_spark_plugs": "Menjava vžigalnih svečk (vsaki 2 leti ali 40.000 km)",
+    "operacion_engine_air_filter": "Menjava zračnega filtra motorja (vsaki 2 leti ali 40.000 km)"
+  }
+}

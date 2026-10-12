@@ -1,5 +1,14 @@
 # Hoja de ruta
 
+## Beta 2.5.0b4 (12-10-2026) — pendiente de probar
+
+- [ ] **Idiomas nuevos:** alemán, francés, neerlandés, noruego, danés,
+      griego y esloveno; y el panel, ya también en portugués, italiano y
+      polaco. Cambiar el idioma del usuario y ver panel, tarjeta y entidades.
+- [ ] Pendiente: revisión de cada idioma por alguien nativo.
+- [ ] **Alta solo con correo:** añadir la cuenta (o volver a iniciar sesión)
+      y ver que pide directamente el correo, sin elegir método.
+
 ## Beta 2.5.0b3 (11-10-2026) — pendiente de probar
 
 - [ ] **Fichas:** pulsar Mantenimiento, ITV y Seguro abre su ventana con los
@@ -28,7 +37,7 @@
       mismo por grupos.
 - [ ] **Datos:** el botón Descargar baja la copia también desde el móvil.
 - [ ] **Diagnóstico:** el historial enseña lo que va pasando.
-- [ ] Pendiente: traducir el panel a portugués, italiano y polaco.
+- [x] Traducir el panel a portugués, italiano y polaco (2.5.0b4).
 
 ## 2.4.0 (11-10-2026) — publicada
 
@@ -67,7 +76,7 @@ Pendiente de comprobar:
       recuperar ignorando los encendidos breves.
 - [ ] **Clima con el coche encendido**: el servidor lo rechaza; falta un
       mensaje claro en la tarjeta.
-- [ ] Revisión de inglés, portugués, italiano y polaco por alguien nativo.
+- [ ] Revisión de todos los idiomas (menos el español) por alguien nativo.
 - [ ] Los mismos colores en la **vista de planta** (las vistas interior y de
       carga no se tocan).
 - [ ] Manual del PHEV: cuando se añada ese modelo al catálogo, con su enlace.
@@ -154,11 +163,8 @@ desactivar en Configurar → Avanzado.
 - [ ] Velocidad, km del trayecto, km de ayer y temperatura exterior:
       activadas a mano el 05-10-2026, **no traen ningún dato** en el S05.
       Siguen desactivadas por defecto.
-- [ ] Login por **SMS**: el servidor responde éxito completo
-      (`success: true, code: 00000, data: "SUC"`) pero el SMS no llega. La
-      petición es idéntica a la de v1 y a la de Deepal Alternative → el fallo
-      parece estar en el envío de Deepal. Pendiente: probar SMS en la app
-      oficial con el mismo número.
+- [x] Login por **SMS**: quitado en la 2.5.0b4 (el servidor respondía éxito
+      pero el SMS no llegaba). Solo se entra con correo.
 - [ ] Capacidades de un **Pro**: confirmar que no manda `FronSeatVentilationSW`
       ni `#vent3` (pedir diagnóstico a alguien con un Pro).
 - [ ] Dejar un SVG nuevo (`outside_temperature.svg`) y comprobar que aparece

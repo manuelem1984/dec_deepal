@@ -145,7 +145,10 @@ def test_languages(page: Page) -> None:
     mount(page, idioma="en")
     assert tiles(page)["trunk"] == ["Boot", "Closed", ""]
     # Catalán, gallego y euskera se ven en español; uno sin traducir, en inglés.
-    for language, expected in (("ca", "Maletero"), ("eu", "Maletero"), ("pl", "Bagażnik"), ("fr", "Boot")):
+    for language, expected in (
+        ("ca", "Maletero"), ("eu", "Maletero"), ("pl", "Bagażnik"), ("fr", "Coffre"), ("de", "Kofferraum"),
+        ("el", "Πορτμπαγκάζ"), ("lb", "Coffre"), ("sv", "Boot"),
+    ):
         mount(page, idioma=language)
         assert tiles(page)["trunk"][0] == expected, language
 

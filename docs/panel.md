@@ -115,9 +115,8 @@ Cada pulsación lleva `data-action="algo"` y la atiende el método `_do_algo`.
 El lado de la integración está en `panel.py`: registra la página y las
 órdenes `dec_deepal/panel/...`, que llaman a lo mismo que usa Configurar.
 
-**Idiomas:** el panel está en español e inglés. En portugués, italiano y
-polaco se ve en inglés hasta que se traduzca su sección `panel` (ver
-[idiomas.md](idiomas.md)).
+**Idiomas:** el panel está en los doce idiomas de la integración (ver
+[idiomas.md](idiomas.md)), según el idioma de cada usuario en Home Assistant.
 
 ### Pruebas
 
