@@ -29,12 +29,9 @@ from typing import Any
 import voluptuous as vol
 from homeassistant.config_entries import (
     SOURCE_REAUTH,
-    ConfigEntry,
     ConfigFlow,
     ConfigFlowResult,
-    OptionsFlow,
 )
-from homeassistant.core import callback
 from homeassistant.helpers import selector
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -77,14 +74,6 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
         self._transport: DeepalTransport | None = None
         self._vehicles: list[VehicleInfo] = []
 
-    @staticmethod
-    @callback
-    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
-        """Asistente de opciones (ver ``options_flow.py``)."""
-        from .options_flow import DecDeepalOptionsFlow  # noqa: PLC0415 - evita importación circular
-
-        return DecDeepalOptionsFlow()
-
     # ------------------------------------------------------------------
     # 1. País
     # ------------------------------------------------------------------
@@ -103,11 +92,17 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
             self._country = countries.get(country_id)
             return await self.async_step_email()
 
+        # Por defecto, el país de Home Assistant (Ajustes → Sistema → General).
+        home = (self.hass.config.country or "").upper()
+        default = next(
+            (country.id for country in enabled if country.sales_country == home),
+            "es" if any(country.id == "es" for country in enabled) else enabled[0].id,
+        )
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_COUNTRY): selector.SelectSelector(
+                    vol.Required(CONF_COUNTRY, default=default): selector.SelectSelector(
                         selector.SelectSelectorConfig(
                             options=[
                                 selector.SelectOptionDict(value=country.id, label=country.name)

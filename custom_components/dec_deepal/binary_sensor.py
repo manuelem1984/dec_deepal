@@ -194,7 +194,7 @@ async def async_setup_entry(
         vehicle_id = vehicle.info.vehicle_id
         remove_entities(hass, "binary_sensor", vehicle_id, REMOVED_KEYS)
         # Testigo de mantenimiento: solo en los coches que lo tienen activado
-        # (Configurar → Mantenimiento).
+        # (el panel DEC Deepal → Coches → Mantenimiento).
         if runtime.alerts.record(vehicle_id) is None:
             remove_entities(hass, "binary_sensor", vehicle_id, (MAINTENANCE_KEY,))
         else:

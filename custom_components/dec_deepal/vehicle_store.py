@@ -3,7 +3,7 @@
 Uno solo para toda la integración (``.storage/dec_deepal.vehicles``), con los
 coches por bastidor: los datos son del coche, no de la cuenta. Quitar la
 cuenta **no** los borra; al volver a añadirla, cada coche recupera lo suyo.
-Se borran desde Configurar → Datos de los coches.
+Se borran desde el panel DEC Deepal → Datos.
 
 Formato, migración y copias: ``vehicle_data.py`` (lógica pura). Aquí solo
 está lo que necesita Home Assistant: leer y escribir en disco, adoptar el
@@ -12,7 +12,6 @@ almacén antiguo (uno por cuenta, hasta la 2.3.0) y la descarga de la copia.
 
 from __future__ import annotations
 
-import html
 import json
 import logging
 from collections.abc import Iterable, Mapping
@@ -206,18 +205,6 @@ def async_export_url(hass: HomeAssistant, *, absolute: bool = False) -> str:
         except NoURLAvailableError:
             continue
     return path
-
-
-def export_link(hass: HomeAssistant, text: str) -> str:
-    """El enlace de descarga, como HTML que se abre **fuera** de la app.
-
-    En la app del móvil, un enlace normal se abre dentro de la propia app,
-    que no sabe descargar ficheros. Con ``target="_blank"`` la app se lo pasa
-    al navegador del teléfono, que sí. (Es lo mismo que hace la tarjeta con
-    el manual y con los botones de llamar.)
-    """
-    url = html.escape(async_export_url(hass), quote=True)
-    return f'<a href="{url}" target="_blank" rel="noopener noreferrer">{html.escape(text)}</a>'
 
 
 @callback

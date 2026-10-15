@@ -34,9 +34,19 @@ async def test_sign_in_with_email_only(hass: HomeAssistant) -> None:
         patch.object(config_flow, "DeepalClient", return_value=client),
         patch.object(config_flow, "async_get_clientsession", return_value=MagicMock()),
     ):
-        # Con un solo país activo, lo primero que se pide es el correo.
+        # Lo primero, el país: por defecto el de Home Assistant.
+        hass.config.country = "PT"
         result = await flow.async_step_user()
+        assert result["type"] == "form" and result["step_id"] == "user"
+        field = next(iter(result["data_schema"].schema))
+        options = result["data_schema"].schema[field].config["options"]
+        assert [option["value"] for option in options] == ["de", "es", "fr", "it", "pt"]
+        assert field.default() == "pt"
+        hass.config.country = "SE"  # sin cuenta posible allí: España
+        assert next(iter((await flow.async_step_user())["data_schema"].schema)).default() == "es"
+        result = await flow.async_step_user({"country": "pt"})
         assert result["type"] == "form" and result["step_id"] == "email"
+        assert flow._country.sales_country == "PT"
 
         # Sin conexión: se vuelve al formulario con el error.
         auth.send_email_code.side_effect = DeepalConnectionError("sin red")

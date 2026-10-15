@@ -137,6 +137,10 @@ def test_notifications_in_each_language() -> None:
     for language in ("ca", "gl", "eu", "ca-ES"):
         assert ar.charge_text(ar.ALERT_CHARGE_STARTED, None, language) == "Carga iniciada."
     assert ar.charge_text(ar.ALERT_CHARGE_STARTED, 46, "pt-BR") == "Carregamento iniciado (bateria a 46 %)."
+    # Aviso del PIN armado (Opción B): antes salía en español en cualquier idioma.
+    assert ar.pin_armed_text(60, "es") == "Comandos con PIN permitidos durante 60 segundos."
+    assert ar.pin_armed_text(60, "de") == "Befehle mit PIN für 60 Sekunden erlaubt."
+    assert ar.pin_armed_text(60, "sv") == "PIN commands allowed for 60 seconds."
 
 
 def test_catalogue_names_in_every_language() -> None:

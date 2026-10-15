@@ -163,7 +163,7 @@ class DeepalCommands:
                 await self.check_pin(self.control_pin)
             else:
                 raise DeepalCommandNotReady(
-                    "Este comando necesita el PIN de control remoto (Configurar → PIN)"
+                    "Este comando necesita el PIN de control remoto (panel DEC Deepal → Ajustes)"
                 )
 
         async def _build_and_post() -> Any:

@@ -8,7 +8,7 @@
 //   banco.estado                       // lo que "guarda" la integración
 //   banco.ventana()                    // la ventana abierta encima
 //
-// Responde a las mismas órdenes que panel.py ("dec_deepal/panel/...") y
+// Responde a las mismas órdenes que panel/ ("dec_deepal/panel/...") y
 // rechaza lo mismo que rechazaría la integración (p. ej. plazos desordenados).
 // =============================================================================
 
@@ -48,7 +48,7 @@
     { id: "ganymade_grey", name: "Ganymede Grey", swatch: "#5d6166" },
     { id: "moonlight_white", name: "Moonlight White", swatch: "" },
   ];
-  /** Una foto por combinación, como hace panel.py: "<versión>|<color>". */
+  /** Una foto por combinación, como hace panel/estado.py: "<versión>|<color>". */
   const photos = (trims) => Object.fromEntries(["", ...trims].flatMap((trim) => ["", ...COLORS.map((c) => c.id)].map((color) =>
     [`${trim}|${color}`, trim && color ? `coche.svg?${trim}_${color}` : "coche.svg?default"])));
   const ITV_RULES = { first_months: 48, interval_months: 24, reduced_from_months: 120, reduced_interval_months: 12 };
@@ -59,8 +59,12 @@
       trims: [{ id: "pro", name: "Pro", wheel: "pro", equipped: 0 }, { id: "limited_edition", name: "Limited Edition", wheel: "pro", equipped: 4 }] },
   ];
 
+  const PEOPLE = [{ id: "person.ella", name: "Ella" }, { id: "person.manuel", name: "Manuel" }];
+
   const initial = () => ({
-    version: "2.5.0b8",
+    version: "2.5.0b9",
+    admin: true,
+    people: PEOPLE,
     models: MODELS,
     accounts: [{
       entry_id: "entry1", title: "manuel@example.com", pin_enabled: true, pin_set: true, pin_mode: "armed", arm_seconds: 30, arm_notify: false,
@@ -71,6 +75,7 @@
       {
         id: "car1", entry_id: "entry1", device_id: "dev1", key: "LS5A3ABE0RA000001", name: "Changote",
         appearance: { model: "s05_2024", trim: "max", color: "ganymade_grey", wheels: "open" }, country: "es",
+        people: [{ id: "person.manuel", name: "Manuel" }], mine: true,
         model: "Deepal S05 EV RWD Max", color: "Ganymede Grey", wheel: "open", configured: true, sheet: SHEET,
         battery: 56, range: 276, odometer: 3498.8, itv_available: true, plan: { interval_km: 20000, interval_months: 12 },
         itv_rules: ITV_RULES, manual_url: "https://example.com/manual.pdf",
@@ -91,6 +96,7 @@
       {
         id: "car2", entry_id: "entry1", device_id: "dev2", key: "LS5A3ABE0RA000002", name: "Changuito",
         appearance: { model: "s05_2024", trim: "pro", color: null, wheels: null }, country: "es",
+        people: [], mine: false,
         model: "Deepal S05 EV RWD Pro", color: "Deep Space Black", wheel: "pro", configured: true,
         sheet: { ...SHEET, version: "pro", verificada: false,
           funciones: { asientos_calefaccion: false, asientos_ventilacion: false, volante_calefactado: false, porton_electrico: false } },
@@ -131,7 +137,10 @@
     estado: null,
     panel: null,
 
-    /** Crea el panel. `opciones`: idioma, fallo (mensaje con el que falla "state"), sin_coches. */
+    /**
+     * Crea el panel. `opciones`: idioma, fallo (mensaje con el que falla "state"),
+     * sin_coches, lectura (usuario que no es administrador: lo que manda panel/estado.py).
+     */
     montar(opciones = {}) {
       document.getElementById("mount").replaceChildren();
       for (const host of document.querySelectorAll("body > div:not(#mount)")) host.remove();
@@ -139,6 +148,11 @@
       banco.avisos = [];
       banco.estado = initial();
       if (opciones.sin_coches) banco.estado.cars = [];
+      if (opciones.lectura) {
+        banco.estado.admin = false;
+        for (const key of ["models", "accounts", "people", "stored", "history"]) delete banco.estado[key];
+      }
+      banco.lectura = Boolean(opciones.lectura);
       const entities = {};
       const states = {};
       for (const [device, picture] of [["dev1", "coche.svg"], ["dev2", "coche.svg"]]) {
@@ -197,7 +211,14 @@
         for (const gone of ["type", "pin", "manual_url"]) delete account[gone];
         return null;
       }
+      if (banco.lectura) throw fail("unauthorized");
       const car = banco._coche(message.vehicle_id);
+      if (type === "set_people") {
+        if (message.people.some((id) => !PEOPLE.some((person) => person.id === id))) throw fail("unknown_person");
+        car.people = PEOPLE.filter((person) => message.people.includes(person.id));
+        car.mine = message.people.includes("person.manuel");
+        return null;
+      }
       if (type === "set_appearance") {
         const model = MODELS.find((item) => item.id === message.model);
         if (!model) throw fail("unknown_model");

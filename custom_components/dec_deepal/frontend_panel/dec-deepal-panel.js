@@ -23,7 +23,7 @@
 //
 // Cómo habla con la integración
 // -----------------------------
-// Por WebSocket, con órdenes "dec_deepal/panel/..." (ver panel.py). Al abrir
+// Por WebSocket, con órdenes "dec_deepal/panel/..." (ver panel/). Al abrir
 // pide el estado completo ("state") y lo vuelve a pedir tras cada cambio. No
 // guarda nada en el navegador.
 //
@@ -41,17 +41,23 @@
   if (customElements.get(TAG)) return;
 
   const DOMAIN = "dec_deepal";
-  /** Prefijo de las órdenes del panel (panel.py). */
+  /** Prefijo de las órdenes del panel (panel/). */
   const WS = "dec_deepal/panel/";
 
-  /** Pestañas: clave (su nombre es el texto "tab_<clave>") e icono. */
+  /**
+   * Pestañas: clave (su nombre es el texto "tab_<clave>"), icono y si es solo
+   * para administradores. Quien no lo es ve las demás en solo lectura.
+   */
   const TABS = [
-    ["cars", "mdi:car-multiple"],
-    ["alerts", "mdi:bell-ring"],
-    ["data", "mdi:database"],
-    ["diagnostics", "mdi:stethoscope"],
-    ["settings", "mdi:cog"],
+    ["cars", "mdi:car-multiple", false],
+    ["alerts", "mdi:bell-ring", false],
+    ["data", "mdi:database", true],
+    ["diagnostics", "mdi:stethoscope", true],
+    ["settings", "mdi:cog", true],
   ];
+
+  /** Pulsaciones que no cambian nada: las únicas que atiende el panel en solo lectura. */
+  const READ_ONLY_ACTIONS = new Set(["tab", "reload", "fold", "info", "close", "call", "copy"]);
 
   /** Apartados de los avisos, en su orden, con su icono. */
   const SECTIONS = [
@@ -372,7 +378,16 @@
       "ins_deadline_passed": "Plazo pasado",
       "ins_deadline_on": "Último día: {date}",
       "ins_renews_itself": "Se renueva solo el {date}",
-      "ins_assistance": "Asistencia"
+      "ins_assistance": "Asistencia",
+      "read_only": "Solo lectura: los cambios los hace un administrador de Home Assistant.",
+      "people": "Personas",
+      "people_none": "Sin asignar",
+      "people_edit": "Elegir",
+      "people_title": "Personas de {name}",
+      "people_help": "Elige a quién pertenece este coche. Son las personas de Ajustes → Personas.",
+      "mine": "Tuyo",
+      "error_unknown_person": "Esa persona ya no existe en Home Assistant.",
+      "error_unauthorized": "Solo un administrador puede hacer este cambio."
     },
     "en": {
       "tab_cars": "Vehicles",
@@ -655,7 +670,16 @@
       "ins_deadline_passed": "Deadline passed",
       "ins_deadline_on": "Last day: {date}",
       "ins_renews_itself": "It renews itself on {date}",
-      "ins_assistance": "Assistance"
+      "ins_assistance": "Assistance",
+      "read_only": "Read only: changes are made by a Home Assistant administrator.",
+      "people": "People",
+      "people_none": "Not assigned",
+      "people_edit": "Choose",
+      "people_title": "People of {name}",
+      "people_help": "Choose who this car belongs to. These are the people in Settings → People.",
+      "mine": "Yours",
+      "error_unknown_person": "That person no longer exists in Home Assistant.",
+      "error_unauthorized": "Only an administrator can make this change."
     },
     "pt": {
       "tab_cars": "Veículos",
@@ -938,7 +962,16 @@
       "ins_deadline_passed": "Prazo passado",
       "ins_deadline_on": "Último dia: {date}",
       "ins_renews_itself": "Renova-se sozinho a {date}",
-      "ins_assistance": "Assistência"
+      "ins_assistance": "Assistência",
+      "read_only": "Só de leitura: as alterações são feitas por um administrador do Home Assistant.",
+      "people": "Pessoas",
+      "people_none": "Sem atribuir",
+      "people_edit": "Escolher",
+      "people_title": "Pessoas de {name}",
+      "people_help": "Escolhe a quem pertence este carro. São as pessoas de Definições → Pessoas.",
+      "mine": "Teu",
+      "error_unknown_person": "Essa pessoa já não existe no Home Assistant.",
+      "error_unauthorized": "Só um administrador pode fazer esta alteração."
     },
     "it": {
       "tab_cars": "Veicoli",
@@ -1221,7 +1254,16 @@
       "ins_deadline_passed": "Termine passato",
       "ins_deadline_on": "Ultimo giorno: {date}",
       "ins_renews_itself": "Si rinnova da sola il {date}",
-      "ins_assistance": "Assistenza"
+      "ins_assistance": "Assistenza",
+      "read_only": "Sola lettura: le modifiche le fa un amministratore di Home Assistant.",
+      "people": "Persone",
+      "people_none": "Non assegnato",
+      "people_edit": "Scegli",
+      "people_title": "Persone di {name}",
+      "people_help": "Scegli a chi appartiene questa auto. Sono le persone di Impostazioni → Persone.",
+      "mine": "Tua",
+      "error_unknown_person": "Quella persona non esiste più in Home Assistant.",
+      "error_unauthorized": "Solo un amministratore può fare questa modifica."
     },
     "pl": {
       "tab_cars": "Pojazdy",
@@ -1504,7 +1546,16 @@
       "ins_deadline_passed": "Termin minął",
       "ins_deadline_on": "Ostatni dzień: {date}",
       "ins_renews_itself": "Odnawia się samo {date}",
-      "ins_assistance": "Pomoc drogowa"
+      "ins_assistance": "Pomoc drogowa",
+      "read_only": "Tylko do odczytu: zmiany wprowadza administrator Home Assistant.",
+      "people": "Osoby",
+      "people_none": "Nieprzypisany",
+      "people_edit": "Wybierz",
+      "people_title": "Osoby: {name}",
+      "people_help": "Wybierz, do kogo należy ten samochód. To osoby z Ustawienia → Osoby.",
+      "mine": "Twój",
+      "error_unknown_person": "Ta osoba już nie istnieje w Home Assistant.",
+      "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator."
     },
     "de": {
       "tab_cars": "Fahrzeuge",
@@ -1787,7 +1838,16 @@
       "ins_deadline_passed": "Frist abgelaufen",
       "ins_deadline_on": "Letzter Tag: {date}",
       "ins_renews_itself": "Verlängert sich von selbst am {date}",
-      "ins_assistance": "Pannenhilfe"
+      "ins_assistance": "Pannenhilfe",
+      "read_only": "Nur Lesen: Änderungen nimmt ein Home-Assistant-Administrator vor.",
+      "people": "Personen",
+      "people_none": "Nicht zugewiesen",
+      "people_edit": "Auswählen",
+      "people_title": "Personen von {name}",
+      "people_help": "Wähle, wem dieses Auto gehört. Das sind die Personen unter Einstellungen → Personen.",
+      "mine": "Deins",
+      "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
+      "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen."
     },
     "fr": {
       "tab_cars": "Véhicules",
@@ -2070,7 +2130,16 @@
       "ins_deadline_passed": "Délai dépassé",
       "ins_deadline_on": "Dernier jour : {date}",
       "ins_renews_itself": "Se renouvelle toute seule le {date}",
-      "ins_assistance": "Assistance"
+      "ins_assistance": "Assistance",
+      "read_only": "Lecture seule : les modifications sont faites par un administrateur de Home Assistant.",
+      "people": "Personnes",
+      "people_none": "Non attribué",
+      "people_edit": "Choisir",
+      "people_title": "Personnes de {name}",
+      "people_help": "Choisissez à qui appartient cette voiture. Ce sont les personnes de Paramètres → Personnes.",
+      "mine": "À vous",
+      "error_unknown_person": "Cette personne n'existe plus dans Home Assistant.",
+      "error_unauthorized": "Seul un administrateur peut faire cette modification."
     },
     "nl": {
       "tab_cars": "Voertuigen",
@@ -2353,7 +2422,16 @@
       "ins_deadline_passed": "Termijn verstreken",
       "ins_deadline_on": "Laatste dag: {date}",
       "ins_renews_itself": "Wordt vanzelf verlengd op {date}",
-      "ins_assistance": "Pechhulp"
+      "ins_assistance": "Pechhulp",
+      "read_only": "Alleen lezen: wijzigingen worden gedaan door een beheerder van Home Assistant.",
+      "people": "Personen",
+      "people_none": "Niet toegewezen",
+      "people_edit": "Kiezen",
+      "people_title": "Personen van {name}",
+      "people_help": "Kies van wie deze auto is. Dit zijn de personen in Instellingen → Personen.",
+      "mine": "Van jou",
+      "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
+      "error_unauthorized": "Alleen een beheerder kan deze wijziging doen."
     },
     "nb": {
       "tab_cars": "Kjøretøy",
@@ -2636,7 +2714,16 @@
       "ins_deadline_passed": "Fristen er ute",
       "ins_deadline_on": "Siste dag: {date}",
       "ins_renews_itself": "Fornyes av seg selv {date}",
-      "ins_assistance": "Veihjelp"
+      "ins_assistance": "Veihjelp",
+      "read_only": "Kun lesing: endringer gjøres av en administrator i Home Assistant.",
+      "people": "Personer",
+      "people_none": "Ikke tildelt",
+      "people_edit": "Velg",
+      "people_title": "Personer for {name}",
+      "people_help": "Velg hvem denne bilen tilhører. Det er personene i Innstillinger → Personer.",
+      "mine": "Din",
+      "error_unknown_person": "Den personen finnes ikke lenger i Home Assistant.",
+      "error_unauthorized": "Bare en administrator kan gjøre denne endringen."
     },
     "da": {
       "tab_cars": "Køretøjer",
@@ -2919,7 +3006,16 @@
       "ins_deadline_passed": "Fristen er overskredet",
       "ins_deadline_on": "Sidste dag: {date}",
       "ins_renews_itself": "Fornyes af sig selv {date}",
-      "ins_assistance": "Vejhjælp"
+      "ins_assistance": "Vejhjælp",
+      "read_only": "Kun læsning: ændringer foretages af en administrator i Home Assistant.",
+      "people": "Personer",
+      "people_none": "Ikke tildelt",
+      "people_edit": "Vælg",
+      "people_title": "Personer for {name}",
+      "people_help": "Vælg, hvem denne bil tilhører. Det er personerne i Indstillinger → Personer.",
+      "mine": "Din",
+      "error_unknown_person": "Den person findes ikke længere i Home Assistant.",
+      "error_unauthorized": "Kun en administrator kan foretage denne ændring."
     },
     "el": {
       "tab_cars": "Οχήματα",
@@ -3202,7 +3298,16 @@
       "ins_deadline_passed": "Η προθεσμία πέρασε",
       "ins_deadline_on": "Τελευταία ημέρα: {date}",
       "ins_renews_itself": "Ανανεώνεται μόνη της στις {date}",
-      "ins_assistance": "Οδική βοήθεια"
+      "ins_assistance": "Οδική βοήθεια",
+      "read_only": "Μόνο ανάγνωση: τις αλλαγές τις κάνει ένας διαχειριστής του Home Assistant.",
+      "people": "Άτομα",
+      "people_none": "Δεν έχει οριστεί",
+      "people_edit": "Επιλογή",
+      "people_title": "Άτομα του {name}",
+      "people_help": "Επίλεξε σε ποιον ανήκει αυτό το αυτοκίνητο. Είναι τα άτομα από Ρυθμίσεις → Άτομα.",
+      "mine": "Δικό σου",
+      "error_unknown_person": "Αυτό το άτομο δεν υπάρχει πια στο Home Assistant.",
+      "error_unauthorized": "Μόνο ένας διαχειριστής μπορεί να κάνει αυτή την αλλαγή."
     },
     "sl": {
       "tab_cars": "Vozila",
@@ -3485,7 +3590,16 @@
       "ins_deadline_passed": "Rok je minil",
       "ins_deadline_on": "Zadnji dan: {date}",
       "ins_renews_itself": "Samo se podaljša {date}",
-      "ins_assistance": "Pomoč na cesti"
+      "ins_assistance": "Pomoč na cesti",
+      "read_only": "Samo za branje: spremembe naredi skrbnik Home Assistanta.",
+      "people": "Osebe",
+      "people_none": "Ni dodeljeno",
+      "people_edit": "Izberi",
+      "people_title": "Osebe vozila {name}",
+      "people_help": "Izberi, komu pripada to vozilo. To so osebe v Nastavitve → Osebe.",
+      "mine": "Tvoje",
+      "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
+      "error_unauthorized": "To spremembo lahko naredi samo skrbnik."
     }
   };
 
@@ -3596,6 +3710,14 @@
     .kv { display: flex; gap: 26px; margin-top: 8px; flex-wrap: wrap; }
     .kv div { font-size: 13px; color: var(--secondary-text-color); } .kv b { display: block; font-size: 18px; font-weight: 400; color: var(--primary-text-color); }
     .chips { padding: 14px 20px 2px; }
+    .people { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; padding: 6px 20px 0; font-size: 13px; }
+    .people .lbl { display: inline-flex; gap: 6px; align-items: center; color: var(--secondary-text-color); margin: 0 6px 6px 0; --mdc-icon-size: 18px; }
+    .people .chip { margin-bottom: 6px; }
+    .people .none { color: var(--secondary-text-color); margin: 0 10px 6px 0; }
+    .people .link { margin-bottom: 6px; }
+    .ro { display: flex; gap: 10px; align-items: center; margin: 0 0 14px; padding: 10px 14px; border-radius: 10px;
+      background: rgba(var(--rgb-primary-color, 3, 169, 244), .1); color: var(--primary-text-color); font-size: 14px; --mdc-icon-size: 20px; }
+    .ro ha-icon { color: var(--primary-color); }
     .chip { display: inline-flex; gap: 6px; align-items: center; padding: 5px 12px; border-radius: 16px; background: ${SOFT}; font-size: 13px;
       margin: 0 6px 6px 0; --mdc-icon-size: 16px; }
     .chip ha-icon { color: var(--primary-color); }
@@ -3634,6 +3756,7 @@
     .box { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
       color: var(--secondary-text-color); --mdc-icon-size: 22px; }
     .box.y, .box.some { color: var(--primary-color); }
+    .box.ro { cursor: default; opacity: .8; }
     tr.grp td { background: ${SOFT}; }
     tr.grp td:first-child { padding: 0; }
     .fold { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; font-weight: 500; font-size: 15px; text-align: left; --mdc-icon-size: 22px; }
@@ -3866,7 +3989,7 @@
       super();
       this.attachShadow({ mode: "open" });
       this._tab = "cars";
-      this._state = null; // lo que devuelve "state" (panel.py)
+      this._state = null; // lo que devuelve "state" (panel/)
       this._error = "";
       this._open = new Set(); // apartados de avisos desplegados: "<coche>/<apartado>"
       this._drafts = {}; // avisos cambiados y sin guardar, por coche
@@ -3978,6 +4101,16 @@
       return this._state.cars.find((car) => car.id === id);
     }
 
+    /** ¿Puede cambiar cosas? (los que no son administradores, solo miran). */
+    _admin() {
+      return !this._state || this._state.admin !== false;
+    }
+
+    /** Pestañas que puede ver quien está mirando. */
+    _tabs() {
+      return TABS.filter(([, , adminOnly]) => !adminOnly || this._admin());
+    }
+
     /** Foto del coche: la entidad de imagen de la integración (de lado; si no, la isométrica). */
     _photo(car) {
       const hass = this._hass;
@@ -3999,7 +4132,8 @@
       const root = this.shadowRoot;
       const scroller = root.querySelector(".scroll");
       const top = scroller ? scroller.scrollTop : 0;
-      const tabs = TABS.map(
+      if (!this._tabs().some(([key]) => key === this._tab)) this._tab = "cars";
+      const tabs = this._tabs().map(
         ([key, icon]) =>
           `<button class="${key === this._tab ? "on" : ""}" data-action="tab" data-tab="${key}"><ha-icon icon="${icon}"></ha-icon>${this._t(`tab_${key}`)}</button>`
       ).join("");
@@ -4007,7 +4141,7 @@
       if (this._error) view = `<div class="empty">${escapeHtml(this._error)}<br><br><button class="btn o" data-action="reload">${this._t("retry")}</button></div>`;
       else if (!this._state) view = `<div class="empty">${this._t("loading")}</div>`;
       else if (!this._state.cars.length) view = `<div class="empty">${this._t("no_cars")}</div>`;
-      else view = this[`_view_${this._tab}`]();
+      else view = (this._admin() ? "" : `<div class="ro"><ha-icon icon="mdi:eye-outline"></ha-icon>${this._t("read_only")}</div>`) + this[`_view_${this._tab}`]();
       root.innerHTML = `<style>${PANEL_CSS}</style>
         <div class="page">
           <div class="bar">
@@ -4038,6 +4172,7 @@
     _onClick(event) {
       const target = event.composedPath().find((node) => node.dataset && node.dataset.action);
       if (!target) return;
+      if (!this._admin() && !READ_ONLY_ACTIONS.has(target.dataset.action)) return;
       const handler = this[`_do_${target.dataset.action.replace(/-/g, "_")}`];
       if (handler) handler.call(this, target.dataset, target, event);
     }
@@ -4110,22 +4245,24 @@
           ? `<span class="badge ok"><ha-icon icon="mdi:check-decagram"></ha-icon>${this._t("sheet_verified")}</span>`
           : `<span class="badge info"><ha-icon icon="mdi:book-open-variant"></ha-icon>${this._t("sheet_catalogue")}</span>`;
       const fact = (value, label) => `<div><b>${value}</b>${this._t(label)}</div>`;
+      const mine = car.mine ? `<span class="badge ok"><ha-icon icon="mdi:account-check"></ha-icon>${this._t("mine")}</span>` : "";
       return `<div class="card">
         <div class="hero">
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
           <div class="who">
             <div class="n">${escapeHtml(car.name)}</div>
             <div class="m">${escapeHtml([car.model, car.color].filter(Boolean).join(" · "))}</div>
-            ${badge}
+            ${badge}${mine}
             <div class="kv">
               ${car.battery == null ? "" : fact(`${this._number(car.battery)} %`, "battery")}
               ${car.range == null ? "" : fact(`${this._number(Math.round(car.range))} km`, "range")}
               ${car.odometer == null ? "" : fact(`${this._number(Math.round(car.odometer))} km`, "odometer")}
             </div>
           </div>
-          <button class="btn o" data-action="appearance" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>
+          ${this._admin() ? `<button class="btn o" data-action="appearance" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>` : ""}
         </div>
         ${chips.length ? `<div class="chips">${chips.join("")}</div>` : ""}
+        ${this._peopleRow(car)}
         <div class="grid3">
           ${this._maintenanceTile(car)}
           ${car.itv_available ? this._itvTile(car) : ""}
@@ -4136,8 +4273,9 @@
 
     /** Recuadro con engranaje; `body` va vacío si el apartado está sin configurar. */
     _tile(car, kind, icon, level, body) {
-      const gear = `<button class="gear" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>`;
+      const gear = !this._admin() ? "" : `<button class="gear" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>`;
       const head = `<div class="h"><ha-icon icon="${icon}"></ha-icon><span>${this._t(`section_${kind}`)}</span>${gear}</div>`;
+      if (!body && !this._admin()) return `<div class="tile off">${head}<div class="v">${this._t("not_set")}</div></div>`;
       if (!body) {
         return `<div class="tile off" data-action="info" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${head}<div class="v">${this._t("not_set")}</div>
           <button class="link" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${this._t(`add_${kind}`)}</button></div>`;
@@ -4234,9 +4372,13 @@
       const targets = this._state.targets;
       const alerts = this._alerts(car);
       const photo = this._photo(car);
-      const box = (state, action, extra) =>
-        `<td><button class="box ${state}" data-action="${action}" data-car="${escapeHtml(car.id)}" ${extra} aria-pressed="${state === "y"}">
-          <ha-icon icon="mdi:${state === "y" ? "checkbox-marked" : state === "some" ? "minus-box" : "checkbox-blank-outline"}"></ha-icon></button></td>`;
+      const admin = this._admin();
+      const box = (state, action, extra) => {
+        const icon = `<ha-icon icon="mdi:${state === "y" ? "checkbox-marked" : state === "some" ? "minus-box" : "checkbox-blank-outline"}"></ha-icon>`;
+        // En solo lectura se ve lo marcado, pero no se puede tocar.
+        if (!admin) return `<td><span class="box ${state} ro" role="checkbox" aria-checked="${state === "y"}" aria-readonly="true">${icon}</span></td>`;
+        return `<td><button class="box ${state}" data-action="${action}" data-car="${escapeHtml(car.id)}" ${extra} aria-pressed="${state === "y"}">${icon}</button></td>`;
+      };
       const rows = [];
       for (const [section, icon] of SECTIONS) {
         const notices = this._notices(car, section);
@@ -4254,7 +4396,7 @@
         if (!open) continue;
         for (const notice of notices) {
           const editing = this._editing && this._editing.car === car.id && this._editing.notice === notice.id;
-          const pen = notice.threshold == null
+          const pen = notice.threshold == null || !admin
             ? ""
             : `<button class="pen" data-action="edit" data-car="${escapeHtml(car.id)}" data-notice="${notice.id}" aria-label="${this._t("edit_threshold")}"><ha-icon icon="mdi:pencil"></ha-icon></button>`;
           const label = editing
@@ -4270,7 +4412,7 @@
       }
       const dirty = Boolean(this._drafts[car.id]);
       const changedThresholds = Object.keys(alerts.thresholds).length > 0;
-      const others = this._state.cars.length > 1;
+      const others = admin && this._state.cars.length > 1;
       return `<div class="card" data-car-card="${escapeHtml(car.id)}">
         <div class="chead">
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
@@ -4282,12 +4424,12 @@
             `<th><div class="dev ${target.kind}"><u><ha-icon icon="${TARGET_ICONS[target.kind] || TARGET_ICONS.service}"></ha-icon></u>${escapeHtml(target.name)}</div></th>`).join("")}</tr>
           ${rows.join("")}
         </table></div>
-        <div class="foot ${dirty ? "dirty" : ""}">
+        ${!admin ? "" : `<div class="foot ${dirty ? "dirty" : ""}">
           <span>${dirty ? this._t("unsaved") : this._t("alerts_help")}</span>
           ${changedThresholds ? `<button class="btn o" data-action="reset-thresholds" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:restore"></ha-icon>${this._t("factory_thresholds")}</button>` : ""}
           ${dirty ? `<button class="btn o" data-action="discard-alerts" data-car="${escapeHtml(car.id)}">${this._t("discard")}</button>
                      <button class="btn" data-action="save-alerts" data-car="${escapeHtml(car.id)}">${this._t("save")}</button>` : ""}
-        </div>
+        </div>`}
       </div>`;
     }
 
@@ -5068,10 +5210,10 @@
            <h2>${this._t(`section_${kind}`)}<small>${escapeHtml(car.name)} · ${escapeHtml(car.model)}</small></h2>
            <button class="x" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button></div>
          ${body}
-         <div class="ifoot"><button class="gearb" data-action="configure" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button><span></span>${buttons || ""}
+         <div class="ifoot">${this._admin() ? `<button class="gearb" data-action="configure" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>` : ""}<span></span>${buttons || ""}
            <button class="tb" data-action="close">${this._t("close")}</button></div>`,
         (action, open, target) => {
-          if (action === "configure") {
+          if (action === "configure" && this._admin()) {
             open.close();
             return this._do_gear({ car: car.id, kind });
           }
@@ -5122,7 +5264,7 @@
             number: item.number, date: this._date(item.date), km: this._number(item.km) })}</div>`).join("")
           : `<div class="hist"><ha-icon icon="mdi:history"></ha-icon>${this._t("mt_no_history")}</div>`}`;
       const buttons = `${car.manual_url ? `<a class="tb" href="${escapeHtml(car.manual_url)}" target="_blank" rel="noopener noreferrer">${this._t("manual")}</a>` : ""}
-        <button class="tb fill" data-action="register">${this._t("mt_register")}</button>`;
+        ${this._admin() ? `<button class="tb fill" data-action="register">${this._t("mt_register")}</button>` : ""}`;
       this._infoWindow(car, "maintenance", "mdi:wrench", body, buttons, (action, open) => {
         if (action !== "register") return;
         open.close();
@@ -5174,7 +5316,7 @@
         ${history.length ? history.map((date) => `<div class="hist"><ha-icon icon="mdi:check"></ha-icon>${this._t("itv_history_item", { date: this._date(date) })}</div>`).join("")
           : `<div class="hist"><ha-icon icon="mdi:history"></ha-icon>${this._t("itv_no_history")}</div>`}`;
       this._infoWindow(car, "itv", "mdi:clipboard-check-outline", body,
-        `<button class="tb fill" data-action="register">${this._t("itv_register")}</button>`, (action, open) => {
+        this._admin() ? `<button class="tb fill" data-action="register">${this._t("itv_register")}</button>` : "", (action, open) => {
           if (action !== "register") return;
           open.close();
           this._register_itv(car);
@@ -5235,6 +5377,47 @@
           navigator.clipboard.writeText(text).then(() => this._toast(this._t("copied", { text })), () => undefined);
         }
       });
+    }
+  });
+
+  // ── src/68_personas.js ────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Personas de cada coche: a quién pertenece (pestaña "Coches")
+  // ---------------------------------------------------------------------------
+  // Las personas son las de Home Assistant (Ajustes → Personas). De momento
+  // solo se enseña de quién es cada coche ("Tuyo" si es de quien mira); más
+  // adelante servirá para decidir quién puede hacer qué con él.
+  install(class {
+    /** Fila "Personas" de la tarjeta del coche (con su botón, si se puede cambiar). */
+    _peopleRow(car) {
+      const people = car.people || [];
+      const names = people.length
+        ? people.map((person) => `<span class="chip"><ha-icon icon="mdi:account"></ha-icon>${escapeHtml(person.name)}</span>`).join("")
+        : `<span class="none">${this._t("people_none")}</span>`;
+      const edit = this._admin() && (this._state.people || []).length
+        ? `<button class="link" data-action="people" data-car="${escapeHtml(car.id)}">${this._t("people_edit")}</button>`
+        : "";
+      return `<div class="people"><span class="lbl"><ha-icon icon="mdi:account-multiple"></ha-icon>${this._t("people")}</span>${names}${edit}</div>`;
+    }
+
+    /** Ventana para elegir las personas de un coche. */
+    _do_people(data) {
+      const car = this._car(data.car);
+      const chosen = new Set((car.people || []).map((person) => person.id));
+      const boxes = (this._state.people || []).map((person) =>
+        `<label class="check"><input type="checkbox" name="${escapeHtml(person.id)}" ${chosen.has(person.id) ? "checked" : ""}>${escapeHtml(person.name)}</label>`).join("");
+      openDialog(
+        `<h2>${this._t("people_title", { name: escapeHtml(car.name) })}</h2><p>${this._t("people_help")}</p>
+         ${boxes}
+         <div class="err"></div>
+         <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div>`,
+        (action, dialog) => {
+          if (action !== "ok") return undefined;
+          const people = Object.entries(dialog.values()).filter(([, on]) => on).map(([id]) => id);
+          dialog.close();
+          return this._run("set_people", { vehicle_id: car.id, people }, this._t("saved"));
+        }
+      );
     }
   });
 

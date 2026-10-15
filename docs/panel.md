@@ -3,11 +3,27 @@
 Una página propia en la barra lateral de Home Assistant, donde se ve y se
 configura todo lo de los coches de un vistazo.
 
-Aparece sola al instalar la integración (**DEC Deepal** en la barra lateral)
-y solo la ven los administradores. El botón **Configurar** de la integración
-(Ajustes → Dispositivos y servicios → DEC Deepal) lleva también aquí, como en
-Alarmo: desde la 2.5.0b2 el panel sustituye a los apartados de Configurar.
-Lo único que queda fuera es añadir la cuenta y volver a iniciar sesión.
+Aparece sola al instalar la integración (**DEC Deepal** en la barra lateral).
+El botón **Configurar** de la integración (Ajustes → Dispositivos y servicios
+→ DEC Deepal) lleva también aquí, como en Alarmo. Lo único que queda fuera es
+añadir la cuenta y volver a iniciar sesión.
+
+**Quién ve qué** (desde la 2.5.0b9):
+
+- **Administradores:** todo, y lo pueden cambiar.
+- **Resto de usuarios:** las pestañas **Coches** y **Avisos**, en solo
+  lectura (un aviso arriba lo dice). Ven las fichas, a quién pertenece cada
+  coche ("Tuyo" en los suyos) y a quién avisa de cada cosa, sin engranajes,
+  casillas ni botones de guardar. La integración comprueba los permisos en
+  cada orden: aunque se forzara el panel, no podrían cambiar nada.
+
+### Personas de cada coche
+
+En la tarjeta de cada coche, la fila **Personas** dice a quién pertenece:
+personas de Home Assistant (Ajustes → Personas). El administrador las elige
+con **Elegir**. Se guardan con el coche (por bastidor) y viajan en la copia
+de seguridad. De momento solo se enseñan; más adelante servirán para decidir
+quién puede hacer qué con cada coche.
 
 ## Pestañas
 
@@ -63,10 +79,6 @@ la campana de Home Assistant) y un apartado plegable por cada cosa:
 - Los avisos de **renovación del seguro** son nuevos en la 2.5.0 y nacen sin
   destinos.
 
-El apartado clásico (Configurar → Avisos al móvil) sigue funcionando: elige
-los destinos por grupo y, al guardar, se los pone a todos los avisos del
-grupo. Los plazos solo se cambian en el panel.
-
 ### Datos
 
 Descargar la copia (un enlace que se abre en el navegador, también desde la
@@ -108,12 +120,18 @@ parte, y se une en `frontend_panel/dec-deepal-panel.js` con
 | `30_estilos.js` | Estilos del panel y de las ventanas |
 | `40_dialogo.js` | La ventana emergente de formularios y confirmaciones |
 | `50_panel.js` | El panel: carga de datos, pestañas y pulsaciones |
-| `60_coches.js` … `66_ajustes.js` | Una pestaña (o una ventana) por fichero |
+| `60_coches.js` … `68_personas.js` | Una pestaña (o una ventana) por fichero |
 | `90_registro.js` | Alta del panel en Home Assistant |
 
 Cada pulsación lleva `data-action="algo"` y la atiende el método `_do_algo`.
-El lado de la integración está en `panel.py`: registra la página y las
-órdenes `dec_deepal/panel/...`, que llaman a lo mismo que usa Configurar.
+En solo lectura solo se atienden las de `READ_ONLY_ACTIONS` (`10_constantes.js`).
+
+El lado de la integración está en `panel/`, un módulo por pestaña con el
+mismo nombre que su fichero del panel (`coches.py` ↔ `60_coches.js`,
+`avisos.py` ↔ `61_avisos.js`...). Cada orden se declara con `@command`
+(`panel/comun.py`), que por defecto exige ser administrador; solo `state` la
+puede pedir cualquiera, y `estado.py` le quita lo de administración. Los
+errores van con un código y el panel enseña el texto `error_<código>`.
 
 **Idiomas:** el panel está en los doce idiomas de la integración (ver
 [idiomas.md](idiomas.md)), según el idioma de cada usuario en Home Assistant.
@@ -131,8 +149,6 @@ Para mirarlo a mano sin Home Assistant: abrir
 
 ## Límites conocidos
 
-- Los apartados de Configurar siguen en el código pero ya no se llega a
-  ellos: se quitarán cuando el panel esté rodado.
 - El historial se pierde al reiniciar Home Assistant.
 - No se puede ocultar el panel de la barra lateral desde la integración (sí
   desde el perfil de cada usuario, como cualquier otro panel).

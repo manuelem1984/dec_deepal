@@ -1,7 +1,7 @@
 """Datos de cada coche (mantenimiento, ITV, seguro, apariencia): formato, migración y copia.
 
 Lógica pura (sin Home Assistant) para que se pueda probar sola. Quién la usa:
-``vehicle_store.py`` (el almacén) y Configurar → Datos de los coches.
+``vehicle_store.py`` (el almacén) y el panel DEC Deepal → Datos.
 
 Los datos van **por coche, no por cuenta**: la clave es el bastidor. Así, si
 se quita la cuenta y se vuelve a añadir, el coche recupera su historial.
@@ -40,6 +40,8 @@ MAINTENANCE: Final = "maintenance"
 ITV: Final = "itv"
 INSURANCE: Final = "insurance"
 APPEARANCE: Final = "appearance"
+#: Personas de Home Assistant a las que pertenece el coche (``person.*``).
+PEOPLE: Final = "people"
 ACTIVE: Final = "active"
 ODOMETER: Final = "odometer"
 #: Carga en curso y última carga (ver ``charging.py``). No va en las copias:
@@ -111,8 +113,24 @@ def has_records(car: Mapping[str, Any]) -> bool:
 
 
 def has_data(car: Mapping[str, Any]) -> bool:
-    """¿Tiene el coche algo que merezca una copia? (fichas o apariencia)."""
-    return has_records(car) or bool(car.get(APPEARANCE))
+    """¿Tiene el coche algo que merezca una copia? (fichas, apariencia o personas)."""
+    return has_records(car) or bool(car.get(APPEARANCE)) or bool(car.get(PEOPLE))
+
+
+#: Más personas que esto en un coche no es un dato nuestro.
+MAX_PEOPLE: Final = 20
+
+
+def clean_people(raw: Any) -> list[str]:
+    """Personas válidas de un coche: ``person.<algo>``, sin repetir y en orden."""
+    if not isinstance(raw, (list, tuple)):
+        return []
+    people = [
+        item.strip()
+        for item in raw
+        if isinstance(item, str) and item.strip().startswith("person.") and len(item.strip()) > 7
+    ]
+    return list(dict.fromkeys(people))[:MAX_PEOPLE]
 
 
 def clean_appearance(raw: Any, models: Mapping[str, Any] | None = None) -> dict[str, Any] | None:
@@ -166,7 +184,7 @@ def export_payload(cars: Mapping[str, Mapping[str, Any]], now: datetime) -> dict
             continue
         exported[key] = {
             field: car[field]
-            for field in (VEHICLE_ID, NAME, MAINTENANCE, ITV, INSURANCE, APPEARANCE, ODOMETER)
+            for field in (VEHICLE_ID, NAME, MAINTENANCE, ITV, INSURANCE, APPEARANCE, PEOPLE, ODOMETER)
             if car.get(field) not in (None, "", {})
         }
     return {
@@ -212,6 +230,8 @@ def parse_backup(payload: Any) -> dict[str, dict[str, Any]]:
             if appearance is None:
                 raise BackupError(ERROR_INVALID)
             car[APPEARANCE] = appearance
+        if people := clean_people(raw.get(PEOPLE)):
+            car[PEOPLE] = people
         if not car:
             continue
         for field in (VEHICLE_ID, NAME):

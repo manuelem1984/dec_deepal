@@ -14,7 +14,7 @@ Módulo              Qué hace
                     comparación entre dos capturas: qué claves cambiaron.
 ==================  ==========================================================
 
-Cómo se activa: Configurar → Opciones avanzadas → **Modo depuración**. Con él
+Cómo se activa: panel DEC Deepal → Ajustes → **Modo depuración**. Con él
 activo:
 
 - el registro guarda también los cuerpos completos (ocultando datos

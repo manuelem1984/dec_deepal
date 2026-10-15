@@ -15,7 +15,7 @@
     Anota que el coche ha pasado la revisión (por defecto, hoy y con el
     cuentakilómetros actual) y empieza a contar para la siguiente. Lo usa la
     tarjeta, tras pedir confirmación. Hace falta haber activado antes el
-    mantenimiento del coche en Configurar → Mantenimiento.
+    mantenimiento del coche en el panel DEC Deepal → Coches → Mantenimiento.
 
 ``dec_deepal.register_itv`` — Registrar una ITV pasada
     Anota que el coche ha pasado la ITV (por defecto, hoy) y calcula la
@@ -41,7 +41,7 @@ from homeassistant.util import dt as dt_util
 
 from .const import CAPTURES_DIR, DOMAIN
 from .debug.capture import build_snapshot, diff_snapshots
-from .runtime import DecDeepalConfigEntry
+from .runtime import DecDeepalConfigEntry, device_entry_ids
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ def _find_vehicle(hass: HomeAssistant, device_id: str):  # noqa: ANN202
     device = dr.async_get(hass).async_get(device_id)
     if device is not None:
         vehicle_ids = [ident for domain, ident in device.identifiers if domain == DOMAIN]
-        for entry_id in device.config_entries:
+        for entry_id in device_entry_ids(device):
             entry: DecDeepalConfigEntry | None = hass.config_entries.async_get_entry(entry_id)
             if entry is None or entry.domain != DOMAIN or not hasattr(entry, "runtime_data"):
                 continue

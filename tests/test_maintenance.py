@@ -179,8 +179,9 @@ def test_every_problem_signal_has_a_named_entity() -> None:
     names = json.loads((INTEGRATION / "translations" / "es.json").read_text(encoding="utf-8"))
     binary = names["entity"]["binary_sensor"]
     assert [signal for signal in ar.PROBLEM_SIGNALS if signal not in binary] == []
-    options = names["selector"]["alert_type"]["options"]
-    assert set(options) == set(ar.CAR_ALERT_TYPES)
+    # Cada tipo de aviso del coche tiene su nombre en el panel (Avisos).
+    texts = json.loads((INTEGRATION / "idiomas" / "es.json").read_text(encoding="utf-8"))
+    assert [kind for kind in ar.CAR_ALERT_TYPES if f"notice_{kind}" not in texts["panel"]] == []
 
 
 def test_texts() -> None:

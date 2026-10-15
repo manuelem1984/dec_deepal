@@ -42,6 +42,14 @@
     .kv { display: flex; gap: 26px; margin-top: 8px; flex-wrap: wrap; }
     .kv div { font-size: 13px; color: var(--secondary-text-color); } .kv b { display: block; font-size: 18px; font-weight: 400; color: var(--primary-text-color); }
     .chips { padding: 14px 20px 2px; }
+    .people { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; padding: 6px 20px 0; font-size: 13px; }
+    .people .lbl { display: inline-flex; gap: 6px; align-items: center; color: var(--secondary-text-color); margin: 0 6px 6px 0; --mdc-icon-size: 18px; }
+    .people .chip { margin-bottom: 6px; }
+    .people .none { color: var(--secondary-text-color); margin: 0 10px 6px 0; }
+    .people .link { margin-bottom: 6px; }
+    .ro { display: flex; gap: 10px; align-items: center; margin: 0 0 14px; padding: 10px 14px; border-radius: 10px;
+      background: rgba(var(--rgb-primary-color, 3, 169, 244), .1); color: var(--primary-text-color); font-size: 14px; --mdc-icon-size: 20px; }
+    .ro ha-icon { color: var(--primary-color); }
     .chip { display: inline-flex; gap: 6px; align-items: center; padding: 5px 12px; border-radius: 16px; background: ${SOFT}; font-size: 13px;
       margin: 0 6px 6px 0; --mdc-icon-size: 16px; }
     .chip ha-icon { color: var(--primary-color); }
@@ -80,6 +88,7 @@
     .box { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
       color: var(--secondary-text-color); --mdc-icon-size: 22px; }
     .box.y, .box.some { color: var(--primary-color); }
+    .box.ro { cursor: default; opacity: .8; }
     tr.grp td { background: ${SOFT}; }
     tr.grp td:first-child { padding: 0; }
     .fold { display: flex; align-items: center; gap: 8px; width: 100%; padding: 12px 14px; font-weight: 500; font-size: 15px; text-align: left; --mdc-icon-size: 22px; }

@@ -4,7 +4,8 @@ Integración **no oficial** de Home Assistant para coches Deepal. Lee el estado
 del coche desde la nube oficial y permite comandos remotos (climatización,
 luces, claxon, asientos, volante, y —con PIN— puertas, ventanillas y maletero).
 
-- **Hoy:** España 🇪🇸 · Deepal S05 (2024-2025) · español.
+- **Hoy:** España 🇪🇸 (probada) · Portugal 🇵🇹, Italia 🇮🇹, Alemania 🇩🇪 y
+  Francia 🇫🇷 (sin probar todavía) · Deepal S05 (2024-2025) · doce idiomas.
 - **Preparada para más:** países, modelos e idiomas se añaden editando
   ficheros de datos, sin programar (ver [docs/anadir-pais-vehiculo-idioma.md](docs/anadir-pais-vehiculo-idioma.md)).
 - Requiere **Home Assistant 2026.3.0** o superior.

@@ -145,9 +145,14 @@ def build_state(
         values[s.LATITUDE], values[s.LONGITUDE] = location
         sources[s.LATITUDE] = sources[s.LONGITUDE] = SOURCE_MQTT if find_location(mqtt_params) else SOURCE_REST
 
-    # Regla 4: conservar el último valor conocido.
+    # Regla 4: conservar el último valor conocido. Uno optimista (de un comando
+    # que el coche aún no ha confirmado) no cuenta: si se conservara, seguiría
+    # ahí aunque el comando no se aplicara nunca. Mientras dura, ya lo vuelve a
+    # poner apply_holds.
     if previous is not None:
         for signal in KEEP_LAST:
+            if previous.sources.get(signal) == SOURCE_OPTIMISTIC:
+                continue
             if signal not in values and previous.values.get(signal) is not None:
                 values[signal] = previous.values[signal]
                 sources[signal] = SOURCE_PREVIOUS

@@ -116,6 +116,21 @@ def test_apply_holds_confirm_and_expire() -> None:
     assert holds == {}
 
 
+def test_optimistic_value_is_not_kept_as_last_known() -> None:
+    """Si el coche nunca confirma un comando, su valor no se queda para siempre."""
+    state = build_state(mqtt_params={"steeringWheelHeating": 0}, rest_raw=None, previous=None)
+    holds = {s.STEERING_WHEEL_HEAT: OptimisticHold(True, expires_at=100.0)}
+    apply_holds(state, holds, now=10.0)
+    assert state.get(s.STEERING_WHEEL_HEAT) is True
+    # Lectura sin el dato (módulo dormido) cuando el valor optimista ya caducó.
+    after = build_state(mqtt_params={"soc": 50}, rest_raw=None, previous=state)
+    apply_holds(after, holds, now=200.0)
+    assert after.get(s.STEERING_WHEEL_HEAT) is None
+    # Un valor real sí se conserva.
+    real = build_state(mqtt_params={"steeringWheelHeating": 1}, rest_raw=None, previous=None)
+    assert build_state(mqtt_params={"soc": 50}, rest_raw=None, previous=real).get(s.STEERING_WHEEL_HEAT) is True
+
+
 def test_derived_signals() -> None:
     state = build_state(
         mqtt_params={

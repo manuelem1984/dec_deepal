@@ -20,22 +20,24 @@
           ? `<span class="badge ok"><ha-icon icon="mdi:check-decagram"></ha-icon>${this._t("sheet_verified")}</span>`
           : `<span class="badge info"><ha-icon icon="mdi:book-open-variant"></ha-icon>${this._t("sheet_catalogue")}</span>`;
       const fact = (value, label) => `<div><b>${value}</b>${this._t(label)}</div>`;
+      const mine = car.mine ? `<span class="badge ok"><ha-icon icon="mdi:account-check"></ha-icon>${this._t("mine")}</span>` : "";
       return `<div class="card">
         <div class="hero">
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
           <div class="who">
             <div class="n">${escapeHtml(car.name)}</div>
             <div class="m">${escapeHtml([car.model, car.color].filter(Boolean).join(" · "))}</div>
-            ${badge}
+            ${badge}${mine}
             <div class="kv">
               ${car.battery == null ? "" : fact(`${this._number(car.battery)} %`, "battery")}
               ${car.range == null ? "" : fact(`${this._number(Math.round(car.range))} km`, "range")}
               ${car.odometer == null ? "" : fact(`${this._number(Math.round(car.odometer))} km`, "odometer")}
             </div>
           </div>
-          <button class="btn o" data-action="appearance" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>
+          ${this._admin() ? `<button class="btn o" data-action="appearance" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:pencil"></ha-icon>${this._t("appearance")}</button>` : ""}
         </div>
         ${chips.length ? `<div class="chips">${chips.join("")}</div>` : ""}
+        ${this._peopleRow(car)}
         <div class="grid3">
           ${this._maintenanceTile(car)}
           ${car.itv_available ? this._itvTile(car) : ""}
@@ -46,8 +48,9 @@
 
     /** Recuadro con engranaje; `body` va vacío si el apartado está sin configurar. */
     _tile(car, kind, icon, level, body) {
-      const gear = `<button class="gear" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>`;
+      const gear = !this._admin() ? "" : `<button class="gear" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>`;
       const head = `<div class="h"><ha-icon icon="${icon}"></ha-icon><span>${this._t(`section_${kind}`)}</span>${gear}</div>`;
+      if (!body && !this._admin()) return `<div class="tile off">${head}<div class="v">${this._t("not_set")}</div></div>`;
       if (!body) {
         return `<div class="tile off" data-action="info" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${head}<div class="v">${this._t("not_set")}</div>
           <button class="link" data-action="gear" data-kind="${kind}" data-car="${escapeHtml(car.id)}">${this._t(`add_${kind}`)}</button></div>`;

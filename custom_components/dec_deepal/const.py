@@ -78,7 +78,7 @@ OPT_PIN_MODE: Final = "pin_mode"
 OPT_ARM_SECONDS: Final = "arm_seconds"
 OPT_ARM_NOTIFY: Final = "arm_notify"
 
-#: Avisos al móvil (Configurar → Avisos): {"targets": [...], "types": [...],
+#: Avisos al móvil (el panel DEC Deepal → Avisos): {"targets": [...], "types": [...],
 #: "persistent": bool}. Los tipos están en alert_rules.py.
 OPT_ALERTS: Final = "alerts"
 #: Servicios de notificación elegidos (sin el "notify."): p. ej. "mobile_app_x".
@@ -95,7 +95,6 @@ OPT_ALERT_PERSISTENT: Final = "persistent"
 OPT_ALERT_VEHICLES: Final = "vehicles"
 OPT_ALERT_CAR_TYPES: Final = "car_types"
 OPT_ALERT_CAR_KNOWN: Final = "car_known"
-DEFAULT_ALERT_PERSISTENT: Final = False
 
 #: Enlace del manual cambiado por el usuario, por modelo: {id del modelo: url}.
 #: Sin entrada, se usa el del catálogo (vehicles.yaml).
@@ -155,7 +154,7 @@ ICONS_JS_FILE: Final = "dec-icons.js"
 #: Tarjeta para los paneles (custom:dec-deepal-card). La carga dec-icons.js.
 CARD_JS_FILE: Final = "dec-deepal-card.js"
 CARD_JS_DIR: Final = "frontend_card"
-#: Panel de la barra lateral (ver panel.py). Su dirección no puede ser
+#: Panel de la barra lateral (ver panel/). Su dirección no puede ser
 #: "dec-deepal": hay usuarios con un tablero propio con ese nombre.
 PANEL_JS_FILE: Final = "dec-deepal-panel.js"
 PANEL_JS_DIR: Final = "frontend_panel"

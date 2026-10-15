@@ -34,6 +34,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
 from .api.account import DeepalAccount
 from .api.client import DeepalClient
@@ -132,3 +133,32 @@ async def async_get_registries(hass: HomeAssistant) -> Registries:
         )
         domain_data[_REGISTRIES_KEY] = registries
     return domain_data[_REGISTRIES_KEY]
+
+
+def vehicle_device(hass: HomeAssistant, entry_id: str, vehicle_id: str) -> dr.DeviceEntry | None:
+    """Dispositivo de Home Assistant de un coche (o ``None`` si aún no existe).
+
+    Desde Home Assistant 2026.10 un identificador solo es único dentro de su
+    cuenta, y ``async_get_device(identifiers=...)`` está obsoleto (deja de
+    funcionar en la 2027.8). Las versiones anteriores no tienen la búsqueda
+    nueva, así que se usa la que haya.
+    """
+    registry = dr.async_get(hass)
+    identifier = (DOMAIN, vehicle_id)
+    if hasattr(registry, "async_get_device_by_identifier"):
+        return registry.async_get_device_by_identifier(identifier, entry_id)
+    return registry.async_get_device(identifiers={identifier})
+
+
+def device_entry_ids(device: dr.DeviceEntry) -> list[str]:
+    """Cuentas a las que pertenece un dispositivo.
+
+    Desde Home Assistant 2026.10 un dispositivo es de una sola cuenta
+    (``config_entry_id``) y ``config_entries`` está obsoleto; antes solo
+    existía ``config_entries``.
+    """
+    entry_id = getattr(device, "config_entry_id", None)
+    if entry_id is not None:
+        return [entry_id]
+    return list(getattr(device, "config_entries", ()))
+

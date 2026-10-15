@@ -21,7 +21,7 @@
 //
 // Cómo habla con la integración
 // -----------------------------
-// Por WebSocket, con órdenes "dec_deepal/panel/..." (ver panel.py). Al abrir
+// Por WebSocket, con órdenes "dec_deepal/panel/..." (ver panel/). Al abrir
 // pide el estado completo ("state") y lo vuelve a pedir tras cada cambio. No
 // guarda nada en el navegador.
 //

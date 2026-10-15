@@ -68,3 +68,47 @@ paises:
       reales. El login por SMS se quitó en la 2.5.0b4: desde septiembre de
       2026 el servidor respondía "SUC" (enviado) y el SMS no llegaba. Ver
       docs/protocolo.md.
+
+  # --- Añadidos en la 2.5.0b9: mismo servidor europeo que España, con su
+  # idioma ya traducido. Sin ITV (cada país tiene su propia inspección, con
+  # otros plazos) y sin probar con una cuenta de allí.
+  pt:
+    nombre: Portugal
+    activo: true
+    entorno: eu
+    pais_venta: PT
+    idioma_api: en_US
+    verificado: false
+    notas: >-
+      Sin probar con una cuenta portuguesa. Inspección (IPO) y normas del
+      seguro sin adaptar todavía.
+  it:
+    nombre: Italia
+    activo: true
+    entorno: eu
+    pais_venta: IT
+    idioma_api: en_US
+    verificado: false
+    notas: >-
+      Sin probar con una cuenta italiana. Revisione y normas del seguro (en
+      Italia la póliza no se renueva sola) sin adaptar todavía.
+  de:
+    nombre: Deutschland
+    activo: true
+    entorno: eu
+    pais_venta: DE
+    idioma_api: en_US
+    verificado: false
+    notas: >-
+      Sin probar con una cuenta alemana. HU/TÜV y normas del seguro (se
+      cancela con un mes de antelación) sin adaptar todavía.
+  fr:
+    nombre: France
+    activo: true
+    entorno: eu
+    pais_venta: FR
+    idioma_api: en_US
+    verificado: false
+    notas: >-
+      Sin probar con una cuenta francesa. Contrôle technique y normas del
+      seguro sin adaptar todavía.

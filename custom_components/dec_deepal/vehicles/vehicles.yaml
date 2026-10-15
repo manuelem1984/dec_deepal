@@ -72,13 +72,13 @@
 #                                     enchufado / cargando)
 #                   Sin este campo, el modelo no tiene vistas.
 #   llantas         (opcional) Llantas que el usuario puede elegir en
-#                   Configurar → Apariencia. La primera es la de por defecto
+#                   el panel DEC Deepal → Coches → Apariencia. La primera es la de por defecto
 #                   (la que ya está dibujada en la base de las vistas). Cada
 #                   una, salvo la primera, necesita su capa wheels_<id>.png.
 #                   El nombre visible está en translations (selector "wheels").
 #   manual          (opcional) Enlace al manual de usuario en PDF. La tarjeta
 #                   lo abre en el navegador desde "Otros → Manual". El usuario puede cambiarlo
-#                   en Configurar → Avanzado.
+#                   en el panel DEC Deepal → Ajustes.
 #   mantenimiento   (opcional) Plan de mantenimiento del manual del coche.
 #                     intervalo_km / intervalo_meses
 #                                   Cada cuánto toca la revisión (lo que llegue
@@ -122,7 +122,7 @@
 # MODELO "generico"
 # -----------------------------------------------------------------------------
 #   Es el modelo con el que ARRANCA todo coche hasta que el usuario elige el
-#   suyo (Configurar → Apariencia, o el aviso "Configura tu vehículo" en
+#   suyo (el panel DEC Deepal → Coches → Apariencia, o el aviso "Configura tu vehículo" en
 #   Ajustes → Reparaciones). Tiene solo las funciones básicas y ninguna foto
 #   propia: así nunca se crean entidades de funciones que el coche no tiene.
 #   También se usa para coches aún no catalogados.
@@ -138,7 +138,7 @@ modelos:
       SUV eléctrico compacto. Modelo de referencia del proyecto, probado con
       coches reales en España (RWD Max).
     fabricante: Changan Deepal
-    paises: [es]
+    paises: [es, pt, it, de, fr]
     reconocer:
       nombre_contiene: ["S05"]
       codigo_serie: []
@@ -316,7 +316,7 @@ modelos:
       para coches aún no catalogados. Solo lectura de datos básicos y comandos
       sin PIN.
     fabricante: Changan Deepal
-    paises: [es]
+    paises: [es, pt, it, de, fr]
     reconocer:
       nombre_contiene: []
       codigo_serie: []

@@ -61,28 +61,6 @@
         "catalog_error": "Et af integrationens kataloger indeholder fejl. Tjek Home Assistant-loggen."
       }
     },
-    "options": {
-      "error": {
-        "pin_required": "Indtast pinkoden for at aktivere fjernbetjening.",
-        "pin_invalid": "Forkert pinkode, eller den er oprettet med en anden konto.",
-        "pin_rate_limited": "For mange pinkodeforsøg. Vent, eller nulstil den i den officielle app.",
-        "invalid_url": "Indtast en fuld webadresse (der begynder med https://).",
-        "cannot_connect": "Kunne ikke oprette forbindelse til Deepal-serveren.",
-        "invalid_file": "Filen er ikke en DEC Deepal-sikkerhedskopi, eller den er beskadiget.",
-        "newer_file": "Sikkerhedskopien kommer fra en nyere version af integrationen. Opdater DEC Deepal og prøv igen.",
-        "empty_file": "Sikkerhedskopien har ikke data for noget køretøj.",
-        "no_selection": "Vælg mindst ét køretøj.",
-        "confirm_required": "Sæt kryds i feltet for at bekræfte sletningen."
-      },
-      "abort": {
-        "not_loaded": "Integrationen er ikke indlæst. Tjek loggen og prøv igen.",
-        "no_data": "Der er ikke gemt data for noget køretøj.",
-        "data_imported": "Sikkerhedskopi indlæst: {cars}.",
-        "data_deleted": "Data slettet: {cars}.",
-        "data_sent": "Notifikation sendt til {device}. Tryk på den på telefonen for at hente sikkerhedskopien.",
-        "no_mobile": "Der er ingen telefon med Home Assistant-appen."
-      }
-    },
     "issues": {
       "vehicle_not_configured": {
         "title": "Sæt dit køretøj op: {vehicle}",
@@ -112,45 +90,41 @@
             "entry_not_found": "Kontoen findes ikke længere."
           }
         }
+      },
+      "vehicle_added": {
+        "title": "Ny bil på din konto: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "Tilføj {vehicle}",
+              "description": "{vehicle} er på din Deepal-konto, men ikke i integrationen. Tryk Send for at tilføje den; derefter vises meddelelsen »Konfigurer dit køretøj«, så du kan vælge model. Hvis du ikke vil have den i Home Assistant, så ignorer denne meddelelse."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Kontoen findes ikke længere."
+          }
+        }
+      },
+      "vehicle_removed": {
+        "title": "{vehicle} er ikke længere på din konto",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "Fjern {vehicle}",
+              "description": "{vehicle} vises ikke længere på din Deepal-konto (er delingen stoppet?). Tryk Send for at fjerne den fra Home Assistant sammen med dens enheder. Service-, syns- og forsikringsdata gemmes, hvis den kommer tilbage."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Kontoen findes ikke længere."
+          }
+        }
       }
     },
     "selector": {
-      "pin_mode": {
-        "options": {
-          "direct": "Mulighed A — direkte kommandoer",
-          "armed": "Mulighed B — lås op først (sikrere)"
-        }
-      },
-      "arm_seconds": {
-        "options": {
-          "10": "10 sekunder",
-          "20": "20 sekunder",
-          "30": "30 sekunder",
-          "60": "60 sekunder"
-        }
-      },
       "wheels": {
         "options": {
           "cover": "20\" med aerokapsel",
           "open": "20\" uden aerokapsel"
-        }
-      },
-      "alert_type": {
-        "options": {
-          "charge_started": "Opladning startet",
-          "charge_interrupted": "Opladning afbrudt",
-          "charge_finished": "Opladning færdig",
-          "warnings": "Advarselslamper i instrumentbrættet",
-          "tires": "Dæk (når bilen tænder advarslen)",
-          "key_battery": "Lavt batteri i nøglen"
-        }
-      },
-      "insurance_kind": {
-        "options": {
-          "third_party": "Ansvar",
-          "third_party_plus": "Udvidet ansvar",
-          "comprehensive_excess": "Kasko med selvrisiko",
-          "comprehensive": "Kasko uden selvrisiko"
         }
       }
     },
@@ -640,8 +614,8 @@
     "ordinal": "{number}.",
     "date_format": "%d.%m.%Y",
     "panel_target": "Home Assistant-notifikationer",
-    "backup_download": "Hent sikkerhedskopien",
-    "backup_notification": "Sikkerhedskopi af dine køretøjers data. Tryk for at hente den (linket udløber om 10 minutter)."
+    "backup_notification": "Sikkerhedskopi af dine køretøjers data. Tryk for at hente den (linket udløber om 10 minutter).",
+    "pin_armed": "Kommandoer med pinkode tilladt i {seconds} sekunder."
   },
   "tarjeta": {
     "card_description": "Din Deepal med et enkelt blik: bilvisning, batteri, komfort og hurtige handlinger.",
@@ -1081,7 +1055,16 @@
     "ins_deadline_passed": "Fristen er overskredet",
     "ins_deadline_on": "Sidste dag: {date}",
     "ins_renews_itself": "Fornyes af sig selv {date}",
-    "ins_assistance": "Vejhjælp"
+    "ins_assistance": "Vejhjælp",
+    "read_only": "Kun læsning: ændringer foretages af en administrator i Home Assistant.",
+    "people": "Personer",
+    "people_none": "Ikke tildelt",
+    "people_edit": "Vælg",
+    "people_title": "Personer for {name}",
+    "people_help": "Vælg, hvem denne bil tilhører. Det er personerne i Indstillinger → Personer.",
+    "mine": "Din",
+    "error_unknown_person": "Den person findes ikke længere i Home Assistant.",
+    "error_unauthorized": "Kun en administrator kan foretage denne ændring."
   },
   "catalogo": {
     "operacion_general_inspection": "Generelt eftersyn (drivenhed, batteri, højspænding, bremser og styretøj)",

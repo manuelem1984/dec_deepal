@@ -9,7 +9,7 @@ intermediario; se descartó porque en el móvil no se podía pasar de página.)
 
 Qué enlace se usa (:func:`manual_url`):
 
-1. El que el usuario haya puesto en Configurar → Avanzado para ese modelo.
+1. El que el usuario haya puesto en el panel DEC Deepal → Ajustes para ese modelo.
 2. Si no, el del catálogo (``manual:`` del modelo en ``vehicles.yaml``).
 3. Si el modelo no tiene, no hay manual (la tarjeta no enseña la opción).
 
@@ -41,7 +41,7 @@ from homeassistant.helpers import device_registry as dr
 
 from .const import DOMAIN, INSURANCE_INFO_API, MANUAL_INFO_API, OPT_MANUAL_URLS
 from .registries.vehicles import GENERIC_MODEL_ID
-from .runtime import VehicleContext
+from .runtime import VehicleContext, device_entry_ids
 
 
 def is_valid_url(url: str) -> bool:
@@ -66,7 +66,7 @@ def _find(hass: HomeAssistant, device_id: str):  # noqa: ANN202
     device = dr.async_get(hass).async_get(device_id)
     if device is not None:
         vehicle_ids = [ident for domain, ident in device.identifiers if domain == DOMAIN]
-        for entry_id in device.config_entries:
+        for entry_id in device_entry_ids(device):
             entry = hass.config_entries.async_get_entry(entry_id)
             if entry is None or entry.domain != DOMAIN or not hasattr(entry, "runtime_data"):
                 continue

@@ -4,12 +4,12 @@
   "after_dependencies": ["lovelace"],
   "codeowners": ["@manuelem1984"],
   "config_flow": true,
-  "dependencies": ["file_upload", "frontend", "http", "panel_custom", "persistent_notification"],
+  "dependencies": ["frontend", "http", "panel_custom", "persistent_notification"],
   "documentation": "https://github.com/manuelem1984/dec_deepal",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/manuelem1984/dec_deepal/issues",
   "loggers": ["custom_components.dec_deepal"],
   "requirements": [],
-  "version": "2.5.0b8"
+  "version": "2.5.0b9"
 }

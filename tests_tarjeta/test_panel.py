@@ -63,6 +63,45 @@ def test_cars_tab(panel: Page) -> None:
     assert panel.evaluate("banco.raiz().querySelectorAll('.gear').length") == 6
 
 
+def test_people_of_each_car(panel: Page) -> None:
+    """A quién pertenece cada coche: se ve en la tarjeta y se elige en una ventana."""
+    mount(panel)
+    people = panel.evaluate(
+        "Array.from(banco.raiz().querySelectorAll('.people')).map(r => Array.from(r.querySelectorAll('.chip, .none')).map(n => n.textContent.trim()))"
+    )
+    assert people == [["Manuel"], ["Sin asignar"]]
+    cards = panel.evaluate("Array.from(banco.raiz().querySelectorAll('.card')).map(c => c.textContent)")
+    assert "Tuyo" in cards[0] and "Tuyo" not in cards[1]
+    click(panel, "[data-action=people]", 1)
+    assert "Personas de Changuito" in window_text(panel)
+    panel.evaluate("banco.ventana().querySelector('[name=\"person.ella\"]').checked = true")
+    click_window(panel, "ok")
+    panel.wait_for_function("banco.registro.some(m => m.type === 'dec_deepal/panel/set_people')")
+    assert orders(panel)[-1] == {"type": "dec_deepal/panel/set_people", "vehicle_id": "car2", "people": ["person.ella"]}
+
+
+def test_read_only_for_other_users(panel: Page) -> None:
+    """Quien no es administrador ve Coches y Avisos, sin poder cambiar nada."""
+    mount(panel, lectura=True)
+    tabs = panel.evaluate("Array.from(banco.raiz().querySelectorAll('[data-tab]')).map(b => b.dataset.tab)")
+    assert tabs == ["cars", "alerts"]
+    text = panel.evaluate("banco.texto()")
+    assert "Solo lectura" in text and "Changote" in text and "Tuyo" in text
+    # Ni engranajes, ni Apariencia, ni elegir personas.
+    for selector in (".gear", "[data-action=appearance]", "[data-action=people]"):
+        assert panel.evaluate(f"banco.raiz().querySelectorAll('{selector}').length") == 0, selector
+    # La ficha se puede abrir, pero sin "Registrar" ni engranaje.
+    click(panel, "[data-action=info][data-kind=maintenance]")
+    assert "1ª revisión" in window_text(panel)
+    assert panel.evaluate("banco.ventana().querySelectorAll('[data-action=register], [data-action=configure]').length") == 0
+    click_window(panel, "close")
+    # Avisos: se ve lo marcado, sin casillas que tocar ni botones de guardar.
+    tab(panel, "alerts")
+    assert panel.evaluate("banco.raiz().querySelectorAll('.box.ro').length") > 0
+    assert panel.evaluate("banco.raiz().querySelectorAll('button.box, [data-action=copy-alerts], .foot').length") == 0
+    assert not [order for order in orders(panel) if order["type"] != "dec_deepal/panel/state"]
+
+
 def window_click(page: Page, selector: str) -> None:
     page.evaluate("selector => banco.ventana().querySelector(selector).click()", selector)
 

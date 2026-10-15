@@ -1,10 +1,8 @@
 """Formularios comunes para elegir modelo, versión y color de un coche.
 
-Los usan dos sitios, para que se comporten exactamente igual:
-
-- Configurar → **Apariencia del vehículo** (``options_flow.py``).
-- El aviso de **Reparaciones** "Configura tu vehículo" (``repairs.py``), que
-  aparece mientras un coche no tiene modelo elegido.
+Los usa el aviso de **Reparaciones** "Configura tu vehículo"
+(``repairs.py``), que aparece mientras un coche no tiene modelo elegido. El
+panel (Coches → Apariencia) guarda lo mismo con :func:`updated_options`.
 
 Todo coche arranca como **modelo genérico** hasta que el usuario elige su
 modelo: así nunca se crean entidades de funciones que su coche no tiene (y

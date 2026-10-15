@@ -61,28 +61,6 @@
         "catalog_error": "Een van de catalogi van de integratie bevat fouten. Bekijk het logboek van Home Assistant."
       }
     },
-    "options": {
-      "error": {
-        "pin_required": "Voer de pincode in om de afstandsbediening in te schakelen.",
-        "pin_invalid": "Onjuiste pincode, of aangemaakt met een ander account.",
-        "pin_rate_limited": "Te veel pincodepogingen. Wacht, of stel hem opnieuw in via de officiële app.",
-        "invalid_url": "Voer een volledig webadres in (beginnend met https://).",
-        "cannot_connect": "Kan geen verbinding maken met de Deepal-server.",
-        "invalid_file": "Het bestand is geen DEC Deepal-back-up, of het is beschadigd.",
-        "newer_file": "De back-up komt uit een nieuwere versie van de integratie. Werk DEC Deepal bij en probeer het opnieuw.",
-        "empty_file": "De back-up bevat van geen enkel voertuig gegevens.",
-        "no_selection": "Kies minstens één voertuig.",
-        "confirm_required": "Vink het vakje aan om het verwijderen te bevestigen."
-      },
-      "abort": {
-        "not_loaded": "De integratie is niet geladen. Bekijk het logboek en probeer het opnieuw.",
-        "no_data": "Er zijn van geen enkel voertuig gegevens opgeslagen.",
-        "data_imported": "Back-up geladen: {cars}.",
-        "data_deleted": "Gegevens verwijderd: {cars}.",
-        "data_sent": "Melding verstuurd naar {device}. Tik erop op de telefoon om de back-up te downloaden.",
-        "no_mobile": "Er is geen telefoon met de Home Assistant-app."
-      }
-    },
     "issues": {
       "vehicle_not_configured": {
         "title": "Stel je voertuig in: {vehicle}",
@@ -112,45 +90,41 @@
             "entry_not_found": "Het account bestaat niet meer."
           }
         }
+      },
+      "vehicle_added": {
+        "title": "Nieuwe auto in je account: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "{vehicle} toevoegen",
+              "description": "{vehicle} staat in je Deepal-account, maar niet in de integratie. Druk op Verzenden om hem toe te voegen; daarna verschijnt de melding ‘Stel je voertuig in’ om het model te kiezen. Wil je hem niet in Home Assistant, negeer dan deze melding."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Het account bestaat niet meer."
+          }
+        }
+      },
+      "vehicle_removed": {
+        "title": "{vehicle} staat niet meer in je account",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "{vehicle} verwijderen",
+              "description": "{vehicle} staat niet meer in je Deepal-account (wordt hij niet meer gedeeld?). Druk op Verzenden om hem met zijn entiteiten uit Home Assistant te verwijderen. Zijn onderhouds-, APK- en verzekeringsgegevens blijven bewaard voor het geval hij terugkomt."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Het account bestaat niet meer."
+          }
+        }
       }
     },
     "selector": {
-      "pin_mode": {
-        "options": {
-          "direct": "Optie A — directe opdrachten",
-          "armed": "Optie B — eerst ontgrendelen (veiliger)"
-        }
-      },
-      "arm_seconds": {
-        "options": {
-          "10": "10 seconden",
-          "20": "20 seconden",
-          "30": "30 seconden",
-          "60": "60 seconden"
-        }
-      },
       "wheels": {
         "options": {
           "cover": "20\" met aerokap",
           "open": "20\" zonder aerokap"
-        }
-      },
-      "alert_type": {
-        "options": {
-          "charge_started": "Laden gestart",
-          "charge_interrupted": "Laden onderbroken",
-          "charge_finished": "Laden voltooid",
-          "warnings": "Waarschuwingslampjes op het dashboard",
-          "tires": "Banden (wanneer de auto de waarschuwing aanzet)",
-          "key_battery": "Batterij van de sleutel bijna leeg"
-        }
-      },
-      "insurance_kind": {
-        "options": {
-          "third_party": "WA",
-          "third_party_plus": "WA beperkt casco",
-          "comprehensive_excess": "Allrisk met eigen risico",
-          "comprehensive": "Allrisk zonder eigen risico"
         }
       }
     },
@@ -640,8 +614,8 @@
     "ordinal": "{number}e",
     "date_format": "%d-%m-%Y",
     "panel_target": "Home Assistant-meldingen",
-    "backup_download": "Back-up downloaden",
-    "backup_notification": "Back-up van de gegevens van je voertuigen. Tik om te downloaden (de link verloopt over 10 minuten)."
+    "backup_notification": "Back-up van de gegevens van je voertuigen. Tik om te downloaden (de link verloopt over 10 minuten).",
+    "pin_armed": "Opdrachten met pincode toegestaan gedurende {seconds} seconden."
   },
   "tarjeta": {
     "card_description": "Je Deepal in één oogopslag: aanzicht van de auto, batterij, comfort en snelle acties.",
@@ -1081,7 +1055,16 @@
     "ins_deadline_passed": "Termijn verstreken",
     "ins_deadline_on": "Laatste dag: {date}",
     "ins_renews_itself": "Wordt vanzelf verlengd op {date}",
-    "ins_assistance": "Pechhulp"
+    "ins_assistance": "Pechhulp",
+    "read_only": "Alleen lezen: wijzigingen worden gedaan door een beheerder van Home Assistant.",
+    "people": "Personen",
+    "people_none": "Niet toegewezen",
+    "people_edit": "Kiezen",
+    "people_title": "Personen van {name}",
+    "people_help": "Kies van wie deze auto is. Dit zijn de personen in Instellingen → Personen.",
+    "mine": "Van jou",
+    "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
+    "error_unauthorized": "Alleen een beheerder kan deze wijziging doen."
   },
   "catalogo": {
     "operacion_general_inspection": "Algemene inspectie (aandrijving, batterij, hoogspanning, remmen en stuurinrichting)",

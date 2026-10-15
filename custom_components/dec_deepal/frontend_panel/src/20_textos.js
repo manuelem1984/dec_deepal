@@ -293,7 +293,16 @@
       "ins_deadline_passed": "Plazo pasado",
       "ins_deadline_on": "Último día: {date}",
       "ins_renews_itself": "Se renueva solo el {date}",
-      "ins_assistance": "Asistencia"
+      "ins_assistance": "Asistencia",
+      "read_only": "Solo lectura: los cambios los hace un administrador de Home Assistant.",
+      "people": "Personas",
+      "people_none": "Sin asignar",
+      "people_edit": "Elegir",
+      "people_title": "Personas de {name}",
+      "people_help": "Elige a quién pertenece este coche. Son las personas de Ajustes → Personas.",
+      "mine": "Tuyo",
+      "error_unknown_person": "Esa persona ya no existe en Home Assistant.",
+      "error_unauthorized": "Solo un administrador puede hacer este cambio."
     },
     "en": {
       "tab_cars": "Vehicles",
@@ -576,7 +585,16 @@
       "ins_deadline_passed": "Deadline passed",
       "ins_deadline_on": "Last day: {date}",
       "ins_renews_itself": "It renews itself on {date}",
-      "ins_assistance": "Assistance"
+      "ins_assistance": "Assistance",
+      "read_only": "Read only: changes are made by a Home Assistant administrator.",
+      "people": "People",
+      "people_none": "Not assigned",
+      "people_edit": "Choose",
+      "people_title": "People of {name}",
+      "people_help": "Choose who this car belongs to. These are the people in Settings → People.",
+      "mine": "Yours",
+      "error_unknown_person": "That person no longer exists in Home Assistant.",
+      "error_unauthorized": "Only an administrator can make this change."
     },
     "pt": {
       "tab_cars": "Veículos",
@@ -859,7 +877,16 @@
       "ins_deadline_passed": "Prazo passado",
       "ins_deadline_on": "Último dia: {date}",
       "ins_renews_itself": "Renova-se sozinho a {date}",
-      "ins_assistance": "Assistência"
+      "ins_assistance": "Assistência",
+      "read_only": "Só de leitura: as alterações são feitas por um administrador do Home Assistant.",
+      "people": "Pessoas",
+      "people_none": "Sem atribuir",
+      "people_edit": "Escolher",
+      "people_title": "Pessoas de {name}",
+      "people_help": "Escolhe a quem pertence este carro. São as pessoas de Definições → Pessoas.",
+      "mine": "Teu",
+      "error_unknown_person": "Essa pessoa já não existe no Home Assistant.",
+      "error_unauthorized": "Só um administrador pode fazer esta alteração."
     },
     "it": {
       "tab_cars": "Veicoli",
@@ -1142,7 +1169,16 @@
       "ins_deadline_passed": "Termine passato",
       "ins_deadline_on": "Ultimo giorno: {date}",
       "ins_renews_itself": "Si rinnova da sola il {date}",
-      "ins_assistance": "Assistenza"
+      "ins_assistance": "Assistenza",
+      "read_only": "Sola lettura: le modifiche le fa un amministratore di Home Assistant.",
+      "people": "Persone",
+      "people_none": "Non assegnato",
+      "people_edit": "Scegli",
+      "people_title": "Persone di {name}",
+      "people_help": "Scegli a chi appartiene questa auto. Sono le persone di Impostazioni → Persone.",
+      "mine": "Tua",
+      "error_unknown_person": "Quella persona non esiste più in Home Assistant.",
+      "error_unauthorized": "Solo un amministratore può fare questa modifica."
     },
     "pl": {
       "tab_cars": "Pojazdy",
@@ -1425,7 +1461,16 @@
       "ins_deadline_passed": "Termin minął",
       "ins_deadline_on": "Ostatni dzień: {date}",
       "ins_renews_itself": "Odnawia się samo {date}",
-      "ins_assistance": "Pomoc drogowa"
+      "ins_assistance": "Pomoc drogowa",
+      "read_only": "Tylko do odczytu: zmiany wprowadza administrator Home Assistant.",
+      "people": "Osoby",
+      "people_none": "Nieprzypisany",
+      "people_edit": "Wybierz",
+      "people_title": "Osoby: {name}",
+      "people_help": "Wybierz, do kogo należy ten samochód. To osoby z Ustawienia → Osoby.",
+      "mine": "Twój",
+      "error_unknown_person": "Ta osoba już nie istnieje w Home Assistant.",
+      "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator."
     },
     "de": {
       "tab_cars": "Fahrzeuge",
@@ -1708,7 +1753,16 @@
       "ins_deadline_passed": "Frist abgelaufen",
       "ins_deadline_on": "Letzter Tag: {date}",
       "ins_renews_itself": "Verlängert sich von selbst am {date}",
-      "ins_assistance": "Pannenhilfe"
+      "ins_assistance": "Pannenhilfe",
+      "read_only": "Nur Lesen: Änderungen nimmt ein Home-Assistant-Administrator vor.",
+      "people": "Personen",
+      "people_none": "Nicht zugewiesen",
+      "people_edit": "Auswählen",
+      "people_title": "Personen von {name}",
+      "people_help": "Wähle, wem dieses Auto gehört. Das sind die Personen unter Einstellungen → Personen.",
+      "mine": "Deins",
+      "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
+      "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen."
     },
     "fr": {
       "tab_cars": "Véhicules",
@@ -1991,7 +2045,16 @@
       "ins_deadline_passed": "Délai dépassé",
       "ins_deadline_on": "Dernier jour : {date}",
       "ins_renews_itself": "Se renouvelle toute seule le {date}",
-      "ins_assistance": "Assistance"
+      "ins_assistance": "Assistance",
+      "read_only": "Lecture seule : les modifications sont faites par un administrateur de Home Assistant.",
+      "people": "Personnes",
+      "people_none": "Non attribué",
+      "people_edit": "Choisir",
+      "people_title": "Personnes de {name}",
+      "people_help": "Choisissez à qui appartient cette voiture. Ce sont les personnes de Paramètres → Personnes.",
+      "mine": "À vous",
+      "error_unknown_person": "Cette personne n'existe plus dans Home Assistant.",
+      "error_unauthorized": "Seul un administrateur peut faire cette modification."
     },
     "nl": {
       "tab_cars": "Voertuigen",
@@ -2274,7 +2337,16 @@
       "ins_deadline_passed": "Termijn verstreken",
       "ins_deadline_on": "Laatste dag: {date}",
       "ins_renews_itself": "Wordt vanzelf verlengd op {date}",
-      "ins_assistance": "Pechhulp"
+      "ins_assistance": "Pechhulp",
+      "read_only": "Alleen lezen: wijzigingen worden gedaan door een beheerder van Home Assistant.",
+      "people": "Personen",
+      "people_none": "Niet toegewezen",
+      "people_edit": "Kiezen",
+      "people_title": "Personen van {name}",
+      "people_help": "Kies van wie deze auto is. Dit zijn de personen in Instellingen → Personen.",
+      "mine": "Van jou",
+      "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
+      "error_unauthorized": "Alleen een beheerder kan deze wijziging doen."
     },
     "nb": {
       "tab_cars": "Kjøretøy",
@@ -2557,7 +2629,16 @@
       "ins_deadline_passed": "Fristen er ute",
       "ins_deadline_on": "Siste dag: {date}",
       "ins_renews_itself": "Fornyes av seg selv {date}",
-      "ins_assistance": "Veihjelp"
+      "ins_assistance": "Veihjelp",
+      "read_only": "Kun lesing: endringer gjøres av en administrator i Home Assistant.",
+      "people": "Personer",
+      "people_none": "Ikke tildelt",
+      "people_edit": "Velg",
+      "people_title": "Personer for {name}",
+      "people_help": "Velg hvem denne bilen tilhører. Det er personene i Innstillinger → Personer.",
+      "mine": "Din",
+      "error_unknown_person": "Den personen finnes ikke lenger i Home Assistant.",
+      "error_unauthorized": "Bare en administrator kan gjøre denne endringen."
     },
     "da": {
       "tab_cars": "Køretøjer",
@@ -2840,7 +2921,16 @@
       "ins_deadline_passed": "Fristen er overskredet",
       "ins_deadline_on": "Sidste dag: {date}",
       "ins_renews_itself": "Fornyes af sig selv {date}",
-      "ins_assistance": "Vejhjælp"
+      "ins_assistance": "Vejhjælp",
+      "read_only": "Kun læsning: ændringer foretages af en administrator i Home Assistant.",
+      "people": "Personer",
+      "people_none": "Ikke tildelt",
+      "people_edit": "Vælg",
+      "people_title": "Personer for {name}",
+      "people_help": "Vælg, hvem denne bil tilhører. Det er personerne i Indstillinger → Personer.",
+      "mine": "Din",
+      "error_unknown_person": "Den person findes ikke længere i Home Assistant.",
+      "error_unauthorized": "Kun en administrator kan foretage denne ændring."
     },
     "el": {
       "tab_cars": "Οχήματα",
@@ -3123,7 +3213,16 @@
       "ins_deadline_passed": "Η προθεσμία πέρασε",
       "ins_deadline_on": "Τελευταία ημέρα: {date}",
       "ins_renews_itself": "Ανανεώνεται μόνη της στις {date}",
-      "ins_assistance": "Οδική βοήθεια"
+      "ins_assistance": "Οδική βοήθεια",
+      "read_only": "Μόνο ανάγνωση: τις αλλαγές τις κάνει ένας διαχειριστής του Home Assistant.",
+      "people": "Άτομα",
+      "people_none": "Δεν έχει οριστεί",
+      "people_edit": "Επιλογή",
+      "people_title": "Άτομα του {name}",
+      "people_help": "Επίλεξε σε ποιον ανήκει αυτό το αυτοκίνητο. Είναι τα άτομα από Ρυθμίσεις → Άτομα.",
+      "mine": "Δικό σου",
+      "error_unknown_person": "Αυτό το άτομο δεν υπάρχει πια στο Home Assistant.",
+      "error_unauthorized": "Μόνο ένας διαχειριστής μπορεί να κάνει αυτή την αλλαγή."
     },
     "sl": {
       "tab_cars": "Vozila",
@@ -3406,6 +3505,15 @@
       "ins_deadline_passed": "Rok je minil",
       "ins_deadline_on": "Zadnji dan: {date}",
       "ins_renews_itself": "Samo se podaljša {date}",
-      "ins_assistance": "Pomoč na cesti"
+      "ins_assistance": "Pomoč na cesti",
+      "read_only": "Samo za branje: spremembe naredi skrbnik Home Assistanta.",
+      "people": "Osebe",
+      "people_none": "Ni dodeljeno",
+      "people_edit": "Izberi",
+      "people_title": "Osebe vozila {name}",
+      "people_help": "Izberi, komu pripada to vozilo. To so osebe v Nastavitve → Osebe.",
+      "mine": "Tvoje",
+      "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
+      "error_unauthorized": "To spremembo lahko naredi samo skrbnik."
     }
   };

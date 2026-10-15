@@ -37,7 +37,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api.account import DeepalAccount
 from .api.client import DeepalClient
-from .api.errors import DeepalAuthError, DeepalError
+from .api.errors import DeepalAuthError, DeepalError, DeepalRateLimitError
 from .api.models import VehicleInfo
 from .api.mqtt.client import MqttReading
 from .debug.recorder import DebugRecorder
@@ -146,6 +146,16 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         except UpdateFailed as err:
             self.recorder.record("update", ok=False, error=str(err))
             raise
+        except DeepalRateLimitError as err:
+            # El servidor pide esperar (HTTP 429): la siguiente lectura se
+            # retrasa lo que pida, pero nunca se adelanta a la normal. No se
+            # avisa al usuario: es pasajero (queda en el registro y en los
+            # diagnósticos).
+            wait = max(err.retry_after or 0.0, self.update_interval.total_seconds())
+            self.recorder.record("update", ok=False, error=str(err), retry_after_s=wait)
+            raise UpdateFailed(
+                f"Deepal pide esperar antes de la siguiente lectura: {err}", retry_after=wait
+            ) from err
         except DeepalError as err:
             self.recorder.record("update", ok=False, error=str(err))
             raise UpdateFailed(f"No se pudo leer el vehículo: {err}") from err
@@ -192,6 +202,10 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
             rest = await self.client.get_condition(self.vehicle.vehicle_id)
         except DeepalAuthError:
             raise
+        except DeepalRateLimitError:
+            if reading is None:
+                raise  # sin datos de ninguna fuente: se espera lo que pida
+            warnings.append("REST: el servidor pide esperar")
         except DeepalError as err:
             if reading is None:
                 raise UpdateFailed(

@@ -21,10 +21,10 @@
            <h2>${this._t(`section_${kind}`)}<small>${escapeHtml(car.name)} · ${escapeHtml(car.model)}</small></h2>
            <button class="x" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button></div>
          ${body}
-         <div class="ifoot"><button class="gearb" data-action="configure" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button><span></span>${buttons || ""}
+         <div class="ifoot">${this._admin() ? `<button class="gearb" data-action="configure" aria-label="${this._t("configure")}"><ha-icon icon="mdi:cog"></ha-icon></button>` : ""}<span></span>${buttons || ""}
            <button class="tb" data-action="close">${this._t("close")}</button></div>`,
         (action, open, target) => {
-          if (action === "configure") {
+          if (action === "configure" && this._admin()) {
             open.close();
             return this._do_gear({ car: car.id, kind });
           }
@@ -75,7 +75,7 @@
             number: item.number, date: this._date(item.date), km: this._number(item.km) })}</div>`).join("")
           : `<div class="hist"><ha-icon icon="mdi:history"></ha-icon>${this._t("mt_no_history")}</div>`}`;
       const buttons = `${car.manual_url ? `<a class="tb" href="${escapeHtml(car.manual_url)}" target="_blank" rel="noopener noreferrer">${this._t("manual")}</a>` : ""}
-        <button class="tb fill" data-action="register">${this._t("mt_register")}</button>`;
+        ${this._admin() ? `<button class="tb fill" data-action="register">${this._t("mt_register")}</button>` : ""}`;
       this._infoWindow(car, "maintenance", "mdi:wrench", body, buttons, (action, open) => {
         if (action !== "register") return;
         open.close();
@@ -127,7 +127,7 @@
         ${history.length ? history.map((date) => `<div class="hist"><ha-icon icon="mdi:check"></ha-icon>${this._t("itv_history_item", { date: this._date(date) })}</div>`).join("")
           : `<div class="hist"><ha-icon icon="mdi:history"></ha-icon>${this._t("itv_no_history")}</div>`}`;
       this._infoWindow(car, "itv", "mdi:clipboard-check-outline", body,
-        `<button class="tb fill" data-action="register">${this._t("itv_register")}</button>`, (action, open) => {
+        this._admin() ? `<button class="tb fill" data-action="register">${this._t("itv_register")}</button>` : "", (action, open) => {
           if (action !== "register") return;
           open.close();
           this._register_itv(car);

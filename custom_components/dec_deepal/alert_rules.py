@@ -3,7 +3,7 @@
 Lógica pura (sin Home Assistant), para poder probarla sola. El envío y la
 configuración están en ``alerts.py``.
 
-Tipos de aviso (el usuario activa los que quiera en Configurar → Avisos):
+Tipos de aviso (el usuario activa los que quiera en el panel DEC Deepal → Avisos):
 
 - **Carga iniciada / interrumpida / terminada.** Se detectan comparando la
   lectura anterior con la nueva (ver :func:`charge_event`).
@@ -467,6 +467,11 @@ def panel_name(language: str) -> str:
 def backup_text(key: str, language: str) -> str:
     """Textos de la copia de los datos: ``download`` (enlace) y ``notification`` (aviso)."""
     return _texts(language)[f"backup_{key}"]
+
+
+def pin_armed_text(seconds: int, language: str) -> str:
+    """Aviso "Comandos con PIN permitidos durante N segundos" (Opción B)."""
+    return _texts(language)["pin_armed"].format(seconds=seconds)
 
 
 def format_number(value: float, language: str) -> str:

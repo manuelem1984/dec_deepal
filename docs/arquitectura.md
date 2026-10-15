@@ -27,8 +27,9 @@ custom_components/dec_deepal/
 ├── manifest.json          Metadatos para Home Assistant / HACS
 ├── const.py               Constantes (claves de opciones, URLs de iconos...)
 ├── runtime.py             Objetos vivos de una cuenta (entry.runtime_data)
-├── config_flow.py         Asistente de alta (país → método → código → coches)
-├── options_flow.py        "Configurar": apariencia, PIN, avanzado
+├── config_flow.py         Asistente de alta (país → correo → código → coches)
+├── repairs.py             Asistentes de Reparaciones (configurar, coche nuevo o retirado)
+├── vehicle_sync.py        Coches nuevos o retirados de la cuenta (cada 30 min)
 ├── coordinator.py         Lecturas periódicas de UN coche
 ├── command_runner.py      Aduana de comandos de UN coche
 ├── entity.py              Entidad base (dispositivo, nombre, icono)
@@ -39,7 +40,11 @@ custom_components/dec_deepal/
 │   ├── src/               Su código, por módulos (ver docs/tarjeta.md)
 │   └── dec-deepal-card.js Generado: los módulos unidos (lo que carga HA)
 ├── frontend_panel/        Panel de la barra lateral (ver docs/panel.md), hecho igual
-├── panel.py               Registro del panel y sus órdenes (WebSocket)
+├── panel/                 Lado de la integración del panel (WebSocket), por pestañas
+│   ├── __init__.py        Registro y lista de órdenes
+│   ├── comun.py           Permisos (administrador / solo lectura), coches y errores
+│   ├── estado.py          Lo que pinta el panel, según quién mira
+│   └── coches.py, avisos.py, datos.py, ajustes.py   Órdenes de cada pestaña
 ├── services.py/.yaml      Servicios: captura de depuración y registrar mantenimiento
 ├── alerts.py              Avisos al móvil y fichas de mantenimiento, ITV y seguro
 ├── debug/history.py       Qué señales cambian entre lecturas (historial del diagnóstico; sin HA)

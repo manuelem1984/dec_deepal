@@ -6,7 +6,7 @@
       super();
       this.attachShadow({ mode: "open" });
       this._tab = "cars";
-      this._state = null; // lo que devuelve "state" (panel.py)
+      this._state = null; // lo que devuelve "state" (panel/)
       this._error = "";
       this._open = new Set(); // apartados de avisos desplegados: "<coche>/<apartado>"
       this._drafts = {}; // avisos cambiados y sin guardar, por coche
@@ -118,6 +118,16 @@
       return this._state.cars.find((car) => car.id === id);
     }
 
+    /** ¿Puede cambiar cosas? (los que no son administradores, solo miran). */
+    _admin() {
+      return !this._state || this._state.admin !== false;
+    }
+
+    /** Pestañas que puede ver quien está mirando. */
+    _tabs() {
+      return TABS.filter(([, , adminOnly]) => !adminOnly || this._admin());
+    }
+
     /** Foto del coche: la entidad de imagen de la integración (de lado; si no, la isométrica). */
     _photo(car) {
       const hass = this._hass;
@@ -139,7 +149,8 @@
       const root = this.shadowRoot;
       const scroller = root.querySelector(".scroll");
       const top = scroller ? scroller.scrollTop : 0;
-      const tabs = TABS.map(
+      if (!this._tabs().some(([key]) => key === this._tab)) this._tab = "cars";
+      const tabs = this._tabs().map(
         ([key, icon]) =>
           `<button class="${key === this._tab ? "on" : ""}" data-action="tab" data-tab="${key}"><ha-icon icon="${icon}"></ha-icon>${this._t(`tab_${key}`)}</button>`
       ).join("");
@@ -147,7 +158,7 @@
       if (this._error) view = `<div class="empty">${escapeHtml(this._error)}<br><br><button class="btn o" data-action="reload">${this._t("retry")}</button></div>`;
       else if (!this._state) view = `<div class="empty">${this._t("loading")}</div>`;
       else if (!this._state.cars.length) view = `<div class="empty">${this._t("no_cars")}</div>`;
-      else view = this[`_view_${this._tab}`]();
+      else view = (this._admin() ? "" : `<div class="ro"><ha-icon icon="mdi:eye-outline"></ha-icon>${this._t("read_only")}</div>`) + this[`_view_${this._tab}`]();
       root.innerHTML = `<style>${PANEL_CSS}</style>
         <div class="page">
           <div class="bar">
@@ -178,6 +189,7 @@
     _onClick(event) {
       const target = event.composedPath().find((node) => node.dataset && node.dataset.action);
       if (!target) return;
+      if (!this._admin() && !READ_ONLY_ACTIONS.has(target.dataset.action)) return;
       const handler = this[`_do_${target.dataset.action.replace(/-/g, "_")}`];
       if (handler) handler.call(this, target.dataset, target, event);
     }

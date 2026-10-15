@@ -61,28 +61,6 @@
         "catalog_error": "Einer der Kataloge der Integration enthält Fehler. Prüfe das Home-Assistant-Protokoll."
       }
     },
-    "options": {
-      "error": {
-        "pin_required": "Gib die PIN ein, um die Fernsteuerung zu aktivieren.",
-        "pin_invalid": "Falsche PIN oder mit einem anderen Konto erstellt.",
-        "pin_rate_limited": "Zu viele PIN-Versuche. Warte oder setze sie in der offiziellen App zurück.",
-        "invalid_url": "Gib eine vollständige Webadresse ein (beginnend mit https://).",
-        "cannot_connect": "Keine Verbindung zum Deepal-Server.",
-        "invalid_file": "Die Datei ist keine DEC-Deepal-Sicherung oder sie ist beschädigt.",
-        "newer_file": "Die Sicherung stammt aus einer neueren Version der Integration. Aktualisiere DEC Deepal und versuche es erneut.",
-        "empty_file": "Die Sicherung enthält keine Fahrzeugdaten.",
-        "no_selection": "Wähle mindestens ein Fahrzeug.",
-        "confirm_required": "Setze das Häkchen, um das Löschen zu bestätigen."
-      },
-      "abort": {
-        "not_loaded": "Die Integration ist nicht geladen. Prüfe das Protokoll und versuche es erneut.",
-        "no_data": "Es sind keine Fahrzeugdaten gespeichert.",
-        "data_imported": "Sicherung geladen: {cars}.",
-        "data_deleted": "Daten gelöscht: {cars}.",
-        "data_sent": "Benachrichtigung an {device} gesendet. Tippe sie auf dem Handy an, um die Sicherung herunterzuladen.",
-        "no_mobile": "Es gibt kein Handy mit der Home-Assistant-App."
-      }
-    },
     "issues": {
       "vehicle_not_configured": {
         "title": "Richte dein Fahrzeug ein: {vehicle}",
@@ -112,45 +90,41 @@
             "entry_not_found": "Das Konto existiert nicht mehr."
           }
         }
+      },
+      "vehicle_added": {
+        "title": "Neues Auto in deinem Konto: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "{vehicle} hinzufügen",
+              "description": "{vehicle} ist in deinem Deepal-Konto, aber nicht in der Integration. Drücke Absenden, um es hinzuzufügen; danach erscheint der Hinweis „Fahrzeug einrichten“, um das Modell zu wählen. Wenn du es nicht in Home Assistant willst, ignoriere diesen Hinweis."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Das Konto existiert nicht mehr."
+          }
+        }
+      },
+      "vehicle_removed": {
+        "title": "{vehicle} ist nicht mehr in deinem Konto",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "{vehicle} entfernen",
+              "description": "{vehicle} erscheint nicht mehr in deinem Deepal-Konto (wurde die Freigabe beendet?). Drücke Absenden, um es mit seinen Entitäten aus Home Assistant zu entfernen. Wartungs-, HU- und Versicherungsdaten bleiben erhalten, falls es zurückkommt."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Das Konto existiert nicht mehr."
+          }
+        }
       }
     },
     "selector": {
-      "pin_mode": {
-        "options": {
-          "direct": "Option A — direkte Befehle",
-          "armed": "Option B — erst entsperren (sicherer)"
-        }
-      },
-      "arm_seconds": {
-        "options": {
-          "10": "10 Sekunden",
-          "20": "20 Sekunden",
-          "30": "30 Sekunden",
-          "60": "60 Sekunden"
-        }
-      },
       "wheels": {
         "options": {
           "cover": "20\" mit Aero-Abdeckung",
           "open": "20\" ohne Aero-Abdeckung"
-        }
-      },
-      "alert_type": {
-        "options": {
-          "charge_started": "Laden gestartet",
-          "charge_interrupted": "Laden unterbrochen",
-          "charge_finished": "Laden beendet",
-          "warnings": "Warnleuchten im Cockpit",
-          "tires": "Reifen (wenn das Auto die Warnung einschaltet)",
-          "key_battery": "Schlüsselbatterie schwach"
-        }
-      },
-      "insurance_kind": {
-        "options": {
-          "third_party": "Haftpflicht",
-          "third_party_plus": "Teilkasko",
-          "comprehensive_excess": "Vollkasko mit Selbstbeteiligung",
-          "comprehensive": "Vollkasko ohne Selbstbeteiligung"
         }
       }
     },
@@ -640,8 +614,8 @@
     "ordinal": "{number}.",
     "date_format": "%d.%m.%Y",
     "panel_target": "Home-Assistant-Benachrichtigungen",
-    "backup_download": "Sicherung herunterladen",
-    "backup_notification": "Sicherung der Daten deiner Fahrzeuge. Tippe zum Herunterladen (der Link läuft in 10 Minuten ab)."
+    "backup_notification": "Sicherung der Daten deiner Fahrzeuge. Tippe zum Herunterladen (der Link läuft in 10 Minuten ab).",
+    "pin_armed": "Befehle mit PIN für {seconds} Sekunden erlaubt."
   },
   "tarjeta": {
     "card_description": "Dein Deepal auf einen Blick: Fahrzeugansicht, Batterie, Komfort und Schnellaktionen.",
@@ -1081,7 +1055,16 @@
     "ins_deadline_passed": "Frist abgelaufen",
     "ins_deadline_on": "Letzter Tag: {date}",
     "ins_renews_itself": "Verlängert sich von selbst am {date}",
-    "ins_assistance": "Pannenhilfe"
+    "ins_assistance": "Pannenhilfe",
+    "read_only": "Nur Lesen: Änderungen nimmt ein Home-Assistant-Administrator vor.",
+    "people": "Personen",
+    "people_none": "Nicht zugewiesen",
+    "people_edit": "Auswählen",
+    "people_title": "Personen von {name}",
+    "people_help": "Wähle, wem dieses Auto gehört. Das sind die Personen unter Einstellungen → Personen.",
+    "mine": "Deins",
+    "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
+    "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen."
   },
   "catalogo": {
     "operacion_general_inspection": "Allgemeine Inspektion (Antrieb, Batterie, Hochvolt, Bremsen und Lenkung)",

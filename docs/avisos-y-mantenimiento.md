@@ -11,7 +11,7 @@ Desde la 2.5.0, los avisos se eligen **uno a uno** y con sus plazos en el
 [panel.md](panel.md)). Lo que sigue describe el apartado clásico, que sigue
 funcionando y es una versión resumida de lo mismo.
 
-**Configurar → Avisos al móvil** (uno por coche). Cada coche reparte sus
+**Panel DEC Deepal → Avisos** (uno por coche). Cada coche reparte sus
 avisos en cuatro grupos, y cada grupo tiene su lista de destinos:
 
 | Grupo | Qué avisos lleva |
@@ -66,7 +66,7 @@ Detalles:
 
 ## Mantenimiento
 
-**Configurar → Mantenimiento** (uno por coche). Se indica:
+**Panel DEC Deepal → Coches → Mantenimiento** (uno por coche). Se indica:
 
 - **Revisiones ya pasadas.** 0 si el coche aún no ha pasado ninguna.
 - **Fecha y kilómetros de la última revisión.** Con 0 revisiones: la fecha de
@@ -104,13 +104,13 @@ con la situación actual.
 
 - **En la tarjeta:** pulsar la llave inglesa → *Registrar mantenimiento* →
   confirmar. Anota la fecha de hoy y los kilómetros actuales.
-- **En Configurar → Mantenimiento → Registrar un mantenimiento hecho:** permite
+- **En el panel DEC Deepal → Coches → Mantenimiento → Registrar:** permite
   poner otra fecha y otros kilómetros.
 - **Acción** `dec_deepal.register_maintenance` (para automatizaciones).
 
 La revisión queda en el historial y se empieza a contar para la siguiente.
-Para corregir un error: *Configurar → Mantenimiento → Corregir los datos o
-desactivar*.
+Para corregir un error: *Panel DEC Deepal → Coches → Mantenimiento*, con el
+lápiz de la ficha (o desactivarla).
 
 ### Qué incluye cada revisión
 
@@ -130,7 +130,7 @@ necesitarlas antes: manda lo que diga el taller.
 
 ## ITV
 
-**Configurar → ITV** (uno por coche): fecha de matriculación y, si ya ha
+**Panel DEC Deepal → Coches → ITV** (uno por coche): fecha de matriculación y, si ya ha
 pasado alguna, fecha de la última ITV. La próxima se calcula con la regla de
 los turismos en España: la primera a los 4 años; después, cada 2 años mientras
 el coche tenga menos de 10, y cada año a partir de entonces. Se puede poner
@@ -148,7 +148,7 @@ acción `dec_deepal.register_itv` o poniendo la fecha en Configurar.
 
 ## Seguro
 
-**Configurar → Seguro** (uno por coche): compañía, número de póliza, tipo
+**Panel DEC Deepal → Coches → Seguro** (uno por coche): compañía, número de póliza, tipo
 (terceros, terceros ampliado, todo riesgo con o sin franquicia), fecha de
 renovación, días de antelación para desistir (30 por defecto) y dos teléfonos
 opcionales (asistencia en carretera y compañía).
@@ -175,14 +175,14 @@ El mantenimiento, la ITV, el seguro y los avisos ya enviados se guardan en
 cuenta. Entra en las copias de seguridad de Home Assistant.
 
 Con ellos se guarda una copia de la **apariencia** (modelo, versión, color y
-llanta). La que manda es la de Configurar → Apariencia; la copia sirve para
+llanta). La que manda es la del panel DEC Deepal → Coches → Apariencia; la copia sirve para
 devolvérsela al coche si la cuenta se quita y se vuelve a añadir, y viaja en
 las copias de seguridad. El PIN y los avisos al móvil son de la cuenta: no
 se guardan con el coche.
 
 - **Quitar la cuenta no borra los datos.** Al volver a añadirla, cada coche
   recupera su historial, aunque el servidor le dé otro identificador.
-- **Copia de seguridad propia:** Configurar → Datos de los coches →
+- **Copia de seguridad propia:** el panel DEC Deepal → Datos →
   *Descargar una copia* genera un fichero con las fichas de todos los coches
   (el enlace caduca a los 10 minutos y se abre en el navegador, también
   desde la app del móvil). *Enviar la copia a un móvil* manda una
@@ -190,7 +190,7 @@ se guardan con el coche.
   descarga. *Cargar una copia* lo restaura en esta
   u otra instalación: deja los coches que trae como estaban en el fichero
   (fichas y apariencia) y no toca los demás. El fichero lleva la póliza y los teléfonos del seguro.
-- **Borrar:** Configurar → Datos de los coches → *Borrar datos guardados*,
+- **Borrar:** el panel DEC Deepal → Datos → *Borrar datos guardados*,
   eligiendo los coches (también los que ya no están en ninguna cuenta). Para
   no dejar nada al desinstalar, hay que borrarlos **antes** de quitar la
   cuenta.
@@ -208,7 +208,7 @@ cuenta>`): se pasa al nuevo solo, la primera vez que arranca la 2.4.0.
 | `alerts.py` | `AlertManager`: vigilancia de cada lectura y envío |
 | `vehicle_data.py` | Formato de los datos por coche, migración y copias (sin Home Assistant) |
 | `vehicle_store.py` | Almacén por bastidor, adopción del antiguo y descarga de la copia |
-| `options_flow.py` | Pasos `alerts`, `maintenance*` y `data*` |
+| `panel/` | Órdenes del panel: avisos, fichas y datos |
 | `services.py` | Acción `register_maintenance` |
 
 Pruebas: `tests/test_maintenance.py` y `tests/test_alert_manager.py`.

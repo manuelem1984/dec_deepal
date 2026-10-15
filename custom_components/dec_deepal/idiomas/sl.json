@@ -61,28 +61,6 @@
         "catalog_error": "Eden od katalogov integracije vsebuje napake. Preverite dnevnik Home Assistanta."
       }
     },
-    "options": {
-      "error": {
-        "pin_required": "Vnesite PIN, da omogočite daljinsko upravljanje.",
-        "pin_invalid": "Napačen PIN ali ustvarjen z drugim računom.",
-        "pin_rate_limited": "Preveč poskusov PIN-a. Počakajte ali ga ponastavite v uradni aplikaciji.",
-        "invalid_url": "Vnesite celoten spletni naslov (ki se začne s https://).",
-        "cannot_connect": "Povezava s strežnikom Deepal ni uspela.",
-        "invalid_file": "Datoteka ni varnostna kopija DEC Deepal ali pa je poškodovana.",
-        "newer_file": "Varnostna kopija izvira iz novejše različice integracije. Posodobite DEC Deepal in poskusite znova.",
-        "empty_file": "Varnostna kopija nima podatkov za nobeno vozilo.",
-        "no_selection": "Izberite vsaj eno vozilo.",
-        "confirm_required": "Označite polje, da potrdite brisanje."
-      },
-      "abort": {
-        "not_loaded": "Integracija ni naložena. Preverite dnevnik in poskusite znova.",
-        "no_data": "Za nobeno vozilo ni shranjenih podatkov.",
-        "data_imported": "Varnostna kopija naložena: {cars}.",
-        "data_deleted": "Podatki izbrisani: {cars}.",
-        "data_sent": "Obvestilo poslano na {device}. Tapnite ga na telefonu, da prenesete varnostno kopijo.",
-        "no_mobile": "Ni telefona z aplikacijo Home Assistant."
-      }
-    },
     "issues": {
       "vehicle_not_configured": {
         "title": "Nastavite svoje vozilo: {vehicle}",
@@ -112,45 +90,41 @@
             "entry_not_found": "Račun ne obstaja več."
           }
         }
+      },
+      "vehicle_added": {
+        "title": "Novo vozilo v tvojem računu: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "Dodaj {vehicle}",
+              "description": "{vehicle} je v tvojem računu Deepal, ni pa v integraciji. Pritisni Pošlji, da ga dodaš; nato se prikaže obvestilo »Nastavi vozilo«, kjer izbereš model. Če ga v Home Assistantu ne želiš, to obvestilo prezri."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Račun ne obstaja več."
+          }
+        }
+      },
+      "vehicle_removed": {
+        "title": "{vehicle} ni več v tvojem računu",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "Odstrani {vehicle}",
+              "description": "{vehicle} se ne prikazuje več v tvojem računu Deepal (je skupna raba prenehala?). Pritisni Pošlji, da ga z njegovimi entitetami odstraniš iz Home Assistanta. Podatki o servisih, tehničnih pregledih in zavarovanju se ohranijo, če se vrne."
+            }
+          },
+          "abort": {
+            "entry_not_found": "Račun ne obstaja več."
+          }
+        }
       }
     },
     "selector": {
-      "pin_mode": {
-        "options": {
-          "direct": "Možnost A — neposredni ukazi",
-          "armed": "Možnost B — najprej odkleni (varneje)"
-        }
-      },
-      "arm_seconds": {
-        "options": {
-          "10": "10 sekund",
-          "20": "20 sekund",
-          "30": "30 sekund",
-          "60": "60 sekund"
-        }
-      },
       "wheels": {
         "options": {
           "cover": "20\" z aerodinamičnim pokrovom",
           "open": "20\" brez aerodinamičnega pokrova"
-        }
-      },
-      "alert_type": {
-        "options": {
-          "charge_started": "Polnjenje se je začelo",
-          "charge_interrupted": "Polnjenje prekinjeno",
-          "charge_finished": "Polnjenje končano",
-          "warnings": "Opozorilne lučke na armaturni plošči",
-          "tires": "Pnevmatike (ko avto vklopi opozorilo)",
-          "key_battery": "Baterija ključa je skoraj prazna"
-        }
-      },
-      "insurance_kind": {
-        "options": {
-          "third_party": "Avtomobilska odgovornost",
-          "third_party_plus": "Delni kasko",
-          "comprehensive_excess": "Polni kasko z odbitno franšizo",
-          "comprehensive": "Polni kasko brez odbitne franšize"
         }
       }
     },
@@ -640,8 +614,8 @@
     "ordinal": "{number}.",
     "date_format": "%d. %m. %Y",
     "panel_target": "Obvestila Home Assistanta",
-    "backup_download": "Prenesi varnostno kopijo",
-    "backup_notification": "Varnostna kopija podatkov vaših vozil. Tapnite za prenos (povezava poteče čez 10 minut)."
+    "backup_notification": "Varnostna kopija podatkov vaših vozil. Tapnite za prenos (povezava poteče čez 10 minut).",
+    "pin_armed": "Ukazi s kodo PIN so dovoljeni {seconds} s."
   },
   "tarjeta": {
     "card_description": "Vaš Deepal na prvi pogled: pogled avtomobila, baterija, udobje in hitra dejanja.",
@@ -1081,7 +1055,16 @@
     "ins_deadline_passed": "Rok je minil",
     "ins_deadline_on": "Zadnji dan: {date}",
     "ins_renews_itself": "Samo se podaljša {date}",
-    "ins_assistance": "Pomoč na cesti"
+    "ins_assistance": "Pomoč na cesti",
+    "read_only": "Samo za branje: spremembe naredi skrbnik Home Assistanta.",
+    "people": "Osebe",
+    "people_none": "Ni dodeljeno",
+    "people_edit": "Izberi",
+    "people_title": "Osebe vozila {name}",
+    "people_help": "Izberi, komu pripada to vozilo. To so osebe v Nastavitve → Osebe.",
+    "mine": "Tvoje",
+    "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
+    "error_unauthorized": "To spremembo lahko naredi samo skrbnik."
   },
   "catalogo": {
     "operacion_general_inspection": "Splošni pregled (pogonska enota, baterija, visoka napetost, zavore in krmiljenje)",

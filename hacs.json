@@ -1,6 +1,6 @@
 {
   "name": "DEC Deepal",
   "homeassistant": "2026.3.0",
-  "country": ["ES"],
+  "country": ["ES", "PT", "IT", "DE", "FR"],
   "render_readme": true
 }

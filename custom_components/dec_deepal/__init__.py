@@ -24,6 +24,7 @@ from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
@@ -80,6 +81,7 @@ from .runtime import (
 )
 from .services import async_register_services
 from .vehicle_store import async_get_store, async_register_export
+from .vehicle_sync import SYNC_INTERVAL, async_sync_vehicles, delete_issues
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -180,7 +182,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     )
 
     # --- Un contexto por coche -----------------------------------------------
-    await _refresh_vehicle_list(hass, entry, client)
+    await async_sync_vehicles(hass, entry, client)
     await _restore_appearance(hass, entry, registries.vehicles.models)
     options = entry.options
     appearance_by_vehicle: dict = options.get(OPT_APPEARANCE, {})
@@ -278,6 +280,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             await hass.config_entries.async_reload(updated.entry_id)
 
     entry.async_on_unload(entry.add_update_listener(_on_entry_updated))
+
+    # Coches nuevos o retirados de la cuenta (avisos en Reparaciones).
+    def _sync(_now: object) -> None:
+        entry.async_create_background_task(
+            hass, async_sync_vehicles(hass, entry, client), f"{DOMAIN}_sync_vehicles"
+        )
+
+    entry.async_on_unload(async_track_time_interval(hass, _sync, SYNC_INTERVAL))
     return True
 
 
@@ -301,10 +311,11 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
 
     Los datos de los coches (mantenimiento, ITV, seguro) **se conservan**:
     son del coche, y vuelven solos si se añade la cuenta otra vez. Se borran
-    desde Configurar → Datos de los coches.
+    desde el panel DEC Deepal → Datos.
     """
     for raw_vehicle in entry.data.get(CONF_VEHICLES, []):
         ir.async_delete_issue(hass, DOMAIN, issue_id(str(raw_vehicle.get("vehicle_id"))))
+    delete_issues(hass, entry)
     # Si la cuenta aún tenía el almacén antiguo (de la 2.3.0), se pasa al de
     # coches antes de perder la relación entre cada coche y su bastidor.
     hass.data.get(DOMAIN, {}).get(_RECORDERS_KEY, {}).pop(entry.entry_id, None)
@@ -366,31 +377,6 @@ async def _restore_appearance(
         hass.config_entries.async_update_entry(
             entry, options={**entry.options, OPT_APPEARANCE: appearance}
         )
-
-
-async def _refresh_vehicle_list(
-    hass: HomeAssistant, entry: DecDeepalConfigEntry, client: DeepalClient
-) -> None:
-    """Actualiza los datos guardados de cada coche (matrícula, imagen, apodo...).
-
-    Los datos se guardaron al configurar la cuenta; si el servidor ha añadido
-    o cambiado algo (p. ej. la matrícula, que versiones anteriores no
-    guardaban), se actualizan sin recargar (no cambian las opciones). Solo se
-    tocan los coches ya elegidos. Nunca falla: si no hay red, se sigue con lo
-    guardado.
-    """
-    try:
-        fresh = {vehicle.vehicle_id: vehicle for vehicle in await client.get_vehicles()}
-    except DeepalError as err:
-        _LOGGER.debug("No se pudo actualizar la lista de vehículos: %s", err)
-        return
-    stored = entry.data[CONF_VEHICLES]
-    updated = [
-        {**item, **fresh[item["vehicle_id"]].to_dict()} if item.get("vehicle_id") in fresh else item
-        for item in stored
-    ]
-    if updated != stored:
-        hass.config_entries.async_update_entry(entry, data={**entry.data, CONF_VEHICLES: updated})
 
 
 async def _fetch_capabilities(client: DeepalClient, info: VehicleInfo) -> Capabilities | None:

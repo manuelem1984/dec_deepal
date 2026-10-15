@@ -3,3 +3,6 @@
 # dependencias (aiohttp, cryptography, PyYAML...), necesarias porque importar
 # custom_components.dec_deepal carga también su __init__.py.
 pytest-homeassistant-custom-component
+# Para comprobar que los formularios se pueden mandar a la interfaz (lo hacía
+# Home Assistant hasta la 2026.9; desde la 2026.10 ya no lo trae).
+voluptuous-serialize

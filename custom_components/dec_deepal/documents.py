@@ -2,7 +2,7 @@
 
 Lógica pura (sin Home Assistant), como ``maintenance.py``. La usan
 ``alerts.py`` (guarda las fichas y envía los avisos), las entidades y
-Configurar → ITV / Seguro.
+el panel DEC Deepal → Coches → ITV / Seguro.
 
 ITV
 ---

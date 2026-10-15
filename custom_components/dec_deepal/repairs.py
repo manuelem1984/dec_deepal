@@ -1,4 +1,12 @@
-"""Reparaciones: asistente "Configura tu vehículo".
+"""Reparaciones: asistentes de los avisos de la integración.
+
+- "Configura tu vehículo" (:class:`VehicleSetupFlow`), explicado abajo.
+- "Coche nuevo en tu cuenta" y "Este coche ya no está en tu cuenta"
+  (:class:`VehicleAddedFlow`, :class:`VehicleRemovedFlow`): los crea
+  ``vehicle_sync.py``. Un solo paso de confirmación.
+
+Configura tu vehículo
+---------------------
 
 Mientras un coche no tiene modelo elegido, funciona como "genérico" y aparece
 un aviso en **Ajustes → Reparaciones** (lo crea ``__init__.py``). Al pulsar
@@ -11,21 +19,24 @@ un aviso en **Ajustes → Reparaciones** (lo crea ``__init__.py``). Al pulsar
 Al terminar se guardan las opciones; la integración se recarga sola, crea las
 entidades que corresponden a ese modelo/versión y el aviso desaparece.
 
-Es lo mismo que Configurar → Apariencia (ambos usan ``appearance.py``).
+Es lo mismo que el panel DEC Deepal → Coches → Apariencia (ambos usan ``appearance.py``).
 """
 
 from __future__ import annotations
 
 from typing import Any
 
+import voluptuous as vol
 from homeassistant.components.repairs import RepairsFlow
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
 from .appearance import details_schema, model_schema, needs_details, updated_options
-from .const import OPT_APPEARANCE, OPT_MODEL
+from .api.models import VehicleInfo
+from .const import CONF_VEHICLES, OPT_APPEARANCE, OPT_MODEL
 from .registries.vehicles import VehicleModel
 from .runtime import DecDeepalConfigEntry, async_get_registries
+from .vehicle_sync import KIND_ADDED, KIND_REMOVED, add_vehicle, remove_vehicle
 
 
 class VehicleSetupFlow(RepairsFlow):
@@ -111,9 +122,67 @@ class VehicleSetupFlow(RepairsFlow):
         return self.async_create_entry(data={})
 
 
+class _ConfirmFlow(RepairsFlow):
+    """Aviso de un coche de la cuenta que se resuelve con un solo "Enviar"."""
+
+    def __init__(self, data: dict[str, Any]) -> None:
+        self._data = data
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Entrada (HA la llama con datos propios): al paso de confirmar."""
+        return await self.async_step_confirm()
+
+    async def async_step_confirm(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        """Confirmar."""
+        entry = self.hass.config_entries.async_get_entry(str(self._data.get("entry_id")))
+        if entry is None:
+            return self.async_abort(reason="entry_not_found")
+        if user_input is not None:
+            self._apply(entry)
+            return self.async_create_entry(data={})
+        return self.async_show_form(
+            step_id="confirm",
+            data_schema=vol.Schema({}),
+            description_placeholders={"vehicle": self._vehicle_name(entry)},
+        )
+
+    def _vehicle_name(self, entry: Any) -> str:
+        raise NotImplementedError
+
+    def _apply(self, entry: Any) -> None:
+        raise NotImplementedError
+
+
+class VehicleAddedFlow(_ConfirmFlow):
+    """Añadir a la integración un coche nuevo de la cuenta."""
+
+    def _vehicle_name(self, entry: Any) -> str:
+        return VehicleInfo.from_dict(self._data.get("vehicle") or {}).display_name
+
+    def _apply(self, entry: Any) -> None:
+        add_vehicle(self.hass, entry, self._data["vehicle"])
+
+
+class VehicleRemovedFlow(_ConfirmFlow):
+    """Quitar de la integración un coche que ya no está en la cuenta."""
+
+    def _vehicle_name(self, entry: Any) -> str:
+        for item in entry.data.get(CONF_VEHICLES, []):
+            if item.get("vehicle_id") == self._data.get("vehicle_id"):
+                return VehicleInfo.from_dict(item).display_name
+        return str(self._data.get("vehicle_id"))
+
+    def _apply(self, entry: Any) -> None:
+        remove_vehicle(self.hass, entry, str(self._data["vehicle_id"]))
+
+
 async def async_create_fix_flow(
     hass: HomeAssistant, issue_id: str, data: dict[str, Any] | None
 ) -> RepairsFlow:
     """Home Assistant llama aquí al pulsar "Enviar" en el aviso."""
     data = data or {}
+    if data.get("kind") == KIND_ADDED:
+        return VehicleAddedFlow(data)
+    if data.get("kind") == KIND_REMOVED:
+        return VehicleRemovedFlow(data)
     return VehicleSetupFlow(str(data.get("entry_id")), str(data.get("vehicle_id")))

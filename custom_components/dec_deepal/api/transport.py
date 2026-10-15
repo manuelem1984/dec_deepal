@@ -19,6 +19,8 @@ import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
 from typing import Any, Final
 
 import aiohttp
@@ -28,6 +30,7 @@ from .errors import (
     DeepalApiError,
     DeepalAuthError,
     DeepalConnectionError,
+    DeepalRateLimitError,
     error_from_response,
 )
 from .session import DeepalSession
@@ -188,6 +191,12 @@ class DeepalTransport:
                         raise DeepalAuthError(
                             f"HTTP {response.status} en {path}", status=response.status
                         )
+                    if response.status == 429:
+                        raise DeepalRateLimitError(
+                            f"HTTP 429 en {path}: demasiadas peticiones",
+                            status=429,
+                            retry_after=retry_after_seconds(response.headers.get("Retry-After")),
+                        )
                     try:
                         response_body = await response.json(content_type=None)
                     except (json.JSONDecodeError, aiohttp.ContentTypeError) as err:
@@ -254,3 +263,22 @@ class DeepalTransport:
             )
         except Exception:  # noqa: BLE001 - la depuración nunca debe romper nada
             _LOGGER.exception("El registro de depuración falló")
+
+
+def retry_after_seconds(value: str | None) -> float | None:
+    """Segundos de la cabecera ``Retry-After`` (número o fecha HTTP), o ``None``."""
+    if not value:
+        return None
+    text = value.strip()
+    try:
+        seconds = float(text)
+    except ValueError:
+        try:
+            when = parsedate_to_datetime(text)
+        except (TypeError, ValueError):
+            return None
+        if when.tzinfo is None:
+            when = when.replace(tzinfo=UTC)
+        seconds = (when - datetime.now(UTC)).total_seconds()
+    return max(0.0, seconds)
+

@@ -61,237 +61,6 @@
         "catalog_error": "Un catalogo dell'integrazione contiene errori. Controlla il registro di Home Assistant."
       }
     },
-    "options": {
-      "step": {
-        "init": {
-          "title": "Opzioni di DEC Deepal",
-          "menu_options": {
-            "appearance": "Aspetto del veicolo (modello, versione, colore)",
-            "pin": "Controllo remoto con PIN",
-            "alerts": "Notifiche sul telefono",
-            "maintenance": "Manutenzione",
-            "itv": "ITV (revisione periodica spagnola)",
-            "insurance": "Assicurazione",
-            "data": "Dati dei veicoli (copia ed eliminazione)",
-            "advanced": "Avanzate (intervallo, debug, manuale)"
-          }
-        },
-        "alerts": {
-          "title": "Notifiche — veicolo",
-          "description": "Scegli il veicolo. Ogni veicolo ha i propri destinatari.",
-          "data": {
-            "vehicle": "Veicolo"
-          }
-        },
-        "alerts_setup": {
-          "title": "Notifiche di {vehicle}",
-          "description": "Scegli chi viene avvisato da questo veicolo per ogni cosa. Un gruppo senza destinatari non avvisa. Ogni notifica riporta il nome del veicolo nel titolo (\"DEC Deepal {vehicle}\"). Sono notifiche normali, non critiche.",
-          "data": {
-            "car": "Notifiche del veicolo: avvisa",
-            "car_types": "Notifiche del veicolo attive",
-            "maintenance": "Manutenzione: avvisa",
-            "itv": "ITV: avvisa",
-            "insurance": "Assicurazione: avvisa",
-            "all_vehicles": "Usa lo stesso per gli altri veicoli"
-          },
-          "data_description": {
-            "car": "I telefoni e i tablet con l'app di Home Assistant, con il nome che hanno in Impostazioni → App per dispositivi mobili. Gli altri servizi di notifica compaiono come notify.nome.",
-            "maintenance": "Mancano 2 mesi, 1 mese, 15 giorni; 3.000, 2.000, 1.000 km; scaduto. Bisogna prima attivare la manutenzione del veicolo nella sua sezione. Solo tra le 8:00 e le 22:00.",
-            "itv": "Mancano 2 mesi, 1 mese, 15 giorni; scaduta. Bisogna prima attivare l'ITV del veicolo nella sua sezione. Solo tra le 8:00 e le 22:00.",
-            "insurance": "30 e 15 giorni prima del termine per la disdetta, l'ultimo giorno e al rinnovo. Bisogna prima attivare l'assicurazione del veicolo nella sua sezione. Solo tra le 8:00 e le 22:00."
-          }
-        },
-        "itv": {
-          "title": "ITV — veicolo",
-          "description": "Scegli l'auto.",
-          "data": {
-            "vehicle": "Veicolo"
-          }
-        },
-        "itv_setup": {
-          "title": "ITV di {vehicle}",
-          "description": "La prossima ITV (la revisione periodica spagnola) viene calcolata automaticamente con la regola delle autovetture in Spagna: la prima a 4 anni dall'immatricolazione, poi ogni 2 anni fino ai 10 e ogni anno da allora in poi.\n\nVengono creati la spia ITV e i sensori con la data limite e i giorni mancanti. Notifiche: mancano 2 mesi, 1 mese, 15 giorni e scaduta.",
-          "data": {
-            "enabled": "Attiva l'ITV di quest'auto",
-            "registration_date": "Data di immatricolazione",
-            "last_itv_date": "Data dell'ultima ITV",
-            "next_itv_date": "Prossima ITV"
-          },
-          "data_description": {
-            "last_itv_date": "Lascia vuoto se l'auto non ne ha ancora fatta nessuna.",
-            "next_itv_date": "Lascia vuoto perché venga calcolata. Compila solo se la tua data è un'altra; vale finché non registri l'ITV successiva."
-          }
-        },
-        "insurance": {
-          "title": "Assicurazione — veicolo",
-          "description": "Scegli l'auto.",
-          "data": {
-            "vehicle": "Veicolo"
-          }
-        },
-        "insurance_setup": {
-          "title": "Assicurazione di {vehicle}",
-          "description": "Vengono creati la spia dell'assicurazione e i sensori con la data di rinnovo e l'ultimo giorno per disdire. Notifiche: 30 e 15 giorni prima di quell'ultimo giorno, il giorno stesso e al rinnovo. All'arrivo del rinnovo, la data passa automaticamente all'anno successivo.\n\nIl numero di polizza e i telefoni si vedono solo nella scheda: non viene creata nessuna entità con questi dati.",
-          "data": {
-            "enabled": "Attiva l'assicurazione di quest'auto",
-            "company": "Compagnia",
-            "policy": "Numero di polizza",
-            "insurance_kind": "Tipo di assicurazione",
-            "renewal_date": "Data di rinnovo",
-            "notice_days": "Disdetta: giorni prima del rinnovo",
-            "phone_assistance": "Telefono dell'assistenza stradale",
-            "phone_company": "Telefono della compagnia"
-          },
-          "data_description": {
-            "notice_days": "Fino a quanti giorni prima del rinnovo puoi comunicare che non rinnovi. In Spagna di solito è un mese; verifica sulla tua polizza.",
-            "phone_assistance": "Facoltativo. Se lo inserisci, la scheda mostra un pulsante per chiamare.",
-            "phone_company": "Facoltativo."
-          }
-        },
-        "maintenance": {
-          "title": "Manutenzione — veicolo",
-          "description": "Scegli l'auto.",
-          "data": {
-            "vehicle": "Veicolo"
-          }
-        },
-        "maintenance_menu": {
-          "title": "Manutenzione di {vehicle}",
-          "description": "{summary}",
-          "menu_options": {
-            "maintenance_register": "Registra un tagliando effettuato",
-            "maintenance_setup": "Correggi i dati o disattiva"
-          }
-        },
-        "maintenance_setup": {
-          "title": "Manutenzione di {vehicle}",
-          "description": "Il prossimo tagliando si conta dall'ultimo effettuato. Se l'auto non ne ha ancora fatto nessuno, indica 0 tagliandi, la data di immatricolazione e 0 km.\n\nVengono creati la spia di manutenzione e i sensori con i giorni e i chilometri mancanti. La spia si accende quando mancano 2 mesi o 3.000 km.",
-          "data": {
-            "maintenance_enabled": "Attiva la manutenzione di quest'auto",
-            "services_done": "Tagliandi già effettuati",
-            "last_date": "Data dell'ultimo tagliando (o dell'immatricolazione)",
-            "last_km": "Chilometri all'ultimo tagliando",
-            "interval_km": "Tagliando ogni (km)",
-            "interval_months": "Tagliando ogni (mesi)"
-          },
-          "data_description": {
-            "interval_km": "Il manuale della S05 indica 20.000 km o 12 mesi, a seconda di cosa arriva prima. Riducilo se fai molti tragitti brevi o guidi con polvere, fango, freddo estremo o sale."
-          }
-        },
-        "maintenance_register": {
-          "title": "Registra manutenzione di {vehicle}",
-          "description": "{summary}\n\nAl salvataggio, il tagliando viene annotato nello storico e inizia il conteggio per il successivo.",
-          "data": {
-            "service_date": "Data del tagliando",
-            "service_km": "Chilometri al tagliando"
-          }
-        },
-        "appearance": {
-          "title": "Aspetto — veicolo e modello",
-          "description": "Il modello decide quali funzioni (ed entità) ha l'auto. Finché non lo scegli, l'auto funziona in modalità generica.",
-          "data": {
-            "vehicle": "Veicolo",
-            "model": "Modello"
-          }
-        },
-        "appearance_details": {
-          "title": "Aspetto — versione e colore",
-          "description": "Versione e colore della tua {model}. Servono per l'\"Immagine DEC\", per la vista isometrica (disegnata con il tuo colore e i tuoi cerchi) e per creare solo le entità che la tua versione possiede.",
-          "data": {
-            "trim": "Versione",
-            "color": "Colore",
-            "wheels": "Cerchi (solo Max)"
-          },
-          "data_description": {
-            "wheels": "La Pro monta sempre il suo cerchio da 18\"."
-          }
-        },
-        "pin": {
-          "title": "Controllo remoto con PIN",
-          "description": "Abilita porte, finestrini e bagagliaio. Il PIN deve essere stato creato nell'app ufficiale con lo STESSO account usato da Home Assistant. Viene verificato al salvataggio.",
-          "data": {
-            "pin_enabled": "Attiva il controllo con PIN",
-            "pin": "PIN del controllo remoto",
-            "pin_mode": "Modalità",
-            "arm_seconds": "Durata dello sblocco (Opzione B)",
-            "arm_notify": "Avvisa allo sblocco (Opzione B)"
-          }
-        },
-        "advanced": {
-          "title": "Avanzate",
-          "data": {
-            "scan_minutes": "Intervallo di lettura",
-            "wake": "Risveglia l'auto quando serve",
-            "debug": "Modalità debug",
-            "manual_url": "Manuale BEV",
-            "manual_url_phev": "Manuale PHEV"
-          },
-          "data_description": {
-            "manual_url": "Link al manuale d'uso (PDF) dell'auto elettrica (BEV). La scheda lo apre nel browser da Altro → Manuale. È preimpostato quello ufficiale; se lo lasci vuoto, torna a essere usato quello.",
-            "scan_minutes": "Ogni quanto vengono letti i dati dell'auto. Valori molto bassi possono portare Deepal a limitare l'account.",
-            "wake": "Quando premi \"Aggiorna dati del veicolo\" e prima di porte/finestrini/bagagliaio, se i dati hanno più di 2 minuti, l'auto viene risvegliata e si attende il suo rapporto. Al massimo una volta ogni 5 minuti, e mai nelle letture automatiche, per preservare la batteria da 12 V.",
-            "debug": "Salva richieste e risposte complete (senza dati personali) nella diagnostica e attiva i messaggi DEBUG nel registro.",
-            "manual_url_phev": "Link al manuale d'uso (PDF) dell'auto ibrida plug-in (PHEV). La scheda lo apre nel browser da Altro → Manuale. È preimpostato quello ufficiale; se lo lasci vuoto, torna a essere usato quello."
-          }
-        },
-        "data": {
-          "title": "Dati dei veicoli",
-          "description": "Manutenzione, ITV, assicurazione e aspetto (modello, versione, colore) sono salvati per veicolo (in base al numero di telaio), non per account: se rimuovi l'account e lo aggiungi di nuovo, ogni veicolo ritrova i suoi dati.",
-          "menu_options": {
-            "data_export": "Scarica una copia",
-            "data_send": "Invia la copia a un telefono",
-            "data_import": "Carica una copia",
-            "data_delete": "Elimina i dati salvati"
-          }
-        },
-        "data_export": {
-          "title": "Scarica una copia",
-          "description": "Veicoli con dati: {cars}.\n\n{link}\n\nIl link scade dopo pochi minuti e si apre nel browser. Il file contiene il numero di polizza e i telefoni dell'assicurazione: conservalo in un posto sicuro. Se dall'app del telefono non viene scaricato, usa «Invia la copia a un telefono»."
-        },
-        "data_send": {
-          "title": "Invia la copia a un telefono",
-          "description": "Viene inviata una notifica al telefono scelto; toccandola si apre il browser e la copia viene scaricata. Il link scade dopo 10 minuti e funziona finché il telefono può raggiungere Home Assistant allo stesso indirizzo che stai usando ora.",
-          "data": {
-            "target": "Telefono"
-          }
-        },
-        "data_import": {
-          "title": "Carica una copia",
-          "description": "Scegli un file scaricato da «Scarica una copia». Sostituisce manutenzione, ITV, assicurazione e aspetto dei veicoli che contiene; gli altri veicoli non vengono toccati.",
-          "data": {
-            "file": "File della copia"
-          }
-        },
-        "data_delete": {
-          "title": "Elimina i dati salvati",
-          "description": "Elimina manutenzione, ITV e assicurazione dei veicoli scelti, che siano o meno in un account. Non si può annullare: scarica prima una copia se vuoi conservarli. L'aspetto di un veicolo che è in un account non viene eliminato: si cambia in Aspetto.",
-          "data": {
-            "cars": "Veicoli",
-            "confirm": "Sì, elimina questi dati"
-          }
-        }
-      },
-      "error": {
-        "pin_required": "Scrivi il PIN per attivare il controllo remoto.",
-        "pin_invalid": "PIN errato o creato con un altro account.",
-        "pin_rate_limited": "Troppi tentativi di PIN. Attendi o reimpostalo nell'app ufficiale.",
-        "invalid_url": "Scrivi un indirizzo web completo (che inizi con https://).",
-        "cannot_connect": "Impossibile connettersi al server Deepal.",
-        "invalid_file": "Il file non è una copia di DEC Deepal oppure è danneggiato.",
-        "newer_file": "La copia proviene da una versione più recente dell'integrazione. Aggiorna DEC Deepal e riprova.",
-        "empty_file": "La copia non contiene dati di alcun veicolo.",
-        "no_selection": "Scegli almeno un veicolo.",
-        "confirm_required": "Spunta la casella per confermare l'eliminazione."
-      },
-      "abort": {
-        "not_loaded": "L'integrazione non è caricata. Controlla il registro e riprova.",
-        "no_data": "Non ci sono dati salvati per alcun veicolo.",
-        "data_imported": "Copia caricata: {cars}.",
-        "data_deleted": "Dati eliminati: {cars}.",
-        "data_sent": "Notifica inviata a {device}. Toccala sul telefono per scaricare la copia.",
-        "no_mobile": "Non c'è nessun telefono con l'app di Home Assistant."
-      }
-    },
     "issues": {
       "vehicle_not_configured": {
         "title": "Configura il tuo veicolo: {vehicle}",
@@ -321,45 +90,41 @@
             "entry_not_found": "L'account non esiste più."
           }
         }
+      },
+      "vehicle_added": {
+        "title": "Nuova auto nel tuo account: {vehicle}",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "Aggiungi {vehicle}",
+              "description": "{vehicle} è nel tuo account Deepal ma non nell'integrazione. Premi Invia per aggiungerla; poi comparirà l'avviso «Configura il tuo veicolo» per scegliere il modello. Se non la vuoi in Home Assistant, ignora questo avviso."
+            }
+          },
+          "abort": {
+            "entry_not_found": "L'account non esiste più."
+          }
+        }
+      },
+      "vehicle_removed": {
+        "title": "{vehicle} non è più nel tuo account",
+        "fix_flow": {
+          "step": {
+            "confirm": {
+              "title": "Rimuovi {vehicle}",
+              "description": "{vehicle} non compare più nel tuo account Deepal (non è più condivisa?). Premi Invia per rimuoverla da Home Assistant con le sue entità. Le schede di manutenzione, revisione e assicurazione si conservano nel caso torni."
+            }
+          },
+          "abort": {
+            "entry_not_found": "L'account non esiste più."
+          }
+        }
       }
     },
     "selector": {
-      "pin_mode": {
-        "options": {
-          "direct": "Opzione A — comandi diretti",
-          "armed": "Opzione B — sbloccare prima (più sicuro)"
-        }
-      },
-      "arm_seconds": {
-        "options": {
-          "10": "10 secondi",
-          "20": "20 secondi",
-          "30": "30 secondi",
-          "60": "60 secondi"
-        }
-      },
       "wheels": {
         "options": {
           "cover": "20\" con copricerchio",
           "open": "20\" senza copricerchio"
-        }
-      },
-      "alert_type": {
-        "options": {
-          "charge_started": "Ricarica avviata",
-          "charge_interrupted": "Ricarica interrotta",
-          "charge_finished": "Ricarica terminata",
-          "warnings": "Spie del quadro",
-          "tires": "Pneumatici (quando l'auto accende l'avviso)",
-          "key_battery": "Batteria della chiave scarica"
-        }
-      },
-      "insurance_kind": {
-        "options": {
-          "third_party": "RC auto",
-          "third_party_plus": "RC auto con garanzie aggiuntive",
-          "comprehensive_excess": "Kasko con franchigia",
-          "comprehensive": "Kasko senza franchigia"
         }
       }
     },
@@ -849,8 +614,8 @@
     "ordinal": "{number}º",
     "date_format": "%d/%m/%Y",
     "panel_target": "Notifiche di Home Assistant",
-    "backup_download": "Scarica la copia",
-    "backup_notification": "Copia dei dati dei tuoi veicoli. Tocca per scaricarla (il link scade tra 10 minuti)."
+    "backup_notification": "Copia dei dati dei tuoi veicoli. Tocca per scaricarla (il link scade tra 10 minuti).",
+    "pin_armed": "Comandi con PIN consentiti per {seconds} secondi."
   },
   "tarjeta": {
     "card_description": "La tua Deepal a colpo d'occhio: vista dell'auto, batteria, comfort e azioni rapide.",
@@ -1290,7 +1055,16 @@
     "ins_deadline_passed": "Termine passato",
     "ins_deadline_on": "Ultimo giorno: {date}",
     "ins_renews_itself": "Si rinnova da sola il {date}",
-    "ins_assistance": "Assistenza"
+    "ins_assistance": "Assistenza",
+    "read_only": "Sola lettura: le modifiche le fa un amministratore di Home Assistant.",
+    "people": "Persone",
+    "people_none": "Non assegnato",
+    "people_edit": "Scegli",
+    "people_title": "Persone di {name}",
+    "people_help": "Scegli a chi appartiene questa auto. Sono le persone di Impostazioni → Persone.",
+    "mine": "Tua",
+    "error_unknown_person": "Quella persona non esiste più in Home Assistant.",
+    "error_unauthorized": "Solo un amministratore può fare questa modifica."
   },
   "catalogo": {
     "operacion_general_inspection": "Ispezione generale (propulsione, batteria, alta tensione, freni e sterzo)",

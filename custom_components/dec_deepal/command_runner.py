@@ -45,8 +45,9 @@ from .api.errors import (
     DeepalRateLimitError,
     DeepalSigningError,
 )
+from .alert_rules import pin_armed_text
 from .api.models import CommandResult, CommandStatus
-from .const import DOMAIN, PIN_MODE_ARMED
+from .const import DOMAIN, NAME, PIN_MODE_ARMED
 from .coordinator import WAKE_BEFORE_COMMAND_TIMEOUT, VehicleCoordinator, WakeResult
 from .debug.recorder import DebugRecorder
 
@@ -163,8 +164,8 @@ class CommandRunner:
         if self.arm_notify:
             persistent_notification.async_create(
                 self.hass,
-                f"Comandos con PIN permitidos durante {self.arm_seconds} segundos.",
-                title=f"DEC Deepal — {self.coordinator.vehicle.display_name}",
+                pin_armed_text(self.arm_seconds, self.hass.config.language),
+                title=f"{NAME} — {self.coordinator.vehicle.display_name}",
                 notification_id=f"{DOMAIN}_arm_{self.vehicle_id}",
             )
         self.recorder.record("command", name="pin_arm", stage="armed", seconds=self.arm_seconds)
@@ -282,7 +283,9 @@ class CommandRunner:
 
         self._start_cooldown(name)
         if refresh_after:
-            self.hass.async_create_background_task(
+            # Ligada a la cuenta: si se recarga o se quita, la tarea se cancela.
+            self.coordinator.config_entry.async_create_background_task(
+                self.hass,
                 self._refresh_after_command(),
                 name=f"{DOMAIN}_refresh_{self.vehicle_id}",
             )

@@ -60,237 +60,6 @@
       "catalog_error": "Um catálogo da integração tem erros. Consulte o registo do Home Assistant."
     }
   },
-  "options": {
-    "step": {
-      "init": {
-        "title": "Opções do DEC Deepal",
-        "menu_options": {
-          "appearance": "Aparência do veículo (modelo, versão, cor)",
-          "pin": "Controlo remoto com PIN",
-          "alerts": "Avisos no telemóvel",
-          "maintenance": "Manutenção",
-          "itv": "ITV (inspeção periódica)",
-          "insurance": "Seguro",
-          "data": "Dados dos veículos (cópia e eliminação)",
-          "advanced": "Avançado (intervalo, depuração, manual)"
-        }
-      },
-      "alerts": {
-        "title": "Avisos — veículo",
-        "description": "Escolha o veículo. Cada veículo tem os seus próprios destinatários.",
-        "data": {
-          "vehicle": "Veículo"
-        }
-      },
-      "alerts_setup": {
-        "title": "Avisos de {vehicle}",
-        "description": "Escolha quem este veículo avisa de cada coisa. Um grupo sem destinatários não avisa. Cada aviso leva o nome do veículo no título (\"DEC Deepal {vehicle}\"). São notificações normais, não críticas.",
-        "data": {
-          "car": "Avisos do veículo: avisar",
-          "car_types": "Avisos do veículo ativados",
-          "maintenance": "Manutenção: avisar",
-          "itv": "ITV: avisar",
-          "insurance": "Seguro: avisar",
-          "all_vehicles": "Usar o mesmo nos outros veículos"
-        },
-        "data_description": {
-          "car": "Os telemóveis e tablets com a aplicação do Home Assistant, com o nome que têm em Definições → Aplicação móvel. Outros serviços de notificação aparecem como notify.nome.",
-          "maintenance": "Faltam 2 meses, 1 mês, 15 dias; 3.000, 2.000, 1.000 km; vencida. É preciso ativar antes a manutenção do veículo na sua secção. Apenas entre as 8:00 e as 22:00.",
-          "itv": "Faltam 2 meses, 1 mês, 15 dias; vencida. É preciso ativar antes a ITV do veículo na sua secção. Apenas entre as 8:00 e as 22:00.",
-          "insurance": "30 e 15 dias antes do limite para cancelar, no último dia e ao renovar. É preciso ativar antes o seguro do veículo na sua secção. Apenas entre as 8:00 e as 22:00."
-        }
-      },
-      "itv": {
-        "title": "ITV — veículo",
-        "description": "Escolha o carro.",
-        "data": {
-          "vehicle": "Veículo"
-        }
-      },
-      "itv_setup": {
-        "title": "ITV de {vehicle}",
-        "description": "A próxima ITV (inspeção periódica) é calculada automaticamente com a regra dos ligeiros de passageiros em Espanha: a primeira 4 anos após a matrícula, depois de 2 em 2 anos até aos 10 e todos os anos a partir daí.\n\nSão criados o aviso de ITV e os sensores com a data limite e os dias que faltam. Avisos: faltam 2 meses, 1 mês, 15 dias e vencida.",
-        "data": {
-          "enabled": "Ativar a ITV deste carro",
-          "registration_date": "Data da matrícula",
-          "last_itv_date": "Data da última ITV",
-          "next_itv_date": "Próxima ITV"
-        },
-        "data_description": {
-          "last_itv_date": "Deixe vazio se o carro ainda não fez nenhuma.",
-          "next_itv_date": "Deixe vazio para ser calculada. Preencha apenas se a sua data for outra; vale até registar a ITV seguinte."
-        }
-      },
-      "insurance": {
-        "title": "Seguro — veículo",
-        "description": "Escolha o carro.",
-        "data": {
-          "vehicle": "Veículo"
-        }
-      },
-      "insurance_setup": {
-        "title": "Seguro de {vehicle}",
-        "description": "São criados o aviso do seguro e os sensores com a data de renovação e o último dia para cancelar. Avisos: 30 e 15 dias antes desse último dia, no próprio dia e na renovação. Ao chegar a renovação, a data passa automaticamente para o ano seguinte.\n\nO número da apólice e os telefones só se veem no cartão: não é criada nenhuma entidade com eles.",
-        "data": {
-          "enabled": "Ativar o seguro deste carro",
-          "company": "Seguradora",
-          "policy": "Número da apólice",
-          "insurance_kind": "Tipo de seguro",
-          "renewal_date": "Data de renovação",
-          "notice_days": "Cancelamento: dias antes da renovação",
-          "phone_assistance": "Telefone da assistência em viagem",
-          "phone_company": "Telefone da seguradora"
-        },
-        "data_description": {
-          "notice_days": "Até quantos dias antes da renovação pode avisar de que não renova. Em Espanha o habitual é um mês; confirme na sua apólice.",
-          "phone_assistance": "Opcional. Se o indicar, o cartão mostra um botão para ligar.",
-          "phone_company": "Opcional."
-        }
-      },
-      "maintenance": {
-        "title": "Manutenção — veículo",
-        "description": "Escolha o carro.",
-        "data": {
-          "vehicle": "Veículo"
-        }
-      },
-      "maintenance_menu": {
-        "title": "Manutenção de {vehicle}",
-        "description": "{summary}",
-        "menu_options": {
-          "maintenance_register": "Registar uma manutenção feita",
-          "maintenance_setup": "Corrigir os dados ou desativar"
-        }
-      },
-      "maintenance_setup": {
-        "title": "Manutenção de {vehicle}",
-        "description": "A próxima revisão conta-se a partir da última feita. Se o carro ainda não fez nenhuma, indique 0 revisões, a data da matrícula e 0 km.\n\nSão criados o aviso de manutenção e os sensores de dias e quilómetros que faltam. O aviso acende quando faltam 2 meses ou 3.000 km.",
-        "data": {
-          "maintenance_enabled": "Ativar a manutenção deste carro",
-          "services_done": "Revisões já feitas",
-          "last_date": "Data da última revisão (ou da matrícula)",
-          "last_km": "Quilómetros na última revisão",
-          "interval_km": "Revisão a cada (km)",
-          "interval_months": "Revisão a cada (meses)"
-        },
-        "data_description": {
-          "interval_km": "O manual do S05 indica 20.000 km ou 12 meses, o que ocorrer primeiro. Reduza se fizer muitos trajetos curtos ou circular com pó, lama, frio extremo ou sal."
-        }
-      },
-      "maintenance_register": {
-        "title": "Registar manutenção de {vehicle}",
-        "description": "{summary}\n\nAo guardar, a revisão fica anotada no histórico e começa a contagem para a seguinte.",
-        "data": {
-          "service_date": "Data da revisão",
-          "service_km": "Quilómetros na revisão"
-        }
-      },
-      "appearance": {
-        "title": "Aparência — veículo e modelo",
-        "description": "O modelo decide que funções (e entidades) o carro tem. Enquanto não o escolher, o carro funciona em modo genérico.",
-        "data": {
-          "vehicle": "Veículo",
-          "model": "Modelo"
-        }
-      },
-      "appearance_details": {
-        "title": "Aparência — versão e cor",
-        "description": "Versão e cor do seu {model}. Servem para a \"Imagem DEC\", para a vista isométrica (desenhada com a sua cor e as suas jantes) e para criar apenas as entidades que a sua versão tem.",
-        "data": {
-          "trim": "Versão",
-          "color": "Cor",
-          "wheels": "Jantes (só Max)"
-        },
-        "data_description": {
-          "wheels": "O Pro tem sempre a sua jante de 18\"."
-        }
-      },
-      "pin": {
-        "title": "Controlo remoto com PIN",
-        "description": "Permite portas, janelas e mala. O PIN tem de ter sido criado na app oficial com a MESMA conta que o Home Assistant usa. É verificado ao guardar.",
-        "data": {
-          "pin_enabled": "Ativar controlo com PIN",
-          "pin": "PIN de controlo remoto",
-          "pin_mode": "Modo",
-          "arm_seconds": "Duração do desbloqueio (Opção B)",
-          "arm_notify": "Avisar ao desbloquear (Opção B)"
-        }
-      },
-      "advanced": {
-        "title": "Avançado",
-        "data": {
-          "scan_minutes": "Intervalo de leitura",
-          "wake": "Acordar o carro quando for preciso",
-          "debug": "Modo de depuração",
-          "manual_url": "Manual BEV",
-          "manual_url_phev": "Manual PHEV"
-        },
-        "data_description": {
-          "manual_url": "Ligação para o manual do utilizador (PDF) do carro elétrico (BEV). O cartão abre-o no navegador em Outros → Manual. Vem com o oficial; se deixar vazio, volta a usar-se esse.",
-          "scan_minutes": "De quanto em quanto tempo se leem os dados do carro. Valores muito baixos podem levar a Deepal a limitar a conta.",
-          "wake": "Ao carregar em \"Atualizar dados do veículo\" e antes de portas/janelas/mala, se os dados tiverem mais de 2 minutos, o carro é acordado e espera-se pelo seu relatório. No máximo uma vez a cada 5 minutos, e nunca nas leituras automáticas, para poupar a bateria de 12 V.",
-          "debug": "Guarda pedidos e respostas completos (sem dados pessoais) nos diagnósticos e ativa as mensagens DEBUG no registo.",
-          "manual_url_phev": "Ligação para o manual do utilizador (PDF) do carro híbrido plug-in (PHEV). O cartão abre-o no navegador em Outros → Manual. Vem com o oficial; se deixar vazio, volta a usar-se esse."
-        }
-      },
-      "data": {
-        "title": "Dados dos veículos",
-        "description": "A manutenção, a ITV, o seguro e a aparência (modelo, versão, cor) são guardados por veículo (pelo número de chassis), não por conta: se remover a conta e a voltar a adicionar, cada veículo recupera os seus dados.",
-        "menu_options": {
-          "data_export": "Descarregar uma cópia",
-          "data_send": "Enviar a cópia para um telemóvel",
-          "data_import": "Carregar uma cópia",
-          "data_delete": "Eliminar dados guardados"
-        }
-      },
-      "data_export": {
-        "title": "Descarregar uma cópia",
-        "description": "Veículos com dados: {cars}.\n\n{link}\n\nA ligação expira em poucos minutos e abre no navegador. O ficheiro contém o número da apólice e os telefones do seguro: guarde-o num local seguro. Se não descarregar na aplicação móvel, use «Enviar a cópia para um telemóvel»."
-      },
-      "data_send": {
-        "title": "Enviar a cópia para um telemóvel",
-        "description": "É enviada uma notificação para o telemóvel escolhido; ao tocar nela abre-se o navegador e a cópia é descarregada. A ligação expira em 10 minutos e funciona enquanto o telemóvel conseguir aceder ao Home Assistant pelo mesmo endereço que está a usar agora.",
-        "data": {
-          "target": "Telemóvel"
-        }
-      },
-      "data_import": {
-        "title": "Carregar uma cópia",
-        "description": "Escolha um ficheiro descarregado em «Descarregar uma cópia». Substitui a manutenção, a ITV, o seguro e a aparência dos veículos que contém; os restantes veículos não são alterados.",
-        "data": {
-          "file": "Ficheiro da cópia"
-        }
-      },
-      "data_delete": {
-        "title": "Eliminar dados guardados",
-        "description": "Elimina a manutenção, a ITV e o seguro dos veículos escolhidos, estejam ou não numa conta. Não é possível anular: descarregue antes uma cópia se a quiser conservar. A aparência de um veículo que está numa conta não é eliminada: altera-se em Aparência.",
-        "data": {
-          "cars": "Veículos",
-          "confirm": "Sim, eliminar estes dados"
-        }
-      }
-    },
-    "error": {
-      "pin_required": "Escreva o PIN para ativar o controlo remoto.",
-      "pin_invalid": "PIN incorreto ou criado com outra conta.",
-      "pin_rate_limited": "Demasiadas tentativas de PIN. Aguarde ou reponha-o na app oficial.",
-      "invalid_url": "Escreva um endereço web completo (que comece por https://).",
-      "cannot_connect": "Não foi possível ligar ao servidor da Deepal.",
-      "invalid_file": "O ficheiro não é uma cópia do DEC Deepal ou está danificado.",
-      "newer_file": "A cópia é de uma versão mais recente da integração. Atualize o DEC Deepal e tente novamente.",
-      "empty_file": "A cópia não contém dados de nenhum veículo.",
-      "no_selection": "Escolha pelo menos um veículo.",
-      "confirm_required": "Marque a caixa para confirmar a eliminação."
-    },
-    "abort": {
-      "not_loaded": "A integração não está carregada. Consulte o registo e tente novamente.",
-      "no_data": "Não há dados guardados de nenhum veículo.",
-      "data_imported": "Cópia carregada: {cars}.",
-      "data_deleted": "Dados eliminados: {cars}.",
-      "data_sent": "Notificação enviada para {device}. Toque nela no telemóvel para descarregar a cópia.",
-      "no_mobile": "Não há nenhum telemóvel com a aplicação do Home Assistant."
-    }
-  },
   "issues": {
     "vehicle_not_configured": {
       "title": "Configure o seu veículo: {vehicle}",
@@ -320,45 +89,41 @@
           "entry_not_found": "A conta já não existe."
         }
       }
+    },
+    "vehicle_added": {
+      "title": "Carro novo na tua conta: {vehicle}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Adicionar {vehicle}",
+            "description": "{vehicle} está na tua conta Deepal, mas não na integração. Carrega em Enviar para o adicionar; depois aparece o aviso «Configura o teu veículo» para escolher o modelo. Se não o queres no Home Assistant, ignora este aviso."
+          }
+        },
+        "abort": {
+          "entry_not_found": "A conta já não existe."
+        }
+      }
+    },
+    "vehicle_removed": {
+      "title": "{vehicle} já não está na tua conta",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Remover {vehicle}",
+            "description": "{vehicle} já não aparece na tua conta Deepal (deixou de ser partilhado?). Carrega em Enviar para o remover do Home Assistant com as suas entidades. As fichas de manutenção, inspeção e seguro guardam-se para o caso de voltar."
+          }
+        },
+        "abort": {
+          "entry_not_found": "A conta já não existe."
+        }
+      }
     }
   },
   "selector": {
-    "pin_mode": {
-      "options": {
-        "direct": "Opção A — comandos diretos",
-        "armed": "Opção B — desbloquear antes (mais seguro)"
-      }
-    },
-    "arm_seconds": {
-      "options": {
-        "10": "10 segundos",
-        "20": "20 segundos",
-        "30": "30 segundos",
-        "60": "60 segundos"
-      }
-    },
     "wheels": {
       "options": {
         "cover": "20\" com tampão",
         "open": "20\" sem tampão"
-      }
-    },
-    "alert_type": {
-      "options": {
-        "charge_started": "Carregamento iniciado",
-        "charge_interrupted": "Carregamento interrompido",
-        "charge_finished": "Carregamento terminado",
-        "warnings": "Luzes de aviso do painel",
-        "tires": "Pneus (quando o carro acende o aviso)",
-        "key_battery": "Pilha da chave fraca"
-      }
-    },
-    "insurance_kind": {
-      "options": {
-        "third_party": "Terceiros",
-        "third_party_plus": "Terceiros alargado",
-        "comprehensive_excess": "Danos próprios com franquia",
-        "comprehensive": "Danos próprios sem franquia"
       }
     }
   },

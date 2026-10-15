@@ -67,7 +67,22 @@ class DeepalAuthError(DeepalApiError):
 
 
 class DeepalRateLimitError(DeepalApiError):
-    """El servidor pide esperar: demasiados códigos, peticiones o intentos de PIN."""
+    """El servidor pide esperar: demasiados códigos, peticiones o intentos de PIN.
+
+    Atributo ``retry_after``: segundos que pide esperar el servidor (cabecera
+    ``Retry-After`` de un HTTP 429), o ``None`` si no lo dice.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: Any = None,
+        status: int | None = None,
+        retry_after: float | None = None,
+    ) -> None:
+        super().__init__(message, code=code, status=status)
+        self.retry_after = retry_after
 
 
 class DeepalPinError(DeepalApiError):

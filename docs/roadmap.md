@@ -1,5 +1,24 @@
 # Hoja de ruta
 
+## Beta 2.5.0b9 (15-10-2026) — pendiente de probar
+
+- [ ] **Usuario que no es administrador:** ve el panel con Coches y Avisos en
+      solo lectura (aviso arriba), sin engranajes, Apariencia, Personas,
+      casillas ni Guardar; no ve Datos, Diagnóstico ni Ajustes.
+- [ ] **Personas:** elegir a quién pertenece cada coche; sale "Tuyo" en los
+      coches del usuario que mira; viaja en la copia de seguridad.
+- [ ] **Coche nuevo en la cuenta** (compartir otro coche con la cuenta de
+      Home Assistant): en menos de 30 min aparece en Reparaciones; al
+      añadirlo, sale "Configura tu vehículo". **Coche retirado** (dejar de
+      compartirlo): aviso para quitarlo; sus fichas se conservan.
+- [ ] **Aviso del PIN armado** (Opción B, con el aviso activado): sale en el
+      idioma de Home Assistant.
+- [ ] **Configurar** (Ajustes → Dispositivos y servicios) sigue abriendo el
+      panel tras quitar los apartados antiguos.
+- [ ] **Países nuevos:** al añadir una cuenta se elige el país (por defecto,
+      el de Home Assistant). Falta que alguien de Portugal, Italia, Alemania
+      o Francia lo pruebe con su cuenta.
+
 ## Beta 2.5.0b8 (15-10-2026) — pendiente de probar
 
 - [ ] **Estado de carga (`ChrgSts`) en el S05 de España:** recorrer los
@@ -125,6 +144,20 @@ Pendiente de comprobar:
 - [ ] Manual del PHEV: cuando se añada ese modelo al catálogo, con su enlace.
 
 ## Pendiente de diseño
+
+- [ ] **Volante a la derecha** (Reino Unido, Irlanda, Malta, Australia):
+      hoy se da por hecho que el delantero izquierdo es el del conductor
+      (puertas, ventanillas, asientos, vistas). Hace falta una opción por
+      coche (o por país) que lo intercambie antes de añadir esos países.
+- [ ] **Permisos por persona:** los coches ya tienen personas asignadas
+      (2.5.0b9). Falta decidir qué puede hacer cada una con su coche
+      (órdenes, ver otros coches, avisos propios...) y cómo se hace cumplir
+      también en las entidades y la tarjeta, no solo en el panel.
+- [ ] **Normas de cada país nuevo:** Portugal, Italia, Alemania y Francia
+      entran sin su inspección (IPO, revisione, HU/TÜV, contrôle technique)
+      y con los plazos del seguro de España. Revisar con usuarios de allí
+      (en Italia el seguro no se renueva solo; en Alemania se cancela con un
+      mes de antelación) y el manual del coche en su idioma.
 
 - [x] **Italiano y polaco**, solo la traducción (2.3.0b10). Pendiente:
       revisor nativo de cada idioma. Las cuentas de Italia y Polonia (países

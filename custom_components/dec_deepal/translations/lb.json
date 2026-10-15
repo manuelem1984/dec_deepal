@@ -60,237 +60,6 @@
       "catalog_error": "L'un des catalogues de l'intégration contient des erreurs. Consultez le journal de Home Assistant."
     }
   },
-  "options": {
-    "step": {
-      "init": {
-        "title": "DEC Deepal options",
-        "menu_options": {
-          "appearance": "Vehicle appearance (model, version, colour)",
-          "pin": "Remote control with PIN",
-          "alerts": "Phone notifications",
-          "maintenance": "Servicing",
-          "itv": "ITV (roadworthiness test)",
-          "insurance": "Insurance",
-          "data": "Vehicle data (backup and deletion)",
-          "advanced": "Advanced (interval, debugging, manual)"
-        }
-      },
-      "alerts": {
-        "title": "Notifications — vehicle",
-        "description": "Choose the vehicle. Each vehicle has its own recipients.",
-        "data": {
-          "vehicle": "Vehicle"
-        }
-      },
-      "alerts_setup": {
-        "title": "Notifications for {vehicle}",
-        "description": "Choose who this vehicle notifies about each thing. A group with no recipients sends nothing. Every notification has the vehicle name in its title (\"DEC Deepal {vehicle}\"). They are normal notifications, not critical ones.",
-        "data": {
-          "car": "Vehicle notifications: notify",
-          "car_types": "Vehicle notifications enabled",
-          "maintenance": "Servicing: notify",
-          "itv": "ITV: notify",
-          "insurance": "Insurance: notify",
-          "all_vehicles": "Use the same for the other vehicles"
-        },
-        "data_description": {
-          "car": "Phones and tablets with the Home Assistant app, with the name they have under Settings → Mobile app. Other notification services appear as notify.name.",
-          "maintenance": "2 months, 1 month, 15 days left; 3,000, 2,000, 1,000 km left; overdue. Enable servicing for the vehicle in its own section first. Only between 8:00 and 22:00.",
-          "itv": "2 months, 1 month, 15 days left; overdue. Enable the ITV for the vehicle in its own section first. Only between 8:00 and 22:00.",
-          "insurance": "30 and 15 days before the cancellation deadline, on the last day and when it renews. Enable insurance for the vehicle in its own section first. Only between 8:00 and 22:00."
-        }
-      },
-      "itv": {
-        "title": "ITV — vehicle",
-        "description": "Choose the car.",
-        "data": {
-          "vehicle": "Vehicle"
-        }
-      },
-      "itv_setup": {
-        "title": "ITV of {vehicle}",
-        "description": "The next ITV (roadworthiness test) is calculated automatically with the rule for passenger cars in Spain: the first one 4 years after registration, then every 2 years until the car is 10, and every year from then on.\n\nAn ITV warning and sensors with the due date and the days left are created. Notifications: 2 months, 1 month and 15 days left, and overdue.",
-        "data": {
-          "enabled": "Enable ITV for this car",
-          "registration_date": "Registration date",
-          "last_itv_date": "Date of the last ITV",
-          "next_itv_date": "Next ITV"
-        },
-        "data_description": {
-          "last_itv_date": "Leave it empty if the car has not had one yet.",
-          "next_itv_date": "Leave it empty to have it calculated. Fill it in only if your date is different; it is used until you register the next ITV."
-        }
-      },
-      "insurance": {
-        "title": "Insurance — vehicle",
-        "description": "Choose the car.",
-        "data": {
-          "vehicle": "Vehicle"
-        }
-      },
-      "insurance_setup": {
-        "title": "Insurance of {vehicle}",
-        "description": "An insurance warning and sensors with the renewal date and the last day to cancel are created. Notifications: 30 and 15 days before that last day, on the day itself and on renewal. When the renewal date arrives, it moves to the following year automatically.\n\nThe policy number and the phone numbers are only shown on the card: no entity is created with them.",
-        "data": {
-          "enabled": "Enable insurance for this car",
-          "company": "Company",
-          "policy": "Policy number",
-          "insurance_kind": "Type of cover",
-          "renewal_date": "Renewal date",
-          "notice_days": "Cancellation: days before renewal",
-          "phone_assistance": "Roadside assistance phone",
-          "phone_company": "Company phone"
-        },
-        "data_description": {
-          "notice_days": "How many days before renewal is the deadline to say that you will not renew. One month is usual in Spain; check your policy.",
-          "phone_assistance": "Optional. If you enter it, the card shows a button to call.",
-          "phone_company": "Optional."
-        }
-      },
-      "maintenance": {
-        "title": "Servicing — vehicle",
-        "description": "Choose the car.",
-        "data": {
-          "vehicle": "Vehicle"
-        }
-      },
-      "maintenance_menu": {
-        "title": "Servicing of {vehicle}",
-        "description": "{summary}",
-        "menu_options": {
-          "maintenance_register": "Register a completed service",
-          "maintenance_setup": "Correct the details or disable"
-        }
-      },
-      "maintenance_setup": {
-        "title": "Servicing of {vehicle}",
-        "description": "The next service is counted from the last one done. If the car has not had any yet, enter 0 services, the registration date and 0 km.\n\nA servicing warning and sensors with the days and kilometres left are created. The warning turns on when 2 months or 3,000 km are left.",
-        "data": {
-          "maintenance_enabled": "Enable servicing for this car",
-          "services_done": "Services already done",
-          "last_date": "Date of the last service (or of registration)",
-          "last_km": "Kilometres at the last service",
-          "interval_km": "Service every (km)",
-          "interval_months": "Service every (months)"
-        },
-        "data_description": {
-          "interval_km": "The S05 manual says 20,000 km or 12 months, whichever comes first. Reduce it if you make many short trips or drive in dust, mud, extreme cold or salt."
-        }
-      },
-      "maintenance_register": {
-        "title": "Register a service for {vehicle}",
-        "description": "{summary}\n\nWhen you save, the service is added to the history and the count for the next one starts.",
-        "data": {
-          "service_date": "Date of the service",
-          "service_km": "Kilometres at the service"
-        }
-      },
-      "appearance": {
-        "title": "Appearance — vehicle and model",
-        "description": "The model decides which features (and entities) the car has. Until you choose it, the car works in generic mode.",
-        "data": {
-          "vehicle": "Vehicle",
-          "model": "Model"
-        }
-      },
-      "appearance_details": {
-        "title": "Appearance — version and colour",
-        "description": "Version and colour of your {model}. They are used for the \"DEC image\", for the isometric view (drawn with your colour and wheels) and to create only the entities your version has.",
-        "data": {
-          "trim": "Version",
-          "color": "Colour",
-          "wheels": "Wheels (Max only)"
-        },
-        "data_description": {
-          "wheels": "The Pro always has its 18\" wheel."
-        }
-      },
-      "pin": {
-        "title": "Remote control with PIN",
-        "description": "Enables doors, windows and boot. The PIN must have been created in the official app with the SAME account that Home Assistant uses. It is checked when you save.",
-        "data": {
-          "pin_enabled": "Enable control with PIN",
-          "pin": "Remote control PIN",
-          "pin_mode": "Mode",
-          "arm_seconds": "Unlock duration (Option B)",
-          "arm_notify": "Notify when unlocking (Option B)"
-        }
-      },
-      "advanced": {
-        "title": "Advanced",
-        "data": {
-          "scan_minutes": "Reading interval",
-          "wake": "Wake the car when needed",
-          "debug": "Debug mode",
-          "manual_url": "BEV manual",
-          "manual_url_phev": "PHEV manual"
-        },
-        "data_description": {
-          "manual_url": "Link to the owner's manual (PDF) of the electric car (BEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again.",
-          "scan_minutes": "How often the car's data is read. Very low values can make Deepal limit the account.",
-          "wake": "When you press \"Refresh vehicle data\" and before door/window/boot commands, if the data is more than 2 minutes old, the car is woken up and its report is awaited. At most once every 5 minutes, and never on automatic readings, to protect the 12 V battery.",
-          "debug": "Stores full requests and responses (without personal data) in the diagnostics and enables DEBUG messages in the log.",
-          "manual_url_phev": "Link to the owner's manual (PDF) of the plug-in hybrid car (PHEV). The card opens it in the browser from More → Manual. It comes with the official one; if you leave it empty, that one is used again."
-        }
-      },
-      "data": {
-        "title": "Vehicle data",
-        "description": "Servicing, ITV, insurance and appearance (model, version, colour) are stored per vehicle (by its VIN), not per account: if you remove the account and add it again, each vehicle gets its data back.",
-        "menu_options": {
-          "data_export": "Download a backup",
-          "data_send": "Send the backup to a phone",
-          "data_import": "Load a backup",
-          "data_delete": "Delete stored data"
-        }
-      },
-      "data_export": {
-        "title": "Download a backup",
-        "description": "Vehicles with data: {cars}.\n\n{link}\n\nThe link expires in a few minutes and opens in the browser. The file contains the policy number and the insurance phone numbers: keep it somewhere safe. If it does not download from the mobile app, use \"Send the backup to a phone\"."
-      },
-      "data_send": {
-        "title": "Send the backup to a phone",
-        "description": "A notification is sent to the chosen phone; tapping it opens the browser and downloads the backup. The link expires in 10 minutes and works as long as the phone can reach Home Assistant at the same address you are using now.",
-        "data": {
-          "target": "Phone"
-        }
-      },
-      "data_import": {
-        "title": "Load a backup",
-        "description": "Choose a file downloaded from \"Download a backup\". It replaces the servicing, ITV, insurance and appearance of the vehicles it contains; other vehicles are left untouched.",
-        "data": {
-          "file": "Backup file"
-        }
-      },
-      "data_delete": {
-        "title": "Delete stored data",
-        "description": "Deletes the servicing, ITV and insurance of the chosen vehicles, whether or not they belong to an account. This cannot be undone: download a backup first if you want to keep them. The appearance of a vehicle that belongs to an account is not deleted: change it under Appearance.",
-        "data": {
-          "cars": "Vehicles",
-          "confirm": "Yes, delete this data"
-        }
-      }
-    },
-    "error": {
-      "pin_required": "Saisissez le code PIN pour activer le contrôle à distance.",
-      "pin_invalid": "Code PIN incorrect, ou créé avec un autre compte.",
-      "pin_rate_limited": "Trop de tentatives de code PIN. Attendez, ou réinitialisez-le dans l'application officielle.",
-      "invalid_url": "Saisissez une adresse web complète (commençant par https://).",
-      "cannot_connect": "Impossible de se connecter au serveur Deepal.",
-      "invalid_file": "Le fichier n'est pas une sauvegarde DEC Deepal, ou il est endommagé.",
-      "newer_file": "La sauvegarde vient d'une version plus récente de l'intégration. Mettez à jour DEC Deepal et réessayez.",
-      "empty_file": "La sauvegarde ne contient les données d'aucun véhicule.",
-      "no_selection": "Choisissez au moins un véhicule.",
-      "confirm_required": "Cochez la case pour confirmer la suppression."
-    },
-    "abort": {
-      "not_loaded": "L'intégration n'est pas chargée. Consultez le journal et réessayez.",
-      "no_data": "Aucune donnée de véhicule n'est enregistrée.",
-      "data_imported": "Sauvegarde chargée : {cars}.",
-      "data_deleted": "Données supprimées : {cars}.",
-      "data_sent": "Notification envoyée à {device}. Touchez-la sur le téléphone pour télécharger la sauvegarde.",
-      "no_mobile": "Aucun téléphone n'a l'application Home Assistant."
-    }
-  },
   "issues": {
     "vehicle_not_configured": {
       "title": "Configurez votre véhicule : {vehicle}",
@@ -320,45 +89,41 @@
           "entry_not_found": "Le compte n'existe plus."
         }
       }
+    },
+    "vehicle_added": {
+      "title": "Nouvelle voiture dans votre compte : {vehicle}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Ajouter {vehicle}",
+            "description": "{vehicle} est dans votre compte Deepal, mais pas dans l'intégration. Appuyez sur Envoyer pour l'ajouter ; ensuite, l'avis « Configurez votre véhicule » apparaîtra pour choisir son modèle. Si vous ne la voulez pas dans Home Assistant, ignorez cet avis."
+          }
+        },
+        "abort": {
+          "entry_not_found": "Le compte n'existe plus."
+        }
+      }
+    },
+    "vehicle_removed": {
+      "title": "{vehicle} n'est plus dans votre compte",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Retirer {vehicle}",
+            "description": "{vehicle} n'apparaît plus dans votre compte Deepal (le partage a-t-il été arrêté ?). Appuyez sur Envoyer pour le retirer de Home Assistant avec ses entités. Ses fiches d'entretien, de contrôle technique et d'assurance sont conservées au cas où il reviendrait."
+          }
+        },
+        "abort": {
+          "entry_not_found": "Le compte n'existe plus."
+        }
+      }
     }
   },
   "selector": {
-    "pin_mode": {
-      "options": {
-        "direct": "Option A — commandes directes",
-        "armed": "Option B — déverrouiller d'abord (plus sûr)"
-      }
-    },
-    "arm_seconds": {
-      "options": {
-        "10": "10 secondes",
-        "20": "20 secondes",
-        "30": "30 secondes",
-        "60": "60 secondes"
-      }
-    },
     "wheels": {
       "options": {
         "cover": "20\" avec enjoliveur aéro",
         "open": "20\" sans enjoliveur aéro"
-      }
-    },
-    "alert_type": {
-      "options": {
-        "charge_started": "Recharge démarrée",
-        "charge_interrupted": "Recharge interrompue",
-        "charge_finished": "Recharge terminée",
-        "warnings": "Témoins du tableau de bord",
-        "tires": "Pneus (quand la voiture allume l'alerte)",
-        "key_battery": "Pile de la clé faible"
-      }
-    },
-    "insurance_kind": {
-      "options": {
-        "third_party": "Au tiers",
-        "third_party_plus": "Tiers étendu",
-        "comprehensive_excess": "Tous risques avec franchise",
-        "comprehensive": "Tous risques sans franchise"
       }
     }
   },

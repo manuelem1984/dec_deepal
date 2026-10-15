@@ -123,7 +123,7 @@ Comprobado en un coche real el 30-09-2026; ⚠️ pendiente de comprobar con un 
 Uso en DEC Deepal (`coordinator.async_wake_and_wait`): solo con el botón
 "Actualizar datos del vehículo" y antes de órdenes con PIN; solo si el último
 informe tiene más de 2 min; como mucho uno cada 5 min por coche; nunca en las
-lecturas automáticas. Se puede desactivar en Configurar → Avanzado.
+lecturas automáticas. Se puede desactivar en el panel DEC Deepal → Ajustes.
 
 ## Comandos
 

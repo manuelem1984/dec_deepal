@@ -6,7 +6,7 @@ identificadores…), así que se pueden compartir en un Issue.
 
 ## 1. Modo depuración (interruptor)
 
-Configurar → **Avanzado** → *Modo depuración*.
+el panel DEC Deepal → **Ajustes** → *Modo depuración*.
 
 Con él activado:
 

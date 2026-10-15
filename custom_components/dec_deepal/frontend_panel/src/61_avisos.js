@@ -42,9 +42,13 @@
       const targets = this._state.targets;
       const alerts = this._alerts(car);
       const photo = this._photo(car);
-      const box = (state, action, extra) =>
-        `<td><button class="box ${state}" data-action="${action}" data-car="${escapeHtml(car.id)}" ${extra} aria-pressed="${state === "y"}">
-          <ha-icon icon="mdi:${state === "y" ? "checkbox-marked" : state === "some" ? "minus-box" : "checkbox-blank-outline"}"></ha-icon></button></td>`;
+      const admin = this._admin();
+      const box = (state, action, extra) => {
+        const icon = `<ha-icon icon="mdi:${state === "y" ? "checkbox-marked" : state === "some" ? "minus-box" : "checkbox-blank-outline"}"></ha-icon>`;
+        // En solo lectura se ve lo marcado, pero no se puede tocar.
+        if (!admin) return `<td><span class="box ${state} ro" role="checkbox" aria-checked="${state === "y"}" aria-readonly="true">${icon}</span></td>`;
+        return `<td><button class="box ${state}" data-action="${action}" data-car="${escapeHtml(car.id)}" ${extra} aria-pressed="${state === "y"}">${icon}</button></td>`;
+      };
       const rows = [];
       for (const [section, icon] of SECTIONS) {
         const notices = this._notices(car, section);
@@ -62,7 +66,7 @@
         if (!open) continue;
         for (const notice of notices) {
           const editing = this._editing && this._editing.car === car.id && this._editing.notice === notice.id;
-          const pen = notice.threshold == null
+          const pen = notice.threshold == null || !admin
             ? ""
             : `<button class="pen" data-action="edit" data-car="${escapeHtml(car.id)}" data-notice="${notice.id}" aria-label="${this._t("edit_threshold")}"><ha-icon icon="mdi:pencil"></ha-icon></button>`;
           const label = editing
@@ -78,7 +82,7 @@
       }
       const dirty = Boolean(this._drafts[car.id]);
       const changedThresholds = Object.keys(alerts.thresholds).length > 0;
-      const others = this._state.cars.length > 1;
+      const others = admin && this._state.cars.length > 1;
       return `<div class="card" data-car-card="${escapeHtml(car.id)}">
         <div class="chead">
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
@@ -90,12 +94,12 @@
             `<th><div class="dev ${target.kind}"><u><ha-icon icon="${TARGET_ICONS[target.kind] || TARGET_ICONS.service}"></ha-icon></u>${escapeHtml(target.name)}</div></th>`).join("")}</tr>
           ${rows.join("")}
         </table></div>
-        <div class="foot ${dirty ? "dirty" : ""}">
+        ${!admin ? "" : `<div class="foot ${dirty ? "dirty" : ""}">
           <span>${dirty ? this._t("unsaved") : this._t("alerts_help")}</span>
           ${changedThresholds ? `<button class="btn o" data-action="reset-thresholds" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:restore"></ha-icon>${this._t("factory_thresholds")}</button>` : ""}
           ${dirty ? `<button class="btn o" data-action="discard-alerts" data-car="${escapeHtml(car.id)}">${this._t("discard")}</button>
                      <button class="btn" data-action="save-alerts" data-car="${escapeHtml(car.id)}">${this._t("save")}</button>` : ""}
-        </div>
+        </div>`}
       </div>`;
     }
 

@@ -3,6 +3,48 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b9] — 2026-10-15
+
+### Añadido
+
+- **Panel para todos los usuarios.** Quien no es administrador ve las
+  pestañas Coches y Avisos en **solo lectura**: las fichas de cada coche y a
+  quién avisa de cada cosa, sin poder cambiar nada. Datos, Diagnóstico y
+  Ajustes siguen siendo solo para administradores.
+- **A quién pertenece cada coche.** En Panel → Coches, la fila «Personas»
+  enseña las personas de Home Assistant de cada coche y el administrador las
+  elige con «Elegir». Los coches de quien mira el panel salen como «Tuyo».
+  Se guardan con el coche y van en la copia de seguridad.
+- **Coches nuevos y retirados de la cuenta.** Cada 30 minutos se mira la
+  lista de coches de la cuenta. Si aparece uno nuevo (por ejemplo, otro
+  compartido), sale un aviso en Ajustes → Reparaciones para añadirlo; al
+  añadirlo, aparece «Configura tu vehículo» para elegir su modelo. Si uno ya
+  no está, otro aviso permite quitarlo (sus fichas de mantenimiento, ITV y
+  seguro se conservan por si vuelve).
+- **Portugal, Italia, Alemania y Francia.** Al añadir una cuenta se elige el
+  país (por defecto, el de Home Assistant). Usan el mismo servidor que
+  España y la integración ya está traducida a sus idiomas. Aún sin probar con
+  cuentas de esos países, y sin su inspección técnica (la ITV es solo de
+  España).
+
+### Corregido
+
+- El aviso «Comandos con PIN permitidos durante N segundos» (Opción B) salía
+  siempre en español: ahora sale en el idioma de Home Assistant.
+- Un valor puesto por una orden que el coche nunca confirmó podía quedarse
+  fijo si el coche dejaba de informar de ese dato. Ahora caduca.
+- Si el servidor de Deepal pide esperar (demasiadas peticiones), la
+  integración espera lo que pida antes de volver a leer, en vez de seguir
+  insistiendo.
+
+### Cambiado
+
+- Se retiran los antiguos apartados de **Configurar** (apariencia, PIN,
+  avisos, mantenimiento, ITV, seguro, datos y avanzado). Desde la 2.5.0b2 el
+  botón Configurar abre el panel DEC Deepal, que hace todo eso.
+- Preparada para las próximas versiones de Home Assistant (2026.10 y
+  posteriores): se dejan de usar dos funciones que dejarán de existir.
+
 ## [2.5.0b8] — 2026-10-15
 
 ### Corregido

@@ -2,17 +2,23 @@
   if (customElements.get(TAG)) return;
 
   const DOMAIN = "dec_deepal";
-  /** Prefijo de las órdenes del panel (panel.py). */
+  /** Prefijo de las órdenes del panel (panel/). */
   const WS = "dec_deepal/panel/";
 
-  /** Pestañas: clave (su nombre es el texto "tab_<clave>") e icono. */
+  /**
+   * Pestañas: clave (su nombre es el texto "tab_<clave>"), icono y si es solo
+   * para administradores. Quien no lo es ve las demás en solo lectura.
+   */
   const TABS = [
-    ["cars", "mdi:car-multiple"],
-    ["alerts", "mdi:bell-ring"],
-    ["data", "mdi:database"],
-    ["diagnostics", "mdi:stethoscope"],
-    ["settings", "mdi:cog"],
+    ["cars", "mdi:car-multiple", false],
+    ["alerts", "mdi:bell-ring", false],
+    ["data", "mdi:database", true],
+    ["diagnostics", "mdi:stethoscope", true],
+    ["settings", "mdi:cog", true],
   ];
+
+  /** Pulsaciones que no cambian nada: las únicas que atiende el panel en solo lectura. */
+  const READ_ONLY_ACTIONS = new Set(["tab", "reload", "fold", "info", "close", "call", "copy"]);
 
   /** Apartados de los avisos, en su orden, con su icono. */
   const SECTIONS = [

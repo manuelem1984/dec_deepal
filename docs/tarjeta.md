@@ -88,7 +88,7 @@ Abre un menú con dos opciones:
 - **Manual** (libro abierto): abre el manual de usuario (PDF) en el
   navegador, en una pestaña nueva. El manual no viene dentro de la
   integración: es un enlace a la web del fabricante. Sale del catálogo según
-  el modelo y se puede cambiar en *Configurar → Avanzado → Manual BEV*. Si el
+  el modelo y se puede cambiar en *panel DEC Deepal → Ajustes → Manual*. Si el
   modelo no tiene manual, la opción no aparece.
 - **Mantenimiento** (llave inglesa): la ventana de mantenimiento, disponible
   siempre. Si el coche no lo tiene activado, explica cómo hacerlo.
@@ -106,7 +106,7 @@ Cuando la revisión está próxima o vencida, el texto del botón cambia a
 
 ### Testigo de mantenimiento
 
-Si el coche tiene el mantenimiento activado (*Configurar → Mantenimiento*), en
+Si el coche tiene el mantenimiento activado (*panel DEC Deepal → Coches → Mantenimiento*), en
 la línea de estado aparece una **llave inglesa** cuando quedan 2 meses o
 3.000 km para la revisión: ámbar, o roja si está vencida. Es el único testigo
 que se puede pulsar. Abre una ventana con los días y kilómetros que quedan, la

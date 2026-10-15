@@ -47,8 +47,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}ª",
         "date_format": "%d/%m/%Y",
         "panel_target": "Notificaciones de Home Assistant",
-        "backup_download": "Descargar la copia",
-        "backup_notification": "Copia de los datos de tus coches. Toca para descargarla (el enlace caduca en 10 minutos)."
+        "backup_notification": "Copia de los datos de tus coches. Toca para descargarla (el enlace caduca en 10 minutos).",
+        "pin_armed": "Comandos con PIN permitidos durante {seconds} segundos."
     },
     "en": {
         "charge_started": "Charging started{battery}.",
@@ -77,8 +77,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}",
         "date_format": "%d/%m/%Y",
         "panel_target": "Home Assistant notifications",
-        "backup_download": "Download the backup",
-        "backup_notification": "Backup of your vehicles' data. Tap to download it (the link expires in 10 minutes)."
+        "backup_notification": "Backup of your vehicles' data. Tap to download it (the link expires in 10 minutes).",
+        "pin_armed": "PIN commands allowed for {seconds} seconds."
     },
     "pt": {
         "charge_started": "Carregamento iniciado{battery}.",
@@ -107,8 +107,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}.ª",
         "date_format": "%d/%m/%Y",
         "panel_target": "Notificações do Home Assistant",
-        "backup_download": "Descarregar a cópia",
-        "backup_notification": "Cópia dos dados dos seus veículos. Toque para a descarregar (a ligação expira em 10 minutos)."
+        "backup_notification": "Cópia dos dados dos seus veículos. Toque para a descarregar (a ligação expira em 10 minutos).",
+        "pin_armed": "Comandos com PIN permitidos durante {seconds} segundos."
     },
     "it": {
         "charge_started": "Ricarica avviata{battery}.",
@@ -137,8 +137,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}º",
         "date_format": "%d/%m/%Y",
         "panel_target": "Notifiche di Home Assistant",
-        "backup_download": "Scarica la copia",
-        "backup_notification": "Copia dei dati dei tuoi veicoli. Tocca per scaricarla (il link scade tra 10 minuti)."
+        "backup_notification": "Copia dei dati dei tuoi veicoli. Tocca per scaricarla (il link scade tra 10 minuti).",
+        "pin_armed": "Comandi con PIN consentiti per {seconds} secondi."
     },
     "pl": {
         "charge_started": "Rozpoczęto ładowanie{battery}.",
@@ -167,8 +167,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}.",
         "date_format": "%d.%m.%Y",
         "panel_target": "Powiadomienia Home Assistant",
-        "backup_download": "Pobierz kopię",
-        "backup_notification": "Kopia danych Twoich pojazdów. Dotknij, aby ją pobrać (link wygasa po 10 minutach)."
+        "backup_notification": "Kopia danych Twoich pojazdów. Dotknij, aby ją pobrać (link wygasa po 10 minutach).",
+        "pin_armed": "Polecenia z kodem PIN dozwolone przez {seconds} s."
     },
     "de": {
         "charge_started": "Laden gestartet{battery}.",
@@ -197,8 +197,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}.",
         "date_format": "%d.%m.%Y",
         "panel_target": "Home-Assistant-Benachrichtigungen",
-        "backup_download": "Sicherung herunterladen",
-        "backup_notification": "Sicherung der Daten deiner Fahrzeuge. Tippe zum Herunterladen (der Link läuft in 10 Minuten ab)."
+        "backup_notification": "Sicherung der Daten deiner Fahrzeuge. Tippe zum Herunterladen (der Link läuft in 10 Minuten ab).",
+        "pin_armed": "Befehle mit PIN für {seconds} Sekunden erlaubt."
     },
     "fr": {
         "charge_started": "Recharge démarrée{battery}.",
@@ -227,8 +227,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}e",
         "date_format": "%d/%m/%Y",
         "panel_target": "Notifications de Home Assistant",
-        "backup_download": "Télécharger la sauvegarde",
-        "backup_notification": "Sauvegarde des données de vos véhicules. Touchez pour la télécharger (le lien expire dans 10 minutes)."
+        "backup_notification": "Sauvegarde des données de vos véhicules. Touchez pour la télécharger (le lien expire dans 10 minutes).",
+        "pin_armed": "Commandes avec code PIN autorisées pendant {seconds} secondes."
     },
     "nl": {
         "charge_started": "Laden gestart{battery}.",
@@ -257,8 +257,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}e",
         "date_format": "%d-%m-%Y",
         "panel_target": "Home Assistant-meldingen",
-        "backup_download": "Back-up downloaden",
-        "backup_notification": "Back-up van de gegevens van je voertuigen. Tik om te downloaden (de link verloopt over 10 minuten)."
+        "backup_notification": "Back-up van de gegevens van je voertuigen. Tik om te downloaden (de link verloopt over 10 minuten).",
+        "pin_armed": "Opdrachten met pincode toegestaan gedurende {seconds} seconden."
     },
     "nb": {
         "charge_started": "Lading startet{battery}.",
@@ -287,8 +287,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}.",
         "date_format": "%d.%m.%Y",
         "panel_target": "Home Assistant-varsler",
-        "backup_download": "Last ned sikkerhetskopien",
-        "backup_notification": "Sikkerhetskopi av dataene til kjøretøyene dine. Trykk for å laste ned (lenken utløper om 10 minutter)."
+        "backup_notification": "Sikkerhetskopi av dataene til kjøretøyene dine. Trykk for å laste ned (lenken utløper om 10 minutter).",
+        "pin_armed": "Kommandoer med PIN-kode tillatt i {seconds} sekunder."
     },
     "da": {
         "charge_started": "Opladning startet{battery}.",
@@ -317,8 +317,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}.",
         "date_format": "%d.%m.%Y",
         "panel_target": "Home Assistant-notifikationer",
-        "backup_download": "Hent sikkerhedskopien",
-        "backup_notification": "Sikkerhedskopi af dine køretøjers data. Tryk for at hente den (linket udløber om 10 minutter)."
+        "backup_notification": "Sikkerhedskopi af dine køretøjers data. Tryk for at hente den (linket udløber om 10 minutter).",
+        "pin_armed": "Kommandoer med pinkode tilladt i {seconds} sekunder."
     },
     "el": {
         "charge_started": "Η φόρτιση ξεκίνησε{battery}.",
@@ -347,8 +347,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}ο",
         "date_format": "%d/%m/%Y",
         "panel_target": "Ειδοποιήσεις του Home Assistant",
-        "backup_download": "Λήψη του αντιγράφου ασφαλείας",
-        "backup_notification": "Αντίγραφο ασφαλείας των δεδομένων των οχημάτων σας. Πατήστε για λήψη (ο σύνδεσμος λήγει σε 10 λεπτά)."
+        "backup_notification": "Αντίγραφο ασφαλείας των δεδομένων των οχημάτων σας. Πατήστε για λήψη (ο σύνδεσμος λήγει σε 10 λεπτά).",
+        "pin_armed": "Οι εντολές με PIN επιτρέπονται για {seconds} δευτερόλεπτα."
     },
     "sl": {
         "charge_started": "Polnjenje se je začelo{battery}.",
@@ -377,8 +377,8 @@ ALERT_TEXTS: Final[dict[str, dict[str, str]]] = {
         "ordinal": "{number}.",
         "date_format": "%d. %m. %Y",
         "panel_target": "Obvestila Home Assistanta",
-        "backup_download": "Prenesi varnostno kopijo",
-        "backup_notification": "Varnostna kopija podatkov vaših vozil. Tapnite za prenos (povezava poteče čez 10 minut)."
+        "backup_notification": "Varnostna kopija podatkov vaših vozil. Tapnite za prenos (povezava poteče čez 10 minut).",
+        "pin_armed": "Ukazi s kodo PIN so dovoljeni {seconds} s."
     }
 }
 #: Nombres del catálogo: ``{idioma: {clave: texto}}``.

@@ -50,7 +50,7 @@ vehicles/photos/s05_2024/
 
 1. Añadir el color en `colores:` del modelo.
 2. Copiar `pro_<color>.png` y `max_<color>.png` en la carpeta del modelo.
-3. Reiniciar. Aparece en Configurar → Apariencia.
+3. Reiniciar. Aparece en el panel DEC Deepal → Coches → Apariencia.
 
 ### Añadir un modelo nuevo
 
@@ -220,7 +220,7 @@ vehículo"). Al pulsar *Enviar* pide modelo (se propone el reconocido por el
 nombre que da el servidor), versión y color. Al terminar, la integración se
 recarga con las entidades correctas y el aviso desaparece.
 
-Se puede cambiar en cualquier momento en Configurar → **Apariencia del
+Se puede cambiar en cualquier momento en el panel DEC Deepal → Coches → **Apariencia del
 vehículo**.
 
 En la ficha del dispositivo el modelo aparece como

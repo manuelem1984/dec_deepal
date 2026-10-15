@@ -3,7 +3,7 @@
 Un :class:`AlertManager` por cuenta. Hace dos cosas:
 
 1. **Avisos.** Escucha cada lectura de cada coche y, según lo que el usuario
-   haya elegido en Configurar → Avisos, envía una notificación a las apps de
+   haya elegido en el panel DEC Deepal → Avisos, envía una notificación a las apps de
    Home Assistant (o al panel de notificaciones). Cada coche tiene sus
    destinos para cada grupo de avisos: los del coche, mantenimiento, ITV y
    seguro. Qué se avisa, a quién y con qué texto: ``alert_rules.py``. El
@@ -29,7 +29,6 @@ from typing import Any, Final
 
 from homeassistant.components import persistent_notification
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
-from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.event import async_track_time_change
 from homeassistant.helpers.translation import async_get_translations
 from homeassistant.util import dt as dt_util
@@ -71,7 +70,7 @@ from .const import (
     OPT_WHEELS,
 )
 from . import vehicle_data as vd
-from .runtime import VehicleContext
+from .runtime import VehicleContext, vehicle_device
 from .telemetry import signals as s
 from .vehicle_store import VehicleStore, async_get_store
 
@@ -116,6 +115,8 @@ class AlertManager:
         self._records: dict[str, mt.MaintenanceRecord] = {}
         self._itv: dict[str, doc.ItvRecord] = {}
         self._insurance: dict[str, doc.InsuranceRecord] = {}
+        #: Personas a las que pertenece cada coche (``person.*``).
+        self._people: dict[str, list[str]] = {}
         #: Testigos encendidos y ya avisados, por coche.
         self._active: dict[str, set[str]] = {}
         #: Última lectura de cada coche (solo las señales que se vigilan).
@@ -160,7 +161,7 @@ class AlertManager:
             vd.ITV: self._itv,
             vd.INSURANCE: self._insurance,
         }
-        for target in (*targets.values(), self._active, self._odometer, self._charge):
+        for target in (*targets.values(), self._active, self._odometer, self._charge, self._people):
             target.clear()
         for vehicle_id in self._vehicles:
             car = self._store.car(self._key(vehicle_id))
@@ -178,6 +179,8 @@ class AlertManager:
                 self._odometer[vehicle_id] = float(car[vd.ODOMETER])
             if stored := charging.clean(car.get(vd.CHARGE)):
                 self._charge[vehicle_id] = stored
+            if people := vd.clean_people(car.get(vd.PEOPLE)):
+                self._people[vehicle_id] = people
 
     @callback
     def async_reload_data(self) -> None:
@@ -248,6 +251,8 @@ class AlertManager:
                 car[vd.CHARGE] = self._charge[vehicle_id]
             if appearance := self._appearance(vehicle_id, key):
                 car[vd.APPEARANCE] = appearance
+            if self._people.get(vehicle_id):
+                car[vd.PEOPLE] = list(self._people[vehicle_id])
             self._store.set_car(key, car)
 
     def _appearance(self, vehicle_id: str, key: str) -> dict[str, Any] | None:
@@ -413,6 +418,19 @@ class AlertManager:
         else:
             self._insurance[vehicle_id] = record
         self._check_documents(vehicle_id)
+        await self._async_save()
+        self._notify_listeners()
+
+    def people(self, vehicle_id: str) -> list[str]:
+        """Personas a las que pertenece un coche (``person.*``)."""
+        return list(self._people.get(vehicle_id, []))
+
+    async def async_set_people(self, vehicle_id: str, people: list[str]) -> None:
+        """Guarda a quién pertenece un coche (lista vacía = a nadie en concreto)."""
+        if clean := vd.clean_people(people):
+            self._people[vehicle_id] = clean
+        else:
+            self._people.pop(vehicle_id, None)
         await self._async_save()
         self._notify_listeners()
 
@@ -633,7 +651,7 @@ class AlertManager:
 
     def _vehicle_name(self, vehicle_id: str) -> str:
         """Nombre del coche: el que le haya puesto el usuario en Home Assistant."""
-        device = dr.async_get(self.hass).async_get_device(identifiers={(DOMAIN, vehicle_id)})
+        device = vehicle_device(self.hass, self._entry_id, vehicle_id)
         if device is not None and (device.name_by_user or device.name):
             return device.name_by_user or device.name
         return self._vehicles[vehicle_id].info.display_name

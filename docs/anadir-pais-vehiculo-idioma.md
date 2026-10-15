@@ -88,8 +88,8 @@ falta el diagnóstico de un PHEV para saber cómo los envía.
    - `carpeta_fotos`.
 2. Crea `vehicles/photos/<carpeta_fotos>/` con `default.png` y las fotos
    `<grupo_foto>_<color>.png`.
-3. Reinicia. El coche se reconoce solo; si no, elígelo en Configurar →
-   Apariencia.
+3. Reinicia. El coche se reconoce solo; si no, elígelo en el panel DEC Deepal →
+   Coches → Apariencia.
 
 ### Caso B — manda datos con otros nombres
 
