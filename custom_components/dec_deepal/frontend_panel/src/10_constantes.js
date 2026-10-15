@@ -37,6 +37,9 @@
     ["porton_electrico", "mdi:car-back", "feature_power_tailgate"],
   ];
 
+  /** Las 12 estrellas de la franja europea de la placa de matrícula (69_matricula.js). */
+  const PLATE_STARS = '<svg width="9" height="9" viewBox="0 0 9 9" fill="#ffd400" aria-hidden="true"><circle cx="4.50" cy="1.26" r="0.9"/><circle cx="6.12" cy="1.69" r="0.9"/><circle cx="7.31" cy="2.88" r="0.9"/><circle cx="7.74" cy="4.50" r="0.9"/><circle cx="7.31" cy="6.12" r="0.9"/><circle cx="6.12" cy="7.31" r="0.9"/><circle cx="4.50" cy="7.74" r="0.9"/><circle cx="2.88" cy="7.31" r="0.9"/><circle cx="1.69" cy="6.12" r="0.9"/><circle cx="1.26" cy="4.50" r="0.9"/><circle cx="1.69" cy="2.88" r="0.9"/><circle cx="2.88" cy="1.69" r="0.9"/></svg>';
+
   /** Icono del destino de un aviso, según su tipo. */
   const TARGET_ICONS = { mobile: "mdi:cellphone", service: "mdi:send", panel: "mdi:bell" };
 

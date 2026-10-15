@@ -80,6 +80,22 @@ def test_people_of_each_car(panel: Page) -> None:
     assert orders(panel)[-1] == {"type": "dec_deepal/panel/set_people", "vehicle_id": "car2", "people": ["person.ella"]}
 
 
+def test_number_plates(panel: Page) -> None:
+    """Placa genérica europea con la matrícula, en Coches y en Avisos."""
+    mount(panel)
+    plates = panel.evaluate(
+        "Array.from(banco.raiz().querySelectorAll('.hero .plate')).map(p => [p.querySelector('.eu').textContent.trim(), p.querySelector('.num').textContent, p.querySelectorAll('.seals').length, p.getAttribute('aria-label')])"
+    )
+    assert plates == [["E", "6545 NPD", 0, "Matrícula 6545 NPD"], ["D", "MAB 1234", 1, "Matrícula M AB 1234"]]
+    # Va en la línea del modelo y el color.
+    assert panel.evaluate("banco.raiz().querySelector('.hero .m .plate') !== null")
+    # La etiqueta "Personas" ya no lleva la raya ni el relleno de los títulos de sección.
+    style = panel.evaluate("(() => { const s = getComputedStyle(banco.raiz().querySelector('.people .lbl')); return [s.borderTopWidth, s.paddingTop]; })()")
+    assert style == ["0px", "0px"]
+    tab(panel, "alerts")
+    assert panel.evaluate("banco.raiz().querySelectorAll('.chead .plate').length") == 2
+
+
 def test_read_only_for_other_users(panel: Page) -> None:
     """Quien no es administrador ve Coches y Avisos, sin poder cambiar nada."""
     mount(panel, lectura=True)

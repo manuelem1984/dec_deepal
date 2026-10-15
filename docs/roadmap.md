@@ -1,5 +1,12 @@
 # Hoja de ruta
 
+## Beta 2.5.0b10 (15-10-2026) — pendiente de probar
+
+- [ ] **Placa de matrícula** en Coches y Avisos, con la matrícula del coche
+      en el formato de España (`6545 NPD`), en tema claro y oscuro y en el
+      móvil (si no cabe, baja entera a la línea siguiente).
+- [ ] La fila «Personas» ya no lleva la raya encima.
+
 ## Beta 2.5.0b9 (15-10-2026) — pendiente de probar
 
 - [ ] **Usuario que no es administrador:** ve el panel con Coches y Avisos en

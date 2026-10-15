@@ -1064,7 +1064,8 @@
     "people_help": "Wähle, wem dieses Auto gehört. Das sind die Personen unter Einstellungen → Personen.",
     "mine": "Deins",
     "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
-    "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen."
+    "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen.",
+    "plate": "Kennzeichen"
   },
   "catalogo": {
     "operacion_general_inspection": "Allgemeine Inspektion (Antrieb, Batterie, Hochvolt, Bremsen und Lenkung)",

@@ -1064,7 +1064,8 @@
     "people_help": "Kies van wie deze auto is. Dit zijn de personen in Instellingen → Personen.",
     "mine": "Van jou",
     "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
-    "error_unauthorized": "Alleen een beheerder kan deze wijziging doen."
+    "error_unauthorized": "Alleen een beheerder kan deze wijziging doen.",
+    "plate": "Kenteken"
   },
   "catalogo": {
     "operacion_general_inspection": "Algemene inspectie (aandrijving, batterij, hoogspanning, remmen en stuurinrichting)",

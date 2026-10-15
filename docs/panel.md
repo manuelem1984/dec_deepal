@@ -17,6 +17,13 @@ añadir la cuenta y volver a iniciar sesión.
   casillas ni botones de guardar. La integración comprueba los permisos en
   cada orden: aunque se forzara el panel, no podrían cambiar nada.
 
+### Matrícula
+
+Junto al modelo y el color (Coches) y junto al nombre (Avisos) sale la
+matrícula como una placa europea genérica: franja azul con la letra del país
+de la cuenta y el texto con el formato de ese país (`plates.py`). Si no
+encaja con el formato se enseña tal cual; sin matrícula, no sale.
+
 ### Personas de cada coche
 
 En la tarjeta de cada coche, la fila **Personas** dice a quién pertenece:

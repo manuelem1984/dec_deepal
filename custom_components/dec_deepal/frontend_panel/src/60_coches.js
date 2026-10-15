@@ -26,7 +26,7 @@
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
           <div class="who">
             <div class="n">${escapeHtml(car.name)}</div>
-            <div class="m">${escapeHtml([car.model, car.color].filter(Boolean).join(" · "))}</div>
+            <div class="m"><span>${escapeHtml([car.model, car.color].filter(Boolean).join(" · "))}</span>${this._plateTag(car)}</div>
             ${badge}${mine}
             <div class="kv">
               ${car.battery == null ? "" : fact(`${this._number(car.battery)} %`, "battery")}

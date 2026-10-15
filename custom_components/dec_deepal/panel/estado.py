@@ -40,6 +40,7 @@ from ..const import (
     VERSION,
 )
 from ..manual import manual_url
+from ..plates import plate
 from ..registries.vehicles import FEATURE_FUEL, GENERIC_MODEL_ID
 from ..runtime import vehicle_device
 from ..telemetry import signals as s
@@ -125,6 +126,12 @@ def account_settings(entry: Any) -> dict[str, Any]:
             }
         ),
     }
+
+
+def _sales_country(entry: Any) -> str:
+    """País de la cuenta como lo espera el servidor (``ES``)."""
+    country = entry.runtime_data.country
+    return str(getattr(country, "sales_country", None) or country.id).upper()
 
 
 def _without_notified(record: Mapping[str, Any]) -> dict[str, Any]:
@@ -228,6 +235,8 @@ def _car(
         # ¿Es de quien está mirando el panel?
         "mine": any(people.get(person_id, {}).get("user_id") == user.id for person_id in owners),
         "country": entry.runtime_data.country.id,
+        # Matrícula con el formato del país de la cuenta (placa del panel).
+        "plate": plate(vehicle.info.license_plate, _sales_country(entry)),
         "sheet": vehicle.model.sheet(vehicle.trim),
         "battery": data.get(s.BATTERY_LEVEL) if data else None,
         "range": data.get(s.RANGE_KM) if data else None,

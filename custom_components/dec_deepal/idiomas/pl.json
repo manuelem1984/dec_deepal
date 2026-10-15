@@ -1064,7 +1064,8 @@
     "people_help": "Wybierz, do kogo należy ten samochód. To osoby z Ustawienia → Osoby.",
     "mine": "Twój",
     "error_unknown_person": "Ta osoba już nie istnieje w Home Assistant.",
-    "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator."
+    "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator.",
+    "plate": "Tablica rejestracyjna"
   },
   "catalogo": {
     "operacion_general_inspection": "Przegląd ogólny (napęd, akumulator, wysokie napięcie, hamulce i układ kierowniczy)",

@@ -1064,7 +1064,8 @@
     "people_help": "Izberi, komu pripada to vozilo. To so osebe v Nastavitve → Osebe.",
     "mine": "Tvoje",
     "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
-    "error_unauthorized": "To spremembo lahko naredi samo skrbnik."
+    "error_unauthorized": "To spremembo lahko naredi samo skrbnik.",
+    "plate": "Registrska tablica"
   },
   "catalogo": {
     "operacion_general_inspection": "Splošni pregled (pogonska enota, baterija, visoka napetost, zavore in krmiljenje)",

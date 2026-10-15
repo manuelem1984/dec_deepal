@@ -1064,7 +1064,8 @@
     "people_help": "Choisissez à qui appartient cette voiture. Ce sont les personnes de Paramètres → Personnes.",
     "mine": "À vous",
     "error_unknown_person": "Cette personne n'existe plus dans Home Assistant.",
-    "error_unauthorized": "Seul un administrateur peut faire cette modification."
+    "error_unauthorized": "Seul un administrateur peut faire cette modification.",
+    "plate": "Plaque d'immatriculation"
   },
   "catalogo": {
     "operacion_general_inspection": "Inspection générale (groupe motopropulseur, batterie, haute tension, freins et direction)",

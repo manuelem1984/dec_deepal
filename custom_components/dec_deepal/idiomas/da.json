@@ -1064,7 +1064,8 @@
     "people_help": "Vælg, hvem denne bil tilhører. Det er personerne i Indstillinger → Personer.",
     "mine": "Din",
     "error_unknown_person": "Den person findes ikke længere i Home Assistant.",
-    "error_unauthorized": "Kun en administrator kan foretage denne ændring."
+    "error_unauthorized": "Kun en administrator kan foretage denne ændring.",
+    "plate": "Nummerplade"
   },
   "catalogo": {
     "operacion_general_inspection": "Generelt eftersyn (drivenhed, batteri, højspænding, bremser og styretøj)",

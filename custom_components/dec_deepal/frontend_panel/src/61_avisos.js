@@ -86,7 +86,7 @@
       return `<div class="card" data-car-card="${escapeHtml(car.id)}">
         <div class="chead">
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
-          <div class="n">${escapeHtml(car.name)}<small>${escapeHtml(car.model)}</small></div>
+          <div class="n"><span class="nm">${escapeHtml(car.name)}${this._plateTag(car)}</span><small>${escapeHtml(car.model)}</small></div>
           ${others ? `<button class="btn o" data-action="copy-alerts" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:content-copy"></ha-icon>${this._t("copy_from")}</button>` : ""}
         </div>
         <div class="wide"><table>

@@ -62,7 +62,7 @@
   const PEOPLE = [{ id: "person.ella", name: "Ella" }, { id: "person.manuel", name: "Manuel" }];
 
   const initial = () => ({
-    version: "2.5.0b9",
+    version: "2.5.0b10",
     admin: true,
     people: PEOPLE,
     models: MODELS,
@@ -75,7 +75,7 @@
       {
         id: "car1", entry_id: "entry1", device_id: "dev1", key: "LS5A3ABE0RA000001", name: "Changote",
         appearance: { model: "s05_2024", trim: "max", color: "ganymade_grey", wheels: "open" }, country: "es",
-        people: [{ id: "person.manuel", name: "Manuel" }], mine: true,
+        people: [{ id: "person.manuel", name: "Manuel" }], mine: true, plate: { code: "E", parts: ["6545 NPD"] },
         model: "Deepal S05 EV RWD Max", color: "Ganymede Grey", wheel: "open", configured: true, sheet: SHEET,
         battery: 56, range: 276, odometer: 3498.8, itv_available: true, plan: { interval_km: 20000, interval_months: 12 },
         itv_rules: ITV_RULES, manual_url: "https://example.com/manual.pdf",
@@ -96,7 +96,7 @@
       {
         id: "car2", entry_id: "entry1", device_id: "dev2", key: "LS5A3ABE0RA000002", name: "Changuito",
         appearance: { model: "s05_2024", trim: "pro", color: null, wheels: null }, country: "es",
-        people: [], mine: false,
+        people: [], mine: false, plate: { code: "D", parts: ["M", "AB 1234"] },
         model: "Deepal S05 EV RWD Pro", color: "Deep Space Black", wheel: "pro", configured: true,
         sheet: { ...SHEET, version: "pro", verificada: false,
           funciones: { asientos_calefaccion: false, asientos_ventilacion: false, volante_calefactado: false, porton_electrico: false } },

@@ -1064,7 +1064,8 @@
     "people_help": "Escolhe a quem pertence este carro. São as pessoas de Definições → Pessoas.",
     "mine": "Teu",
     "error_unknown_person": "Essa pessoa já não existe no Home Assistant.",
-    "error_unauthorized": "Só um administrador pode fazer esta alteração."
+    "error_unauthorized": "Só um administrador pode fazer esta alteração.",
+    "plate": "Matrícula"
   },
   "catalogo": {
     "operacion_general_inspection": "Inspeção geral (propulsão, bateria, alta tensão, travões e direção)",

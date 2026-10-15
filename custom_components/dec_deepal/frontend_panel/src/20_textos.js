@@ -302,7 +302,8 @@
       "people_help": "Elige a quién pertenece este coche. Son las personas de Ajustes → Personas.",
       "mine": "Tuyo",
       "error_unknown_person": "Esa persona ya no existe en Home Assistant.",
-      "error_unauthorized": "Solo un administrador puede hacer este cambio."
+      "error_unauthorized": "Solo un administrador puede hacer este cambio.",
+      "plate": "Matrícula"
     },
     "en": {
       "tab_cars": "Vehicles",
@@ -594,7 +595,8 @@
       "people_help": "Choose who this car belongs to. These are the people in Settings → People.",
       "mine": "Yours",
       "error_unknown_person": "That person no longer exists in Home Assistant.",
-      "error_unauthorized": "Only an administrator can make this change."
+      "error_unauthorized": "Only an administrator can make this change.",
+      "plate": "Number plate"
     },
     "pt": {
       "tab_cars": "Veículos",
@@ -886,7 +888,8 @@
       "people_help": "Escolhe a quem pertence este carro. São as pessoas de Definições → Pessoas.",
       "mine": "Teu",
       "error_unknown_person": "Essa pessoa já não existe no Home Assistant.",
-      "error_unauthorized": "Só um administrador pode fazer esta alteração."
+      "error_unauthorized": "Só um administrador pode fazer esta alteração.",
+      "plate": "Matrícula"
     },
     "it": {
       "tab_cars": "Veicoli",
@@ -1178,7 +1181,8 @@
       "people_help": "Scegli a chi appartiene questa auto. Sono le persone di Impostazioni → Persone.",
       "mine": "Tua",
       "error_unknown_person": "Quella persona non esiste più in Home Assistant.",
-      "error_unauthorized": "Solo un amministratore può fare questa modifica."
+      "error_unauthorized": "Solo un amministratore può fare questa modifica.",
+      "plate": "Targa"
     },
     "pl": {
       "tab_cars": "Pojazdy",
@@ -1470,7 +1474,8 @@
       "people_help": "Wybierz, do kogo należy ten samochód. To osoby z Ustawienia → Osoby.",
       "mine": "Twój",
       "error_unknown_person": "Ta osoba już nie istnieje w Home Assistant.",
-      "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator."
+      "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator.",
+      "plate": "Tablica rejestracyjna"
     },
     "de": {
       "tab_cars": "Fahrzeuge",
@@ -1762,7 +1767,8 @@
       "people_help": "Wähle, wem dieses Auto gehört. Das sind die Personen unter Einstellungen → Personen.",
       "mine": "Deins",
       "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
-      "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen."
+      "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen.",
+      "plate": "Kennzeichen"
     },
     "fr": {
       "tab_cars": "Véhicules",
@@ -2054,7 +2060,8 @@
       "people_help": "Choisissez à qui appartient cette voiture. Ce sont les personnes de Paramètres → Personnes.",
       "mine": "À vous",
       "error_unknown_person": "Cette personne n'existe plus dans Home Assistant.",
-      "error_unauthorized": "Seul un administrateur peut faire cette modification."
+      "error_unauthorized": "Seul un administrateur peut faire cette modification.",
+      "plate": "Plaque d'immatriculation"
     },
     "nl": {
       "tab_cars": "Voertuigen",
@@ -2346,7 +2353,8 @@
       "people_help": "Kies van wie deze auto is. Dit zijn de personen in Instellingen → Personen.",
       "mine": "Van jou",
       "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
-      "error_unauthorized": "Alleen een beheerder kan deze wijziging doen."
+      "error_unauthorized": "Alleen een beheerder kan deze wijziging doen.",
+      "plate": "Kenteken"
     },
     "nb": {
       "tab_cars": "Kjøretøy",
@@ -2638,7 +2646,8 @@
       "people_help": "Velg hvem denne bilen tilhører. Det er personene i Innstillinger → Personer.",
       "mine": "Din",
       "error_unknown_person": "Den personen finnes ikke lenger i Home Assistant.",
-      "error_unauthorized": "Bare en administrator kan gjøre denne endringen."
+      "error_unauthorized": "Bare en administrator kan gjøre denne endringen.",
+      "plate": "Registreringsnummer"
     },
     "da": {
       "tab_cars": "Køretøjer",
@@ -2930,7 +2939,8 @@
       "people_help": "Vælg, hvem denne bil tilhører. Det er personerne i Indstillinger → Personer.",
       "mine": "Din",
       "error_unknown_person": "Den person findes ikke længere i Home Assistant.",
-      "error_unauthorized": "Kun en administrator kan foretage denne ændring."
+      "error_unauthorized": "Kun en administrator kan foretage denne ændring.",
+      "plate": "Nummerplade"
     },
     "el": {
       "tab_cars": "Οχήματα",
@@ -3222,7 +3232,8 @@
       "people_help": "Επίλεξε σε ποιον ανήκει αυτό το αυτοκίνητο. Είναι τα άτομα από Ρυθμίσεις → Άτομα.",
       "mine": "Δικό σου",
       "error_unknown_person": "Αυτό το άτομο δεν υπάρχει πια στο Home Assistant.",
-      "error_unauthorized": "Μόνο ένας διαχειριστής μπορεί να κάνει αυτή την αλλαγή."
+      "error_unauthorized": "Μόνο ένας διαχειριστής μπορεί να κάνει αυτή την αλλαγή.",
+      "plate": "Πινακίδα"
     },
     "sl": {
       "tab_cars": "Vozila",
@@ -3514,6 +3525,7 @@
       "people_help": "Izberi, komu pripada to vozilo. To so osebe v Nastavitve → Osebe.",
       "mine": "Tvoje",
       "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
-      "error_unauthorized": "To spremembo lahko naredi samo skrbnik."
+      "error_unauthorized": "To spremembo lahko naredi samo skrbnik.",
+      "plate": "Registrska tablica"
     }
   };

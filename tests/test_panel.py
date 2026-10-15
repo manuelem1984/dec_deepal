@@ -36,7 +36,10 @@ ME = "mobile_app_iphone_de_manuel"
 def _vehicle(model, vehicle_id: str, name: str, vin: str, trim: str):  # noqa: ANN001, ANN202
     values = {s.ODOMETER_KM: 37500, s.BATTERY_LEVEL: 56, s.RANGE_KM: 276}
     return SimpleNamespace(
-        info=VehicleInfo(vehicle_id=vehicle_id, nickname=name, vin=vin),
+        info=VehicleInfo(
+            vehicle_id=vehicle_id, nickname=name, vin=vin,
+            license_plate="6545NPD" if vehicle_id == "car1" else None,
+        ),
         coordinator=SimpleNamespace(
             data=SimpleNamespace(get=values.get), async_add_listener=lambda _cb: lambda: None
         ),
@@ -127,6 +130,8 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, hass_client_n
     assert state["stored"] == [] and state["version"] and state["admin"] is True
     # Sin personas asignadas: el coche no es de nadie en concreto.
     assert first["people"] == [] and first["mine"] is False
+    # Matrícula con el formato del país de la cuenta; sin ella, sin placa.
+    assert first["plate"] == {"code": "E", "parts": ["6545 NPD"]} and second["plate"] is None
     # Para elegir la apariencia: los modelos del país, con sus versiones, colores y fotos.
     assert [item["id"] for item in state["models"]] == ["s05_2024", "s05_phev"]
     ev = state["models"][0]

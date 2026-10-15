@@ -76,6 +76,9 @@
     ["porton_electrico", "mdi:car-back", "feature_power_tailgate"],
   ];
 
+  /** Las 12 estrellas de la franja europea de la placa de matrícula (69_matricula.js). */
+  const PLATE_STARS = '<svg width="9" height="9" viewBox="0 0 9 9" fill="#ffd400" aria-hidden="true"><circle cx="4.50" cy="1.26" r="0.9"/><circle cx="6.12" cy="1.69" r="0.9"/><circle cx="7.31" cy="2.88" r="0.9"/><circle cx="7.74" cy="4.50" r="0.9"/><circle cx="7.31" cy="6.12" r="0.9"/><circle cx="6.12" cy="7.31" r="0.9"/><circle cx="4.50" cy="7.74" r="0.9"/><circle cx="2.88" cy="7.31" r="0.9"/><circle cx="1.69" cy="6.12" r="0.9"/><circle cx="1.26" cy="4.50" r="0.9"/><circle cx="1.69" cy="2.88" r="0.9"/><circle cx="2.88" cy="1.69" r="0.9"/></svg>';
+
   /** Icono del destino de un aviso, según su tipo. */
   const TARGET_ICONS = { mobile: "mdi:cellphone", service: "mdi:send", panel: "mdi:bell" };
 
@@ -387,7 +390,8 @@
       "people_help": "Elige a quién pertenece este coche. Son las personas de Ajustes → Personas.",
       "mine": "Tuyo",
       "error_unknown_person": "Esa persona ya no existe en Home Assistant.",
-      "error_unauthorized": "Solo un administrador puede hacer este cambio."
+      "error_unauthorized": "Solo un administrador puede hacer este cambio.",
+      "plate": "Matrícula"
     },
     "en": {
       "tab_cars": "Vehicles",
@@ -679,7 +683,8 @@
       "people_help": "Choose who this car belongs to. These are the people in Settings → People.",
       "mine": "Yours",
       "error_unknown_person": "That person no longer exists in Home Assistant.",
-      "error_unauthorized": "Only an administrator can make this change."
+      "error_unauthorized": "Only an administrator can make this change.",
+      "plate": "Number plate"
     },
     "pt": {
       "tab_cars": "Veículos",
@@ -971,7 +976,8 @@
       "people_help": "Escolhe a quem pertence este carro. São as pessoas de Definições → Pessoas.",
       "mine": "Teu",
       "error_unknown_person": "Essa pessoa já não existe no Home Assistant.",
-      "error_unauthorized": "Só um administrador pode fazer esta alteração."
+      "error_unauthorized": "Só um administrador pode fazer esta alteração.",
+      "plate": "Matrícula"
     },
     "it": {
       "tab_cars": "Veicoli",
@@ -1263,7 +1269,8 @@
       "people_help": "Scegli a chi appartiene questa auto. Sono le persone di Impostazioni → Persone.",
       "mine": "Tua",
       "error_unknown_person": "Quella persona non esiste più in Home Assistant.",
-      "error_unauthorized": "Solo un amministratore può fare questa modifica."
+      "error_unauthorized": "Solo un amministratore può fare questa modifica.",
+      "plate": "Targa"
     },
     "pl": {
       "tab_cars": "Pojazdy",
@@ -1555,7 +1562,8 @@
       "people_help": "Wybierz, do kogo należy ten samochód. To osoby z Ustawienia → Osoby.",
       "mine": "Twój",
       "error_unknown_person": "Ta osoba już nie istnieje w Home Assistant.",
-      "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator."
+      "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator.",
+      "plate": "Tablica rejestracyjna"
     },
     "de": {
       "tab_cars": "Fahrzeuge",
@@ -1847,7 +1855,8 @@
       "people_help": "Wähle, wem dieses Auto gehört. Das sind die Personen unter Einstellungen → Personen.",
       "mine": "Deins",
       "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
-      "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen."
+      "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen.",
+      "plate": "Kennzeichen"
     },
     "fr": {
       "tab_cars": "Véhicules",
@@ -2139,7 +2148,8 @@
       "people_help": "Choisissez à qui appartient cette voiture. Ce sont les personnes de Paramètres → Personnes.",
       "mine": "À vous",
       "error_unknown_person": "Cette personne n'existe plus dans Home Assistant.",
-      "error_unauthorized": "Seul un administrateur peut faire cette modification."
+      "error_unauthorized": "Seul un administrateur peut faire cette modification.",
+      "plate": "Plaque d'immatriculation"
     },
     "nl": {
       "tab_cars": "Voertuigen",
@@ -2431,7 +2441,8 @@
       "people_help": "Kies van wie deze auto is. Dit zijn de personen in Instellingen → Personen.",
       "mine": "Van jou",
       "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
-      "error_unauthorized": "Alleen een beheerder kan deze wijziging doen."
+      "error_unauthorized": "Alleen een beheerder kan deze wijziging doen.",
+      "plate": "Kenteken"
     },
     "nb": {
       "tab_cars": "Kjøretøy",
@@ -2723,7 +2734,8 @@
       "people_help": "Velg hvem denne bilen tilhører. Det er personene i Innstillinger → Personer.",
       "mine": "Din",
       "error_unknown_person": "Den personen finnes ikke lenger i Home Assistant.",
-      "error_unauthorized": "Bare en administrator kan gjøre denne endringen."
+      "error_unauthorized": "Bare en administrator kan gjøre denne endringen.",
+      "plate": "Registreringsnummer"
     },
     "da": {
       "tab_cars": "Køretøjer",
@@ -3015,7 +3027,8 @@
       "people_help": "Vælg, hvem denne bil tilhører. Det er personerne i Indstillinger → Personer.",
       "mine": "Din",
       "error_unknown_person": "Den person findes ikke længere i Home Assistant.",
-      "error_unauthorized": "Kun en administrator kan foretage denne ændring."
+      "error_unauthorized": "Kun en administrator kan foretage denne ændring.",
+      "plate": "Nummerplade"
     },
     "el": {
       "tab_cars": "Οχήματα",
@@ -3307,7 +3320,8 @@
       "people_help": "Επίλεξε σε ποιον ανήκει αυτό το αυτοκίνητο. Είναι τα άτομα από Ρυθμίσεις → Άτομα.",
       "mine": "Δικό σου",
       "error_unknown_person": "Αυτό το άτομο δεν υπάρχει πια στο Home Assistant.",
-      "error_unauthorized": "Μόνο ένας διαχειριστής μπορεί να κάνει αυτή την αλλαγή."
+      "error_unauthorized": "Μόνο ένας διαχειριστής μπορεί να κάνει αυτή την αλλαγή.",
+      "plate": "Πινακίδα"
     },
     "sl": {
       "tab_cars": "Vozila",
@@ -3599,7 +3613,8 @@
       "people_help": "Izberi, komu pripada to vozilo. To so osebe v Nastavitve → Osebe.",
       "mine": "Tvoje",
       "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
-      "error_unauthorized": "To spremembo lahko naredi samo skrbnik."
+      "error_unauthorized": "To spremembo lahko naredi samo skrbnik.",
+      "plate": "Registrska tablica"
     }
   };
 
@@ -3699,6 +3714,7 @@
     .btn[disabled] { opacity: .5; pointer-events: none; }
     .badge { font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 500; display: inline-flex; gap: 4px; align-items: center; --mdc-icon-size: 14px; }
     .badge.ok { background: rgba(67, 160, 71, .15); color: var(--success-color, #2e7d32); }
+    .badge + .badge { margin-left: 6px; }
     .badge.warn { background: rgba(249, 168, 37, .18); color: var(--warning-color, #f57f17); }
     .badge.info { background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color); }
 
@@ -3706,12 +3722,22 @@
     .hero { display: flex; align-items: center; gap: 16px; padding: 12px 20px 0; flex-wrap: wrap; }
     .hero img { width: 380px; max-width: 100%; margin: -4px 0 -8px -16px; }
     .hero .who { flex: 1; min-width: 200px; }
-    .hero .n { font-size: 26px; } .hero .m { color: var(--secondary-text-color); margin: 2px 0 10px; }
+    .hero .n { font-size: 26px; }
+    .hero .m { color: var(--secondary-text-color); margin: 2px 0 10px; display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; }
+    .chead .nm { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .plate { display: inline-flex; align-items: stretch; height: 22px; flex: none; background: #fff; color: #111; border: 1.5px solid #1b1b1b;
+      border-radius: 4px; overflow: hidden; line-height: 1; font-family: "DIN 1451", "Barlow Semi Condensed", "Roboto Condensed", "Arial Narrow", sans-serif; }
+    .plate .eu { width: 12px; background: #0b3fa8; color: #fff; font-size: 7px; padding: 2px 0 1px; display: flex; flex-direction: column;
+      align-items: center; justify-content: space-between; font-family: Arial, sans-serif; }
+    .plate .num { display: flex; align-items: center; padding: 0 6px; font-size: 15px; font-weight: 500; letter-spacing: .03em; white-space: nowrap; }
+    .plate .seals { display: inline-flex; flex-direction: column; gap: 2px; margin: 0 4px; }
+    .plate .seals i { display: block; width: 5px; height: 5px; border-radius: 50%; border: 1px solid #444; }
     .kv { display: flex; gap: 26px; margin-top: 8px; flex-wrap: wrap; }
     .kv div { font-size: 13px; color: var(--secondary-text-color); } .kv b { display: block; font-size: 18px; font-weight: 400; color: var(--primary-text-color); }
     .chips { padding: 14px 20px 2px; }
     .people { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; padding: 6px 20px 0; font-size: 13px; }
-    .people .lbl { display: inline-flex; gap: 6px; align-items: center; color: var(--secondary-text-color); margin: 0 6px 6px 0; --mdc-icon-size: 18px; }
+    .people .lbl { display: inline-flex; gap: 6px; align-items: center; color: var(--secondary-text-color); margin: 0 6px 6px 0; padding: 0; border: 0;
+      font-size: 13px; --mdc-icon-size: 18px; }
     .people .chip { margin-bottom: 6px; }
     .people .none { color: var(--secondary-text-color); margin: 0 10px 6px 0; }
     .people .link { margin-bottom: 6px; }
@@ -4251,7 +4277,7 @@
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
           <div class="who">
             <div class="n">${escapeHtml(car.name)}</div>
-            <div class="m">${escapeHtml([car.model, car.color].filter(Boolean).join(" · "))}</div>
+            <div class="m"><span>${escapeHtml([car.model, car.color].filter(Boolean).join(" · "))}</span>${this._plateTag(car)}</div>
             ${badge}${mine}
             <div class="kv">
               ${car.battery == null ? "" : fact(`${this._number(car.battery)} %`, "battery")}
@@ -4416,7 +4442,7 @@
       return `<div class="card" data-car-card="${escapeHtml(car.id)}">
         <div class="chead">
           ${photo ? `<img src="${escapeHtml(photo)}" alt="">` : ""}
-          <div class="n">${escapeHtml(car.name)}<small>${escapeHtml(car.model)}</small></div>
+          <div class="n"><span class="nm">${escapeHtml(car.name)}${this._plateTag(car)}</span><small>${escapeHtml(car.model)}</small></div>
           ${others ? `<button class="btn o" data-action="copy-alerts" data-car="${escapeHtml(car.id)}"><ha-icon icon="mdi:content-copy"></ha-icon>${this._t("copy_from")}</button>` : ""}
         </div>
         <div class="wide"><table>
@@ -5418,6 +5444,26 @@
           return this._run("set_people", { vehicle_id: car.id, people }, this._t("saved"));
         }
       );
+    }
+  });
+
+  // ── src/69_matricula.js ───────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Placa de matrícula (pestañas "Coches" y "Avisos")
+  // ---------------------------------------------------------------------------
+  // Placa genérica europea: franja azul con las estrellas y la letra del país
+  // de la cuenta, y la matrícula con el formato de ese país (lo pone
+  // plates.py: "parts" trae el texto; con dos partes, Alemania, entre ellas
+  // van los dos sellos). Sin matrícula, no se pinta nada.
+  install(class {
+    _plateTag(car) {
+      const plate = car.plate;
+      if (!plate || !plate.parts || !plate.parts.length) return "";
+      const seals = `<span class="seals" aria-hidden="true"><i></i><i></i></span>`;
+      const text = plate.parts.map((part) => escapeHtml(part)).join(seals);
+      const label = `${this._t("plate")} ${plate.parts.join(" ")}`;
+      return `<span class="plate" role="img" aria-label="${escapeHtml(label)}">
+        <span class="eu">${PLATE_STARS}<span>${escapeHtml(plate.code)}</span></span><span class="num">${text}</span></span>`;
     }
   });
 

@@ -31,6 +31,7 @@
     .btn[disabled] { opacity: .5; pointer-events: none; }
     .badge { font-size: 12px; padding: 4px 10px; border-radius: 12px; font-weight: 500; display: inline-flex; gap: 4px; align-items: center; --mdc-icon-size: 14px; }
     .badge.ok { background: rgba(67, 160, 71, .15); color: var(--success-color, #2e7d32); }
+    .badge + .badge { margin-left: 6px; }
     .badge.warn { background: rgba(249, 168, 37, .18); color: var(--warning-color, #f57f17); }
     .badge.info { background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color); }
 
@@ -38,12 +39,22 @@
     .hero { display: flex; align-items: center; gap: 16px; padding: 12px 20px 0; flex-wrap: wrap; }
     .hero img { width: 380px; max-width: 100%; margin: -4px 0 -8px -16px; }
     .hero .who { flex: 1; min-width: 200px; }
-    .hero .n { font-size: 26px; } .hero .m { color: var(--secondary-text-color); margin: 2px 0 10px; }
+    .hero .n { font-size: 26px; }
+    .hero .m { color: var(--secondary-text-color); margin: 2px 0 10px; display: flex; align-items: center; gap: 4px 10px; flex-wrap: wrap; }
+    .chead .nm { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .plate { display: inline-flex; align-items: stretch; height: 22px; flex: none; background: #fff; color: #111; border: 1.5px solid #1b1b1b;
+      border-radius: 4px; overflow: hidden; line-height: 1; font-family: "DIN 1451", "Barlow Semi Condensed", "Roboto Condensed", "Arial Narrow", sans-serif; }
+    .plate .eu { width: 12px; background: #0b3fa8; color: #fff; font-size: 7px; padding: 2px 0 1px; display: flex; flex-direction: column;
+      align-items: center; justify-content: space-between; font-family: Arial, sans-serif; }
+    .plate .num { display: flex; align-items: center; padding: 0 6px; font-size: 15px; font-weight: 500; letter-spacing: .03em; white-space: nowrap; }
+    .plate .seals { display: inline-flex; flex-direction: column; gap: 2px; margin: 0 4px; }
+    .plate .seals i { display: block; width: 5px; height: 5px; border-radius: 50%; border: 1px solid #444; }
     .kv { display: flex; gap: 26px; margin-top: 8px; flex-wrap: wrap; }
     .kv div { font-size: 13px; color: var(--secondary-text-color); } .kv b { display: block; font-size: 18px; font-weight: 400; color: var(--primary-text-color); }
     .chips { padding: 14px 20px 2px; }
     .people { display: flex; flex-wrap: wrap; align-items: center; gap: 0 6px; padding: 6px 20px 0; font-size: 13px; }
-    .people .lbl { display: inline-flex; gap: 6px; align-items: center; color: var(--secondary-text-color); margin: 0 6px 6px 0; --mdc-icon-size: 18px; }
+    .people .lbl { display: inline-flex; gap: 6px; align-items: center; color: var(--secondary-text-color); margin: 0 6px 6px 0; padding: 0; border: 0;
+      font-size: 13px; --mdc-icon-size: 18px; }
     .people .chip { margin-bottom: 6px; }
     .people .none { color: var(--secondary-text-color); margin: 0 10px 6px 0; }
     .people .link { margin-bottom: 6px; }

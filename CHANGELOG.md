@@ -3,6 +3,22 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b10] — 2026-10-15
+
+### Añadido
+
+- **Matrícula en el panel**, como una pequeña placa europea (franja azul con
+  la letra del país) junto al modelo y el color en Coches, y junto al nombre
+  en Avisos. Lleva el formato del país de la cuenta: `6545 NPD` en España,
+  `AA-00-AA` en Portugal, `AB 123 CD` en Italia, `AB-123-CD` en Francia y,
+  en Alemania, los dos sellos entre la ciudad y el resto. Si una matrícula no
+  encaja con ese formato, se enseña tal cual. Sin matrícula, no sale nada.
+
+### Corregido
+
+- Panel → Coches: la etiqueta «Personas» salía con una raya encima y
+  desplazada; y «Ficha verificada» y «Tuyo» salían pegadas.
+
 ## [2.5.0b9] — 2026-10-15
 
 ### Añadido
