@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Wersja i kolor",
-            "description": "Wersja i kolor Twojego {model}. Wersja decyduje o tym, jakie encje powstają (np. wentylacja foteli jest tylko w Max) i, razem z kolorem, o „Obrazie DEC”.",
+            "description": "Wersja i kolor Twojego {model}. Wersja decyduje o tym, jakie encje powstają (np. wentylacja foteli jest tylko w Max) i, razem z kolorem, o „Widoku z boku”.",
             "data": {
               "trim": "Wersja",
               "color": "Kolor",
@@ -458,7 +458,7 @@
         "name": "Obraz oficjalny"
       },
       "dec_photo": {
-        "name": "Obraz DEC"
+        "name": "Widok z boku"
       },
       "top_view": {
         "name": "Widok z góry"

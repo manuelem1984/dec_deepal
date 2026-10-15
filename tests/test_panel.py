@@ -141,6 +141,9 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, hass_client_n
     assert ev["colors"][2] == {"id": "ganymade_grey", "name": "Ganymede Grey", "swatch": "#5d6166"}
     assert ev["photos"]["max|ganymade_grey"].startswith("/dec_deepal/photos/s05_2024/max_ganymade_grey.png?v=")
     assert ev["photos"]["|"].startswith("/dec_deepal/photos/s05_2024/default.png")
+    # La llanta sin tapacubos del Max tiene foto propia (solo donde la hay).
+    assert ev["photos"]["max|ganymade_grey|open"].startswith("/dec_deepal/photos/s05_2024/max_ganymade_grey_open.png")
+    assert "pro|ganymade_grey|open" not in ev["photos"]
     assert state["models"][1]["fuel"] is True
     assert first["appearance"] == {"model": "s05_2024", "trim": "max", "color": first["appearance"]["color"], "wheels": None}
     # Los ajustes de la cuenta, sin el PIN (solo si lo hay).

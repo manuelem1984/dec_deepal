@@ -17,7 +17,7 @@ Con dos coches, una tarjeta por coche.
 
 ### La misma tarjeta, con la vista de planta
 
-Desde la 2.5.0b5 hay una segunda tarjeta, **DEC Deepal · Vista de planta**:
+Desde la 2.5.0b5 hay una segunda tarjeta, **DEC Deepal · Vista planta**:
 es la misma (cabecera, testigos, batería, los seis botones y sus ventanas),
 pero con el coche visto desde arriba, que es donde mejor se ve qué puerta o
 ventanilla está abierta. Se añade igual, buscando **DEC Deepal**. En YAML:

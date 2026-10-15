@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Versjon og farge",
-            "description": "Versjon og farge på din {model}. Versjonen avgjør hvilke entiteter som opprettes (seteventilasjon finnes for eksempel bare på Max) og, sammen med fargen, «DEC-bildet».",
+            "description": "Versjon og farge på din {model}. Versjonen avgjør hvilke entiteter som opprettes (seteventilasjon finnes for eksempel bare på Max) og, sammen med fargen, «Sett fra siden».",
             "data": {
               "trim": "Versjon",
               "color": "Farge",
@@ -458,7 +458,7 @@
         "name": "Offisielt bilde"
       },
       "dec_photo": {
-        "name": "DEC-bilde"
+        "name": "Sett fra siden"
       },
       "top_view": {
         "name": "Sett ovenfra"

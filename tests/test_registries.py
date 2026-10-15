@@ -45,6 +45,13 @@ def test_trim_features_and_photos(registries) -> None:  # noqa: ANN001
     assert model.has(FEATURE_SEAT_VENT, "max")
     assert model.photo_for("max_awd", "andromeda_blue").name == "max_andromeda_blue.png"
     assert model.photo_for(None, None).name == "default.png"
+    # Vista lateral sin tapacubos: foto propia del Max con la llanta "open" (2.5.0b11),
+    # en los cinco colores; con la de serie (o una que no es elegible), la normal.
+    for color in model.colors:
+        assert model.photo_for("max", color, "open").name == f"max_{color}_open.png"
+    assert model.photo_for("max", "andromeda_blue", "cover").name == "max_andromeda_blue.png"
+    assert model.photo_for("pro", "andromeda_blue", "open").name == "pro_andromeda_blue.png"  # sin foto propia
+    assert model.photo_for("pro", "andromeda_blue", "pro").name == "pro_andromeda_blue.png"
     assert model.display_name("max") == "Deepal S05 EV RWD Max"
     assert model.display_name("max_awd") == "Deepal S05 EV 4WD Max"
     assert model.display_name(None) == "Deepal S05 EV"

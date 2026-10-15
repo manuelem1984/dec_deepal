@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Različica in barva",
-            "description": "Različica in barva vašega {model}. Različica določa, katere entitete se ustvarijo (prezračevanje sedežev obstaja na primer samo pri Max) in skupaj z barvo tudi »sliko DEC«.",
+            "description": "Različica in barva vašega {model}. Različica določa, katere entitete se ustvarijo (prezračevanje sedežev obstaja na primer samo pri Max) in skupaj z barvo tudi »pogled od strani«.",
             "data": {
               "trim": "Različica",
               "color": "Barva",
@@ -458,7 +458,7 @@
         "name": "Uradna slika"
       },
       "dec_photo": {
-        "name": "Slika DEC"
+        "name": "Pogled od strani"
       },
       "top_view": {
         "name": "Pogled od zgoraj"

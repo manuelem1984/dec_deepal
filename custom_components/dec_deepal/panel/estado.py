@@ -52,9 +52,11 @@ from .comun import command, loaded_entries
 _COMFORT: Final = ("asientos_calefaccion", "asientos_ventilacion", "volante_calefactado", "porton_electrico")
 
 
-def _photo_url(model: Any, trim: str | None, color: str | None) -> str | None:
-    """Dirección de la foto del catálogo para esa versión y ese color."""
-    photo = model.photo_for(trim, color)
+def _photo_url(
+    model: Any, trim: str | None, color: str | None, wheel: str | None = None
+) -> str | None:
+    """Dirección de la foto del catálogo para esa versión, ese color y esa llanta."""
+    photo = model.photo_for(trim, color, wheel)
     if photo is None:
         return None
     relative = photo.relative_to(INTEGRATION_DIR / "vehicles" / "photos").as_posix()
@@ -82,11 +84,21 @@ def _model(model: Any) -> dict[str, Any]:
             for color in model.colors.values()
         ],
         "wheels": list(model.wheel_options),
-        # Foto de cada combinación: "<versión>|<color>" (vacíos = sin elegir).
+        # Foto de cada combinación: "<versión>|<color>" (vacíos = sin elegir) y,
+        # si una llanta elegible tiene foto propia, "<versión>|<color>|<llanta>".
         "photos": {
-            f"{trim or ''}|{color or ''}": _photo_url(model, trim, color)
-            for trim in (None, *model.trims)
-            for color in (None, *model.colors)
+            **{
+                f"{trim or ''}|{color or ''}": _photo_url(model, trim, color)
+                for trim in (None, *model.trims)
+                for color in (None, *model.colors)
+            },
+            **{
+                f"{trim}|{color}|{wheel}": url
+                for trim in model.trims
+                for color in model.colors
+                for wheel in model.wheel_options[1:]
+                if (url := _photo_url(model, trim, color, wheel)) != _photo_url(model, trim, color)
+            },
         },
     }
 

@@ -1,5 +1,13 @@
 # Hoja de ruta
 
+## Beta 2.5.0b11 (15-10-2026) — pendiente de probar
+
+- [ ] **Vista lateral** de tu Max: con la llanta sin tapacubos elegida en
+      Apariencia, sale la llanta negra en su color; con tapacubos, como antes.
+- [ ] Los nombres nuevos: «Vista lateral», «Vista planta» y «Vista carga».
+- [ ] Pendiente: una foto de la llanta más de frente y con luz uniforme
+      mejoraría el resultado (`tools/generar_vista_lateral_llanta.py`).
+
 ## Beta 2.5.0b10 (15-10-2026) — pendiente de probar
 
 - [ ] **Placa de matrícula** en Coches y Avisos, con la matrícula del coche

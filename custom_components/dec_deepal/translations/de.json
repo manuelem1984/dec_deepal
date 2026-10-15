@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Version und Farbe",
-            "description": "Version und Farbe deines {model}. Die Version bestimmt, welche Entitäten angelegt werden (die Sitzbelüftung gibt es z. B. nur beim Max) und zusammen mit der Farbe das „DEC-Bild“.",
+            "description": "Version und Farbe deines {model}. Die Version bestimmt, welche Entitäten angelegt werden (die Sitzbelüftung gibt es z. B. nur beim Max) und zusammen mit der Farbe die „Seitenansicht“.",
             "data": {
               "trim": "Version",
               "color": "Farbe",
@@ -458,7 +458,7 @@
         "name": "Offizielles Bild"
       },
       "dec_photo": {
-        "name": "DEC-Bild"
+        "name": "Seitenansicht"
       },
       "top_view": {
         "name": "Draufsicht"

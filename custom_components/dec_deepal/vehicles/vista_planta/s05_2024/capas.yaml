@@ -2,7 +2,7 @@
 # DEC Deepal — VISTA DE PLANTA del Deepal S05 (2024-25)
 # =============================================================================
 #
-# La entidad "Vista de planta" dibuja el coche visto desde arriba poniendo
+# La entidad "Vista planta" dibuja el coche visto desde arriba poniendo
 # estas capas UNA ENCIMA DE OTRA, en el orden de la lista (la primera queda
 # debajo). Cada capa es un PNG transparente del MISMO tamaño (750×750) y con
 # el coche en la MISMA posición, así encajan sin mover nada.

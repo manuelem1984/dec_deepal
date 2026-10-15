@@ -14,7 +14,7 @@
   const TEXTS = {
     "es": {
       "card_description": "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",
-      "top_view": "Vista de planta",
+      "top_view": "Vista planta",
       "top_card_description": "Tu Deepal visto desde arriba: puertas, capó y maletero de un vistazo, con la batería, el confort y las acciones rápidas.",
       "orientation": "Orientación del coche",
       "orientation_horizontal": "Horizontal (tumbado)",

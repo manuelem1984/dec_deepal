@@ -60,7 +60,7 @@
       return this._vertical() ? 11 : 8;
     }
 
-    /** ¿Vista de planta de pie? (solo la tarjeta de planta, y si se pide). */
+    /** ¿Vista planta de pie? (solo la tarjeta de planta, y si se pide). */
     _vertical() {
       return this.constructor.VIEW === "top" && this._config.orientation === "vertical";
     }

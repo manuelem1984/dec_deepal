@@ -51,6 +51,12 @@ Apache 2.0), vía Iconify. Detalle por icono en
 - `icons/reserva/charge_cover_*.svg` (tapa de carga con el puerto CCS2) es un
   dibujo propio.
 
+## Vista lateral: Max sin tapacubos
+
+Las fotos `max_<color>_open.png` son las del catálogo con la llanta del Max
+sin tapacubos encima, sacada de una fotografía cedida por la Comunidad Deepal
+España (`tools/fuentes/llanta_max_sin_tapacubos.jpg`).
+
 ## Vista isométrica: colores y llantas
 
 Las capas de color de la vista isométrica son las capas originales

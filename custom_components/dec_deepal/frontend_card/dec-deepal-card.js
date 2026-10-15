@@ -155,7 +155,7 @@
   const TEXTS = {
     "es": {
       "card_description": "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",
-      "top_view": "Vista de planta",
+      "top_view": "Vista planta",
       "top_card_description": "Tu Deepal visto desde arriba: puertas, capó y maletero de un vistazo, con la batería, el confort y las acciones rápidas.",
       "orientation": "Orientación del coche",
       "orientation_horizontal": "Horizontal (tumbado)",
@@ -2082,7 +2082,7 @@
     .carbox[hidden] { display: none; }
     .carbox.plain { aspect-ratio: auto; }
     .carbox.plain .car { position: static; width: 100%; }
-    /* Vista de planta: tumbada (morro a la izquierda) o de pie. */
+    /* Vista planta: tumbada (morro a la izquierda) o de pie. */
     .carbox.top { aspect-ratio: ${TOP.crop.h} / ${TOP.crop.w}; }
     .carbox.top .car { transform: rotate(-90deg);
       width: ${(TOP.size / TOP.crop.h) * 100}%;
@@ -2307,7 +2307,7 @@
       return this._vertical() ? 11 : 8;
     }
 
-    /** ¿Vista de planta de pie? (solo la tarjeta de planta, y si se pide). */
+    /** ¿Vista planta de pie? (solo la tarjeta de planta, y si se pide). */
     _vertical() {
       return this.constructor.VIEW === "top" && this._config.orientation === "vertical";
     }

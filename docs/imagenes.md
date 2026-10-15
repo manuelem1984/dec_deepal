@@ -5,11 +5,11 @@ Cada coche tiene **seis entidades de imagen, independientes**:
 | Entidad | De dónde sale | Si no hay imagen |
 | --- | --- | --- |
 | **Imagen oficial** (`official_image`) | URL que envía el servidor de Deepal en la lista de vehículos | No disponible |
-| **Imagen DEC** (`dec_photo`) | Catálogo local `vehicles/photos/`, según modelo + versión + color | Foto por defecto del modelo; si tampoco hay (p. ej. modelo genérico), **la imagen oficial** |
-| **Vista de planta** (`top_view`) | Capas de `vehicles/vista_planta/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
+| **Vista lateral** (`dec_photo`) | Catálogo local `vehicles/photos/`, según modelo + versión + color | Foto por defecto del modelo; si tampoco hay (p. ej. modelo genérico), **la imagen oficial** |
+| **Vista planta** (`top_view`) | Capas de `vehicles/vista_planta/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
 | **Vista isométrica** (`isometric_view`) | Capas de `vehicles/vista_isometrica/`, montadas según el estado del coche | No se crea si el modelo no tiene esa vista |
 | **Vista interior** (`interior_view`) | Capas de `vehicles/vista_interior/`: volante y asientos encendidos | No se crea si el modelo no tiene esa vista |
-| **Vista de carga** (`charging_view`) | Capas de `vehicles/vista_carga/`: cable enchufado o cargando | No se crea si el modelo no tiene esa vista |
+| **Vista carga** (`charging_view`) | Capas de `vehicles/vista_carga/`: cable enchufado o cargando | No se crea si el modelo no tiene esa vista |
 
 La imagen oficial se descarga una sola vez y la comparten las dos entidades.
 
@@ -25,10 +25,11 @@ Mismo concepto que los iconos: **datos, no código**. Ahí se definen:
 
 Todos los campos están explicados en la cabecera del propio YAML.
 
-## Fotos
+## Fotos (entidad «Vista lateral»)
 
 ```
 vehicles/photos/<carpeta_fotos>/<grupo_foto>_<color>.<ext>
+vehicles/photos/<carpeta_fotos>/<grupo_foto>_<color>_<llanta>.<ext>   (opcional)
 vehicles/photos/<carpeta_fotos>/<foto_defecto>
 ```
 
@@ -38,8 +39,18 @@ Ejemplo S05:
 vehicles/photos/s05_2024/
 ├── default.png
 ├── pro_andromeda_blue.png   … pro_moonlight_white.png   (5)
-└── max_andromeda_blue.png   … max_moonlight_white.png   (5)
+├── max_andromeda_blue.png   … max_moonlight_white.png   (5)
+└── max_andromeda_blue_open.png … max_moonlight_white_open.png (5, sin tapacubos)
 ```
+
+- **Llantas:** si el coche lleva una llanta elegible que no es la de serie
+  (la primera de `llantas`; en el S05 Max, `open` = sin tapacubos), se usa
+  `<grupo_foto>_<color>_<llanta>` si existe. Las del Max sin tapacubos las
+  genera `tools/generar_vista_lateral_llanta.py` a partir de las de serie y de
+  la foto de la llanta (`tools/fuentes/llanta_max_sin_tapacubos.jpg`): mide el
+  tapacubos de cada foto, encaja la llanta en ese círculo y la pasa a negro.
+  Si cambia la foto de la llanta o las del catálogo, basta con volver a
+  ejecutarlo.
 
 - `grupo_foto` permite que versiones iguales por fuera compartan fotos: el
   **Max AWD** usa las del **Max**.
@@ -64,10 +75,10 @@ tiene cada modelo lo dice `vistas:` en `vehicles.yaml`:
 
 ```yaml
 vistas:
-  top_view: vista_planta/s05_2024            # "Vista de planta"
+  top_view: vista_planta/s05_2024            # "Vista planta"
   isometric_view: vista_isometrica/s05_2024  # "Vista isométrica"
   interior_view: vista_interior/s05_2024      # "Vista interior"
-  charging_view: vista_carga/s05_2024         # "Vista de carga"
+  charging_view: vista_carga/s05_2024         # "Vista carga"
 ```
 
 Cada vista es una entidad de imagen y todas funcionan igual (mismo código);
@@ -75,7 +86,7 @@ solo cambian sus capas. Para un ángulo nuevo: carpeta con sus capas y su
 `capas.yaml`, una clave nueva en `KNOWN_VIEWS` (`registries/vehicles.py`) y
 su nombre en `translations/`.
 
-### Vista de planta (`top_view`)
+### Vista planta (`top_view`)
 
 El coche **visto desde arriba** (750×750). Las piezas abiertas están
 dibujadas en rojo para que se vean de un vistazo:
@@ -138,7 +149,7 @@ costuras, se apaga hacia el borde y deja un halo suave (20 % transparente):
   no se distingue la intensidad.
 - En el S05 Pro (sin ventilación) las capas de ventilación nunca se encienden.
 
-### Vista de carga (`charging_view`)
+### Vista carga (`charging_view`)
 
 El coche **de lado**, semitransparente y con la mecánica a la vista
 (750×500), con el cable de carga según su estado:

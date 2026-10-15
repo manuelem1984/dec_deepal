@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Versión y color",
-            "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Imagen DEC\".",
+            "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Vista lateral\".",
             "data": {
               "trim": "Versión",
               "color": "Color",
@@ -458,10 +458,10 @@
         "name": "Imagen oficial"
       },
       "dec_photo": {
-        "name": "Imagen DEC"
+        "name": "Vista lateral"
       },
       "top_view": {
-        "name": "Vista de planta"
+        "name": "Vista planta"
       },
       "isometric_view": {
         "name": "Vista isométrica"
@@ -470,7 +470,7 @@
         "name": "Vista interior"
       },
       "charging_view": {
-        "name": "Vista de carga"
+        "name": "Vista carga"
       }
     }
   },

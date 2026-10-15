@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Version and colour",
-            "description": "Version and colour of your {model}. The version decides which entities are created (for example, seat ventilation only exists on the Max) and, together with the colour, the \"DEC image\".",
+            "description": "Version and colour of your {model}. The version decides which entities are created (for example, seat ventilation only exists on the Max) and, together with the colour, the \"Side view\".",
             "data": {
               "trim": "Version",
               "color": "Colour",
@@ -458,7 +458,7 @@
         "name": "Official image"
       },
       "dec_photo": {
-        "name": "DEC image"
+        "name": "Side view"
       },
       "top_view": {
         "name": "Top view"

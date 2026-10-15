@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Versione e colore",
-            "description": "Versione e colore della tua {model}. La versione decide quali entità vengono create (ad esempio, la ventilazione dei sedili esiste solo sulla Max) e, insieme al colore, l'\"Immagine DEC\".",
+            "description": "Versione e colore della tua {model}. La versione decide quali entità vengono create (ad esempio, la ventilazione dei sedili esiste solo sulla Max) e, insieme al colore, la \"Vista laterale\".",
             "data": {
               "trim": "Versione",
               "color": "Colore",
@@ -458,7 +458,7 @@
         "name": "Immagine ufficiale"
       },
       "dec_photo": {
-        "name": "Immagine DEC"
+        "name": "Vista laterale"
       },
       "top_view": {
         "name": "Vista dall'alto"

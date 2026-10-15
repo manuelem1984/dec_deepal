@@ -461,11 +461,11 @@ official_image:
   descripcion: Imagen oficial que envía el servidor de Deepal
 dec_photo:
   plataforma: image
-  descripcion: Imagen DEC según versión y color elegidos
+  descripcion: Vista lateral según versión y color elegidos
 top_view:
   plataforma: image
   descripcion: >-
-    Vista de planta: el coche desde arriba con puertas, capó, maletero,
+    Vista planta: el coche desde arriba con puertas, capó, maletero,
     ventanillas y luces según su estado (capas en vehicles/vista_planta/)
 isometric_view:
   plataforma: image
@@ -480,7 +480,7 @@ interior_view:
 charging_view:
   plataforma: image
   descripcion: >-
-    Vista de carga: el coche de lado con el cable enchufado (gris) o cargando
+    Vista carga: el coche de lado con el cable enchufado (gris) o cargando
     (verde)
 
 # ---------------------------------------------------------------------------

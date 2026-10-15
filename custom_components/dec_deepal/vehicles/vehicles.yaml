@@ -64,11 +64,11 @@
 #                   maletero, ventanillas, luces). Cada vista es una entidad de
 #                   imagen. Clave = vista; valor = carpeta dentro de vehicles/
 #                   con su capas.yaml. Vistas posibles:
-#                     top_view        "Vista de planta" (desde arriba)
+#                     top_view        "Vista planta" (desde arriba)
 #                     isometric_view  "Vista isométrica" (delante-izquierda)
 #                     interior_view   "Vista interior" (habitáculo: volante y
 #                                     asientos calefactados / ventilados)
-#                     charging_view   "Vista de carga" (lateral con el cable
+#                     charging_view   "Vista carga" (lateral con el cable
 #                                     enchufado / cargando)
 #                   Sin este campo, el modelo no tiene vistas.
 #   llantas         (opcional) Llantas que el usuario puede elegir en
@@ -117,6 +117,10 @@
 #   Ejemplo: vehicles/photos/s05_2024/max_andromeda_blue.png
 #   Formatos admitidos: .png, .jpg, .jpeg, .webp (se busca en ese orden).
 #   Si falta la foto exacta, se usa foto_defecto. No hace falta tocar código.
+#   Llantas: con una llanta elegible que no es la primera de "llantas" (p. ej.
+#   "open", sin tapacubos), se usa <grupo_foto>_<color>_<llanta>.png si existe
+#   (ej.: max_andromeda_blue_open.png; las genera
+#   tools/generar_vista_lateral_llanta.py).
 #
 # -----------------------------------------------------------------------------
 # MODELO "generico"

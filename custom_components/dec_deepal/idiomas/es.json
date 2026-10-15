@@ -75,7 +75,7 @@
             },
             "details": {
               "title": "Versión y color",
-              "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Imagen DEC\".",
+              "description": "Versión y color de tu {model}. La versión decide qué entidades se crean (p. ej. la ventilación de asientos solo existe en el Max) y, junto con el color, la \"Vista lateral\".",
               "data": {
                 "trim": "Versión",
                 "color": "Color",
@@ -459,10 +459,10 @@
           "name": "Imagen oficial"
         },
         "dec_photo": {
-          "name": "Imagen DEC"
+          "name": "Vista lateral"
         },
         "top_view": {
-          "name": "Vista de planta"
+          "name": "Vista planta"
         },
         "isometric_view": {
           "name": "Vista isométrica"
@@ -471,7 +471,7 @@
           "name": "Vista interior"
         },
         "charging_view": {
-          "name": "Vista de carga"
+          "name": "Vista carga"
         }
       }
     },
@@ -619,7 +619,7 @@
   },
   "tarjeta": {
     "card_description": "Tu Deepal de un vistazo: vista del coche, batería, confort y acciones rápidas.",
-    "top_view": "Vista de planta",
+    "top_view": "Vista planta",
     "top_card_description": "Tu Deepal visto desde arriba: puertas, capó y maletero de un vistazo, con la batería, el confort y las acciones rápidas.",
     "orientation": "Orientación del coche",
     "orientation_horizontal": "Horizontal (tumbado)",

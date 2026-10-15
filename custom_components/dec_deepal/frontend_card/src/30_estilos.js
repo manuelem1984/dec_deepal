@@ -18,7 +18,7 @@
     .carbox[hidden] { display: none; }
     .carbox.plain { aspect-ratio: auto; }
     .carbox.plain .car { position: static; width: 100%; }
-    /* Vista de planta: tumbada (morro a la izquierda) o de pie. */
+    /* Vista planta: tumbada (morro a la izquierda) o de pie. */
     .carbox.top { aspect-ratio: ${TOP.crop.h} / ${TOP.crop.w}; }
     .carbox.top .car { transform: rotate(-90deg);
       width: ${(TOP.size / TOP.crop.h) * 100}%;

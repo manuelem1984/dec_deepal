@@ -77,7 +77,7 @@ class VehicleContext:
     #: Resultado de la última descarga de la imagen oficial (diagnóstico).
     official_image_status: dict[str, Any] = field(default_factory=dict)
     #: Imagen oficial ya descargada ``(bytes, content_type)``; la comparten
-    #: "Imagen oficial" e "Imagen DEC" (cuando no hay foto del catálogo).
+    #: "Imagen oficial" e "Vista lateral" (cuando no hay foto del catálogo).
     official_image_cache: tuple[bytes, str] | None = None
 
     @property

@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b11] — 2026-10-15
+
+### Añadido
+
+- **«Vista lateral» del Max sin tapacubos.** Si en Apariencia tu Max lleva la
+  llanta sin tapacubos, la vista lateral del coche la enseña, en los cinco
+  colores, igual que ya hacía la vista isométrica. La ventana de Apariencia
+  del panel también cambia la foto al elegir la llanta.
+
+### Cambiado
+
+- **Nombres de las vistas**, más cortos y todos iguales: «Imagen DEC» pasa a
+  ser **«Vista lateral»** (en todos los idiomas), y en español «Vista de
+  planta» y «Vista de carga» pasan a ser **«Vista planta»** y **«Vista
+  carga»** (también la tarjeta «DEC Deepal · Vista planta»). Solo cambia el
+  nombre que se ve: los identificadores (`image.…`) siguen igual, así que no
+  se rompe ninguna tarjeta ni automatización.
+
 ## [2.5.0b10] — 2026-10-15
 
 ### Añadido

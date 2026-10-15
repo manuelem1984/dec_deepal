@@ -3,13 +3,13 @@
 - **official_image** — "Imagen oficial": la foto que manda el servidor de
   Deepal en la lista de vehículos. Si el servidor no manda ninguna, la entidad
   aparece como no disponible.
-- **dec_photo** — "Imagen DEC": la foto del catálogo (``vehicles/photos``) que
+- **dec_photo** — "Vista lateral": la foto del catálogo (``vehicles/photos``) que
   corresponde a la versión y el color elegidos en Configurar. Si no se han
   elegido, o falta esa foto, se usa la foto por defecto del modelo. Ver
   ``docs/imagenes.md``.
-- **Vistas por capas** — "Vista de planta" (``top_view``), "Vista
+- **Vistas por capas** — "Vista planta" (``top_view``), "Vista
   isométrica" (``isometric_view``), "Vista interior" (``interior_view``) y
-  "Vista de carga" (``charging_view``): el coche desde un ángulo, montado con
+  "Vista carga" (``charging_view``): el coche desde un ángulo, montado con
   capas según su estado (puertas, capó, maletero, ventanillas, luces,
   volante, asientos y cable de carga). Qué
   vistas tiene cada modelo lo dice ``vistas:`` en ``vehicles.yaml``; las
@@ -74,7 +74,7 @@ async def fetch_official_image(
 ) -> tuple[bytes, str] | None:
     """Descarga la imagen oficial del coche (una vez; luego, de memoria).
 
-    La usan las dos entidades: "Imagen oficial" siempre, e "Imagen DEC" cuando
+    La usan las dos entidades: "Imagen oficial" siempre, e "Vista lateral" cuando
     el catálogo no tiene foto para el coche. El resultado de cada intento se
     guarda en ``vehicle.official_image_status`` (lo muestran los diagnósticos,
     sin la URL completa).
@@ -180,14 +180,15 @@ class DecOfficialImage(DecDeepalEntity, ImageEntity):
 
 
 class DecImage(DecDeepalEntity, ImageEntity):
-    """"Imagen DEC": foto del catálogo según versión y color.
+    """"Vista lateral": foto del catálogo según versión, color y llanta.
 
+    Con la llanta sin tapacubos del Max, su foto propia (``max_<color>_open``).
     Si el catálogo no tiene foto para este coche (modelo genérico, o falta
     la foto y no hay foto por defecto), muestra la **imagen oficial** del
     servidor. Así la ficha del dispositivo siempre tiene imagen.
 
-    La clave interna sigue siendo ``dec_photo`` (antes "Imagen DEC") para no
-    cambiar el ``entity_id`` de quien ya la tiene.
+    La clave interna sigue siendo ``dec_photo`` (se llamó "Imagen DEC" hasta
+    la 2.5.0b11) para no cambiar el ``entity_id`` de quien ya la tiene.
     """
 
     def __init__(
@@ -197,7 +198,7 @@ class DecImage(DecDeepalEntity, ImageEntity):
         ImageEntity.__init__(self, hass)
         # Se decide una vez: cambiar versión/color en Configurar recarga la
         # integración y vuelve a crear esta entidad con la foto nueva.
-        self._path: Path | None = vehicle.model.photo_for(vehicle.trim, vehicle.color)
+        self._path: Path | None = vehicle.model.photo_for(vehicle.trim, vehicle.color, vehicle.wheel)
         if self._path is not None:
             self._attr_content_type = mimetypes.guess_type(self._path.name)[0] or "image/png"
         self._attr_image_last_updated = datetime.now(UTC)
@@ -219,7 +220,7 @@ class DecImage(DecDeepalEntity, ImageEntity):
 
 
 class DecLayeredView(DecDeepalEntity, ImageEntity):
-    """Vista por capas ("Vista de planta", "Vista isométrica"...) según el estado.
+    """Vista por capas ("Vista planta", "Vista isométrica"...) según el estado.
 
     Cada vez que llegan datos se decide qué capas tocan (puerta abierta,
     capó cerrado...). Solo si cambian se marca la imagen como nueva, y Home

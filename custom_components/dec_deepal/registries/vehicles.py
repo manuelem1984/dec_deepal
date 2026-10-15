@@ -7,7 +7,7 @@ Además de leer el catálogo, este módulo:
   (:meth:`VehicleModel.features_for`): así se crean solo las entidades que
   tienen sentido (p. ej. sin ventilación de asientos en el S05 Pro).
 - Busca la **foto** que corresponde a versión + color (:meth:`VehicleModel.photo_for`).
-- Carga las capas de las **vistas** del modelo ("Vista de planta", "Vista
+- Carga las capas de las **vistas** del modelo ("Vista planta", "Vista
   isométrica"...), si tiene (``vistas:``; ver :mod:`.views`).
 - Lee el **plan de mantenimiento** del modelo (``mantenimiento:``): cada
   cuánto toca la revisión y qué operaciones lleva cada una.
@@ -198,19 +198,28 @@ class VehicleModel:
         """¿Tiene esta función (con la versión indicada)?"""
         return bool(self.features_for(trim_id).get(feature, False))
 
-    def photo_for(self, trim_id: str | None, color_id: str | None) -> Path | None:
-        """Foto exacta para versión + color, o la de por defecto, o ``None``.
+    def photo_for(
+        self, trim_id: str | None, color_id: str | None, wheel: str | None = None
+    ) -> Path | None:
+        """Foto exacta para versión + color (+ llanta), o la de por defecto, o ``None``.
 
         Busca ``<carpeta_fotos>/<grupo_foto>_<color>.<ext>`` con cada extensión
-        admitida. Si falta, ``<carpeta_fotos>/<foto_defecto>``. Si tampoco
-        existe, ``None`` (la entidad de foto se mostrará como no disponible).
+        admitida. Con una llanta elegible que no es la de serie (la primera de
+        ``llantas``, p. ej. ``open`` = sin tapacubos), antes prueba
+        ``<grupo_foto>_<color>_<llanta>.<ext>``. Si falta, la de serie; si
+        tampoco, ``<carpeta_fotos>/<foto_defecto>``; y si no, ``None`` (la
+        entidad de foto se mostrará como no disponible).
         """
         trim = self.trims.get(trim_id or "")
         if trim is not None and color_id in self.colors:
-            for extension in PHOTO_EXTENSIONS:
-                candidate = self.photos_dir / f"{trim.photo_group}_{color_id}{extension}"
-                if candidate.is_file():
-                    return candidate
+            names = [f"{trim.photo_group}_{color_id}"]
+            if wheel and wheel in self.wheel_options and wheel != self.wheel_options[0]:
+                names.insert(0, f"{trim.photo_group}_{color_id}_{wheel}")
+            for name in names:
+                for extension in PHOTO_EXTENSIONS:
+                    candidate = self.photos_dir / f"{name}{extension}"
+                    if candidate.is_file():
+                        return candidate
         default = self.photos_dir / self.default_photo
         return default if default.is_file() else None
 

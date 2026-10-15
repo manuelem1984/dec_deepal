@@ -62,7 +62,7 @@
   const PEOPLE = [{ id: "person.ella", name: "Ella" }, { id: "person.manuel", name: "Manuel" }];
 
   const initial = () => ({
-    version: "2.5.0b10",
+    version: "2.5.0b11",
     admin: true,
     people: PEOPLE,
     models: MODELS,

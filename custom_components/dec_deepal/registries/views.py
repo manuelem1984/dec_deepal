@@ -1,6 +1,6 @@
 """Cargador de las **vistas por capas**: ``vehicles/<vista>/<carpeta>/capas.yaml``.
 
-Una vista por capas es el coche dibujado desde un ángulo ("Vista de planta",
+Una vista por capas es el coche dibujado desde un ángulo ("Vista planta",
 "Vista isométrica"...), montado con capas PNG transparentes que se ponen una
 encima de otra según el estado (puertas, capó, maletero, ventanillas,
 luces). Qué vistas tiene cada modelo lo dice ``vistas:`` en

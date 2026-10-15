@@ -144,7 +144,7 @@ def charger_plugged(values: Mapping[str, Any]) -> bool | None:
     Si el coche carga o su estado de carga dice que hay manguera (1-4), está
     enchufado, digan lo que digan los conectores (que en el S05 no son
     fiables; ver :func:`charge_status`). ``None`` solo si no se sabe nada. La
-    usa la "Vista de carga" para pintar el cable.
+    usa la "Vista carga" para pintar el cable.
     """
     if values.get(s.CHARGING) is True or values.get(s.CHARGE_STATE) in _STATUS_BY_CHARGE_STATE:
         return True

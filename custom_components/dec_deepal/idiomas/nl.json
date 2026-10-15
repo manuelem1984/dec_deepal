@@ -75,7 +75,7 @@
             },
             "details": {
               "title": "Uitvoering en kleur",
-              "description": "Uitvoering en kleur van je {model}. De uitvoering bepaalt welke entiteiten worden aangemaakt (stoelventilatie bestaat bijvoorbeeld alleen op de Max) en, samen met de kleur, de ‘DEC-afbeelding’.",
+              "description": "Uitvoering en kleur van je {model}. De uitvoering bepaalt welke entiteiten worden aangemaakt (stoelventilatie bestaat bijvoorbeeld alleen op de Max) en, samen met de kleur, het ‘zijaanzicht’.",
               "data": {
                 "trim": "Uitvoering",
                 "color": "Kleur",
@@ -459,7 +459,7 @@
           "name": "Officiële afbeelding"
         },
         "dec_photo": {
-          "name": "DEC-afbeelding"
+          "name": "Zijaanzicht"
         },
         "top_view": {
           "name": "Bovenaanzicht"

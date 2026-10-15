@@ -74,7 +74,7 @@
           },
           "details": {
             "title": "Versão e cor",
-            "description": "Versão e cor do seu {model}. A versão decide que entidades são criadas (por exemplo, a ventilação dos bancos só existe no Max) e, juntamente com a cor, a \"Imagem DEC\".",
+            "description": "Versão e cor do seu {model}. A versão decide que entidades são criadas (por exemplo, a ventilação dos bancos só existe no Max) e, juntamente com a cor, a \"Vista lateral\".",
             "data": {
               "trim": "Versão",
               "color": "Cor",
@@ -458,7 +458,7 @@
         "name": "Imagem oficial"
       },
       "dec_photo": {
-        "name": "Imagem DEC"
+        "name": "Vista lateral"
       },
       "top_view": {
         "name": "Vista de cima"

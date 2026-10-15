@@ -2,7 +2,7 @@
 # DEC Deepal — VISTA DE CARGA del Deepal S05 (2024-25)
 # =============================================================================
 #
-# La entidad "Vista de carga" dibuja el coche de lado (semitransparente, con
+# La entidad "Vista carga" dibuja el coche de lado (semitransparente, con
 # la mecánica a la vista) y le añade el cable de carga según su estado. Las
 # capas se ponen UNA ENCIMA DE OTRA, en el orden de la lista (la primera
 # queda debajo). Cada capa es un PNG transparente de 750×500 con el coche en

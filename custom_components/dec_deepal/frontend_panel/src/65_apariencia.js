@@ -35,7 +35,9 @@
       };
       const body = () => {
         const { model, choosable } = current();
-        const photo = model.photos[`${pick.trim || ""}|${pick.color || ""}`] || model.photos["|"];
+        const base = `${pick.trim || ""}|${pick.color || ""}`;
+        // Con la llanta elegida, su foto (p. ej. el Max sin tapacubos), si la hay.
+        const photo = (choosable && model.photos[`${base}|${pick.wheels}`]) || model.photos[base] || model.photos["|"];
         return `<h2>${this._t("appearance_title", { name: escapeHtml(car.name) })}</h2><p>${this._t("appearance_help")}</p>
           ${photo ? `<div class="prev"><img src="${escapeHtml(photo)}" alt=""></div>` : ""}
           ${models.length > 1 ? `<div class="lbl">${this._t("model")}</div><div class="opts">${models.map((item) =>
