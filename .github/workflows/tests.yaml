@@ -46,6 +46,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/ruff-action@v4
+      # Desde la v4 sus releases son inmutables y no hay etiqueta "v4": versión exacta.
+      - uses: astral-sh/ruff-action@v4.1.0
         with:
           args: check .
