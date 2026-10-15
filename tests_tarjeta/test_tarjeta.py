@@ -5,7 +5,7 @@ from __future__ import annotations
 from playwright.sync_api import Page
 
 CHARGE = "component.dec_deepal.entity.sensor.charge_status.state."
-CLIMATE_ON = {"climate.cabin_climate": ["heat_cool", {"temperature": 22.5, "min_temp": 16, "max_temp": 32}]}
+CLIMATE_ON = {"climate.cabin_climate": ["heat_cool", {"temperature": 22.5, "min_temp": 18, "max_temp": 32}]}
 
 
 def mount(page: Page, **options) -> None:  # noqa: ANN003

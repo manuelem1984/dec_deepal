@@ -3,6 +3,34 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b8] — 2026-10-15
+
+### Corregido
+
+- **Enchufar la manguera ya no cuenta como «cargando».** El coche manda su
+  estado de carga como un número del 0 al 4 (0 sin cargar, 1 manguera AC
+  puesta, 2 manguera DC puesta, 3 cargando en AC, 4 cargando en DC), y se
+  leía como sí/no. Con solo enchufar, «Cargando» se encendía, empezaba una
+  carga en la ventana de carga y llegaba el aviso «carga iniciada»; al
+  desenchufar sin haber cargado se apuntaba una «última carga» falsa. Ahora
+  solo cuentan el 3 y el 4. ⚠️ Pendiente de comprobar en el S05 de España.
+- **«Estado de carga» y la vista de carga**, a partir de ese mismo dato:
+  enseñan «Conectado AC/DC» con la manguera puesta sin cargar aunque el coche
+  no mande los conectores (la limitación conocida de la 2.5.0b7).
+- **Corriente de carga:** es la del cargador en uso. Antes, en DC salía 0
+  porque se cogía primero la de AC. Sin cargar marca 0, y los valores
+  imposibles (fuera de 0-600 A, como los 2538 A que manda a veces el coche
+  tras una carga en DC) se descartan.
+- **Climatización:** el mínimo pasa de 16 °C a 18 °C y la temperatura se
+  recorta a 18-32 °C antes de enviarla. El servidor rechaza cualquier otra
+  (`COMMON_1_1_01_005`), y el coche puede informar de una fuera de rango que
+  luego se reutilizaba al encender.
+
+### Cambiado
+
+- **Despertar el coche** con QoS 1: el servidor guarda la orden hasta que el
+  coche, si está muy dormido, vuelva a conectarse. Antes se perdía.
+
 ## [2.5.0b7] — 2026-10-12
 
 ### Corregido

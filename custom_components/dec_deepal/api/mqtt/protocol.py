@@ -1,7 +1,8 @@
 """Paquetes MQTT 3.1.1 (el subconjunto mínimo que necesita la lectura).
 
 Referencia: especificación MQTT 3.1.1 (OASIS). Solo se implementa lo que se
-usa: CONNECT, SUBSCRIBE, PUBLISH (QoS 0 al enviar), PUBACK y DISCONNECT, más
+usa: CONNECT, SUBSCRIBE, PUBLISH (QoS 0 al enviar; QoS 1 para despertar al
+coche), PUBACK y DISCONNECT, más
 la lectura de paquetes entrantes.
 
 Nota: el broker acepta MQTT 3.1.1 y 5.0. Aquí se mantiene 3.1.1 porque es lo
@@ -66,12 +67,21 @@ def build_subscribe(packet_id: int, topics: list[str]) -> bytes:
     return _packet(0x82, struct.pack("!H", packet_id) + payload)
 
 
-def build_publish(topic: str, payload: dict[str, Any]) -> bytes:
-    """PUBLISH QoS 0 con un JSON compacto."""
-    body = encode_string(topic) + json.dumps(
-        payload, ensure_ascii=False, separators=(",", ":")
-    ).encode()
-    return _packet(0x30, body)
+def build_publish(
+    topic: str, payload: dict[str, Any], *, qos: int = 0, packet_id: int = 1
+) -> bytes:
+    """PUBLISH con un JSON compacto. QoS 0 salvo que se pida 1.
+
+    Con QoS 1 lleva identificador de paquete y el broker lo guarda para un
+    cliente desconectado: lo usa el despertar, porque un coche muy dormido no
+    está conectado y un QoS 0 se perdería. El broker contesta con un PUBACK,
+    que la lectura ignora (solo mira los PUBLISH).
+    """
+    header = encode_string(topic)
+    if qos:
+        header += struct.pack("!H", packet_id)
+    body = header + json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode()
+    return _packet(0x30 | ((qos & 0x03) << 1), body)
 
 
 def build_puback(packet_id: int) -> bytes:

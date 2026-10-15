@@ -14,6 +14,21 @@ from typing import Any, Final
 #: Valor que manda el coche en ``chargDeltMins`` cuando no hay estimación.
 CHARGE_TIME_SENTINEL: Final = 8191
 
+#: Estados de carga del S05 (``ChrgSts``), comprobados moviendo la manguera
+#: por todos los estados en un S05 real (15-10-2026). ⚠️ Pendiente de
+#: comprobar con un S05 de España.
+CHARGE_STATE_NONE: Final = 0  # sin cargar
+CHARGE_STATE_AC_CONNECTED: Final = 1  # manguera AC puesta, sin cargar
+CHARGE_STATE_DC_CONNECTED: Final = 2  # manguera DC puesta, sin cargar
+CHARGE_STATE_AC_CHARGING: Final = 3  # cargando en alterna
+CHARGE_STATE_DC_CHARGING: Final = 4  # cargando en continua
+CHARGE_STATES: Final = frozenset(range(CHARGE_STATE_NONE, CHARGE_STATE_DC_CHARGING + 1))
+CHARGING_STATES: Final = frozenset({CHARGE_STATE_AC_CHARGING, CHARGE_STATE_DC_CHARGING})
+
+#: Ninguna corriente de carga real se acerca a esto (el pico en DC ronda los
+#: 480 A). El coche ha llegado a mandar 2538 A aparcado tras una carga DC.
+MAX_CHARGE_CURRENT_A: Final = 600.0
+
 
 def to_int(value: Any) -> int | None:
     """Número entero (acepta ``"12"``, ``12.7`` → 12)."""
@@ -39,6 +54,32 @@ def to_bool(value: Any) -> bool | None:
     """``0`` → ``False``; cualquier otro número → ``True``."""
     number = to_int(value)
     return None if number is None else number != 0
+
+
+def charge_state(value: Any) -> int | None:
+    """Estado de carga ``ChrgSts`` (0-4). Cualquier otro valor → ``None``."""
+    number = to_int(value)
+    return number if number in CHARGE_STATES else None
+
+
+def charging_from_state(value: Any) -> bool | None:
+    """¿Está cargando? Solo los estados 3 y 4.
+
+    Con la manguera puesta y sin cargar (1 y 2) el coche **no** carga: antes
+    cualquier valor distinto de 0 contaba como "cargando", así que enchufar
+    la manguera encendía "Cargando", abría una sesión y mandaba el aviso.
+    Un estado desconocido → ``None`` (no se adivina).
+    """
+    state = charge_state(value)
+    return None if state is None else state in CHARGING_STATES
+
+
+def charge_current(value: Any) -> float | None:
+    """Corriente de carga en A. Fuera de 0-600 A es un valor falso → ``None``."""
+    number = to_float(value)
+    if number is None or not 0 <= number <= MAX_CHARGE_CURRENT_A:
+        return None
+    return number
 
 
 def connector(value: Any) -> bool | None:

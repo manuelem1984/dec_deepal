@@ -24,6 +24,7 @@ from typing import Final
 BATTERY_LEVEL: Final = "battery_level"  # % (0-100)
 RANGE_KM: Final = "range_km"  # km de autonomía eléctrica estimada
 CHARGING: Final = "charging"  # bool: está cargando
+CHARGE_STATE: Final = "charge_state"  # 0-4 en bruto (ChrgSts, ver converters.py)
 AC_CONNECTOR: Final = "ac_connector"  # bool: manguera AC (Tipo 2) enchufada
 DC_CONNECTOR: Final = "dc_connector"  # bool: manguera DC (CCS2) enchufada
 CHARGE_CURRENT: Final = "charge_current"  # A (AC o DC, la que haya)

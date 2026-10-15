@@ -43,11 +43,13 @@ REST_FIELDS: Final[tuple[RestField, ...]] = (
     # --- Batería y carga ----------------------------------------------------
     RestField(s.BATTERY_LEVEL, (("vehicleStatus", "soc"),), c.to_int),
     RestField(s.RANGE_KM, (("vehicleStatus", "drvMileage"),), c.to_int),
+    # ⚠️ Solo rellena si el MQTT no trae ChrgSts. No se sabe si este valor es
+    # el mismo estado 0-4 del MQTT, así que se mantiene "distinto de 0 = sí".
     RestField(s.CHARGING, (("charge", "chargeStatus"),), c.to_bool),
     RestField(s.DC_CONNECTOR, (("charge", "dcChargeGunConnectStatus"),), c.connector),
-    RestField(s.CHARGE_CURRENT, (("charge", "chargeCurrent"),), c.to_float),
-    RestField(s.AC_CHARGE_CURRENT, (("charge", "acChargeCurrent"),), c.to_float),
-    RestField(s.DC_CHARGE_CURRENT, (("charge", "dcChargeCurrent"),), c.to_float),
+    RestField(s.CHARGE_CURRENT, (("charge", "chargeCurrent"),), c.charge_current),
+    RestField(s.AC_CHARGE_CURRENT, (("charge", "acChargeCurrent"),), c.charge_current),
+    RestField(s.DC_CHARGE_CURRENT, (("charge", "dcChargeCurrent"),), c.charge_current),
     RestField(s.REMAINING_CHARGE_MIN, (("charge", "remainChargeTime"),), c.charge_minutes),
     # --- Estado general -----------------------------------------------------
     RestField(

@@ -109,8 +109,10 @@ Servicios aceptados: `car_condition`, `BDC_Service`, `BMS_Service`,
 Comprobado en un coche real el 30-09-2026; ⚠️ pendiente de comprobar con un S05 de España.
 
 1. Misma sesión MQTT que la lectura (CONNECT, SUBSCRIBE, login → `secretKey`).
-2. PUBLISH en `$vdp/<coche>/properties/set/req` (si la configuración no lo
-   trae, se deduce de `properties/get/req`) con el servicio cifrado:
+2. PUBLISH **QoS 1** en `$vdp/<coche>/properties/set/req` (si la
+   configuración no lo trae, se deduce de `properties/get/req`) con el
+   servicio cifrado. Con QoS 0 el broker descarta el mensaje si el coche,
+   muy dormido, no está conectado; con QoS 1 lo guarda hasta que se conecte:
    ```json
    {"service_code": "TxWakeup", "command_code": "Cnr_ReWakeup",
     "service_req_id": "<r>", "params": {}}
@@ -147,7 +149,7 @@ Un error con `TBOX_` suele indicar coche dormido u ocupado.
 
 | Comando | Endpoint | Payload | Estado |
 | --- | --- | --- | --- |
-| Clima | `control/air-conditioner` | `command: air, enabled, targetTemp (décimas), runTime: 30, windMode: 1` | ✅ |
+| Clima | `control/air-conditioner` | `command: air, enabled, targetTemp (décimas, 18-32 °C; fuera: COMMON_1_1_01_005), runTime: 30, windMode: 1` | ✅ |
 | Datos frescos | `control/condition-inquiry` | `command: COMMAND_GET_NEW_CONDITION` | ✅ |
 | Luces / claxon / ambos | `control/flashing-honking` | `command: flash_bee, type: 1/2/3` | ✅ / ✅ / ⚠️ |
 | Asientos calefacción | `control/seats/heat` | `command: seats_heat, masterSwitch/masterLevel` o `copilotSwitch/copilotLevel` | ⚠️ |

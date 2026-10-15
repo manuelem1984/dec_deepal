@@ -23,10 +23,16 @@ from .registries.vehicles import FEATURE_CLIMATE
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
 
-#: Límites razonables; los reales del coche no se han confirmado.
-MIN_TEMP_C: Final = 16.0
+#: Límites de la pasarela: fuera de 18-32 °C rechaza la orden con
+#: ``COMMON_1_1_01_005`` (comprobado en un S05 real el 14-10-2026).
+MIN_TEMP_C: Final = 18.0
 MAX_TEMP_C: Final = 32.0
 DEFAULT_TEMP_C: Final = 22.0
+
+
+def clamp_temperature(target: float | None) -> float:
+    """Temperatura que se puede mandar: la pedida, dentro de 18-32 °C."""
+    return min(max(target or DEFAULT_TEMP_C, MIN_TEMP_C), MAX_TEMP_C)
 
 
 async def async_setup_entry(
@@ -103,8 +109,12 @@ class DecClimate(DecDeepalEntity, ClimateEntity):
         await self._send(on=True, target=float(temperature))
 
     async def _send(self, *, on: bool, target: float | None) -> None:
-        """Envía el comando con valor optimista."""
-        target_c = target or DEFAULT_TEMP_C
+        """Envía el comando con valor optimista.
+
+        La temperatura se recorta a 18-32 °C: el coche puede informar de una
+        fuera de ese rango, y al encender se reutiliza la que informa.
+        """
+        target_c = clamp_temperature(target)
         vehicle_id = self.vehicle.info.vehicle_id
         optimistic: dict[str, Any] = {s.CLIMATE_ON: on}
         if on:

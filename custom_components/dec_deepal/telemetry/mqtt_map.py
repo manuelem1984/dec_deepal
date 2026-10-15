@@ -32,11 +32,17 @@ class MqttField:
     convert: Callable[[Any], Any]
 
 
+CHARGE_STATE_KEYS: Final = ("ChrgSts",)
+AC_CURRENT_KEYS: Final = ("BattACChrgInCurr", "battACChrgInCurr")
+DC_CURRENT_KEYS: Final = ("BattDCChrgInCurr", "battDCChrgInCurr")
+
 MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
     # --- Batería y carga ----------------------------------------------------
     MqttField(s.BATTERY_LEVEL, ("soc", "socDsp", "remainPower"), c.to_int),
     MqttField(s.RANGE_KM, ("remainedPowerMile", "totalResidualMileage"), c.to_int),
-    MqttField(s.CHARGING, ("ChrgSts",), c.to_bool),
+    # ChrgSts es un estado (0-4), no un sí/no: ver converters.charge_state.
+    MqttField(s.CHARGE_STATE, CHARGE_STATE_KEYS, c.charge_state),
+    MqttField(s.CHARGING, CHARGE_STATE_KEYS, c.charging_from_state),
     MqttField(s.AC_CONNECTOR, ("acChargeGunConnectionState",), c.connector),
     # "dcDhargeGunConnectionState" (sic) aparece en algunas versiones del coche.
     MqttField(
@@ -44,14 +50,10 @@ MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
         ("dcChargeGunConnectionState", "dcDhargeGunConnectionState"),
         c.connector,
     ),
-    # El coche usa dos grafías (mayúscula y minúscula inicial).
-    MqttField(
-        s.CHARGE_CURRENT,
-        ("BattACChrgInCurr", "BattDCChrgInCurr", "battACChrgInCurr", "battDCChrgInCurr"),
-        c.to_float,
-    ),
-    MqttField(s.AC_CHARGE_CURRENT, ("BattACChrgInCurr", "battACChrgInCurr"), c.to_float),
-    MqttField(s.DC_CHARGE_CURRENT, ("BattDCChrgInCurr", "battDCChrgInCurr"), c.to_float),
+    # Corrientes: el coche usa dos grafías (mayúscula y minúscula inicial). La
+    # corriente "activa" (CHARGE_CURRENT) se elige en map_mqtt según ChrgSts.
+    MqttField(s.AC_CHARGE_CURRENT, AC_CURRENT_KEYS, c.charge_current),
+    MqttField(s.DC_CHARGE_CURRENT, DC_CURRENT_KEYS, c.charge_current),
     MqttField(s.REMAINING_CHARGE_MIN, ("chargDeltMins",), c.charge_minutes),
     # --- Estado general -----------------------------------------------------
     MqttField(s.REPORT_TIME, ("latestDate", "lastUpdatedAt", "lastUpdatedTime"), c.timestamp),
@@ -160,4 +162,50 @@ def map_mqtt(params: dict[str, Any]) -> dict[str, Any]:
         value = field.convert(first_present(params, field.keys))
         if value is not None:
             values[field.signal] = value
+    _resolve_charge_currents(params, values)
     return values
+
+
+def _resolve_charge_currents(params: dict[str, Any], values: dict[str, Any]) -> None:
+    """Ajusta las corrientes de carga según el estado (``ChrgSts``).
+
+    El coche sigue mandando la corriente del cargador que **no** usa, y antes
+    se cogía primero la de AC: un ``0`` en AC escondía la corriente real de
+    DC. Ahora:
+
+    - Cargando en DC (4): la activa es la de DC; la de AC, 0.
+    - Cargando en AC (3): la activa es la de AC; la de DC, 0.
+    - Sin cargar (0, 1, 2): todas a 0 (no un valor viejo ni el falso de
+      después de una carga).
+    - Estado desconocido: la que no sea 0, preferiblemente la de AC.
+
+    Solo se pone 0 en una corriente que el coche haya mandado.
+    """
+    state = values.get(s.CHARGE_STATE)
+    ac_sent = c.to_float(first_present(params, AC_CURRENT_KEYS)) is not None
+    dc_sent = c.to_float(first_present(params, DC_CURRENT_KEYS)) is not None
+    ac = values.get(s.AC_CHARGE_CURRENT)
+    dc = values.get(s.DC_CHARGE_CURRENT)
+
+    if state == c.CHARGE_STATE_DC_CHARGING:
+        ac, active = (0.0 if ac_sent else None), dc
+    elif state == c.CHARGE_STATE_AC_CHARGING:
+        dc, active = (0.0 if dc_sent else None), ac
+    elif state is not None:
+        ac = 0.0 if ac_sent else None
+        dc = 0.0 if dc_sent else None
+        active = 0.0 if (ac_sent or dc_sent) else None
+    else:
+        active = ac if ac else dc
+        if active is None and ac is not None:
+            active = 0.0
+
+    for signal, value in (
+        (s.AC_CHARGE_CURRENT, ac),
+        (s.DC_CHARGE_CURRENT, dc),
+        (s.CHARGE_CURRENT, active),
+    ):
+        if value is None:
+            values.pop(signal, None)
+        else:
+            values[signal] = value

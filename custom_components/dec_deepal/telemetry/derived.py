@@ -13,6 +13,7 @@ from __future__ import annotations
 from collections.abc import Callable, Mapping
 from typing import Any, Final
 
+from . import converters as c
 from . import signals as s
 
 # Estados posibles de "Estado de carga" (también son sus claves de traducción).
@@ -38,13 +39,27 @@ def _dc(values: Mapping[str, Any]) -> bool:
     )
 
 
-def charge_status(values: Mapping[str, Any]) -> str | None:
-    """Estado de carga en una palabra, a partir de "cargando" y los conectores.
+#: Estado de carga del coche (``ChrgSts``) → "Estado de carga". El 0 no está:
+#: "sin cargar" puede ser con la manguera puesta y la carga terminada, así
+#: que ahí se sigue mirando los conectores.
+_STATUS_BY_CHARGE_STATE: Final = {
+    c.CHARGE_STATE_AC_CONNECTED: CHARGE_CONNECTED_AC,
+    c.CHARGE_STATE_DC_CONNECTED: CHARGE_CONNECTED_DC,
+    c.CHARGE_STATE_AC_CHARGING: CHARGE_CHARGING_AC,
+    c.CHARGE_STATE_DC_CHARGING: CHARGE_CHARGING_DC,
+}
 
-    Manda "cargando", que es el dato fiable. Los dos conectores **no lo son**
-    en el S05: se ha visto al coche cargando mientras decía que no tenía la
-    manguera puesta (11-10-2026), y hay coches que ni siquiera mandan el de
-    AC. Por eso:
+
+def charge_status(values: Mapping[str, Any]) -> str | None:
+    """Estado de carga en una palabra.
+
+    Si el coche manda su estado de carga (``ChrgSts`` 1-4), se usa tal cual:
+    dice a la vez si hay manguera, de qué tipo y si carga.
+
+    Si no (estado 0 o sin estado, p. ej. solo REST), manda "cargando", que es
+    el dato fiable. Los dos conectores **no lo son** en el S05: se ha visto al
+    coche cargando mientras decía que no tenía la manguera puesta
+    (11-10-2026), y hay coches que ni siquiera mandan el de AC. Por eso:
 
     1. Cargando → ``charging_dc`` si hay señales de continua (conector DC o
        corriente DC); si no, ``charging_ac``. Nunca "desconectado" cargando.
@@ -55,6 +70,9 @@ def charge_status(values: Mapping[str, Any]) -> str | None:
 
     Solo es ``None`` si no se sabe si carga.
     """
+    status = _STATUS_BY_CHARGE_STATE.get(values.get(s.CHARGE_STATE))
+    if status is not None:
+        return status
     charging = values.get(s.CHARGING)
     if charging is None:
         return None
@@ -123,11 +141,12 @@ def power_on(values: Mapping[str, Any]) -> bool | None:
 def charger_plugged(values: Mapping[str, Any]) -> bool | None:
     """Manguera enchufada: la de AC (Tipo 2) o la de DC (CCS2).
 
-    Si el coche carga, está enchufado, digan lo que digan los conectores (que
-    en el S05 no son fiables; ver :func:`charge_status`). ``None`` solo si no
-    se sabe nada. La usa la "Vista de carga" para pintar el cable.
+    Si el coche carga o su estado de carga dice que hay manguera (1-4), está
+    enchufado, digan lo que digan los conectores (que en el S05 no son
+    fiables; ver :func:`charge_status`). ``None`` solo si no se sabe nada. La
+    usa la "Vista de carga" para pintar el cable.
     """
-    if values.get(s.CHARGING) is True:
+    if values.get(s.CHARGING) is True or values.get(s.CHARGE_STATE) in _STATUS_BY_CHARGE_STATE:
         return True
     connectors = [values.get(s.AC_CONNECTOR), values.get(s.DC_CONNECTOR)]
     if any(connector is True for connector in connectors):

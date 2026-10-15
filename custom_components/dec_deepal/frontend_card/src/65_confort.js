@@ -84,7 +84,7 @@
         if (!climate) return;
         const current = this._pendingTemp != null ? this._pendingTemp : Number(climate.attributes.temperature);
         if (!Number.isFinite(current)) return;
-        const min = Number(climate.attributes.min_temp) || 16;
+        const min = Number(climate.attributes.min_temp) || 18;
         const max = Number(climate.attributes.max_temp) || 32;
         this._pendingTemp = Math.max(min, Math.min(max, current + Number(target.dataset.step)));
         this._paintComfort();

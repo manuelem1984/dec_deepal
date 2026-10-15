@@ -292,7 +292,8 @@ async def _subscribe(
 # ---------------------------------------------------------------------------
 #
 # Comprobado con un coche real el 30-09-2026: la app oficial despierta el
-# coche publicando el servicio "TxWakeup" con la orden "Cnr_ReWakeup" en el topic ``.../properties/set/req``.
+# coche publicando el servicio "TxWakeup" con la orden "Cnr_ReWakeup" en el
+# topic ``.../properties/set/req``.
 # La pasarela confirma con ``code: "000000"`` y el coche publica un informe
 # nuevo en unos 20 segundos. ⚠️ Pendiente de comprobar con un S05 de España.
 #
@@ -305,6 +306,12 @@ WAKE_COMMAND_CODE: Final = "Cnr_ReWakeup"
 WAKE_OK_CODES: Final = frozenset({"000000", "0", "00000"})
 #: Segundos máximos esperando la confirmación de la pasarela.
 WAKE_ACK_TIMEOUT: Final = 20
+#: QoS 1 (el que anuncia la configuración MQTT): el broker guarda el despertar
+#: hasta que el coche, si está muy dormido, vuelva a conectarse. Con QoS 0 lo
+#: descartaba. ⚠️ Pendiente de comprobar con un S05 de España.
+WAKE_QOS: Final = 1
+#: Identificador del PUBLISH del despertar (el 1 lo usa el SUBSCRIBE).
+WAKE_PACKET_ID: Final = 2
 
 
 def _wake_payload(
@@ -420,6 +427,8 @@ async def _wake_vehicle(
                                 secret_key,
                                 wake_request_id,
                             ),
+                            qos=WAKE_QOS,
+                            packet_id=WAKE_PACKET_ID,
                         )
                     )
                     await writer.drain()

@@ -1,5 +1,22 @@
 # Hoja de ruta
 
+## Beta 2.5.0b8 (15-10-2026) — pendiente de probar
+
+- [ ] **Estado de carga (`ChrgSts`) en el S05 de España:** recorrer los
+      estados y comprobar "Estado de carga" y "Cargando" en cada uno:
+      sin manguera (0 → Desconectado, no carga), AC enchufado sin cargar
+      (1 → Conectado AC, no carga), AC cargando (3 → Cargando AC) y, si se
+      puede, DC (2 → Conectado DC, 4 → Cargando DC). El valor en bruto sale
+      en el diagnóstico (`charge_state`).
+- [ ] **Enchufar sin cargar no abre una carga** ni manda el aviso "carga
+      iniciada"; desenchufar después no apunta una "última carga".
+- [ ] **Carga terminada con la manguera puesta:** ¿qué `ChrgSts` manda?
+- [ ] **Corriente de carga:** en DC enseña la de DC (antes, 0); sin cargar, 0.
+- [ ] **Climatización:** no deja bajar de 18 °C; encender con el coche
+      informando una temperatura fuera de rango funciona.
+- [ ] **Despertar con QoS 1:** "Actualizar datos" con el coche muy dormido
+      (horas parado) trae datos nuevos.
+
 ## Beta 2.5.0b7 (12-10-2026) — pendiente de probar
 
 - [ ] **Estado de carga sin conectores:** cargando, la tarjeta y el sensor

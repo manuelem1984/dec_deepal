@@ -68,7 +68,7 @@
     "image.interior_view": ["2026-10-09T12:00:00", { entity_picture: PIXEL }],
     "image.charging_view": ["2026-10-09T12:00:00", { entity_picture: `${PIXEL}#carga` }],
     "image.dec_photo": ["2026-10-09T12:00:00", {}],
-    "climate.cabin_climate": ["off", { temperature: 22.5, min_temp: 16, max_temp: 32 }],
+    "climate.cabin_climate": ["off", { temperature: 22.5, min_temp: 18, max_temp: 32 }],
     "lock.doors": ["locked"],
     "lock.pin_arm": ["locked"],
     "cover.windows": ["open"], // invertida: "open" = cerradas

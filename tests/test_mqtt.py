@@ -26,6 +26,18 @@ def test_parse_publish_qos1() -> None:
     assert (parsed_topic, parsed_payload, packet_id) == (topic, {"r": "x"}, 7)
 
 
+def test_build_publish_qos0_and_qos1() -> None:
+    """QoS 0 por defecto; el despertar va con QoS 1 y su identificador."""
+    topic = "$vdp/abc/properties/set/req"
+    qos0 = protocol.build_publish(topic, {"r": "x"})
+    assert qos0[0] == 0x30
+    assert protocol.parse_publish(qos0[0], qos0[2:]) == (topic, {"r": "x"}, None)
+
+    qos1 = protocol.build_publish(topic, {"r": "x"}, qos=1, packet_id=2)
+    assert qos1[0] == 0x32
+    assert protocol.parse_publish(qos1[0], qos1[2:]) == (topic, {"r": "x"}, 2)
+
+
 def test_parse_connack() -> None:
     assert protocol.parse_connack(0x20, b"\x00\x00") == 0
     assert protocol.parse_connack(0x30, b"\x00\x00") is None

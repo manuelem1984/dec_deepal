@@ -121,7 +121,7 @@ def test_derived_signals() -> None:
         mqtt_params={
             "acChargeGunConnectionState": 3,
             "dcChargeGunConnectionState": 0,
-            "ChrgSts": 1,
+            "ChrgSts": 3,
             "chargDeltMins": 125,
             "driverDoorLock": 0,
             "passengerDoorLock": 1,
@@ -174,6 +174,96 @@ def test_charge_status_does_not_trust_the_connectors() -> None:
     assert charge_status({s.CHARGING: False, s.DC_CONNECTOR: True}) == "connected_dc"
     # Sin saber si carga, no se adivina.
     assert charge_status({s.AC_CONNECTOR: True}) is None and charge_status({}) is None
+
+
+def test_charge_state_is_an_enum() -> None:
+    """ChrgSts: 0 sin cargar, 1/2 manguera AC/DC puesta, 3/4 cargando AC/DC."""
+    assert [c.charge_state(value) for value in (0, "1", 2.0, 3, 4)] == [0, 1, 2, 3, 4]
+    assert c.charge_state(9) is None and c.charge_state(None) is None
+    assert [c.charging_from_state(value) for value in (0, 1, 2, 3, 4)] == [
+        False,
+        False,
+        False,
+        True,
+        True,
+    ]
+    assert c.charging_from_state(9) is None
+
+
+def test_plugging_in_is_not_charging() -> None:
+    """Enchufar la manguera (1 o 2) ya no cuenta como "cargando" (2.5.0b8)."""
+    expected = {
+        0: (False, "disconnected", False),
+        1: (False, "connected_ac", True),
+        2: (False, "connected_dc", True),
+        3: (True, "charging_ac", True),
+        4: (True, "charging_dc", True),
+    }
+    for chrg_sts, (charging, status, plugged) in expected.items():
+        # Conectores en "no enchufado": manda el estado de carga.
+        params = {"ChrgSts": chrg_sts, "acChargeGunConnectionState": 0}
+        state = build_state(mqtt_params=params, rest_raw=None, previous=None)
+        assert state.get(s.CHARGE_STATE) == chrg_sts
+        assert state.get(s.CHARGING) is charging
+        assert state.get(s.CHARGE_STATUS) == status
+        assert state.get(s.CHARGER_PLUGGED) is plugged
+
+    # Estado desconocido: no se adivina si carga.
+    unknown = build_state(mqtt_params={"ChrgSts": 9}, rest_raw=None, previous=None)
+    assert unknown.get(s.CHARGING) is None and unknown.get(s.CHARGE_STATE) is None
+    # Sin cargar (0) con un conector que dice "enchufado": carga terminada.
+    full = build_state(
+        mqtt_params={"ChrgSts": 0, "acChargeGunConnectionState": 2}, rest_raw=None, previous=None
+    )
+    assert full.get(s.CHARGE_STATUS) == "connected_ac"
+
+
+def test_plugging_in_does_not_open_a_charge_session() -> None:
+    from custom_components.dec_deepal import charging as ch
+
+    now = datetime(2026, 10, 15, 10, 0, tzinfo=UTC)
+    plugged = map_mqtt({"ChrgSts": 1, "soc": 40})
+    session, changed = ch.update(None, plugged[s.CHARGING], 40, 200, now)
+    assert session == {} and changed is False
+
+
+def test_charge_currents_follow_the_charge_state() -> None:
+    """La corriente activa es la del cargador en uso (antes, un 0 en AC tapaba la de DC)."""
+    dc = map_mqtt({"ChrgSts": 4, "BattACChrgInCurr": 0, "BattDCChrgInCurr": 120})
+    assert (dc[s.AC_CHARGE_CURRENT], dc[s.DC_CHARGE_CURRENT], dc[s.CHARGE_CURRENT]) == (
+        0.0,
+        120.0,
+        120.0,
+    )
+    ac = map_mqtt({"ChrgSts": 3, "battACChrgInCurr": 16, "battDCChrgInCurr": 5})
+    assert (ac[s.AC_CHARGE_CURRENT], ac[s.DC_CHARGE_CURRENT], ac[s.CHARGE_CURRENT]) == (
+        16.0,
+        0.0,
+        16.0,
+    )
+    # Sin cargar: 0, no un valor viejo.
+    idle = map_mqtt({"ChrgSts": 2, "BattACChrgInCurr": 3, "BattDCChrgInCurr": 60})
+    assert (idle[s.AC_CHARGE_CURRENT], idle[s.DC_CHARGE_CURRENT], idle[s.CHARGE_CURRENT]) == (
+        0.0,
+        0.0,
+        0.0,
+    )
+    # Estado desconocido: la que no sea 0.
+    unknown = map_mqtt({"BattACChrgInCurr": 0, "BattDCChrgInCurr": 60})
+    assert unknown[s.CHARGE_CURRENT] == 60.0
+    assert map_mqtt({"BattACChrgInCurr": 0})[s.CHARGE_CURRENT] == 0.0
+    # Sin corrientes en el informe: no se inventan.
+    assert s.CHARGE_CURRENT not in map_mqtt({"ChrgSts": 0})
+
+
+def test_impossible_charge_current_is_dropped() -> None:
+    """2538 A: valor falso que mandó un S05 aparcado tras una carga DC."""
+    assert c.charge_current(2538) is None
+    assert c.charge_current(-1) is None
+    assert c.charge_current("480") == 480.0
+    values = map_mqtt({"BattDCChrgInCurr": 2538})
+    assert s.DC_CHARGE_CURRENT not in values and s.CHARGE_CURRENT not in values
+    assert s.CHARGE_CURRENT not in map_rest({"charge": {"chargeCurrent": 2538}})
 
 
 def test_extras_2_1_0() -> None:
