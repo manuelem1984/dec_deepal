@@ -85,6 +85,14 @@
   /** Cuántos eventos del historial se enseñan como mucho. */
   const HISTORY_LIMIT = 80;
 
+  /**
+   * Fondo de estudio detrás de las fotos del coche, solo en tema oscuro: se
+   * aclara a gris medio detrás del coche y se funde con la tarjeta en los
+   * bordes. Sin él, las partes oscuras (techo, alerón, zaga) se pierden en el
+   * fondo oscuro. Las fotos no cambian; en tema claro no se pinta nada.
+   */
+  const STUDIO_BG = "radial-gradient(closest-side at 50% 50%, rgba(150, 154, 162, .62) 0%, rgba(150, 154, 162, .42) 45%, rgba(150, 154, 162, .14) 80%, rgba(150, 154, 162, 0) 100%)";
+
   // ── src/20_textos.js ──────────────────────────────────────────────────────
   // ---------------------------------------------------------------------------
   // Textos por idioma
@@ -3767,6 +3775,7 @@
     /* --- Avisos --- */
     .chead { display: flex; align-items: center; gap: 10px; padding: 8px 20px 0; flex-wrap: wrap; }
     .chead img { width: 170px; margin: -6px 0 -10px -18px; }
+    :host([dark]) .hero img, :host([dark]) .chead img { background: ${STUDIO_BG}; }
     .chead .n { font-size: 20px; flex: 1; min-width: 140px; } .chead .n small { display: block; font-size: 13px; color: var(--secondary-text-color); }
     .wide { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
@@ -3952,6 +3961,7 @@
     @media (max-width: 520px) { .fg, .dual, .kinds, .calls { grid-template-columns: 1fr; } }
     .prev { background: rgba(var(--rgb-primary-text-color, 33, 33, 33), .05); border-radius: 16px; text-align: center; padding-top: 4px; margin-bottom: 4px; overflow: hidden; }
     .prev img { width: 88%; display: block; margin: 0 auto -4px; }
+    .dlg.dark .prev { background: ${STUDIO_BG}; }
     .lbl { font-size: 13px; color: var(--secondary-text-color); margin: 14px 0 6px; }
     .opts { display: flex; gap: 8px; flex-wrap: wrap; }
     .opt { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 9px 14px; text-align: left; }
@@ -4035,6 +4045,8 @@
       const first = !this._hass;
       const language = first ? "" : this._language();
       this._hass = hass;
+      // Tema oscuro: fondo de estudio detrás de las fotos (STUDIO_BG).
+      this.toggleAttribute("dark", this._dark());
       if (first) this._load();
       else if (language !== this._language()) this._render();
       this._syncMenu();
@@ -4046,6 +4058,11 @@
     }
 
     // --- Idioma y textos ---------------------------------------------------------
+
+    /** ¿Tema oscuro? (lo dice Home Assistant: el del usuario o el del sistema). */
+    _dark() {
+      return Boolean(((this._hass || {}).themes || {}).darkMode);
+    }
 
     _language() {
       const hass = this._hass || {};
@@ -5092,6 +5109,7 @@
         );
       });
       dialog.root.querySelector(".dlg").classList.add("wide");
+      dialog.root.querySelector(".dlg").classList.toggle("dark", this._dark());
     }
   });
 

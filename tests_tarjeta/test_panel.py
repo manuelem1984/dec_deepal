@@ -96,6 +96,18 @@ def test_number_plates(panel: Page) -> None:
     assert panel.evaluate("banco.raiz().querySelectorAll('.chead .plate').length") == 2
 
 
+def test_studio_background_only_in_dark_theme(panel: Page) -> None:
+    """Tema oscuro: fondo de estudio detrás de las fotos (el techo y la zaga no se pierden)."""
+    background = "getComputedStyle(banco.raiz().querySelector('.hero img')).backgroundImage"
+    mount(panel, oscuro=True)
+    assert panel.evaluate("banco.panel.hasAttribute('dark')")
+    assert "radial-gradient" in panel.evaluate(background)
+    tab(panel, "alerts")
+    assert "radial-gradient" in panel.evaluate("getComputedStyle(banco.raiz().querySelector('.chead img')).backgroundImage")
+    mount(panel)
+    assert panel.evaluate(background) == "none"
+
+
 def test_read_only_for_other_users(panel: Page) -> None:
     """Quien no es administrador ve Coches y Avisos, sin poder cambiar nada."""
     mount(panel, lectura=True)

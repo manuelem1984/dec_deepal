@@ -1,5 +1,12 @@
 # Hoja de ruta
 
+## Beta 2.5.0b12 (15-10-2026) — pendiente de probar
+
+- [ ] **Tema oscuro:** la foto del coche lleva detrás una luz de estudio en
+      la tarjeta (vista principal y ventana de carga) y en el panel (Coches,
+      Avisos y Apariencia); el techo y la zaga se distinguen. En tema claro,
+      como antes.
+
 ## Beta 2.5.0b11 (15-10-2026) — pendiente de probar
 
 - [ ] **Vista lateral** de tu Max: con la llanta sin tapacubos elegida en

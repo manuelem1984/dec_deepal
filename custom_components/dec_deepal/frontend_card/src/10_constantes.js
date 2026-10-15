@@ -69,3 +69,11 @@
     { key: ITV, action: "itv", icon: "mdi:clipboard-check-outline", label: "itv" },
     { key: INSURANCE, action: "insurance", icon: "mdi:shield-car", label: "insurance" },
   ];
+
+  /**
+   * Fondo de estudio detrás de las fotos del coche, solo en tema oscuro: se
+   * aclara a gris medio detrás del coche y se funde con la tarjeta en los
+   * bordes. Sin él, las partes oscuras (techo, alerón, zaga) se pierden en el
+   * fondo oscuro. Las fotos no cambian; en tema claro no se pinta nada.
+   */
+  const STUDIO_BG = "radial-gradient(closest-side at 50% 50%, rgba(150, 154, 162, .62) 0%, rgba(150, 154, 162, .42) 45%, rgba(150, 154, 162, .14) 80%, rgba(150, 154, 162, 0) 100%)";

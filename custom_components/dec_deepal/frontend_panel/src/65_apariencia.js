@@ -69,5 +69,6 @@
         );
       });
       dialog.root.querySelector(".dlg").classList.add("wide");
+      dialog.root.querySelector(".dlg").classList.toggle("dark", this._dark());
     }
   });

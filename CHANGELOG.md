@@ -3,6 +3,16 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.0b12] — 2026-10-15
+
+### Cambiado
+
+- **Fotos del coche en tema oscuro:** en la tarjeta y en el panel, detrás de
+  la foto del coche hay ahora una luz de estudio suave que se funde con la
+  tarjeta. Así el techo, el alerón y la zaga ya no se pierden en el fondo
+  oscuro (sobre todo en los colores oscuros). En tema claro no cambia nada,
+  y las fotos son las mismas.
+
 ## [2.5.0b11] — 2026-10-15
 
 ### Añadido

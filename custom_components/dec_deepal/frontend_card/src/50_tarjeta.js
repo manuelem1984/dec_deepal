@@ -53,6 +53,8 @@
 
     set hass(hass) {
       this._hass = hass;
+      // Tema oscuro: fondo de estudio detrás de la foto (STUDIO_BG).
+      this.toggleAttribute("dark", Boolean((hass.themes || {}).darkMode));
       this._update();
     }
 

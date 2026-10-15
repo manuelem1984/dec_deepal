@@ -57,6 +57,15 @@ def test_a_parked_car(page: Page) -> None:
     }
 
 
+def test_studio_background_only_in_dark_theme(page: Page) -> None:
+    """Tema oscuro: fondo de estudio detrás del coche; tema claro: nada."""
+    background = "getComputedStyle(banco.card.shadowRoot.querySelector('.carbox')).backgroundImage"
+    mount(page, oscuro=True)
+    assert "radial-gradient" in page.evaluate(background)
+    mount(page)
+    assert page.evaluate(background) == "none"
+
+
 def test_top_view_card(page: Page) -> None:
     """La otra tarjeta: lo mismo, con el coche visto desde arriba."""
     box = "banco.card.shadowRoot.querySelector('.carbox')"

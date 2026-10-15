@@ -16,6 +16,7 @@
     @keyframes dec-spin { to { transform: rotate(360deg); } }
     .carbox { position: relative; overflow: hidden; aspect-ratio: ${ISOMETRIC.crop.w} / ${ISOMETRIC.crop.h}; }
     .carbox[hidden] { display: none; }
+    :host([dark]) .carbox { background: ${STUDIO_BG}; }
     .carbox.plain { aspect-ratio: auto; }
     .carbox.plain .car { position: static; width: 100%; }
     /* Vista planta: tumbada (morro a la izquierda) o de pie. */
@@ -98,6 +99,7 @@
       top: ${(-CHARGING.crop.y / CHARGING.crop.h) * 100}%;
       filter: brightness(.62) contrast(1.25); }
     .chg.dark .view img { filter: none; }
+    .chg.dark .view { background: ${STUDIO_BG}; }
     .chg .now { font-size: 13px; font-weight: 500; display: flex; gap: 6px; align-items: center; color: var(--secondary-text-color); --mdc-icon-size: 18px; }
     .chg .now.on { color: var(--success-color, #43a047); }
     .chg .pct { display: flex; align-items: baseline; gap: 10px; margin: 6px 0; }

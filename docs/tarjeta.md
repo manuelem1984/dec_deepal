@@ -224,3 +224,11 @@ español; cualquier otro, en inglés). Los textos se escriben en
 - Sin opciones todavía: no se puede elegir qué botones mostrar.
 - Los niveles de los asientos se envían al coche con cada toque; el coche
   tarda unos segundos en confirmar.
+
+## Tema oscuro
+
+Con el tema oscuro de Home Assistant, detrás de la foto del coche se pinta una
+luz de estudio suave (`STUDIO_BG`, en `10_constantes.js` de la tarjeta y del
+panel) que se funde con la tarjeta: las partes oscuras del coche (techo,
+alerón, zaga) no se pierden en el fondo. Las fotos no cambian y en tema claro
+no se pinta nada. La tarjeta y el panel lo saben por `hass.themes.darkMode`.

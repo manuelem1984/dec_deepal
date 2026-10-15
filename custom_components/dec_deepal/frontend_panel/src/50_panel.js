@@ -26,6 +26,8 @@
       const first = !this._hass;
       const language = first ? "" : this._language();
       this._hass = hass;
+      // Tema oscuro: fondo de estudio detrás de las fotos (STUDIO_BG).
+      this.toggleAttribute("dark", this._dark());
       if (first) this._load();
       else if (language !== this._language()) this._render();
       this._syncMenu();
@@ -37,6 +39,11 @@
     }
 
     // --- Idioma y textos ---------------------------------------------------------
+
+    /** ¿Tema oscuro? (lo dice Home Assistant: el del usuario o el del sistema). */
+    _dark() {
+      return Boolean(((this._hass || {}).themes || {}).darkMode);
+    }
 
     _language() {
       const hass = this._hass || {};

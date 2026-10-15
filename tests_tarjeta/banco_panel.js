@@ -62,7 +62,7 @@
   const PEOPLE = [{ id: "person.ella", name: "Ella" }, { id: "person.manuel", name: "Manuel" }];
 
   const initial = () => ({
-    version: "2.5.0b11",
+    version: "2.5.0b12",
     admin: true,
     people: PEOPLE,
     models: MODELS,
@@ -139,7 +139,8 @@
 
     /**
      * Crea el panel. `opciones`: idioma, fallo (mensaje con el que falla "state"),
-     * sin_coches, lectura (usuario que no es administrador: lo que manda panel/estado.py).
+     * sin_coches, lectura (usuario que no es administrador: lo que manda panel/estado.py),
+     * oscuro (tema oscuro de Home Assistant).
      */
     montar(opciones = {}) {
       document.getElementById("mount").replaceChildren();
@@ -163,6 +164,7 @@
       const hass = {
         entities, states,
         locale: { language: opciones.idioma || "es" },
+        themes: { darkMode: Boolean(opciones.oscuro) },
         callWS: async (message) => {
           banco.registro.push(JSON.parse(JSON.stringify(message)));
           if (message.type === "auth/sign_path") return { path: `${message.path}?authSig=abc` };
