@@ -1,4 +1,8 @@
 # Ejecuta las pruebas y el linter en cada push y pull request.
+#
+# Las máquinas van fijadas a Ubuntu 24.04 (no "ubuntu-latest") para que el
+# salto de GitHub a Ubuntu 26 no cambie el entorno sin avisar: Playwright
+# instala dependencias del sistema y puede no soportar una versión recién salida.
 name: Pruebas
 
 on:
@@ -7,10 +11,10 @@ on:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
           cache: pip
@@ -21,10 +25,10 @@ jobs:
 
   # La tarjeta, en un navegador (no necesita Home Assistant). Ver docs/tarjeta.md
   tarjeta:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.13"
           cache: pip
@@ -39,9 +43,9 @@ jobs:
         run: pytest -v -c tests_tarjeta/pytest.ini tests_tarjeta
 
   ruff:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/ruff-action@v3
+      - uses: actions/checkout@v7
+      - uses: astral-sh/ruff-action@v4
         with:
           args: check .
