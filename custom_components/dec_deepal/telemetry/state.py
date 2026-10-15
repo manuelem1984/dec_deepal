@@ -1,7 +1,7 @@
 """Estado del vehículo: fusión de MQTT + REST + último valor conocido.
 
 Reglas de fusión (en este orden), pensadas a partir de lo observado con el
-coche real y de lo aprendido por Deepal Alternative:
+coche real:
 
 1. **Base: MQTT.** Es la fuente principal del S05.
 2. **REST rellena huecos:** si una señal no llegó por MQTT pero sí por REST,

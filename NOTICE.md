@@ -1,41 +1,6 @@
-# Avisos de terceros y agradecimientos
+# Avisos de terceros
 
-DEC Deepal es una reescritura desde cero, pero reutiliza conocimiento y, en
-algunos puntos, código de otros proyectos con licencia MIT. La licencia MIT
-obliga a conservar su aviso de copyright; se recogen aquí.
-
-## ha-deepal-spain-dec (proyecto anterior de la comunidad)
-
-- Repositorio: <https://github.com/manuelem1984/ha-deepal-spain-dec>
-- Licencia: MIT — Copyright (c) 2026 Comunidad Deepal España (DEC) - manuelem1984
-- Qué se reutiliza: cifrado del login, descifrado MQTT, firma de comandos,
-  cliente MQTT de una sola lectura, clasificación de errores, diseño del PIN
-  con Opción A / Opción B, fotos por versión y color, iconos `dec:`.
-
-## Deepal Alternative (ha-deepal-alternative)
-
-- Repositorio: <https://github.com/Sunek0/ha-deepal-alternative>
-- Licencia: MIT — Copyright (c) 2026 Deepal Alternative contributors
-- Qué se reutiliza (adaptado, no copiado tal cual):
-  - Formato de los comandos con PIN: puertas (`{"command": "lock", "open": ...}`)
-    y ventanillas (`{"command": "window", "open": ..., "openType": 10}`).
-  - Petición completa del endpoint REST de estado (`vechileCriteria` con todas
-    las categorías) y su interpretación (décimas de grado, presión en kPa,
-    `driverLock == 0` = bloqueado).
-  - Escala de los asientos por MQTT (0-3 directo; `6` = módulo dormido → desconocido).
-  - Códigos de error adicionales (`HW_1_1_01_047`, `HW_1_1_01_073`,
-    `HW_1_1_01_074`, `COMMON_1_1_01_001` en `serial-no/get`, `46000`,
-    `APIGW_-1_7_01_004`, `APIGW_1_7_02_001`).
-  - Renovación de sesión con caducidad del JWT, ventana de 30 min y una sola
-    petición a la vez.
-  - Cola de comandos por vehículo, tiempos de espera de luces (30 s) y claxon
-    (6 s), mantenimiento del valor optimista durante 120 s y reversión si el
-    coche rechaza el comando.
-  - Conservar el último valor válido de asientos/volante/desempañado cuando el
-    coche no lo informa.
-  - Pista de versión (Pro/Max) a partir de las capacidades del vehículo.
-
-Texto de la licencia MIT de Deepal Alternative:
+## Aviso de licencia MIT
 
 ```
 MIT License

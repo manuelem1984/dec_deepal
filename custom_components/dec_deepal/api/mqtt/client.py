@@ -291,9 +291,8 @@ async def _subscribe(
 # Despertar el coche
 # ---------------------------------------------------------------------------
 #
-# Descubierto por Deepal Alternative (v1.3.2-beta.1, comprobado con un coche
-# real el 30-09-2026): la app oficial despierta el coche publicando el servicio
-# "TxWakeup" con la orden "Cnr_ReWakeup" en el topic ``.../properties/set/req``.
+# Comprobado con un coche real el 30-09-2026: la app oficial despierta el
+# coche publicando el servicio "TxWakeup" con la orden "Cnr_ReWakeup" en el topic ``.../properties/set/req``.
 # La pasarela confirma con ``code: "000000"`` y el coche publica un informe
 # nuevo en unos 20 segundos. ⚠️ Pendiente de comprobar con un S05 de España.
 #

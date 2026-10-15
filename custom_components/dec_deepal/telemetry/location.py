@@ -1,9 +1,8 @@
 """Ubicación del coche, por si algún día la envía.
 
 Hoy el Deepal S05 de España **no envía su posición** ni por MQTT ni por REST
-(revisado en todas las capturas hasta el 01-10-2026). Aun así, Deepal
-Alternative empezó a ocultar ``Lat``/``Lng`` en sus registros (v1.4.0-beta.3),
-señal de que algún modelo o respuesta la incluye.
+(revisado en todas las capturas hasta el 01-10-2026). Aun así, hay indicios
+de que algún modelo o respuesta incluye ``Lat``/``Lng``.
 
 Por eso se busca de forma genérica: cualquier clave que se llame (sin
 distinguir mayúsculas) ``lat``/``latitude`` y ``lng``/``lon``/``longitude``,

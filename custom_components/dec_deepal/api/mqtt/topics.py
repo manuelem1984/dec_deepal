@@ -63,8 +63,7 @@ def parse_connection_config(config: dict[str, Any]) -> MqttConnection:
     Los topics de comandos (``/commands/``, ``/set/``) no se SUSCRIBEN: no
     interesan sus respuestas. El de publicar órdenes (``properties/set/req``)
     sí se guarda, porque es por donde se despierta al coche. Si la
-    configuración no lo trae, se deduce del de estado (``get`` → ``set``),
-    igual que hace Deepal Alternative.
+    configuración no lo trae, se deduce del de estado (``get`` → ``set``).
 
     Raises:
         ValueError: si falta cualquier dato imprescindible. El mensaje dice cuál.

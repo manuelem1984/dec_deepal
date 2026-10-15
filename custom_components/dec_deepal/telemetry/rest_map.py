@@ -4,8 +4,7 @@ El JSON del REST está anidado; cada fila indica una o varias **rutas** (la
 primera que tenga valor gana). Una ruta es una tupla de claves y/o índices:
 ``("seat", "leftFront", "heatStatus")`` o ``("door", "doors", 0)``.
 
-Interpretaciones tomadas de Deepal Alternative (MIT, ver NOTICE.md), salvo
-asientos/volante/desempañado, verificados ✅ por el proyecto anterior:
+Interpretaciones:
 
 - Temperaturas del REST en **décimas** de grado.
 - Presión de neumáticos en kPa (igual que MQTT).

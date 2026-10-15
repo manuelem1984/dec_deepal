@@ -896,8 +896,7 @@ reúne todo lo de las betas `2.0.0b1`–`2.0.0rc10` (detalle más abajo).
 
 ## [2.0.0rc4] — 2026-10-01
 
-Incorpora lo útil de las últimas betas de Deepal Alternative (1.3.2-beta.1 a
-1.4.0-beta.3), siempre centrado en el S05 de España.
+Siempre centrado en el S05 de España.
 
 ### Añadido
 
@@ -974,7 +973,7 @@ de código.
 
 - **Acceso por SMS desaconsejado:** ahora mismo Deepal responde que ha enviado
   el código (`SUC`) pero el SMS no llega. La petición es idéntica a la de la
-  v1 (con la que funcionaba) y a la de Deepal Alternative, así que el fallo es
+  v1 (con la que funcionaba), así que el fallo es
   del lado de Deepal. El asistente lo avisa, propone el **correo** por defecto
   y marca el SMS como "ahora mismo no llega". Documentado en README y en
   `docs/protocolo.md`.
@@ -1010,8 +1009,7 @@ de código.
 
 ### Corregido
 
-- **Login por SMS:** las cabeceras ahora son las de la app actual, iguales a
-  las de Deepal Alternative (a quien le llegan los SMS): `appversion V1.12.0`
+- **Login por SMS:** las cabeceras ahora son las de la app actual: `appversion V1.12.0`
   (antes `V1.11.0`) y sin cabecera `authorization` vacía antes de iniciar
   sesión. El servidor aceptaba la petición pero el SMS no llegaba.
   ⚠️ Pendiente de confirmar.
@@ -1079,14 +1077,11 @@ Primeras correcciones tras probar la b1 con un S05 Max real.
 
 ## [2.0.0b1] — 2026-09-30
 
-Reescritura completa desde cero de
-[ha-deepal-spain-dec](https://github.com/manuelem1984/ha-deepal-spain-dec) 1.3.1b18.
+Reescritura completa desde cero.
 
 ### ⚠️ Cambio incompatible
 
-- Dominio nuevo `dec_deepal` y repositorio nuevo. **No se migra** desde
-  `deepal_spain_dec`: hay que quitar la integración antigua y añadir la nueva.
-  Los `entity_id` cambian.
+- Dominio nuevo `dec_deepal` y repositorio nuevo. Los `entity_id` cambian.
 
 ### Añadido
 
@@ -1110,7 +1105,7 @@ Reescritura completa desde cero de
   y temperatura exterior, por si llegan por REST.
 - Pista automática de versión Pro/Max por capacidades (⚠️).
 
-### Cambiado (tomado de Deepal Alternative, ver NOTICE.md)
+### Cambiado
 
 - Comando de **puertas**: `{"command": "lock", "open": …}`.
 - Comando de **ventanillas**: una sola entidad para todas

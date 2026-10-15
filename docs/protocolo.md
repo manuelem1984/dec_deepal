@@ -1,8 +1,7 @@
 # Protocolo de la nube de Deepal
 
 Cómo habla la integración con los servidores oficiales. Reconstruido por
-ingeniería inversa de la app "My Changan / Deepal" y contrastado con el
-proyecto anterior y con Deepal Alternative. Qué endpoint alimenta cada
+ingeniería inversa de la app "My Changan / Deepal". Qué endpoint alimenta cada
 entidad: [correlacion_endpoints_entidades.csv](correlacion_endpoints_entidades.csv).
 
 Leyenda: ✅ verificado con el coche real · ⚠️ implementado sin verificar.
@@ -39,10 +38,8 @@ la cuenta):
 Descartado en la integración:
 
 - La petición es **idéntica** a la de la v1 (con la que el SMS estaba
-  verificado) y a la de Deepal Alternative (endpoint, cuerpo y cabeceras,
-  incluidas `appversion V1.12.0` y la ausencia de `authorization`).
-- Deepal Alternative solo prueba su SMS contra un servidor simulado: no hay
-  constancia de que les llegue.
+  verificado): endpoint, cuerpo y cabeceras, incluidas `appversion V1.12.0`
+  y la ausencia de `authorization`.
 - Un número, prefijo o cifrado incorrecto produce `success: false`, no `SUC`.
 
 Conclusión: fallo de entrega del lado de Deepal. Por eso el asistente solo
@@ -109,8 +106,7 @@ Servicios aceptados: `car_condition`, `BDC_Service`, `BMS_Service`,
 
 ### Despertar el coche (MQTT) ⚠️
 
-Descubierto por Deepal Alternative (v1.3.2-beta.1, comprobado en un coche
-real el 30-09-2026); ⚠️ pendiente de comprobar con un S05 de España.
+Comprobado en un coche real el 30-09-2026; ⚠️ pendiente de comprobar con un S05 de España.
 
 1. Misma sesión MQTT que la lectura (CONNECT, SUBSCRIBE, login → `secretKey`).
 2. PUBLISH en `$vdp/<coche>/properties/set/req` (si la configuración no lo

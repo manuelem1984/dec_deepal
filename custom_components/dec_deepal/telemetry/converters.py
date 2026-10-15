@@ -55,7 +55,7 @@ def connector(value: Any) -> bool | None:
 def seat_level(value: Any) -> int | None:
     """Nivel de asiento 0-3. ``6`` (módulo dormido) u otro valor → ``None``.
 
-    Escala 1:1 con la app (verificado por Deepal Alternative en un S05 real).
+    Escala 1:1 con la app (verificado en un S05 real).
     La versión anterior dividía entre 2, basándose en un material de
     referencia que resultó no aplicar al S05.
     """
@@ -98,8 +98,7 @@ def humidity(value: Any) -> float | None:
 def locked_if_zero(value: Any) -> bool | None:
     """Cerradura: ``0`` = bloqueada → ``True``. ⚠️ Pendiente de confirmar en S05.
 
-    Lo indican tanto el material de referencia del proyecto anterior como
-    Deepal Alternative (``driverLock == 0``). Si se demuestra lo contrario, se
+    Lo indica el material de referencia (``driverLock == 0``). Si se demuestra lo contrario, se
     cambia aquí y todas las entidades de cierre se corrigen a la vez.
     """
     number = to_int(value)

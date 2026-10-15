@@ -4,7 +4,7 @@ Ninguna se crea si el bloque de PIN está desactivado en Configurar: una
 cerradura que siempre se niega a funcionar solo confunde.
 
 - **doors** — bloquear/desbloquear todas las puertas. ⚠️ Formato del comando
-  tomado de Deepal Alternative; pendiente de confirmar en el S05 de España.
+  pendiente de confirmar en el S05 de España.
 - **pin_arm** — "Desbloqueo acciones con PIN". No envía nada al coche: abre
   una ventana de N segundos en la que se permiten los comandos con PIN.
   Solo existe en la Opción B. Siempre arranca bloqueado.

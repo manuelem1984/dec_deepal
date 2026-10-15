@@ -18,8 +18,6 @@ asistente de voz:
    rechaza, se **deshace** el valor optimista y se muestra un error claro.
 6. **Refresco:** se pide al coche que informe (``condition-inquiry``) y se
    relee dos veces (a los 5 s y a los 25 s).
-
-Basado en el diseño del proyecto anterior y en Deepal Alternative (MIT).
 """
 
 from __future__ import annotations
@@ -55,7 +53,7 @@ from .debug.recorder import DebugRecorder
 _LOGGER = logging.getLogger(__name__)
 
 #: Segundos que el coche tarda en completar el ciclo físico de un comando
-#: (medido con el coche real por Deepal Alternative). Clima, asientos y
+#: (medido con el coche real). Clima, asientos y
 #: volante no tienen espera.
 COOLDOWN_SECONDS: Final[dict[str, float]] = {
     "flash_lights": 30.0,
@@ -251,7 +249,7 @@ class CommandRunner:
     async def _wake_before_command(self, name: str) -> None:
         """Despierta el coche (si hace falta) antes de una orden con PIN.
 
-        Idea de Deepal Alternative (v1.4.0-beta.2): las órdenes con PIN se
+        Las órdenes con PIN se
         rechazan a menudo con el coche dormido (``APP_1_1_05_001``). Si sus
         datos están viejos, se despierta y se espera hasta 30 s a que informe.
         Es "lo mejor posible": pase lo que pase, la orden se envía después.

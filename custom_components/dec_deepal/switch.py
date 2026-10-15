@@ -6,8 +6,7 @@ crea. El código se conserva para modelos que sí lo admitan.
 
 Su estado se lee del REST (el MQTT no es fiable para ellos, ver
 ``telemetry/state.py``) y se conserva el último valor si el coche no lo
-informa, para que encender el clima no los "apague" en pantalla (fallo
-corregido en Deepal Alternative v1.3.1).
+informa, para que encender el clima no los "apague" en pantalla.
 """
 
 from __future__ import annotations

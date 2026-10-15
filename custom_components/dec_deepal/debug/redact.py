@@ -77,8 +77,7 @@ _JWT: Final = re.compile(r"^eyJ[\w-]+\.[\w-]+\.[\w-]+$")
 
 
 #: Las mismas claves exactas, en minúsculas: la comparación no distingue
-#: mayúsculas (Deepal manda a veces ``Lat``/``Lng``, visto por Deepal
-#: Alternative en v1.4.0-beta.3).
+#: mayúsculas (Deepal manda a veces ``Lat``/``Lng``).
 _EXACT_KEYS_LOWER: Final = frozenset(key.lower() for key in EXACT_KEYS)
 
 

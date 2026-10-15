@@ -4,9 +4,8 @@ Referencia: especificación MQTT 3.1.1 (OASIS). Solo se implementa lo que se
 usa: CONNECT, SUBSCRIBE, PUBLISH (QoS 0 al enviar), PUBACK y DISCONNECT, más
 la lectura de paquetes entrantes.
 
-Nota: Deepal Alternative usa MQTT 5.0 contra el mismo broker. Aquí se mantiene
-3.1.1 porque es lo que está verificado ✅ con el S05 en España desde el primer
-día; el broker acepta ambos.
+Nota: el broker acepta MQTT 3.1.1 y 5.0. Aquí se mantiene 3.1.1 porque es lo
+que está verificado ✅ con el S05 en España desde el primer día.
 """
 
 from __future__ import annotations

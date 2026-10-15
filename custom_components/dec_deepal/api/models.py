@@ -169,8 +169,7 @@ class CommandResult:
 # ---------------------------------------------------------------------------
 
 #: Códigos que indican ventilación de asientos delanteros.
-#: - ``#driverSeatVent`` / ``#passengerSeatVent``: los que documenta Deepal
-#:   Alternative (otras regiones).
+#: - ``#driverSeatVent`` / ``#passengerSeatVent``: los de otras regiones.
 #: - ``FronSeatVentilationSW``, ``FronSeatVentilationLevel``,
 #:   ``DriverSeatVentilatorSW``, ``DriverSeatVentilatorLevel``, ``#vent3``:
 #:   los que manda el servidor europeo para un S05 **Max** de España
@@ -215,7 +214,7 @@ class Capabilities:
     def trim_hint(self) -> str | None:
         """Pista de versión del S05: ``"max"`` si tiene ventilación, si no ``"pro"``.
 
-        Idea de Deepal Alternative. Solo es una pista: se propone por defecto
+        Solo es una pista: se propone por defecto
         en el asistente y el usuario la confirma o la cambia.
         """
         if not self.raw_codes:

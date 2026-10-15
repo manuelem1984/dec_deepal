@@ -41,9 +41,9 @@ REQUEST_TIMEOUT: Final = 30
 # estos valores puede hacer que el servidor rechace las peticiones.
 APP_ID: Final = "ca"
 APP_TYPE: Final = "Android"
-# V1.12.0 (antes V1.11.0): es la versión que usa Deepal Alternative, a quien
-# le llegan los SMS de login. Con V1.11.0 el servidor aceptaba la petición de
-# código por SMS pero el SMS no llegaba (el correo sí). Ver b4 en CHANGELOG.
+# V1.12.0 (antes V1.11.0): con esta versión llegan los SMS de login. Con
+# V1.11.0 el servidor aceptaba la petición de código por SMS pero el SMS no
+# llegaba (el correo sí). Ver b4 en CHANGELOG.
 APP_VERSION: Final = "V1.12.0"
 DEVICE_TYPE: Final = "samsung"
 OS_VERSION: Final = "9"

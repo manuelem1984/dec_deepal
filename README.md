@@ -10,9 +10,7 @@ luces, claxon, asientos, volante, y —con PIN— puertas, ventanillas y maleter
 - Requiere **Home Assistant 2026.3.0** o superior.
 - Comunidad y soporte: [Telegram Deepal España](https://t.me/deepalespana_general).
 
-> **Versión 2 (reescritura).** Sustituye a
-> [ha-deepal-spain-dec](https://github.com/manuelem1984/ha-deepal-spain-dec).
-> Es una integración nueva (dominio `dec_deepal`): se instala aparte y hay que
+> **Versión 2 (reescritura).** Es una integración nueva (dominio `dec_deepal`): se instala aparte y hay que
 > configurarla de nuevo. Ver [CHANGELOG.md](CHANGELOG.md).
 
 ## ⚠️ Antes de instalar
@@ -129,11 +127,10 @@ Deepal*. Detalles en [docs/tarjeta.md](docs/tarjeta.md).
 | [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md) | Avisos al móvil y mantenimiento periódico |
 | [docs/depuracion.md](docs/depuracion.md) | Modo depuración, diagnósticos y capturas |
 | [docs/anadir-pais-vehiculo-idioma.md](docs/anadir-pais-vehiculo-idioma.md) | Ampliar países, coches e idiomas |
-| [docs/comparativa-alternativo.md](docs/comparativa-alternativo.md) | Qué se tomó de Deepal Alternative |
 | [docs/roadmap.md](docs/roadmap.md) | Pendientes |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Cómo colaborar |
 | [NOTICE.md](NOTICE.md) | Créditos y licencias de terceros |
 
 ## Licencia
 
-MIT. Incluye trabajo adaptado de Deepal Alternative (MIT), ver [NOTICE.md](NOTICE.md).
+MIT. Avisos de terceros en [NOTICE.md](NOTICE.md).

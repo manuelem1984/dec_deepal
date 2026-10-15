@@ -68,7 +68,7 @@ def charge_status(values: Mapping[str, Any]) -> str | None:
 
 
 def remaining_charge_hhmm(values: Mapping[str, Any]) -> str | None:
-    """Tiempo de carga restante como texto ``H:MM`` (idea de Deepal Alternative)."""
+    """Tiempo de carga restante como texto ``H:MM``."""
     minutes = values.get(s.REMAINING_CHARGE_MIN)
     if minutes is None:
         return None

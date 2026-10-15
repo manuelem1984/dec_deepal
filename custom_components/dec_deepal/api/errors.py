@@ -92,8 +92,8 @@ class DeepalCommandNotReady(DeepalApiError):
 # ---------------------------------------------------------------------------
 
 #: Códigos que significan "la sesión ya no vale". Los ``APP_1_1_02_00x`` y
-#: ``CAC_1_1_01_045`` los usa la app para expulsar sesiones; ``46000`` lo
-#: documenta Deepal Alternative (CaErrorCode de la app).
+#: ``CAC_1_1_01_045`` los usa la app para expulsar sesiones; ``46000`` es
+#: un CaErrorCode de la app.
 AUTH_ERROR_CODES: Final = frozenset(
     {
         "APP_1_1_02_003",
@@ -120,7 +120,7 @@ PIN_EXPIRED_CODE: Final = "HW_1_1_01_073"
 PIN_NOT_SET_CODE: Final = "HW_1_1_01_074"
 
 #: Al ENVIAR una orden: el coche no la aceptó porque está dormido o sin
-#: conexión (observado por Deepal Alternative en un S05 real, 30-09-2026).
+#: conexión (observado en un S05 real, 30-09-2026).
 COMMAND_ASLEEP_CODE: Final = "APP_1_1_05_001"
 
 #: Respuesta de ``serial-no/get`` cuando la clave de firma no es la registrada.

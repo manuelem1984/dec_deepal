@@ -19,7 +19,7 @@ Necesitan un ``rcToken``, que se obtiene canjeando el PIN de control remoto
 (``security-code/check-code``). El ``rcToken`` se guarda y se reutiliza; si el
 servidor rechaza uno reutilizado, se pide otro con el PIN y se reintenta una
 vez. **El rcToken solo se incluye en esos tres comandos**: incluirlo en los
-demás provoca errores ``COMMON_1_1_01_008`` (hallazgo de Deepal Alternative).
+demás provoca errores ``COMMON_1_1_01_008``.
 """
 
 from __future__ import annotations
@@ -291,7 +291,7 @@ class DeepalCommands:
     async def doors(self, vehicle_id: str, *, unlock: bool) -> str:
         """Cierre centralizado: bloquear (``unlock=False``) o desbloquear. ⚠️
 
-        Formato de Deepal Alternative: ``{"command": "lock", "open": <bool>}``
+        Formato: ``{"command": "lock", "open": <bool>}``
         (``open=True`` = desbloquear). Sustituye al formato que usaba la
         versión anterior (``"doors"``/``"lock"``), que nunca se verificó.
         """
@@ -302,7 +302,7 @@ class DeepalCommands:
     async def windows(self, vehicle_id: str, *, open_windows: bool) -> str:
         """Todas las ventanillas a la vez: abrir o cerrar. ⚠️
 
-        Formato de Deepal Alternative: ``{"command": "window", "open": <bool>,
+        Formato: ``{"command": "window", "open": <bool>,
         "openType": 10}``. No existe mando por ventanilla individual conocido.
         """
         return await self.send(

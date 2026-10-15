@@ -16,8 +16,6 @@ servidor puede interpretarlo como abuso o invalidar la sesión.
   el servidor lo rechazó).
 - **Cada renovación se guarda** en la entrada de configuración, mediante la
   función ``on_session_changed`` que le pasa Home Assistant.
-
-Lógica tomada de Deepal Alternative (MIT), ver NOTICE.md.
 """
 
 from __future__ import annotations

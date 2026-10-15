@@ -238,7 +238,7 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
     ) -> WakeResult:
         """Despierta el coche si sus datos están viejos y espera un informe nuevo.
 
-        Reglas (mismas que Deepal Alternative, para cuidar la batería de 12 V):
+        Reglas (para cuidar la batería de 12 V):
         - Solo coches MQTT (el S05) y con la opción activada.
         - Solo si el último informe tiene más de ``WAKE_STALE_AFTER`` s.
         - Como mucho uno cada ``WAKE_COOLDOWN`` s por coche (el límite cuenta

@@ -2,8 +2,7 @@
 # .gitignore de DEC Deepal
 # -----------------------------------------------------------------------------
 
-# Copia de referencia del proyecto anterior (ha-deepal-spain-dec). Solo se usa
-# en local para consultar el código viejo durante la reescritura; NO se sube.
+# Material de referencia local; NO se sube.
 _ref/
 
 # Python
