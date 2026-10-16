@@ -65,7 +65,7 @@ class DecDeepalConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
     #: 2 = conectores AC/DC desactivados (ver ``async_migrate_entry``).
-    MINOR_VERSION = 2
+    MINOR_VERSION = 3
 
     def __init__(self) -> None:
         self._country: Country | None = None

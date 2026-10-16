@@ -22,9 +22,10 @@ import logging
 from datetime import timedelta
 from typing import Any, Final
 
-from homeassistant.core import HomeAssistant
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers.event import async_track_time_interval
 
 from .api.client import DeepalClient
 from .appearance import issue_id as setup_issue_id
@@ -60,6 +61,23 @@ def _in_other_entries(hass: HomeAssistant, entry_id: str) -> set[str]:
         if other.entry_id != entry_id
         for item in other.data.get(CONF_VEHICLES, [])
     }
+
+
+def async_schedule_sync(hass: HomeAssistant, entry: Any, client: DeepalClient) -> CALLBACK_TYPE:
+    """Mira los coches de la cuenta cada ``SYNC_INTERVAL``. Devuelve cómo pararlo.
+
+    El temporizador tiene que ser ``@callback``: sin eso, Home Assistant lo
+    ejecuta en un hilo aparte, la tarea no queda registrada y se pierde sin
+    llegar a mirar nada (error "Task was destroyed but it is pending").
+    """
+
+    @callback
+    def _sync(_now: object) -> None:
+        entry.async_create_background_task(
+            hass, async_sync_vehicles(hass, entry, client), f"{DOMAIN}_sync_vehicles"
+        )
+
+    return async_track_time_interval(hass, _sync, SYNC_INTERVAL)
 
 
 async def async_sync_vehicles(hass: HomeAssistant, entry: Any, client: DeepalClient) -> None:

@@ -99,22 +99,19 @@ BINARY_SENSORS: tuple[DecBinaryDescription, ...] = (
     DecBinaryDescription(
         key="charging", signal=s.CHARGING, device_class=BinarySensorDeviceClass.BATTERY_CHARGING
     ),
-    # Conectores: desactivados de fábrica (2.5.0b7). En el S05 no son fiables
-    # (el coche carga diciendo que no tiene la manguera puesta) y hay coches
-    # que no mandan el de AC. Se dejan por si alguien los quiere mirar.
+    # Conectores: salen del estado de carga del coche (``ChrgSts``, 2.5.1b1),
+    # no de sus campos de conexión, que en el S05 no son fiables.
     DecBinaryDescription(
         key="ac_connector",
-        signal=s.AC_CONNECTOR,
+        signal=s.AC_PLUGGED,
         device_class=BinarySensorDeviceClass.PLUG,
         entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_enabled_default=False,
     ),
     DecBinaryDescription(
         key="dc_connector",
-        signal=s.DC_CONNECTOR,
+        signal=s.DC_PLUGGED,
         device_class=BinarySensorDeviceClass.PLUG,
         entity_category=EntityCategory.DIAGNOSTIC,
-        entity_registry_enabled_default=False,
     ),
     _door("door_front_left", s.DOOR_FRONT_LEFT),
     _door("door_front_right", s.DOOR_FRONT_RIGHT),

@@ -16,6 +16,7 @@ import pytest
 
 from custom_components.dec_deepal import alert_rules as ar
 from custom_components.dec_deepal import textos_generados as generated
+from custom_components.dec_deepal import vehicle_data as vd
 from custom_components.dec_deepal.registries import load_all
 
 #: Idiomas con fichero propio.
@@ -187,3 +188,11 @@ def test_card_uses_only_existing_texts() -> None:
     from custom_components.dec_deepal.documents import INSURANCE_KINDS
 
     assert {f"kind_{kind}" for kind in INSURANCE_KINDS} <= set(spanish)
+
+
+@pytest.mark.parametrize("language", LANGUAGES)
+def test_panel_names_every_stored_section(language: str) -> None:
+    """Panel → Datos lista lo guardado de cada coche con ``section_<dato>``."""
+    panel = json.loads((INTEGRATION / "idiomas" / f"{language}.json").read_text(encoding="utf-8"))["panel"]
+    for section in (*vd.RECORDS, vd.APPEARANCE, vd.PEOPLE):
+        assert panel.get(f"section_{section}"), f"{language}: falta panel.section_{section}"

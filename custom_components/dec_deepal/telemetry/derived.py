@@ -31,17 +31,46 @@ CHARGE_STATUS_OPTIONS: Final = (
 )
 
 
+#: Estados de carga (``ChrgSts``) con la manguera de cada tipo puesta.
+_AC_STATES: Final = frozenset({c.CHARGE_STATE_AC_CONNECTED, c.CHARGE_STATE_AC_CHARGING})
+_DC_STATES: Final = frozenset({c.CHARGE_STATE_DC_CONNECTED, c.CHARGE_STATE_DC_CHARGING})
+
+
+def _plugged(values: Mapping[str, Any], states: frozenset[int], raw: str) -> bool | None:
+    """Manguera de un tipo enchufada, según el estado de carga del coche.
+
+    Con estado de carga (``ChrgSts`` 0-4) manda él: 1/3 es AC, 2/4 es DC y 0
+    es sin manguera. Los campos de conexión del coche **no son fiables** en
+    el S05 (cargando dice que no hay manguera, otros no mandan el de AC y un
+    valor viejo puede quedarse encendido con el cable quitado), así que solo
+    se miran si no hay estado de carga (p. ej. solo REST).
+    """
+    state = values.get(s.CHARGE_STATE)
+    if state is not None:
+        return state in states
+    return values.get(raw)
+
+
+def ac_plugged(values: Mapping[str, Any]) -> bool | None:
+    """Manguera AC (Tipo 2) enchufada: ``ChrgSts`` 1 o 3."""
+    return _plugged(values, _AC_STATES, s.AC_CONNECTOR)
+
+
+def dc_plugged(values: Mapping[str, Any]) -> bool | None:
+    """Manguera DC (CCS2) enchufada: ``ChrgSts`` 2 o 4."""
+    return _plugged(values, _DC_STATES, s.DC_CONNECTOR)
+
+
 def _dc(values: Mapping[str, Any]) -> bool:
     """¿Hay señales de que la carga es en continua (CCS2)?"""
     current = values.get(s.DC_CHARGE_CURRENT)
-    return values.get(s.DC_CONNECTOR) is True or (
+    return dc_plugged(values) is True or (
         isinstance(current, (int, float)) and not isinstance(current, bool) and current > 0
     )
 
 
 #: Estado de carga del coche (``ChrgSts``) → "Estado de carga". El 0 no está:
-#: "sin cargar" puede ser con la manguera puesta y la carga terminada, así
-#: que ahí se sigue mirando los conectores.
+#: con él se mira si carga (dato fiable) y, si no, es "desconectado".
 _STATUS_BY_CHARGE_STATE: Final = {
     c.CHARGE_STATE_AC_CONNECTED: CHARGE_CONNECTED_AC,
     c.CHARGE_STATE_DC_CONNECTED: CHARGE_CONNECTED_DC,
@@ -57,16 +86,15 @@ def charge_status(values: Mapping[str, Any]) -> str | None:
     dice a la vez si hay manguera, de qué tipo y si carga.
 
     Si no (estado 0 o sin estado, p. ej. solo REST), manda "cargando", que es
-    el dato fiable. Los dos conectores **no lo son** en el S05: se ha visto al
-    coche cargando mientras decía que no tenía la manguera puesta
-    (11-10-2026), y hay coches que ni siquiera mandan el de AC. Por eso:
+    el dato fiable, y los conectores de :func:`ac_plugged` / :func:`dc_plugged`
+    (con estado 0, los dos apagados; sin estado, los campos del coche):
 
     1. Cargando → ``charging_dc`` si hay señales de continua (conector DC o
        corriente DC); si no, ``charging_ac``. Nunca "desconectado" cargando.
-    2. Sin cargar y con un conector que dice "enchufado" → ``connected_ac`` /
+    2. Sin cargar y con un conector enchufado → ``connected_ac`` /
        ``connected_dc``.
     3. Sin cargar y sin ningún conector enchufado (o sin saberlo) →
-       ``disconnected``. Puede ser que esté enchufado y el coche no lo diga.
+       ``disconnected``.
 
     Solo es ``None`` si no se sabe si carga.
     """
@@ -78,9 +106,9 @@ def charge_status(values: Mapping[str, Any]) -> str | None:
         return None
     if charging:
         return CHARGE_CHARGING_DC if _dc(values) else CHARGE_CHARGING_AC
-    if values.get(s.AC_CONNECTOR) is True:
+    if ac_plugged(values) is True:
         return CHARGE_CONNECTED_AC
-    if values.get(s.DC_CONNECTOR) is True:
+    if dc_plugged(values) is True:
         return CHARGE_CONNECTED_DC
     return CHARGE_DISCONNECTED
 
@@ -141,14 +169,13 @@ def power_on(values: Mapping[str, Any]) -> bool | None:
 def charger_plugged(values: Mapping[str, Any]) -> bool | None:
     """Manguera enchufada: la de AC (Tipo 2) o la de DC (CCS2).
 
-    Si el coche carga o su estado de carga dice que hay manguera (1-4), está
-    enchufado, digan lo que digan los conectores (que en el S05 no son
-    fiables; ver :func:`charge_status`). ``None`` solo si no se sabe nada. La
-    usa la "Vista carga" para pintar el cable.
+    Si el coche carga, está enchufado. Si no, lo dicen los conectores de
+    :func:`ac_plugged` / :func:`dc_plugged` (del estado de carga). ``None``
+    solo si no se sabe nada. La usa la "Vista carga" para pintar el cable.
     """
-    if values.get(s.CHARGING) is True or values.get(s.CHARGE_STATE) in _STATUS_BY_CHARGE_STATE:
+    if values.get(s.CHARGING) is True:
         return True
-    connectors = [values.get(s.AC_CONNECTOR), values.get(s.DC_CONNECTOR)]
+    connectors = [ac_plugged(values), dc_plugged(values)]
     if any(connector is True for connector in connectors):
         return True
     if all(connector is None for connector in connectors) and values.get(s.CHARGING) is None:
@@ -164,4 +191,6 @@ DERIVED: Final[dict[str, Callable[[Mapping[str, Any]], Any]]] = {
     s.CENTRAL_LOCKED: central_locked,
     s.POWER_ON: power_on,
     s.CHARGER_PLUGGED: charger_plugged,
+    s.AC_PLUGGED: ac_plugged,
+    s.DC_PLUGGED: dc_plugged,
 }

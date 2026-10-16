@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
@@ -10,14 +11,17 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import issue_registry as ir
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from homeassistant.util import dt as dt_util
+from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 
 from custom_components.dec_deepal import repairs
 from custom_components.dec_deepal.api.errors import DeepalConnectionError
 from custom_components.dec_deepal.api.models import VehicleInfo
 from custom_components.dec_deepal.const import CONF_VEHICLES, DOMAIN
 from custom_components.dec_deepal.vehicle_sync import (
+    SYNC_INTERVAL,
     added_issue_id,
+    async_schedule_sync,
     async_sync_vehicles,
     delete_issues,
     removed_issue_id,
@@ -107,3 +111,18 @@ async def test_issues_go_away_with_the_account(hass: HomeAssistant) -> None:
     await async_sync_vehicles(hass, entry, _client(NUEVO))
     delete_issues(hass, entry)
     assert not [key for key in ir.async_get(hass).issues if key[0] == DOMAIN]
+
+
+async def test_periodic_sync_runs(hass: HomeAssistant) -> None:
+    """Cada SYNC_INTERVAL se vuelve a mirar la cuenta (antes la tarea se perdía)."""
+    entry = MockConfigEntry(domain=DOMAIN, data={CONF_VEHICLES: [CHANGOTE.to_dict()]}, options={})
+    entry.add_to_hass(hass)
+    client = _client(CHANGOTE, NUEVO)
+
+    unsub = async_schedule_sync(hass, entry, client)
+    async_fire_time_changed(hass, dt_util.utcnow() + SYNC_INTERVAL + timedelta(seconds=1))
+    await hass.async_block_till_done(wait_background_tasks=True)
+
+    assert client.get_vehicles.await_count == 1
+    assert ir.async_get(hass).async_get_issue(DOMAIN, added_issue_id("car3")) is not None
+    unsub()

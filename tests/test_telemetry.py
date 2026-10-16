@@ -208,13 +208,13 @@ def test_charge_state_is_an_enum() -> None:
 def test_plugging_in_is_not_charging() -> None:
     """Enchufar la manguera (1 o 2) ya no cuenta como "cargando" (2.5.0b8)."""
     expected = {
-        0: (False, "disconnected", False),
-        1: (False, "connected_ac", True),
-        2: (False, "connected_dc", True),
-        3: (True, "charging_ac", True),
-        4: (True, "charging_dc", True),
+        0: (False, "disconnected", False, False, False),
+        1: (False, "connected_ac", True, True, False),
+        2: (False, "connected_dc", True, False, True),
+        3: (True, "charging_ac", True, True, False),
+        4: (True, "charging_dc", True, False, True),
     }
-    for chrg_sts, (charging, status, plugged) in expected.items():
+    for chrg_sts, (charging, status, plugged, ac, dc) in expected.items():
         # Conectores en "no enchufado": manda el estado de carga.
         params = {"ChrgSts": chrg_sts, "acChargeGunConnectionState": 0}
         state = build_state(mqtt_params=params, rest_raw=None, previous=None)
@@ -222,15 +222,30 @@ def test_plugging_in_is_not_charging() -> None:
         assert state.get(s.CHARGING) is charging
         assert state.get(s.CHARGE_STATUS) == status
         assert state.get(s.CHARGER_PLUGGED) is plugged
+        assert (state.get(s.AC_PLUGGED), state.get(s.DC_PLUGGED)) == (ac, dc)
 
     # Estado desconocido: no se adivina si carga.
     unknown = build_state(mqtt_params={"ChrgSts": 9}, rest_raw=None, previous=None)
     assert unknown.get(s.CHARGING) is None and unknown.get(s.CHARGE_STATE) is None
-    # Sin cargar (0) con un conector que dice "enchufado": carga terminada.
-    full = build_state(
+    # Con estado 0, un campo de conexión que dice "enchufado" (un valor viejo
+    # con el cable quitado) ya no enciende nada (2.5.1b1).
+    stale = build_state(
         mqtt_params={"ChrgSts": 0, "acChargeGunConnectionState": 2}, rest_raw=None, previous=None
     )
-    assert full.get(s.CHARGE_STATUS) == "connected_ac"
+    assert stale.get(s.CHARGE_STATUS) == "disconnected"
+    assert stale.get(s.AC_PLUGGED) is False and stale.get(s.CHARGER_PLUGGED) is False
+
+
+def test_connectors_without_charge_state() -> None:
+    """Sin estado de carga (p. ej. solo REST) quedan los campos del coche."""
+    from custom_components.dec_deepal.telemetry.derived import ac_plugged, dc_plugged
+
+    assert ac_plugged({}) is None and dc_plugged({}) is None
+    assert ac_plugged({s.AC_CONNECTOR: True}) is True
+    assert dc_plugged({s.DC_CONNECTOR: False}) is False
+    # El estado de carga manda sobre los campos.
+    assert dc_plugged({s.CHARGE_STATE: 1, s.DC_CONNECTOR: True}) is False
+    assert ac_plugged({s.CHARGE_STATE: 3, s.AC_CONNECTOR: False}) is True
 
 
 def test_plugging_in_does_not_open_a_charge_session() -> None:

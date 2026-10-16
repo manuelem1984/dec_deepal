@@ -1,127 +1,40 @@
 # Hoja de ruta
 
-## Beta 2.5.0b12 (15-10-2026) — pendiente de probar
+## Beta 2.5.1b1 (16-10-2026) — pendiente de probar
 
-- [ ] **Tema oscuro:** la foto del coche lleva detrás una luz de estudio en
-      la tarjeta (vista principal y ventana de carga) y en el panel (Coches,
-      Avisos y Apariencia); el techo y la zaga se distinguen. En tema claro,
-      como antes.
+Las betas 2.5.0b1 a b12 están probadas en una instalación real con dos S05 EV
+RWD Max (todo menos la carga). Esta beta añade los conectores AC y DC a
+partir de `ChrgSts` y corrige la comprobación de coches de la cuenta y el
+texto «Personas» de Panel → Datos. Cuando se pruebe la carga, sale la 2.5.1
+estable.
 
-## Beta 2.5.0b11 (15-10-2026) — pendiente de probar
+Pendiente de comprobar:
 
-- [ ] **Vista lateral** de tu Max: con la llanta sin tapacubos elegida en
-      Apariencia, sale la llanta negra en su color; con tapacubos, como antes.
-- [ ] Los nombres nuevos: «Vista lateral», «Vista planta» y «Vista carga».
-- [ ] Pendiente: una foto de la llanta más de frente y con luz uniforme
-      mejoraría el resultado (`tools/generar_vista_lateral_llanta.py`).
-
-## Beta 2.5.0b10 (15-10-2026) — pendiente de probar
-
-- [ ] **Placa de matrícula** en Coches y Avisos, con la matrícula del coche
-      en el formato de España (`6545 NPD`), en tema claro y oscuro y en el
-      móvil (si no cabe, baja entera a la línea siguiente).
-- [ ] La fila «Personas» ya no lleva la raya encima.
-
-## Beta 2.5.0b9 (15-10-2026) — pendiente de probar
-
-- [ ] **Usuario que no es administrador:** ve el panel con Coches y Avisos en
-      solo lectura (aviso arriba), sin engranajes, Apariencia, Personas,
-      casillas ni Guardar; no ve Datos, Diagnóstico ni Ajustes.
-- [ ] **Personas:** elegir a quién pertenece cada coche; sale "Tuyo" en los
-      coches del usuario que mira; viaja en la copia de seguridad.
-- [ ] **Coche nuevo en la cuenta** (compartir otro coche con la cuenta de
-      Home Assistant): en menos de 30 min aparece en Reparaciones; al
-      añadirlo, sale "Configura tu vehículo". **Coche retirado** (dejar de
-      compartirlo): aviso para quitarlo; sus fichas se conservan.
-- [ ] **Aviso del PIN armado** (Opción B, con el aviso activado): sale en el
-      idioma de Home Assistant.
-- [ ] **Configurar** (Ajustes → Dispositivos y servicios) sigue abriendo el
-      panel tras quitar los apartados antiguos.
-- [ ] **Países nuevos:** al añadir una cuenta se elige el país (por defecto,
-      el de Home Assistant). Falta que alguien de Portugal, Italia, Alemania
-      o Francia lo pruebe con su cuenta.
-
-## Beta 2.5.0b8 (15-10-2026) — pendiente de probar
-
-- [ ] **Estado de carga (`ChrgSts`) en el S05 de España:** recorrer los
-      estados y comprobar "Estado de carga" y "Cargando" en cada uno:
-      sin manguera (0 → Desconectado, no carga), AC enchufado sin cargar
-      (1 → Conectado AC, no carga), AC cargando (3 → Cargando AC) y, si se
-      puede, DC (2 → Conectado DC, 4 → Cargando DC). El valor en bruto sale
-      en el diagnóstico (`charge_state`).
-- [ ] **Enchufar sin cargar no abre una carga** ni manda el aviso "carga
-      iniciada"; desenchufar después no apunta una "última carga".
+- [ ] **Conectores:** tras actualizar, «Conector AC» y «Conector DC» están
+      activos. Sin manguera, los dos apagados; con la AC (enchufada o
+      cargando), solo el AC; con la DC, solo el DC.
+- [ ] **Estado de carga (`ChrgSts`):** sin manguera (0 → Desconectado), AC
+      enchufado sin cargar (1 → Conectado AC, sin aviso de "carga
+      iniciada"), AC cargando (3 → Cargando AC, cable verde en la vista de
+      carga) y, si se puede, DC (2 → Conectado DC, 4 → Cargando DC, con la
+      corriente de DC). El valor en bruto sale en el diagnóstico.
+- [ ] **Última carga:** tras una carga completa, de qué porcentaje a cuál y
+      cuánto duró; enchufar y desenchufar sin cargar no apunta nada. (La de
+      Changote del 12-10, «del 100 % al 100 % en 14 h 28 min», es de antes
+      de la 2.5.0b8.)
 - [ ] **Carga terminada con la manguera puesta:** ¿qué `ChrgSts` manda?
-- [ ] **Corriente de carga:** en DC enseña la de DC (antes, 0); sin cargar, 0.
-- [ ] **Climatización:** no deja bajar de 18 °C; encender con el coche
-      informando una temperatura fuera de rango funciona.
-- [ ] **Despertar con QoS 1:** "Actualizar datos" con el coche muy dormido
-      (horas parado) trae datos nuevos.
-
-## Beta 2.5.0b7 (12-10-2026) — pendiente de probar
-
-- [ ] **Estado de carga sin conectores:** cargando, la tarjeta y el sensor
-      dicen "Cargando AC" y la vista de carga pinta el cable verde.
-- [ ] Tras actualizar, "Conector AC" y "Conector DC" aparecen desactivados.
+- [ ] **Coche nuevo o retirado de la cuenta:** el aviso sale en menos de 30
+      minutos sin reiniciar (corregido en la 2.5.0).
+- [ ] **Países nuevos:** que alguien de Portugal, Italia, Alemania o Francia
+      lo pruebe con su cuenta.
+- [ ] Revisión de cada idioma por alguien nativo.
+- [ ] Pendiente: potencia (kW) en la ventana de carga, si el coche da el
+      voltaje.
+- [ ] Pendiente: la vista de planta solo está dibujada en plata.
+- [ ] Pendiente: una foto de la llanta sin tapacubos más de frente y con luz
+      uniforme mejoraría la vista lateral.
 - [ ] Pendiente: saber si está enchufado sin cargar cuando el coche no manda
-      el conector. Candidato: `charge.chargeConStatus` del REST (sin
-      verificar qué significa cada valor).
-
-## Beta 2.5.0b6 (12-10-2026) — pendiente de probar
-
-- [ ] **Ventana de carga:** pulsar la franja de la batería sin enchufar,
-      enchufado y cargando; en tema claro y en oscuro.
-- [ ] **Cargas apuntadas:** tras una carga completa, "Última carga" enseña
-      de qué porcentaje a cuál y cuánto duró; sigue ahí tras reiniciar.
-- [ ] Pendiente: potencia (kW) en la ventana, si el coche da el voltaje.
-- [ ] Pendiente: imágenes de la vista de carga para fondo claro (hoy se
-      oscurecen con un filtro).
-
-## Beta 2.5.0b5 (12-10-2026) — pendiente de probar
-
-- [ ] **Tarjeta de planta:** añadir "DEC Deepal · Vista de planta" a un
-      panel, en horizontal y en vertical; abrir una puerta y ver que cambia.
-- [ ] Pendiente: la vista de planta solo está dibujada en plata; faltan los
-      demás colores.
-
-## Beta 2.5.0b4 (12-10-2026) — pendiente de probar
-
-- [ ] **Idiomas nuevos:** alemán, francés, neerlandés, noruego, danés,
-      griego y esloveno; y el panel, ya también en portugués, italiano y
-      polaco. Cambiar el idioma del usuario y ver panel, tarjeta y entidades.
-- [ ] Pendiente: revisión de cada idioma por alguien nativo.
-- [ ] **Alta solo con correo:** añadir la cuenta (o volver a iniciar sesión)
-      y ver que pide directamente el correo, sin elegir método.
-
-## Beta 2.5.0b3 (11-10-2026) — pendiente de probar
-
-- [ ] **Fichas:** pulsar Mantenimiento, ITV y Seguro abre su ventana con los
-      datos del coche; registrar una revisión desde la ficha.
-- [ ] **Formularios nuevos:** el recuadro verde cambia según se escribe y
-      guardar deja el recuadro del coche con lo puesto.
-- [ ] En el móvil: los teléfonos del seguro abren el marcador.
-
-## Beta 2.5.0b2 (11-10-2026) — pendiente de probar
-
-- [ ] **Configurar** (en la integración) abre el panel.
-- [ ] **Apariencia:** cambiar el color o la llanta de un coche y ver que
-      cambian la foto, la vista y, con otra versión, las entidades.
-- [ ] **Ajustes:** cambiar el modo del PIN y el intervalo; un PIN equivocado
-      se rechaza sin perder lo cambiado.
-- [ ] Pendiente: quitar del código los apartados de Configurar cuando el
-      panel esté rodado.
-
-## Beta 2.5.0b1 (11-10-2026) — pendiente de probar
-
-- [ ] **Panel:** aparece "DEC Deepal" en la barra lateral y las cuatro
-      pestañas cargan con los dos coches (ordenador y app del móvil).
-- [ ] **Coches:** los engranajes abren mantenimiento, ITV y seguro y guardan.
-- [ ] **Avisos:** marcar destinos aviso a aviso, cambiar un plazo con el
-      lápiz y guardar; comprobar que Configurar → Avisos al móvil enseña lo
-      mismo por grupos.
-- [ ] **Datos:** el botón Descargar baja la copia también desde el móvil.
-- [ ] **Diagnóstico:** el historial enseña lo que va pasando.
-- [x] Traducir el panel a portugués, italiano y polaco (2.5.0b4).
+      el conector (candidato: `charge.chargeConStatus` del REST).
 
 ## 2.4.0 (11-10-2026) — publicada
 

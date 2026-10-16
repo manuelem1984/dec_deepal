@@ -3,6 +3,28 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.1b1] — 2026-10-16
+
+### Cambiado
+
+- **«Conector AC» y «Conector DC» vuelven a estar activos** y ahora salen
+  del estado de carga del coche: el AC está enchufado con la manguera AC
+  puesta (cargando o no) y el DC, con la de DC. Antes salían de unos campos
+  que el S05 manda mal (cargando decía que no había manguera, o se quedaban
+  encendidos con el cable quitado) y por eso estaban desactivados. Al
+  actualizar se activan solos, salvo que los hubieras desactivado tú a mano.
+- Con el coche diciendo «sin manguera», un valor viejo de esos campos ya no
+  puede dejar «Estado de carga» en «Conectado» ni pintar el cable en la vista
+  de carga.
+
+### Corregido
+
+- **Coches nuevos y retirados de la cuenta:** la comprobación de cada 30
+  minutos no llegaba a hacerse (solo funcionaba al arrancar Home Assistant).
+  Ahora se hace.
+- Panel → Datos: en «Datos guardados» salía «section_people» en vez de
+  «Personas», en todos los idiomas.
+
 ## [2.5.0b12] — 2026-10-15
 
 ### Cambiado

@@ -24,7 +24,6 @@ from homeassistant.exceptions import ConfigEntryError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
@@ -81,7 +80,7 @@ from .runtime import (
 )
 from .services import async_register_services
 from .vehicle_store import async_get_store, async_register_export
-from .vehicle_sync import SYNC_INTERVAL, async_sync_vehicles, delete_issues
+from .vehicle_sync import async_schedule_sync, async_sync_vehicles, delete_issues
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -111,26 +110,28 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     return True
 
 
-#: Entidades que pasan a estar desactivadas de fábrica en la versión menor 2.
-_DISABLED_IN_MINOR_2 = ("_binary_sensor_ac_connector", "_binary_sensor_dc_connector")
+#: Conectores AC y DC (ver ``async_migrate_entry``).
+_CONNECTORS = ("_binary_sensor_ac_connector", "_binary_sensor_dc_connector")
 
 
 async def async_migrate_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -> bool:
     """Pone al día una cuenta añadida con una versión anterior.
 
-    Versión menor 2 (2.5.0b7): los conectores AC y DC pasan a estar
-    desactivados. En una instalación nueva basta con crearlos así; en una que
-    ya los tenía hay que desactivarlos, y se hace una sola vez (aquí) para no
-    pisar a quien después los vuelva a activar a mano.
+    - Versión menor 2 (2.5.0b7): los conectores AC y DC se desactivaron
+      porque no eran fiables.
+    - Versión menor 3 (2.5.1b1): salen del estado de carga del coche y se
+      vuelven a activar. Solo los que desactivó la integración: si alguien los
+      desactivó a mano, se respeta. Se hace una sola vez.
     """
-    if entry.version == 1 and entry.minor_version < 2:
+    if entry.version == 1 and entry.minor_version < 3:
         registry = er.async_get(hass)
         for item in er.async_entries_for_config_entry(registry, entry.entry_id):
-            if item.unique_id.endswith(_DISABLED_IN_MINOR_2) and item.disabled_by is None:
-                registry.async_update_entity(
-                    item.entity_id, disabled_by=er.RegistryEntryDisabler.INTEGRATION
-                )
-        hass.config_entries.async_update_entry(entry, minor_version=2)
+            if (
+                item.unique_id.endswith(_CONNECTORS)
+                and item.disabled_by is er.RegistryEntryDisabler.INTEGRATION
+            ):
+                registry.async_update_entity(item.entity_id, disabled_by=None)
+        hass.config_entries.async_update_entry(entry, minor_version=3)
     return True
 
 
@@ -282,12 +283,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     entry.async_on_unload(entry.add_update_listener(_on_entry_updated))
 
     # Coches nuevos o retirados de la cuenta (avisos en Reparaciones).
-    def _sync(_now: object) -> None:
-        entry.async_create_background_task(
-            hass, async_sync_vehicles(hass, entry, client), f"{DOMAIN}_sync_vehicles"
-        )
-
-    entry.async_on_unload(async_track_time_interval(hass, _sync, SYNC_INTERVAL))
+    entry.async_on_unload(async_schedule_sync(hass, entry, client))
     return True
 
 
