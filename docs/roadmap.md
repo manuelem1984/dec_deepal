@@ -1,12 +1,13 @@
 # Hoja de ruta
 
-## Beta 2.5.1b1 (16-10-2026) — pendiente de probar
+## 2.5.1 (16-10-2026) — publicada
 
-Las betas 2.5.0b1 a b12 están probadas en una instalación real con dos S05 EV
-RWD Max (todo menos la carga). Esta beta añade los conectores AC y DC a
-partir de `ChrgSts` y corrige la comprobación de coches de la cuenta y el
-texto «Personas» de Panel → Datos. Cuando se pruebe la carga, sale la 2.5.1
-estable.
+Panel DEC Deepal (también en solo lectura para quien no es administrador),
+matrícula, personas, coches nuevos y retirados, ventana de carga, vista
+planta, vista lateral del Max sin tapacubos, tema oscuro, conectores desde
+`ChrgSts`, 12 idiomas y cuatro países nuevos. Reúne las betas 2.5.0b1 a b12 y
+la 2.5.1b1 (no hubo 2.5.0 estable). Probado en una instalación real con dos
+S05 EV RWD Max, todo menos la carga.
 
 Pendiente de comprobar:
 

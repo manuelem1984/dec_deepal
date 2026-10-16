@@ -3,6 +3,83 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.1] — 2026-10-16
+
+Versión estable. Reúne las betas `2.5.0b1` a `2.5.0b12`, probadas en una
+instalación real con dos S05 EV RWD Max, y la `2.5.1b1`. (No hubo 2.5.0
+estable: se pasó directamente a esta.)
+
+### Añadido
+
+- **Panel DEC Deepal en la barra lateral**, que sustituye a los apartados de
+  Configurar (el botón Configurar de la integración lo abre). Pestañas:
+  - **Coches:** foto, versión, equipamiento y matrícula de cada coche; fichas
+    de mantenimiento, ITV y seguro; **Apariencia** (modelo, versión, color y
+    llanta) y **Personas** (a quién pertenece cada coche; los tuyos salen
+    como «Tuyo»).
+  - **Avisos:** a quién llega cada aviso, coche a coche, y los plazos de cada
+    uno (días y kilómetros). Nuevos avisos de renovación del seguro.
+  - **Datos:** copia de seguridad (descargar, enviar al móvil, cargar) y
+    borrar los datos guardados de un coche.
+  - **Diagnóstico:** lo que ha pasado desde el último reinicio y la ficha de
+    cada coche.
+  - **Ajustes:** control remoto con PIN, intervalo de lectura, despertar el
+    coche, enlace del manual y modo depuración.
+- **Panel para todos los usuarios:** quien no es administrador ve Coches y
+  Avisos en solo lectura.
+- **Matrícula como placa europea** en Coches y Avisos, con el formato del
+  país de la cuenta.
+- **Coches nuevos y retirados de la cuenta:** aviso en Reparaciones para
+  añadirlos o quitarlos.
+- **Ventana de carga** en la tarjeta (al pulsar la franja de la batería) con
+  la **última carga**: de qué porcentaje a cuál y cuánto duró.
+- **Tarjeta «DEC Deepal · Vista planta»** (`custom:dec-deepal-top-card`).
+- **«Vista lateral» del Max sin tapacubos**, en los cinco colores.
+- **Siete idiomas nuevos** (alemán, francés, neerlandés, noruego, danés,
+  griego y esloveno): la integración está en 12 idiomas, panel incluido.
+- **Portugal, Italia, Alemania y Francia** al añadir una cuenta (el país por
+  defecto es el de Home Assistant). Aún sin probar con cuentas de esos
+  países.
+
+### Cambiado
+
+- **Fotos del coche en tema oscuro:** una luz de estudio detrás del coche en
+  la tarjeta y en el panel.
+- **Nombres de las vistas:** «Vista lateral» (antes «Imagen DEC»), «Vista
+  planta» y «Vista carga». Los identificadores (`image.…`) no cambian.
+- **El alta es solo con correo electrónico.**
+- **Climatización:** de 18 °C a 32 °C (antes desde 16 °C).
+- **Despertar el coche** más fiable: el servidor guarda la orden hasta que el
+  coche la recibe.
+- **«Conector AC» y «Conector DC» salen del estado de carga del coche** y
+  están activos: el AC con la manguera AC puesta (cargando o no), el DC con
+  la de DC. Al actualizar se activan solos, salvo que los hubieras
+  desactivado tú a mano.
+- Si el servidor de Deepal pide esperar, la integración espera antes de
+  volver a leer.
+- Preparada para Home Assistant 2026.10 y posteriores (sigue funcionando
+  desde la 2026.3).
+
+### Corregido
+
+- **Enchufar la manguera ya no cuenta como «cargando»**; «Estado de carga»,
+  los conectores y la corriente de carga (también en DC) salen del dato de
+  carga del coche, y un valor viejo ya no los deja encendidos.
+- **La comprobación de coches de la cuenta cada 30 minutos no llegaba a
+  hacerse** (solo funcionaba al arrancar Home Assistant). Ahora se hace.
+- Panel → Datos: en «Datos guardados» salía «section_people» en vez de
+  «Personas», en todos los idiomas.
+- El aviso del PIN armado sale en el idioma de Home Assistant.
+- Un valor puesto por una orden que el coche nunca confirmó ya no se queda
+  fijo.
+
+### Limitación conocida
+
+- La carga (estados AC y DC, avisos de carga y última carga) no se ha podido
+  probar todavía con esta versión.
+- Si al terminar una carga con la manguera puesta el coche dice «sin
+  manguera», se verá «Desconectado». Falta comprobar qué manda el S05.
+
 ## [2.5.1b1] — 2026-10-16
 
 ### Cambiado
