@@ -1,5 +1,10 @@
 # Hoja de ruta
 
+## Beta 2.6.0b2 (18-10-2026) — pendiente de probar
+
+- [ ] **Editor del cargador en el móvil:** todos los selectores en una línea;
+      el nombre se cambia en su campo; las entidades con su estado en palabras.
+
 ## Beta 2.6.0b1 (18-10-2026) — pendiente de probar
 
 Cargadores (ver `docs/cargadores.md`). Antes de activarlo, desactivar las

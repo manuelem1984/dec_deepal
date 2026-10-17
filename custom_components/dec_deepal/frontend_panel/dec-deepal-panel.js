@@ -153,14 +153,14 @@
       "chargers_enabled_help": "Desactivado, todo funciona como siempre y no se toca ningún cargador.",
       "chargers_control": "Quién puede desbloquear",
       "chargers_control_help": "Desde la tarjeta del cargador y las notificaciones.",
-      "control_people": "Personas de los coches y administradores",
-      "control_admins": "Solo administradores",
+      "control_people": "Personas y admins",
+      "control_admins": "Solo admins",
       "charger_none": "Todavía no hay cargadores.",
       "charger_add": "Añadir cargador",
       "charger_no_cars": "Sin coches",
       "charger_default_name": "Garaje",
       "charger_name": "Nombre del cargador",
-      "charger_edit_help": "Sirve para cualquier cargador con sus entidades en Home Assistant.",
+      "charger_name_help": "Ponle el nombre que quieras: Garaje, Trabajo, Casa de la playa…",
       "charger_deleted": "Cargador quitado.",
       "edit": "Editar",
       "st_plugged": "Enchufado",
@@ -178,6 +178,9 @@
       "role_energy": "Energía",
       "role_lock": "Bloqueo",
       "role_none": "— Ninguna —",
+      "state_yes": "Sí",
+      "state_no": "No",
+      "state_unknown": "Sin dato",
       "lock_on": "El bloqueo, encendido es…",
       "lock_on_help": "En el V2C Trydan, «Bloquear EVSE» encendido es bloqueado.",
       "lock_on_locked": "Bloqueado",
@@ -189,8 +192,8 @@
       "unlock_title": "Desbloqueo",
       "unlock_help": "La compañía (OCPP) o el cargador empiezan a cargar en cuanto queda desbloqueado.",
       "unlock_no_lock": "Sin entidad de bloqueo: solo se lee el cargador.",
-      "unlock_none": "Sin bloqueo (solo leer)",
-      "unlock_confirm": "Desbloquear al confirmar el coche",
+      "unlock_none": "Solo leer",
+      "unlock_confirm": "Al confirmar el coche",
       "ask_title": "Pedir confirmación por notificación",
       "ask_help": "Llega a quien recibe los avisos de «Cargador» de esos coches; al elegir el coche se desbloquea.",
       "remind_title": "Si nadie contesta, recordar a los",
@@ -212,7 +215,7 @@
       "price_help": "Para el coste de cada carga (opcional).",
       "price_none": "Sin precio",
       "price_fixed": "Fijo",
-      "price_entity": "De una entidad",
+      "price_entity": "Entidad",
       "error_charger_plugged": "Elige la entidad «Enchufado» del cargador.",
       "error_charger_name": "Ponle un nombre al cargador.",
       "error_charger_entity": "Esa entidad no vale para ese papel.",
@@ -531,14 +534,14 @@
       "chargers_enabled_help": "When off, everything works as usual and no charger is touched.",
       "chargers_control": "Who can unlock",
       "chargers_control_help": "From the charger card and notifications.",
-      "control_people": "Car owners and administrators",
-      "control_admins": "Administrators only",
+      "control_people": "Owners and admins",
+      "control_admins": "Admins only",
       "charger_none": "No chargers yet.",
       "charger_add": "Add charger",
       "charger_no_cars": "No cars",
       "charger_default_name": "Garage",
       "charger_name": "Charger name",
-      "charger_edit_help": "Works with any charger that has its entities in Home Assistant.",
+      "charger_name_help": "Name it however you like: Garage, Work, Beach house…",
       "charger_deleted": "Charger removed.",
       "edit": "Edit",
       "st_plugged": "Plugged in",
@@ -556,6 +559,9 @@
       "role_energy": "Energy",
       "role_lock": "Lock",
       "role_none": "— None —",
+      "state_yes": "Yes",
+      "state_no": "No",
+      "state_unknown": "No data",
       "lock_on": "The lock, when on, means…",
       "lock_on_help": "On the V2C Trydan, “Lock EVSE” on means locked.",
       "lock_on_locked": "Locked",
@@ -567,8 +573,8 @@
       "unlock_title": "Unlocking",
       "unlock_help": "The supplier (OCPP) or the charger starts charging as soon as it's unlocked.",
       "unlock_no_lock": "No lock entity: the charger is only read.",
-      "unlock_none": "No locking (read only)",
-      "unlock_confirm": "Unlock when the car is confirmed",
+      "unlock_none": "Read only",
+      "unlock_confirm": "When the car is confirmed",
       "ask_title": "Ask for confirmation by notification",
       "ask_help": "Sent to whoever gets those cars' “Charger” alerts; choosing the car unlocks it.",
       "remind_title": "If nobody answers, remind after",
@@ -590,7 +596,7 @@
       "price_help": "For the cost of each charge (optional).",
       "price_none": "No price",
       "price_fixed": "Fixed",
-      "price_entity": "From an entity",
+      "price_entity": "Entity",
       "error_charger_plugged": "Choose the charger's “Plugged in” entity.",
       "error_charger_name": "Give the charger a name.",
       "error_charger_entity": "That entity doesn't fit that role.",
@@ -909,14 +915,14 @@
       "chargers_enabled_help": "Desativado, tudo funciona como sempre e nenhum carregador é tocado.",
       "chargers_control": "Quem pode desbloquear",
       "chargers_control_help": "A partir do cartão do carregador e das notificações.",
-      "control_people": "Pessoas dos carros e administradores",
-      "control_admins": "Só administradores",
+      "control_people": "Pessoas e admins",
+      "control_admins": "Só admins",
       "charger_none": "Ainda não há carregadores.",
       "charger_add": "Adicionar carregador",
       "charger_no_cars": "Sem carros",
       "charger_default_name": "Garagem",
       "charger_name": "Nome do carregador",
-      "charger_edit_help": "Serve para qualquer carregador com entidades no Home Assistant.",
+      "charger_name_help": "Dá-lhe o nome que quiseres: Garagem, Trabalho, Casa de praia…",
       "charger_deleted": "Carregador removido.",
       "edit": "Editar",
       "st_plugged": "Ligado",
@@ -934,6 +940,9 @@
       "role_energy": "Energia",
       "role_lock": "Bloqueio",
       "role_none": "— Nenhuma —",
+      "state_yes": "Sim",
+      "state_no": "Não",
+      "state_unknown": "Sem dados",
       "lock_on": "O bloqueio, ligado é…",
       "lock_on_help": "No V2C Trydan, «Bloquear EVSE» ligado é bloqueado.",
       "lock_on_locked": "Bloqueado",
@@ -945,8 +954,8 @@
       "unlock_title": "Desbloqueio",
       "unlock_help": "A comercializadora (OCPP) ou o carregador começam a carregar assim que fica desbloqueado.",
       "unlock_no_lock": "Sem entidade de bloqueio: o carregador só é lido.",
-      "unlock_none": "Sem bloqueio (só ler)",
-      "unlock_confirm": "Desbloquear ao confirmar o carro",
+      "unlock_none": "Só ler",
+      "unlock_confirm": "Ao confirmar o carro",
       "ask_title": "Pedir confirmação por notificação",
       "ask_help": "Chega a quem recebe os avisos «Carregador» desses carros; ao escolher o carro desbloqueia.",
       "remind_title": "Se ninguém responder, lembrar aos",
@@ -968,7 +977,7 @@
       "price_help": "Para o custo de cada carga (opcional).",
       "price_none": "Sem preço",
       "price_fixed": "Fixo",
-      "price_entity": "De uma entidade",
+      "price_entity": "Entidade",
       "error_charger_plugged": "Escolhe a entidade «Ligado» do carregador.",
       "error_charger_name": "Dá um nome ao carregador.",
       "error_charger_entity": "Essa entidade não serve para esse papel.",
@@ -1287,14 +1296,14 @@
       "chargers_enabled_help": "Disattivato, tutto funziona come sempre e nessun caricatore viene toccato.",
       "chargers_control": "Chi può sbloccare",
       "chargers_control_help": "Dalla scheda del caricatore e dalle notifiche.",
-      "control_people": "Persone delle auto e amministratori",
-      "control_admins": "Solo amministratori",
+      "control_people": "Persone e admin",
+      "control_admins": "Solo admin",
       "charger_none": "Ancora nessun caricatore.",
       "charger_add": "Aggiungi caricatore",
       "charger_no_cars": "Nessuna auto",
       "charger_default_name": "Garage",
       "charger_name": "Nome del caricatore",
-      "charger_edit_help": "Funziona con qualsiasi caricatore con entità in Home Assistant.",
+      "charger_name_help": "Chiamalo come vuoi: Garage, Lavoro, Casa al mare…",
       "charger_deleted": "Caricatore rimosso.",
       "edit": "Modifica",
       "st_plugged": "Collegato",
@@ -1312,6 +1321,9 @@
       "role_energy": "Energia",
       "role_lock": "Blocco",
       "role_none": "— Nessuna —",
+      "state_yes": "Sì",
+      "state_no": "No",
+      "state_unknown": "Nessun dato",
       "lock_on": "Il blocco, acceso significa…",
       "lock_on_help": "Nel V2C Trydan, «Blocca EVSE» acceso significa bloccato.",
       "lock_on_locked": "Bloccato",
@@ -1323,8 +1335,8 @@
       "unlock_title": "Sblocco",
       "unlock_help": "Il fornitore (OCPP) o il caricatore iniziano a caricare appena è sbloccato.",
       "unlock_no_lock": "Senza entità di blocco: il caricatore viene solo letto.",
-      "unlock_none": "Senza blocco (solo lettura)",
-      "unlock_confirm": "Sblocca quando l'auto è confermata",
+      "unlock_none": "Solo lettura",
+      "unlock_confirm": "Alla conferma dell'auto",
       "ask_title": "Chiedi conferma con una notifica",
       "ask_help": "Arriva a chi riceve gli avvisi «Caricatore» di quelle auto; scegliendo l'auto si sblocca.",
       "remind_title": "Se nessuno risponde, ricorda dopo",
@@ -1346,7 +1358,7 @@
       "price_help": "Per il costo di ogni ricarica (facoltativo).",
       "price_none": "Nessun prezzo",
       "price_fixed": "Fisso",
-      "price_entity": "Da un'entità",
+      "price_entity": "Entità",
       "error_charger_plugged": "Scegli l'entità «Collegato» del caricatore.",
       "error_charger_name": "Dai un nome al caricatore.",
       "error_charger_entity": "Quell'entità non va bene per quel ruolo.",
@@ -1665,14 +1677,14 @@
       "chargers_enabled_help": "Wyłączone: wszystko działa jak zwykle, a żadna ładowarka nie jest używana.",
       "chargers_control": "Kto może odblokować",
       "chargers_control_help": "Z karty ładowarki i powiadomień.",
-      "control_people": "Właściciele samochodów i administratorzy",
-      "control_admins": "Tylko administratorzy",
+      "control_people": "Osoby i admini",
+      "control_admins": "Tylko admini",
       "charger_none": "Brak ładowarek.",
       "charger_add": "Dodaj ładowarkę",
       "charger_no_cars": "Brak samochodów",
       "charger_default_name": "Garaż",
       "charger_name": "Nazwa ładowarki",
-      "charger_edit_help": "Działa z każdą ładowarką, która ma encje w Home Assistant.",
+      "charger_name_help": "Nazwij ją, jak chcesz: Garaż, Praca, Dom letni…",
       "charger_deleted": "Ładowarka usunięta.",
       "edit": "Edytuj",
       "st_plugged": "Podłączony",
@@ -1690,6 +1702,9 @@
       "role_energy": "Energia",
       "role_lock": "Blokada",
       "role_none": "— Brak —",
+      "state_yes": "Tak",
+      "state_no": "Nie",
+      "state_unknown": "Brak danych",
       "lock_on": "Blokada włączona oznacza…",
       "lock_on_help": "W V2C Trydan włączone „Zablokuj EVSE” oznacza zablokowaną.",
       "lock_on_locked": "Zablokowana",
@@ -1701,8 +1716,8 @@
       "unlock_title": "Odblokowanie",
       "unlock_help": "Dostawca (OCPP) lub ładowarka zaczyna ładować, gdy tylko zostanie odblokowana.",
       "unlock_no_lock": "Brak encji blokady: ładowarka jest tylko odczytywana.",
-      "unlock_none": "Bez blokady (tylko odczyt)",
-      "unlock_confirm": "Odblokuj po potwierdzeniu samochodu",
+      "unlock_none": "Tylko odczyt",
+      "unlock_confirm": "Po potwierdzeniu auta",
       "ask_title": "Pytaj o potwierdzenie powiadomieniem",
       "ask_help": "Trafia do odbiorców alertów „Ładowarka” tych samochodów; wybór samochodu odblokowuje.",
       "remind_title": "Jeśli nikt nie odpowie, przypomnij po",
@@ -1724,7 +1739,7 @@
       "price_help": "Do kosztu każdego ładowania (opcjonalnie).",
       "price_none": "Bez ceny",
       "price_fixed": "Stała",
-      "price_entity": "Z encji",
+      "price_entity": "Encja",
       "error_charger_plugged": "Wybierz encję „Podłączony” ładowarki.",
       "error_charger_name": "Nadaj ładowarce nazwę.",
       "error_charger_entity": "Ta encja nie pasuje do tej roli.",
@@ -2043,14 +2058,14 @@
       "chargers_enabled_help": "Ausgeschaltet funktioniert alles wie immer und keine Ladestation wird angesteuert.",
       "chargers_control": "Wer entsperren darf",
       "chargers_control_help": "Über die Ladestations-Karte und Benachrichtigungen.",
-      "control_people": "Personen der Autos und Administratoren",
-      "control_admins": "Nur Administratoren",
+      "control_people": "Personen und Admins",
+      "control_admins": "Nur Admins",
       "charger_none": "Noch keine Ladestationen.",
       "charger_add": "Ladestation hinzufügen",
       "charger_no_cars": "Keine Autos",
       "charger_default_name": "Garage",
       "charger_name": "Name der Ladestation",
-      "charger_edit_help": "Funktioniert mit jeder Ladestation mit Entitäten in Home Assistant.",
+      "charger_name_help": "Nenne sie, wie du willst: Garage, Arbeit, Ferienhaus…",
       "charger_deleted": "Ladestation entfernt.",
       "edit": "Bearbeiten",
       "st_plugged": "Eingesteckt",
@@ -2068,6 +2083,9 @@
       "role_energy": "Energie",
       "role_lock": "Sperre",
       "role_none": "— Keine —",
+      "state_yes": "Ja",
+      "state_no": "Nein",
+      "state_unknown": "Keine Daten",
       "lock_on": "Die Sperre bedeutet eingeschaltet…",
       "lock_on_help": "Beim V2C Trydan bedeutet „EVSE sperren“ eingeschaltet gesperrt.",
       "lock_on_locked": "Gesperrt",
@@ -2079,8 +2097,8 @@
       "unlock_title": "Entsperren",
       "unlock_help": "Der Anbieter (OCPP) oder die Ladestation beginnt zu laden, sobald entsperrt ist.",
       "unlock_no_lock": "Ohne Sperr-Entität wird die Ladestation nur gelesen.",
-      "unlock_none": "Ohne Sperre (nur lesen)",
-      "unlock_confirm": "Entsperren, wenn das Auto bestätigt ist",
+      "unlock_none": "Nur lesen",
+      "unlock_confirm": "Nach Autobestätigung",
       "ask_title": "Per Benachrichtigung bestätigen lassen",
       "ask_help": "Geht an die Empfänger der „Ladestation“-Hinweise dieser Autos; die Auswahl entsperrt.",
       "remind_title": "Wenn niemand antwortet, erinnern nach",
@@ -2102,7 +2120,7 @@
       "price_help": "Für die Kosten jeder Ladung (optional).",
       "price_none": "Kein Preis",
       "price_fixed": "Fest",
-      "price_entity": "Aus einer Entität",
+      "price_entity": "Entität",
       "error_charger_plugged": "Wähle die Entität „Eingesteckt“ der Ladestation.",
       "error_charger_name": "Gib der Ladestation einen Namen.",
       "error_charger_entity": "Diese Entität passt nicht zu dieser Rolle.",
@@ -2421,14 +2439,14 @@
       "chargers_enabled_help": "Désactivé, tout fonctionne comme d'habitude et aucune borne n'est touchée.",
       "chargers_control": "Qui peut déverrouiller",
       "chargers_control_help": "Depuis la carte de la borne et les notifications.",
-      "control_people": "Personnes des voitures et administrateurs",
-      "control_admins": "Administrateurs seulement",
+      "control_people": "Personnes et admins",
+      "control_admins": "Admins seuls",
       "charger_none": "Aucune borne pour l'instant.",
       "charger_add": "Ajouter une borne",
       "charger_no_cars": "Aucune voiture",
       "charger_default_name": "Garage",
       "charger_name": "Nom de la borne",
-      "charger_edit_help": "Fonctionne avec toute borne ayant ses entités dans Home Assistant.",
+      "charger_name_help": "Nommez-la comme vous voulez : Garage, Travail, Maison de vacances…",
       "charger_deleted": "Borne supprimée.",
       "edit": "Modifier",
       "st_plugged": "Branché",
@@ -2446,6 +2464,9 @@
       "role_energy": "Énergie",
       "role_lock": "Verrouillage",
       "role_none": "— Aucune —",
+      "state_yes": "Oui",
+      "state_no": "Non",
+      "state_unknown": "Pas de donnée",
       "lock_on": "Le verrouillage, activé signifie…",
       "lock_on_help": "Sur le V2C Trydan, « Verrouiller EVSE » activé signifie verrouillée.",
       "lock_on_locked": "Verrouillée",
@@ -2457,8 +2478,8 @@
       "unlock_title": "Déverrouillage",
       "unlock_help": "Le fournisseur (OCPP) ou la borne commence à charger dès qu'elle est déverrouillée.",
       "unlock_no_lock": "Sans entité de verrouillage : la borne est seulement lue.",
-      "unlock_none": "Sans verrouillage (lecture seule)",
-      "unlock_confirm": "Déverrouiller quand la voiture est confirmée",
+      "unlock_none": "Lecture seule",
+      "unlock_confirm": "À la confirmation",
       "ask_title": "Demander une confirmation par notification",
       "ask_help": "Envoyée à qui reçoit les alertes « Borne » de ces voitures ; choisir la voiture déverrouille.",
       "remind_title": "Si personne ne répond, rappeler après",
@@ -2480,7 +2501,7 @@
       "price_help": "Pour le coût de chaque charge (facultatif).",
       "price_none": "Sans prix",
       "price_fixed": "Fixe",
-      "price_entity": "D'une entité",
+      "price_entity": "Entité",
       "error_charger_plugged": "Choisissez l'entité « Branché » de la borne.",
       "error_charger_name": "Donnez un nom à la borne.",
       "error_charger_entity": "Cette entité ne convient pas à ce rôle.",
@@ -2799,14 +2820,14 @@
       "chargers_enabled_help": "Uit werkt alles zoals altijd en wordt geen lader aangestuurd.",
       "chargers_control": "Wie mag ontgrendelen",
       "chargers_control_help": "Vanaf de laderkaart en meldingen.",
-      "control_people": "Personen van de auto's en beheerders",
+      "control_people": "Personen en beheerders",
       "control_admins": "Alleen beheerders",
       "charger_none": "Nog geen laders.",
       "charger_add": "Lader toevoegen",
       "charger_no_cars": "Geen auto's",
       "charger_default_name": "Garage",
       "charger_name": "Naam van de lader",
-      "charger_edit_help": "Werkt met elke lader met entiteiten in Home Assistant.",
+      "charger_name_help": "Geef hem een naam: Garage, Werk, Strandhuis…",
       "charger_deleted": "Lader verwijderd.",
       "edit": "Bewerken",
       "st_plugged": "Aangesloten",
@@ -2824,6 +2845,9 @@
       "role_energy": "Energie",
       "role_lock": "Vergrendeling",
       "role_none": "— Geen —",
+      "state_yes": "Ja",
+      "state_no": "Nee",
+      "state_unknown": "Geen gegevens",
       "lock_on": "De vergrendeling, aan betekent…",
       "lock_on_help": "Bij de V2C Trydan betekent ‘EVSE vergrendelen’ aan vergrendeld.",
       "lock_on_locked": "Vergrendeld",
@@ -2835,8 +2859,8 @@
       "unlock_title": "Ontgrendelen",
       "unlock_help": "De leverancier (OCPP) of de lader begint te laden zodra hij ontgrendeld is.",
       "unlock_no_lock": "Zonder vergrendelingsentiteit wordt de lader alleen gelezen.",
-      "unlock_none": "Zonder vergrendeling (alleen lezen)",
-      "unlock_confirm": "Ontgrendelen als de auto bevestigd is",
+      "unlock_none": "Alleen lezen",
+      "unlock_confirm": "Na bevestiging auto",
       "ask_title": "Bevestiging vragen via melding",
       "ask_help": "Gaat naar wie de ‘Lader’-meldingen van die auto's krijgt; de auto kiezen ontgrendelt.",
       "remind_title": "Als niemand antwoordt, herinneren na",
@@ -2858,7 +2882,7 @@
       "price_help": "Voor de kosten van elke laadbeurt (optioneel).",
       "price_none": "Geen prijs",
       "price_fixed": "Vast",
-      "price_entity": "Uit een entiteit",
+      "price_entity": "Entiteit",
       "error_charger_plugged": "Kies de entiteit ‘Aangesloten’ van de lader.",
       "error_charger_name": "Geef de lader een naam.",
       "error_charger_entity": "Die entiteit past niet bij die rol.",
@@ -3177,14 +3201,14 @@
       "chargers_enabled_help": "Når av, fungerer alt som vanlig og ingen lader berøres.",
       "chargers_control": "Hvem kan låse opp",
       "chargers_control_help": "Fra laderkortet og varslene.",
-      "control_people": "Bilenes personer og administratorer",
-      "control_admins": "Bare administratorer",
+      "control_people": "Personer og admin",
+      "control_admins": "Bare admin",
       "charger_none": "Ingen ladere ennå.",
       "charger_add": "Legg til lader",
       "charger_no_cars": "Ingen biler",
       "charger_default_name": "Garasje",
       "charger_name": "Ladernavn",
-      "charger_edit_help": "Fungerer med alle ladere som har enheter i Home Assistant.",
+      "charger_name_help": "Gi den et navn: Garasje, Jobb, Hytta…",
       "charger_deleted": "Lader fjernet.",
       "edit": "Rediger",
       "st_plugged": "Tilkoblet",
@@ -3202,6 +3226,9 @@
       "role_energy": "Energi",
       "role_lock": "Lås",
       "role_none": "— Ingen —",
+      "state_yes": "Ja",
+      "state_no": "Nei",
+      "state_unknown": "Ingen data",
       "lock_on": "Låsen, på betyr…",
       "lock_on_help": "På V2C Trydan betyr «Lås EVSE» på at den er låst.",
       "lock_on_locked": "Låst",
@@ -3213,8 +3240,8 @@
       "unlock_title": "Opplåsing",
       "unlock_help": "Leverandøren (OCPP) eller laderen starter ladingen så snart den er låst opp.",
       "unlock_no_lock": "Uten låseenhet leses laderen bare.",
-      "unlock_none": "Uten lås (bare lese)",
-      "unlock_confirm": "Lås opp når bilen er bekreftet",
+      "unlock_none": "Bare lese",
+      "unlock_confirm": "Når bilen bekreftes",
       "ask_title": "Be om bekreftelse med varsel",
       "ask_help": "Går til dem som får «Lader»-varsler for bilene; å velge bilen låser opp.",
       "remind_title": "Hvis ingen svarer, påminn etter",
@@ -3236,7 +3263,7 @@
       "price_help": "For kostnaden ved hver lading (valgfritt).",
       "price_none": "Ingen pris",
       "price_fixed": "Fast",
-      "price_entity": "Fra en enhet",
+      "price_entity": "Enhet",
       "error_charger_plugged": "Velg laderens «Tilkoblet»-enhet.",
       "error_charger_name": "Gi laderen et navn.",
       "error_charger_entity": "Den enheten passer ikke til den rollen.",
@@ -3555,14 +3582,14 @@
       "chargers_enabled_help": "Slået fra fungerer alt som altid, og ingen lader røres.",
       "chargers_control": "Hvem kan låse op",
       "chargers_control_help": "Fra laderkortet og notifikationerne.",
-      "control_people": "Bilernes personer og administratorer",
-      "control_admins": "Kun administratorer",
+      "control_people": "Personer og admin",
+      "control_admins": "Kun admin",
       "charger_none": "Ingen ladere endnu.",
       "charger_add": "Tilføj lader",
       "charger_no_cars": "Ingen biler",
       "charger_default_name": "Garage",
       "charger_name": "Ladernavn",
-      "charger_edit_help": "Virker med alle ladere med entiteter i Home Assistant.",
+      "charger_name_help": "Giv den et navn: Garage, Arbejde, Sommerhus…",
       "charger_deleted": "Lader fjernet.",
       "edit": "Rediger",
       "st_plugged": "Tilsluttet",
@@ -3580,6 +3607,9 @@
       "role_energy": "Energi",
       "role_lock": "Lås",
       "role_none": "— Ingen —",
+      "state_yes": "Ja",
+      "state_no": "Nej",
+      "state_unknown": "Ingen data",
       "lock_on": "Låsen, tændt betyder…",
       "lock_on_help": "På V2C Trydan betyder »Lås EVSE« tændt låst.",
       "lock_on_locked": "Låst",
@@ -3591,8 +3621,8 @@
       "unlock_title": "Oplåsning",
       "unlock_help": "Leverandøren (OCPP) eller laderen starter opladningen, så snart den er låst op.",
       "unlock_no_lock": "Uden låseentitet læses laderen kun.",
-      "unlock_none": "Uden lås (kun læse)",
-      "unlock_confirm": "Lås op, når bilen er bekræftet",
+      "unlock_none": "Kun læse",
+      "unlock_confirm": "Når bilen bekræftes",
       "ask_title": "Bed om bekræftelse med notifikation",
       "ask_help": "Går til dem, der får »Lader«-advarsler for bilerne; valg af bil låser op.",
       "remind_title": "Hvis ingen svarer, påmind efter",
@@ -3614,7 +3644,7 @@
       "price_help": "Til prisen for hver opladning (valgfrit).",
       "price_none": "Ingen pris",
       "price_fixed": "Fast",
-      "price_entity": "Fra en entitet",
+      "price_entity": "Entitet",
       "error_charger_plugged": "Vælg laderens »Tilsluttet«-entitet.",
       "error_charger_name": "Giv laderen et navn.",
       "error_charger_entity": "Den entitet passer ikke til den rolle.",
@@ -3933,14 +3963,14 @@
       "chargers_enabled_help": "Απενεργοποιημένο, όλα λειτουργούν όπως πάντα και κανένας φορτιστής δεν αγγίζεται.",
       "chargers_control": "Ποιος μπορεί να ξεκλειδώσει",
       "chargers_control_help": "Από την κάρτα του φορτιστή και τις ειδοποιήσεις.",
-      "control_people": "Άτομα των αυτοκινήτων και διαχειριστές",
-      "control_admins": "Μόνο διαχειριστές",
+      "control_people": "Άτομα και διαχ.",
+      "control_admins": "Μόνο διαχ.",
       "charger_none": "Δεν υπάρχουν ακόμη φορτιστές.",
       "charger_add": "Προσθήκη φορτιστή",
       "charger_no_cars": "Χωρίς αυτοκίνητα",
       "charger_default_name": "Γκαράζ",
       "charger_name": "Όνομα φορτιστή",
-      "charger_edit_help": "Λειτουργεί με κάθε φορτιστή με οντότητες στο Home Assistant.",
+      "charger_name_help": "Δώστε όποιο όνομα θέλετε: Γκαράζ, Δουλειά, Εξοχικό…",
       "charger_deleted": "Ο φορτιστής αφαιρέθηκε.",
       "edit": "Επεξεργασία",
       "st_plugged": "Συνδεδεμένο",
@@ -3958,6 +3988,9 @@
       "role_energy": "Ενέργεια",
       "role_lock": "Κλείδωμα",
       "role_none": "— Καμία —",
+      "state_yes": "Ναι",
+      "state_no": "Όχι",
+      "state_unknown": "Χωρίς δεδομένα",
       "lock_on": "Το κλείδωμα, ενεργό σημαίνει…",
       "lock_on_help": "Στο V2C Trydan, το «Κλείδωμα EVSE» ενεργό σημαίνει κλειδωμένο.",
       "lock_on_locked": "Κλειδωμένο",
@@ -3969,8 +4002,8 @@
       "unlock_title": "Ξεκλείδωμα",
       "unlock_help": "Ο πάροχος (OCPP) ή ο φορτιστής ξεκινά τη φόρτιση μόλις ξεκλειδωθεί.",
       "unlock_no_lock": "Χωρίς οντότητα κλειδώματος: ο φορτιστής μόνο διαβάζεται.",
-      "unlock_none": "Χωρίς κλείδωμα (μόνο ανάγνωση)",
-      "unlock_confirm": "Ξεκλείδωμα όταν επιβεβαιωθεί το αυτοκίνητο",
+      "unlock_none": "Μόνο ανάγνωση",
+      "unlock_confirm": "Με επιβεβαίωση",
       "ask_title": "Ζήτηση επιβεβαίωσης με ειδοποίηση",
       "ask_help": "Πηγαίνει σε όσους λαμβάνουν τις ειδοποιήσεις «Φορτιστής»· η επιλογή ξεκλειδώνει.",
       "remind_title": "Αν δεν απαντήσει κανείς, υπενθύμιση μετά από",
@@ -3992,7 +4025,7 @@
       "price_help": "Για το κόστος κάθε φόρτισης (προαιρετικό).",
       "price_none": "Χωρίς τιμή",
       "price_fixed": "Σταθερή",
-      "price_entity": "Από οντότητα",
+      "price_entity": "Οντότητα",
       "error_charger_plugged": "Επιλέξτε την οντότητα «Συνδεδεμένο» του φορτιστή.",
       "error_charger_name": "Δώστε όνομα στον φορτιστή.",
       "error_charger_entity": "Αυτή η οντότητα δεν ταιριάζει σε αυτόν τον ρόλο.",
@@ -4311,14 +4344,14 @@
       "chargers_enabled_help": "Izklopljeno: vse deluje kot običajno in nobena polnilnica se ne spreminja.",
       "chargers_control": "Kdo lahko odklene",
       "chargers_control_help": "Prek kartice polnilnice in obvestil.",
-      "control_people": "Osebe avtov in skrbniki",
+      "control_people": "Osebe in skrbniki",
       "control_admins": "Samo skrbniki",
       "charger_none": "Še ni polnilnic.",
       "charger_add": "Dodaj polnilnico",
       "charger_no_cars": "Brez avtov",
       "charger_default_name": "Garaža",
       "charger_name": "Ime polnilnice",
-      "charger_edit_help": "Deluje s katero koli polnilnico z entitetami v Home Assistantu.",
+      "charger_name_help": "Poimenujte jo po želji: Garaža, Služba, Vikend…",
       "charger_deleted": "Polnilnica odstranjena.",
       "edit": "Uredi",
       "st_plugged": "Priklopljen",
@@ -4336,6 +4369,9 @@
       "role_energy": "Energija",
       "role_lock": "Zaklep",
       "role_none": "— Nobena —",
+      "state_yes": "Da",
+      "state_no": "Ne",
+      "state_unknown": "Ni podatka",
       "lock_on": "Zaklep, vklopljen pomeni…",
       "lock_on_help": "Pri V2C Trydan vklopljen »Zakleni EVSE« pomeni zaklenjeno.",
       "lock_on_locked": "Zaklenjena",
@@ -4347,8 +4383,8 @@
       "unlock_title": "Odklepanje",
       "unlock_help": "Dobavitelj (OCPP) ali polnilnica začne polniti, takoj ko je odklenjena.",
       "unlock_no_lock": "Brez entitete zaklepa: polnilnica se le bere.",
-      "unlock_none": "Brez zaklepa (samo branje)",
-      "unlock_confirm": "Odkleni, ko je avto potrjen",
+      "unlock_none": "Samo branje",
+      "unlock_confirm": "Ob potrditvi avta",
       "ask_title": "Zahtevaj potrditev z obvestilom",
       "ask_help": "Prejmejo jo prejemniki opozoril »Polnilnica« teh avtov; izbira avta odklene.",
       "remind_title": "Če nihče ne odgovori, opomni po",
@@ -4370,7 +4406,7 @@
       "price_help": "Za strošek vsakega polnjenja (neobvezno).",
       "price_none": "Brez cene",
       "price_fixed": "Fiksna",
-      "price_entity": "Iz entitete",
+      "price_entity": "Entiteta",
       "error_charger_plugged": "Izberite entiteto »Priklopljen« polnilnice.",
       "error_charger_name": "Polnilnici dajte ime.",
       "error_charger_entity": "Ta entiteta ne ustreza tej vlogi.",
@@ -4838,6 +4874,9 @@
     .row .ic { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color);
       display: flex; align-items: center; justify-content: center; flex: none; }
     .row .ic.grey { background: ${SOFT}; color: var(--secondary-text-color); }
+    .under { padding: 0 20px 14px; }
+    .seg.wide { display: flex; flex-wrap: nowrap; } .seg.wide button { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 8px 5px; font-size: 12.5px; }
+    .seg.wide button.on::before { content: "✓ "; }
     .chg-chips { margin-top: 6px; } .chg-chips .chip { margin: 0 6px 4px 0; font-size: 12px; padding: 3px 10px; --mdc-icon-size: 16px; }
     .row .tx { flex: 1; min-width: 180px; } .row .tx small { display: block; color: var(--secondary-text-color); font-size: 13px; }
     select { font: inherit; color: inherit; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--divider-color, #e0e0e0);
@@ -4992,12 +5031,22 @@
     /* Ventana de un cargador */
     .fsec h4 .num { width: 18px; height: 18px; border-radius: 50%; background: var(--primary-color); color: var(--text-primary-color, #fff); font-size: 11px;
       display: inline-flex; align-items: center; justify-content: center; }
-    input.cname { font-size: 20px; padding: 4px 8px; margin: 0; }
+    label.cname { flex: 1; margin: 0; } label.cname > span:first-child { font-size: 12px; color: var(--primary-color); }
+    label.cname .cn { display: flex; align-items: center; gap: 6px; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 8px; padding: 0 10px 0 0; margin-top: 4px;
+      color: var(--secondary-text-color); --mdc-icon-size: 18px; }
+    label.cname input { border: 0; margin: 0; font-size: 18px; padding: 8px 10px; background: transparent; }
+    .cname-help { margin: -4px 0 4px 56px; }
+    small.eid { display: block; font-size: 11px; color: var(--secondary-text-color); margin-top: 3px; word-break: break-all; }
+    .cstack { margin: 12px 0; } .cstack b { display: block; font-weight: 400; font-size: 14px; color: var(--primary-text-color); }
+    .cstack small { display: block; font-size: 12px; color: var(--secondary-text-color); margin: 2px 0 8px; }
+    .cstack > .seg { margin-top: 6px; }
+    .fi.wide { margin-top: 8px; }
     label.ent { margin: 8px 0 0; } label.ent > span { display: flex; justify-content: space-between; gap: 8px; }
     label.ent em { font-style: normal; color: var(--success-color, #43a047); }
     .cline { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 10px 0; }
     .cline b { font-weight: 400; color: var(--primary-text-color); font-size: 14px; } .cline small { display: block; font-size: 12px; color: var(--secondary-text-color); }
-    .seg.wide { display: flex; } .seg.wide button { flex: 1; }
+    .seg.wide { display: flex; flex-wrap: nowrap; } .seg.wide button { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 8px 5px; font-size: 12.5px; }
+    .seg.wide button.on::before { content: "✓ "; }
     .carpicks { display: flex; gap: 10px; flex-wrap: wrap; }
     .carpick { flex: 1; min-width: 120px; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 6px; text-align: center; font-size: 13px; }
     .carpick img { width: 100%; height: 56px; object-fit: contain; display: block; }
@@ -6542,8 +6591,9 @@
       const config = this._state.chargers;
       if (!config) return "";
       const toggle = `<button class="tog ${config.enabled ? "on" : ""}" data-action="chargers-enabled" role="switch" aria-checked="${config.enabled}"></button>`;
-      const control = `<span class="seg">${["people", "admins"].map((value) =>
-        `<button class="${config.control === value ? "on" : ""}" data-action="chargers-control" data-value="${value}">${this._t(`control_${value}`)}</button>`).join("")}</span>`;
+      // En el móvil no cabe a la derecha: el selector va debajo, a todo lo ancho.
+      const control = `<div class="under"><span class="seg wide">${["people", "admins"].map((value) =>
+        `<button class="${config.control === value ? "on" : ""}" data-action="chargers-control" data-value="${value}">${this._t(`control_${value}`)}</button>`).join("")}</span></div>`;
       const row = (icon, title, help, right) => `<div class="row"><div class="ic"><ha-icon icon="${icon}"></ha-icon></div>
         <div class="tx">${this._t(title)}<small>${this._t(help)}</small></div>${right}</div>`;
       const list = config.chargers.map((charger) => this._chargerRow(charger)).join("") ||
@@ -6551,7 +6601,7 @@
       return `<div class="card" data-chargers>
           <h2>${this._t("chargers_title")}</h2><div class="sub">${this._t("chargers_help")}</div>
           ${row("mdi:ev-station", "chargers_enabled", "chargers_enabled_help", toggle)}
-          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", control)}${list}
+          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", "")}${control}${list}
           <div class="foot"><span></span><button class="btn" data-action="charger-edit" data-id=""><ha-icon icon="mdi:plus"></ha-icon>${this._t("charger_add")}</button></div>` : ""}
         </div>`;
     }
@@ -6592,11 +6642,21 @@
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    _entityState(entityId) {
+    /** Estado de la entidad de un papel, en palabras: "Sí", "Desbloqueado", "3,9 kW"... */
+    _entityState(role, entityId, lockOnLocked) {
       const state = entityId && this._hass.states[entityId];
-      if (!state) return "";
-      const unit = state.attributes.unit_of_measurement;
-      return `${state.state}${unit ? ` ${unit}` : ""}`;
+      if (!state || ["unknown", "unavailable"].includes(state.state)) return state ? this._t("state_unknown") : "";
+      if (role === "power" || role === "energy") {
+        const number = Number(state.state);
+        const unit = state.attributes.unit_of_measurement || "";
+        return Number.isFinite(number) ? `${number.toLocaleString(this._language(), { maximumFractionDigits: 2 })} ${unit}`.trim() : state.state;
+      }
+      const on = ["on", "true", "locked", "plugged", "connected", "charging"].includes(state.state) || Number(state.state) > 0;
+      if (role === "lock") {
+        const locked = state.entity_id.startsWith("lock.") ? state.state === "locked" : on === lockOnLocked;
+        return this._t(locked ? "st_locked" : "st_unlocked");
+      }
+      return this._t(on ? "state_yes" : "state_no");
     }
 
     _do_charger_edit(data) {
@@ -6614,13 +6674,19 @@
       };
       const tog = (name) => `<button class="tog ${f[name] ? "on" : ""}" data-action="set" data-f="${name}" data-v="${!f[name]}" role="switch" aria-checked="${Boolean(f[name])}"></button>`;
       const line = (title, help, control) => `<div class="cline"><div><b>${this._t(title)}</b>${help ? `<small>${this._t(help)}</small>` : ""}</div>${control}</div>`;
+      // Selector debajo del texto, a todo lo ancho y en una línea (en el móvil no cabe al lado).
+      const stack = (title, help, control) =>
+        `<div class="cstack">${title ? `<b>${this._t(title)}</b>` : ""}${help ? `<small>${this._t(help)}</small>` : ""}${control}</div>`;
+      const choices = (...options) => `<span class="seg wide">${options.join("")}</span>`;
       const section = (number, title, help, content) =>
         `<div class="fsec"><h4><span class="num">${number}</span>${this._t(title)}</h4>${help ? `<div class="hp">${this._t(help)}</div>` : ""}${content}</div>`;
       const select = (role) => {
         const options = this._roleEntities(role).map((item) =>
-          `<option value="${escapeHtml(item.id)}" ${item.id === f.entities[role] ? "selected" : ""}>${escapeHtml(item.name)} (${escapeHtml(item.id)})</option>`).join("");
-        return `<label class="ent"><span>${this._t(`role_${role}`)}${role === "plugged" ? " *" : ""}<em>${escapeHtml(this._entityState(f.entities[role]))}</em></span>
-          <select data-role="${role}"><option value="">${this._t("role_none")}</option>${options}</select></label>`;
+          `<option value="${escapeHtml(item.id)}" ${item.id === f.entities[role] ? "selected" : ""}>${escapeHtml(item.name)}</option>`).join("");
+        // El nombre en la lista y el identificador debajo, en pequeño (en el móvil no cabe todo).
+        return `<label class="ent"><span>${this._t(`role_${role}`)}${role === "plugged" ? " *" : ""}<em>${escapeHtml(this._entityState(role, f.entities[role], f.lock_on_locked))}</em></span>
+          <select data-role="${role}"><option value="">${this._t("role_none")}</option>${options}</select>
+          ${f.entities[role] ? `<small class="eid">${escapeHtml(f.entities[role])}</small>` : ""}</label>`;
       };
       const measured = () => {
         const value = saved && saved.measured;
@@ -6638,23 +6704,25 @@
         const confirm = f.unlock === "confirm";
         return `
           <div class="thead"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
-            <h2><input class="cname" data-name value="${escapeHtml(f.name)}" maxlength="40" aria-label="${this._t("charger_name")}"><small>${this._t("charger_edit_help")}</small></h2></div>
+            <label class="cname"><span>${this._t("charger_name")}</span>
+              <span class="cn"><input data-name value="${escapeHtml(f.name)}" maxlength="40"><ha-icon icon="mdi:pencil"></ha-icon></span></label></div>
+          <div class="hp cname-help">${this._t("charger_name_help")}</div>
           ${section(1, "entities_title", "entities_help", ["plugged", "charging", "power", "energy", "lock"].map(select).join(""))}
-          ${f.entities.lock && lockDomain !== "lock" ? line("lock_on", "lock_on_help", `<span class="seg">${opt("lock_on_locked", true, this._t("lock_on_locked"))}${opt("lock_on_locked", false, this._t("lock_on_unlocked"))}</span>`) : ""}
+          ${f.entities.lock && lockDomain !== "lock" ? stack("lock_on", "lock_on_help", choices(opt("lock_on_locked", true, this._t("lock_on_locked")), opt("lock_on_locked", false, this._t("lock_on_unlocked")))) : ""}
           ${section(2, "cars_title", "cars_help", `<div class="carpicks">${cars}</div>`)}
           ${section(3, "coverage_title", "coverage_help", `<span class="seg wide">${["yes", "no", "unknown"].map((value) => opt("coverage", value, this._t(`coverage_${value}`))).join("")}</span>`)}
           ${section(4, "unlock_title", f.entities.lock ? "unlock_help" : "unlock_no_lock", f.entities.lock ? `<span class="seg wide">${opt("unlock", "none", this._t("unlock_none"))}${opt("unlock", "confirm", this._t("unlock_confirm"))}</span>
             ${confirm ? line("ask_title", "ask_help", tog("notify_confirm")) : ""}
-            ${confirm && f.notify_confirm ? line("remind_title", "remind_help", `<span class="seg">${this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)).join("")}</span>`) : ""}` : "")}
+            ${confirm && f.notify_confirm ? stack("remind_title", "remind_help", choices(...this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)))) : ""}` : "")}
           ${f.entities.lock ? section(5, "relock_title", "", `${line("relock_on", "relock_help", tog("relock"))}
-            ${f.relock ? line("relock_after", "", `<span class="seg">${this._state.chargers.relock_choices.map((value) => opt("relock_minutes", value, `${value} min`)).join("")}</span>`) : ""}
+            ${f.relock ? stack("relock_after", "", choices(...this._state.chargers.relock_choices.map((value) => opt("relock_minutes", value, `${value} min`)))) : ""}
             ${f.relock ? line("relock_notify", "relock_notify_help", tog("relock_notify")) : ""}`) : ""}
           ${section(f.entities.lock ? 6 : 5, "loss_title", "loss_help", `
             ${line("loss_value", "", `<span class="fi small"><input type="number" min="0" max="40" step="0.1" data-num="loss" value="${escapeHtml(f.loss)}"><em>%</em></span>`)}
             ${line("learn_title", "learn_help", tog("learn"))}
             ${measured()}
-            ${line("price_title", "price_help", `<span class="seg">${opt("price_mode", "none", this._t("price_none"))}${opt("price_mode", "fixed", this._t("price_fixed"))}${opt("price_mode", "entity", this._t("price_entity"))}</span>`)}
-            ${f.price_mode === "fixed" ? `<span class="fi small"><input type="number" min="0" step="0.001" data-num="price" value="${escapeHtml(f.price == null ? "" : f.price)}"><em>€/kWh</em></span>` : ""}
+            ${stack("price_title", "price_help", choices(opt("price_mode", "none", this._t("price_none")), opt("price_mode", "fixed", this._t("price_fixed")), opt("price_mode", "entity", this._t("price_entity"))))}
+            ${f.price_mode === "fixed" ? `<span class="fi wide"><input type="number" min="0" step="0.001" data-num="price" value="${escapeHtml(f.price == null ? "" : f.price)}"><em>€/kWh</em></span>` : ""}
             ${f.price_mode === "entity" ? `<select data-price>${["", ...Object.keys(this._hass.states).filter((id) => /^(sensor|input_number|number)\./.test(id))].map((id) =>
               `<option value="${escapeHtml(id)}" ${id === f.price_entity ? "selected" : ""}>${escapeHtml(id ? `${(this._hass.states[id].attributes.friendly_name || id)} (${id})` : this._t("role_none"))}</option>`).join("")}</select>` : ""}`)}
           <div class="err"></div>

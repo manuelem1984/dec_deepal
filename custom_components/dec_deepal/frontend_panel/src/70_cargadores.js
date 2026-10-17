@@ -10,8 +10,9 @@
       const config = this._state.chargers;
       if (!config) return "";
       const toggle = `<button class="tog ${config.enabled ? "on" : ""}" data-action="chargers-enabled" role="switch" aria-checked="${config.enabled}"></button>`;
-      const control = `<span class="seg">${["people", "admins"].map((value) =>
-        `<button class="${config.control === value ? "on" : ""}" data-action="chargers-control" data-value="${value}">${this._t(`control_${value}`)}</button>`).join("")}</span>`;
+      // En el móvil no cabe a la derecha: el selector va debajo, a todo lo ancho.
+      const control = `<div class="under"><span class="seg wide">${["people", "admins"].map((value) =>
+        `<button class="${config.control === value ? "on" : ""}" data-action="chargers-control" data-value="${value}">${this._t(`control_${value}`)}</button>`).join("")}</span></div>`;
       const row = (icon, title, help, right) => `<div class="row"><div class="ic"><ha-icon icon="${icon}"></ha-icon></div>
         <div class="tx">${this._t(title)}<small>${this._t(help)}</small></div>${right}</div>`;
       const list = config.chargers.map((charger) => this._chargerRow(charger)).join("") ||
@@ -19,7 +20,7 @@
       return `<div class="card" data-chargers>
           <h2>${this._t("chargers_title")}</h2><div class="sub">${this._t("chargers_help")}</div>
           ${row("mdi:ev-station", "chargers_enabled", "chargers_enabled_help", toggle)}
-          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", control)}${list}
+          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", "")}${control}${list}
           <div class="foot"><span></span><button class="btn" data-action="charger-edit" data-id=""><ha-icon icon="mdi:plus"></ha-icon>${this._t("charger_add")}</button></div>` : ""}
         </div>`;
     }
@@ -60,11 +61,21 @@
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
-    _entityState(entityId) {
+    /** Estado de la entidad de un papel, en palabras: "Sí", "Desbloqueado", "3,9 kW"... */
+    _entityState(role, entityId, lockOnLocked) {
       const state = entityId && this._hass.states[entityId];
-      if (!state) return "";
-      const unit = state.attributes.unit_of_measurement;
-      return `${state.state}${unit ? ` ${unit}` : ""}`;
+      if (!state || ["unknown", "unavailable"].includes(state.state)) return state ? this._t("state_unknown") : "";
+      if (role === "power" || role === "energy") {
+        const number = Number(state.state);
+        const unit = state.attributes.unit_of_measurement || "";
+        return Number.isFinite(number) ? `${number.toLocaleString(this._language(), { maximumFractionDigits: 2 })} ${unit}`.trim() : state.state;
+      }
+      const on = ["on", "true", "locked", "plugged", "connected", "charging"].includes(state.state) || Number(state.state) > 0;
+      if (role === "lock") {
+        const locked = state.entity_id.startsWith("lock.") ? state.state === "locked" : on === lockOnLocked;
+        return this._t(locked ? "st_locked" : "st_unlocked");
+      }
+      return this._t(on ? "state_yes" : "state_no");
     }
 
     _do_charger_edit(data) {
@@ -82,13 +93,19 @@
       };
       const tog = (name) => `<button class="tog ${f[name] ? "on" : ""}" data-action="set" data-f="${name}" data-v="${!f[name]}" role="switch" aria-checked="${Boolean(f[name])}"></button>`;
       const line = (title, help, control) => `<div class="cline"><div><b>${this._t(title)}</b>${help ? `<small>${this._t(help)}</small>` : ""}</div>${control}</div>`;
+      // Selector debajo del texto, a todo lo ancho y en una línea (en el móvil no cabe al lado).
+      const stack = (title, help, control) =>
+        `<div class="cstack">${title ? `<b>${this._t(title)}</b>` : ""}${help ? `<small>${this._t(help)}</small>` : ""}${control}</div>`;
+      const choices = (...options) => `<span class="seg wide">${options.join("")}</span>`;
       const section = (number, title, help, content) =>
         `<div class="fsec"><h4><span class="num">${number}</span>${this._t(title)}</h4>${help ? `<div class="hp">${this._t(help)}</div>` : ""}${content}</div>`;
       const select = (role) => {
         const options = this._roleEntities(role).map((item) =>
-          `<option value="${escapeHtml(item.id)}" ${item.id === f.entities[role] ? "selected" : ""}>${escapeHtml(item.name)} (${escapeHtml(item.id)})</option>`).join("");
-        return `<label class="ent"><span>${this._t(`role_${role}`)}${role === "plugged" ? " *" : ""}<em>${escapeHtml(this._entityState(f.entities[role]))}</em></span>
-          <select data-role="${role}"><option value="">${this._t("role_none")}</option>${options}</select></label>`;
+          `<option value="${escapeHtml(item.id)}" ${item.id === f.entities[role] ? "selected" : ""}>${escapeHtml(item.name)}</option>`).join("");
+        // El nombre en la lista y el identificador debajo, en pequeño (en el móvil no cabe todo).
+        return `<label class="ent"><span>${this._t(`role_${role}`)}${role === "plugged" ? " *" : ""}<em>${escapeHtml(this._entityState(role, f.entities[role], f.lock_on_locked))}</em></span>
+          <select data-role="${role}"><option value="">${this._t("role_none")}</option>${options}</select>
+          ${f.entities[role] ? `<small class="eid">${escapeHtml(f.entities[role])}</small>` : ""}</label>`;
       };
       const measured = () => {
         const value = saved && saved.measured;
@@ -106,23 +123,25 @@
         const confirm = f.unlock === "confirm";
         return `
           <div class="thead"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
-            <h2><input class="cname" data-name value="${escapeHtml(f.name)}" maxlength="40" aria-label="${this._t("charger_name")}"><small>${this._t("charger_edit_help")}</small></h2></div>
+            <label class="cname"><span>${this._t("charger_name")}</span>
+              <span class="cn"><input data-name value="${escapeHtml(f.name)}" maxlength="40"><ha-icon icon="mdi:pencil"></ha-icon></span></label></div>
+          <div class="hp cname-help">${this._t("charger_name_help")}</div>
           ${section(1, "entities_title", "entities_help", ["plugged", "charging", "power", "energy", "lock"].map(select).join(""))}
-          ${f.entities.lock && lockDomain !== "lock" ? line("lock_on", "lock_on_help", `<span class="seg">${opt("lock_on_locked", true, this._t("lock_on_locked"))}${opt("lock_on_locked", false, this._t("lock_on_unlocked"))}</span>`) : ""}
+          ${f.entities.lock && lockDomain !== "lock" ? stack("lock_on", "lock_on_help", choices(opt("lock_on_locked", true, this._t("lock_on_locked")), opt("lock_on_locked", false, this._t("lock_on_unlocked")))) : ""}
           ${section(2, "cars_title", "cars_help", `<div class="carpicks">${cars}</div>`)}
           ${section(3, "coverage_title", "coverage_help", `<span class="seg wide">${["yes", "no", "unknown"].map((value) => opt("coverage", value, this._t(`coverage_${value}`))).join("")}</span>`)}
           ${section(4, "unlock_title", f.entities.lock ? "unlock_help" : "unlock_no_lock", f.entities.lock ? `<span class="seg wide">${opt("unlock", "none", this._t("unlock_none"))}${opt("unlock", "confirm", this._t("unlock_confirm"))}</span>
             ${confirm ? line("ask_title", "ask_help", tog("notify_confirm")) : ""}
-            ${confirm && f.notify_confirm ? line("remind_title", "remind_help", `<span class="seg">${this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)).join("")}</span>`) : ""}` : "")}
+            ${confirm && f.notify_confirm ? stack("remind_title", "remind_help", choices(...this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)))) : ""}` : "")}
           ${f.entities.lock ? section(5, "relock_title", "", `${line("relock_on", "relock_help", tog("relock"))}
-            ${f.relock ? line("relock_after", "", `<span class="seg">${this._state.chargers.relock_choices.map((value) => opt("relock_minutes", value, `${value} min`)).join("")}</span>`) : ""}
+            ${f.relock ? stack("relock_after", "", choices(...this._state.chargers.relock_choices.map((value) => opt("relock_minutes", value, `${value} min`)))) : ""}
             ${f.relock ? line("relock_notify", "relock_notify_help", tog("relock_notify")) : ""}`) : ""}
           ${section(f.entities.lock ? 6 : 5, "loss_title", "loss_help", `
             ${line("loss_value", "", `<span class="fi small"><input type="number" min="0" max="40" step="0.1" data-num="loss" value="${escapeHtml(f.loss)}"><em>%</em></span>`)}
             ${line("learn_title", "learn_help", tog("learn"))}
             ${measured()}
-            ${line("price_title", "price_help", `<span class="seg">${opt("price_mode", "none", this._t("price_none"))}${opt("price_mode", "fixed", this._t("price_fixed"))}${opt("price_mode", "entity", this._t("price_entity"))}</span>`)}
-            ${f.price_mode === "fixed" ? `<span class="fi small"><input type="number" min="0" step="0.001" data-num="price" value="${escapeHtml(f.price == null ? "" : f.price)}"><em>€/kWh</em></span>` : ""}
+            ${stack("price_title", "price_help", choices(opt("price_mode", "none", this._t("price_none")), opt("price_mode", "fixed", this._t("price_fixed")), opt("price_mode", "entity", this._t("price_entity"))))}
+            ${f.price_mode === "fixed" ? `<span class="fi wide"><input type="number" min="0" step="0.001" data-num="price" value="${escapeHtml(f.price == null ? "" : f.price)}"><em>€/kWh</em></span>` : ""}
             ${f.price_mode === "entity" ? `<select data-price>${["", ...Object.keys(this._hass.states).filter((id) => /^(sensor|input_number|number)\./.test(id))].map((id) =>
               `<option value="${escapeHtml(id)}" ${id === f.price_entity ? "selected" : ""}>${escapeHtml(id ? `${(this._hass.states[id].attributes.friendly_name || id)} (${id})` : this._t("role_none"))}</option>`).join("")}</select>` : ""}`)}
           <div class="err"></div>

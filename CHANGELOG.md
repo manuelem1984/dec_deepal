@@ -3,6 +3,21 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b2] — 2026-10-18
+
+### Cambiado
+
+- **Cargadores en el móvil:** los selectores («Quién puede desbloquear», «El
+  bloqueo, encendido es…», «Si nadie contesta…», «Pasados» y «Precio del
+  kWh») van debajo de su texto, a todo lo ancho y en una sola línea; la opción
+  elegida lleva ✓. Textos más cortos: «Personas y admins», «Solo admins»,
+  «Solo leer», «Al confirmar el coche» y «Entidad».
+- **Nombre del cargador:** ahora es un campo con su etiqueta y un lápiz, para
+  que se vea que se puede cambiar.
+- **Entidades del cargador:** en la lista sale el nombre y, debajo, el
+  identificador en pequeño (antes se cortaba); su estado sale en palabras
+  («Sí», «No», «Bloqueado», «3,9 kW») en vez de «on/off».
+
 ## [2.6.0b1] — 2026-10-18
 
 ### Añadido

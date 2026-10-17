@@ -126,6 +126,9 @@
     .row .ic { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color);
       display: flex; align-items: center; justify-content: center; flex: none; }
     .row .ic.grey { background: ${SOFT}; color: var(--secondary-text-color); }
+    .under { padding: 0 20px 14px; }
+    .seg.wide { display: flex; flex-wrap: nowrap; } .seg.wide button { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 8px 5px; font-size: 12.5px; }
+    .seg.wide button.on::before { content: "✓ "; }
     .chg-chips { margin-top: 6px; } .chg-chips .chip { margin: 0 6px 4px 0; font-size: 12px; padding: 3px 10px; --mdc-icon-size: 16px; }
     .row .tx { flex: 1; min-width: 180px; } .row .tx small { display: block; color: var(--secondary-text-color); font-size: 13px; }
     select { font: inherit; color: inherit; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--divider-color, #e0e0e0);
@@ -280,12 +283,22 @@
     /* Ventana de un cargador */
     .fsec h4 .num { width: 18px; height: 18px; border-radius: 50%; background: var(--primary-color); color: var(--text-primary-color, #fff); font-size: 11px;
       display: inline-flex; align-items: center; justify-content: center; }
-    input.cname { font-size: 20px; padding: 4px 8px; margin: 0; }
+    label.cname { flex: 1; margin: 0; } label.cname > span:first-child { font-size: 12px; color: var(--primary-color); }
+    label.cname .cn { display: flex; align-items: center; gap: 6px; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 8px; padding: 0 10px 0 0; margin-top: 4px;
+      color: var(--secondary-text-color); --mdc-icon-size: 18px; }
+    label.cname input { border: 0; margin: 0; font-size: 18px; padding: 8px 10px; background: transparent; }
+    .cname-help { margin: -4px 0 4px 56px; }
+    small.eid { display: block; font-size: 11px; color: var(--secondary-text-color); margin-top: 3px; word-break: break-all; }
+    .cstack { margin: 12px 0; } .cstack b { display: block; font-weight: 400; font-size: 14px; color: var(--primary-text-color); }
+    .cstack small { display: block; font-size: 12px; color: var(--secondary-text-color); margin: 2px 0 8px; }
+    .cstack > .seg { margin-top: 6px; }
+    .fi.wide { margin-top: 8px; }
     label.ent { margin: 8px 0 0; } label.ent > span { display: flex; justify-content: space-between; gap: 8px; }
     label.ent em { font-style: normal; color: var(--success-color, #43a047); }
     .cline { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 10px 0; }
     .cline b { font-weight: 400; color: var(--primary-text-color); font-size: 14px; } .cline small { display: block; font-size: 12px; color: var(--secondary-text-color); }
-    .seg.wide { display: flex; } .seg.wide button { flex: 1; }
+    .seg.wide { display: flex; flex-wrap: nowrap; } .seg.wide button { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 8px 5px; font-size: 12.5px; }
+    .seg.wide button.on::before { content: "✓ "; }
     .carpicks { display: flex; gap: 10px; flex-wrap: wrap; }
     .carpick { flex: 1; min-width: 120px; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 6px; text-align: center; font-size: 13px; }
     .carpick img { width: 100%; height: 56px; object-fit: contain; display: block; }
