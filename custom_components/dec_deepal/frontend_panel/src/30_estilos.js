@@ -126,7 +126,13 @@
     .row .ic { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color);
       display: flex; align-items: center; justify-content: center; flex: none; }
     .row .ic.grey { background: ${SOFT}; color: var(--secondary-text-color); }
-    .under { padding: 0 20px 14px; }
+    /* Selectores y campos debajo del texto de su fila, alineados con él (un solo formato). */
+    .row:has(+ .under) { padding-bottom: 6px; }
+    .under { padding: 0 20px 14px 74px; }
+    .under .pinbox { display: flex; } .under .pinbox input { flex: 1; width: auto; }
+    .under input.url { width: 100%; }
+    .mode.on b::before { content: "✓"; color: var(--primary-color); }
+    @media (max-width: 500px) { .under { padding-left: 20px; } }
     .seg.wide { display: flex; flex-wrap: nowrap; } .seg.wide button { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 8px 5px; font-size: 12.5px; }
     .seg.wide button.on::before { content: "✓ "; }
     .chg-chips { margin-top: 6px; } .chg-chips .chip { margin: 0 6px 4px 0; font-size: 12px; padding: 3px 10px; --mdc-icon-size: 16px; }
@@ -155,7 +161,7 @@
     .seg { display: inline-flex; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 18px; overflow: hidden; flex-wrap: wrap; }
     .seg button { padding: 7px 13px; font-size: 13px; border-right: 1px solid var(--divider-color, #e0e0e0); }
     .seg button:last-child { border: 0; } .seg button.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
-    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 20px 16px; }
+    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 16px; }
     .mode { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 14px 16px; text-align: left; }
     .mode.on { border: 2px solid var(--primary-color); padding: 13px 15px; background: rgba(var(--rgb-primary-color, 3, 169, 244), .08); }
     .mode b { font-weight: 500; display: flex; gap: 8px; align-items: center; --mdc-icon-size: 20px; } .mode b ha-icon { color: var(--primary-color); }
@@ -169,7 +175,6 @@
 
     @media (max-width: 700px) {
       .view { padding: 12px; }
-      .modes { grid-template-columns: 1fr; }
       .grid3 { grid-template-columns: 1fr; }
       .hero img { width: 100%; margin: 0; }
       .tabs button { padding: 12px 10px; } .tabs button ha-icon { display: none; }
@@ -178,7 +183,9 @@
   `;
 
   const DIALOG_CSS = `
-    :host { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;
+    :host { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+      /* En el iPhone, Home Assistant pinta bajo la hora y la batería: se respeta la zona segura. */
+      padding: max(16px, calc(env(safe-area-inset-top, 0px) + 8px)) 16px max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px));
       background: rgba(0, 0, 0, .32); font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif); color: var(--primary-text-color); font-size: 14px; }
     * { box-sizing: border-box; }
     .dlg { width: 100%; max-width: 460px; max-height: 100%; overflow: auto; background: var(--ha-card-background, var(--card-background-color, #fff));
@@ -283,11 +290,19 @@
     /* Ventana de un cargador */
     .fsec h4 .num { width: 18px; height: 18px; border-radius: 50%; background: var(--primary-color); color: var(--text-primary-color, #fff); font-size: 11px;
       display: inline-flex; align-items: center; justify-content: center; }
-    label.cname { flex: 1; margin: 0; } label.cname > span:first-child { font-size: 12px; color: var(--primary-color); }
+    /* Ventana con cabecera y pie fijos (editor del cargador) */
+    .dlg.sheet { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+    .sheet .dhead { display: flex; align-items: center; gap: 8px; padding: 10px 12px 10px 8px; border-bottom: 1px solid var(--divider-color, #e0e0e0); }
+    .sheet .dhead h2 { flex: 1; margin: 0; font-size: 18px; min-width: 0; }
+    .sheet .dhead h2 small { display: block; font-size: 12px; color: var(--secondary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sheet .dbody { flex: 1; overflow: auto; padding: 12px 22px 8px; }
+    .sheet .dfoot { border-top: 1px solid var(--divider-color, #e0e0e0); padding: 0 16px; }
+    .sheet .dfoot .err:empty { display: none; } .sheet .dfoot .btns { margin: 10px 0; }
+    label.cname { flex: 1; margin: 0; display: block; } label.cname > span:first-child { font-size: 12px; color: var(--primary-color); }
     label.cname .cn { display: flex; align-items: center; gap: 6px; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 8px; padding: 0 10px 0 0; margin-top: 4px;
       color: var(--secondary-text-color); --mdc-icon-size: 18px; }
     label.cname input { border: 0; margin: 0; font-size: 18px; padding: 8px 10px; background: transparent; }
-    .cname-help { margin: -4px 0 4px 56px; }
+    .cname-help { margin: 6px 0 4px; }
     small.eid { display: block; font-size: 11px; color: var(--secondary-text-color); margin-top: 3px; word-break: break-all; }
     .cstack { margin: 12px 0; } .cstack b { display: block; font-weight: 400; font-size: 14px; color: var(--primary-text-color); }
     .cstack small { display: block; font-size: 12px; color: var(--secondary-text-color); margin: 2px 0 8px; }

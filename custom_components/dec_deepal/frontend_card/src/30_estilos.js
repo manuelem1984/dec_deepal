@@ -57,7 +57,9 @@
     .msg { padding: 16px; color: var(--secondary-text-color); font-size: 14px; }
   `;
   const DIALOG_CSS = `
-    :host { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;
+    :host { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+      /* En el iPhone, Home Assistant pinta bajo la hora y la batería: se respeta la zona segura. */
+      padding: max(16px, calc(env(safe-area-inset-top, 0px) + 8px)) 16px max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px));
       background: rgba(0, 0, 0, .32); font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif); color: var(--primary-text-color); }
     .dlg { width: 100%; max-width: 440px; max-height: 100%; overflow: auto; background: var(--ha-card-background, var(--card-background-color, #fff));
       border-radius: 28px; box-shadow: 0 8px 24px rgba(0, 0, 0, .3); }

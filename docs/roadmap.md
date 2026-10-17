@@ -1,5 +1,12 @@
 # Hoja de ruta
 
+## Beta 2.6.0b3 (18-10-2026) — pendiente de probar
+
+- [ ] **iPhone:** el editor del cargador (y las demás ventanas) ya no se mete
+      bajo la hora; la cabecera y «Cancelar · Guardar» no se pierden.
+- [ ] **Ajustes:** todos los selectores y campos debajo del texto, en una
+      línea y con ✓; los interruptores a la derecha. En móvil y ordenador.
+
 ## Beta 2.6.0b2 (18-10-2026) — pendiente de probar
 
 - [ ] **Editor del cargador en el móvil:** todos los selectores en una línea;

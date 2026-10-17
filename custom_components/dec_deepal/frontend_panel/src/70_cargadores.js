@@ -121,10 +121,14 @@
           return `<button class="carpick ${on ? "on" : ""}" data-action="car" data-v="${escapeHtml(car.id)}" aria-pressed="${on}">${photo ? `<img src="${photo}" alt="">` : ""}<span>${escapeHtml(car.name)}</span></button>`;
         }).join("");
         const confirm = f.unlock === "confirm";
+        // Cabecera y pie fijos (no se pierden al desplazarse); en medio, el contenido.
         return `
-          <div class="thead"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
-            <label class="cname"><span>${this._t("charger_name")}</span>
-              <span class="cn"><input data-name value="${escapeHtml(f.name)}" maxlength="40"><ha-icon icon="mdi:pencil"></ha-icon></span></label></div>
+          <div class="dhead"><button class="x" data-action="close" aria-label="${this._t("cancel")}"><ha-icon icon="mdi:close"></ha-icon></button>
+            <h2>${this._t("charger_window")}<small>${escapeHtml(f.name || "")}</small></h2>
+            <button class="tb fill" data-action="ok">${this._t("save")}</button></div>
+          <div class="dbody">
+          <label class="cname"><span>${this._t("charger_name")}</span>
+            <span class="cn"><input data-name value="${escapeHtml(f.name)}" maxlength="40"><ha-icon icon="mdi:pencil"></ha-icon></span></label>
           <div class="hp cname-help">${this._t("charger_name_help")}</div>
           ${section(1, "entities_title", "entities_help", ["plugged", "charging", "power", "energy", "lock"].map(select).join(""))}
           ${f.entities.lock && lockDomain !== "lock" ? stack("lock_on", "lock_on_help", choices(opt("lock_on_locked", true, this._t("lock_on_locked")), opt("lock_on_locked", false, this._t("lock_on_unlocked")))) : ""}
@@ -144,15 +148,16 @@
             ${f.price_mode === "fixed" ? `<span class="fi wide"><input type="number" min="0" step="0.001" data-num="price" value="${escapeHtml(f.price == null ? "" : f.price)}"><em>€/kWh</em></span>` : ""}
             ${f.price_mode === "entity" ? `<select data-price>${["", ...Object.keys(this._hass.states).filter((id) => /^(sensor|input_number|number)\./.test(id))].map((id) =>
               `<option value="${escapeHtml(id)}" ${id === f.price_entity ? "selected" : ""}>${escapeHtml(id ? `${(this._hass.states[id].attributes.friendly_name || id)} (${id})` : this._t("role_none"))}</option>`).join("")}</select>` : ""}`)}
-          <div class="err"></div>
-          <div class="btns">${saved ? `<button class="tb danger left" data-action="delete">${this._t("delete")}</button>` : ""}
-            <button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div>`;
+          </div>
+          <div class="dfoot"><div class="err"></div>
+            <div class="btns">${saved ? `<button class="tb danger left" data-action="delete">${this._t("delete")}</button>` : ""}
+              <button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div></div>`;
       };
       const paint = (open) => {
         const box = open.root.querySelector(".dlg");
-        const top = box.scrollTop;
+        const top = box.querySelector(".dbody").scrollTop;
         box.innerHTML = body();
-        box.scrollTop = top;
+        box.querySelector(".dbody").scrollTop = top;
       };
       const dialog = openDialog(body(), async (action, open, target) => {
         const value = target.dataset.v;
@@ -181,7 +186,7 @@
         }
         paint(open);
       });
-      dialog.root.querySelector(".dlg").classList.add("mid");
+      dialog.root.querySelector(".dlg").classList.add("mid", "sheet");
       dialog.root.addEventListener("change", (event) => {
         const target = event.target;
         if (target.dataset.role) {
@@ -192,7 +197,10 @@
       });
       dialog.root.addEventListener("input", (event) => {
         const target = event.target;
-        if (target.dataset.name !== undefined) f.name = target.value;
+        if (target.dataset.name !== undefined) {
+          f.name = target.value;
+          dialog.root.querySelector(".dhead small").textContent = target.value;
+        }
         else if (target.dataset.num) f[target.dataset.num] = target.value === "" ? null : Number(target.value);
       });
     }

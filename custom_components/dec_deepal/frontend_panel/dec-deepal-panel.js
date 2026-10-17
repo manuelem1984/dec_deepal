@@ -160,6 +160,7 @@
       "charger_no_cars": "Sin coches",
       "charger_default_name": "Garaje",
       "charger_name": "Nombre del cargador",
+      "charger_window": "Cargador",
       "charger_name_help": "Ponle el nombre que quieras: Garaje, Trabajo, Casa de la playa…",
       "charger_deleted": "Cargador quitado.",
       "edit": "Editar",
@@ -379,6 +380,7 @@
       "pin_checked": "Comprobado",
       "show_pin": "Ver el PIN",
       "pin_mode_title": "Cómo se usan las órdenes",
+      "pin_mode_help": "Elige una.",
       "mode_direct": "Directo",
       "mode_direct_help": "La orden se envía al pulsar, tras confirmar. Lo más cómodo.",
       "mode_armed": "Desbloquear antes",
@@ -541,6 +543,7 @@
       "charger_no_cars": "No cars",
       "charger_default_name": "Garage",
       "charger_name": "Charger name",
+      "charger_window": "Charger",
       "charger_name_help": "Name it however you like: Garage, Work, Beach house…",
       "charger_deleted": "Charger removed.",
       "edit": "Edit",
@@ -760,6 +763,7 @@
       "pin_checked": "Checked",
       "show_pin": "Show the PIN",
       "pin_mode_title": "How commands are used",
+      "pin_mode_help": "Choose one.",
       "mode_direct": "Direct",
       "mode_direct_help": "The command is sent when you tap, after confirming. The most convenient.",
       "mode_armed": "Unlock first",
@@ -922,6 +926,7 @@
       "charger_no_cars": "Sem carros",
       "charger_default_name": "Garagem",
       "charger_name": "Nome do carregador",
+      "charger_window": "Carregador",
       "charger_name_help": "Dá-lhe o nome que quiseres: Garagem, Trabalho, Casa de praia…",
       "charger_deleted": "Carregador removido.",
       "edit": "Editar",
@@ -1141,6 +1146,7 @@
       "pin_checked": "Verificado",
       "show_pin": "Mostrar o PIN",
       "pin_mode_title": "Como se usam os comandos",
+      "pin_mode_help": "Escolhe uma.",
       "mode_direct": "Direto",
       "mode_direct_help": "O comando é enviado ao tocar, depois de confirmar. O mais cómodo.",
       "mode_armed": "Desbloquear primeiro",
@@ -1303,6 +1309,7 @@
       "charger_no_cars": "Nessuna auto",
       "charger_default_name": "Garage",
       "charger_name": "Nome del caricatore",
+      "charger_window": "Caricatore",
       "charger_name_help": "Chiamalo come vuoi: Garage, Lavoro, Casa al mare…",
       "charger_deleted": "Caricatore rimosso.",
       "edit": "Modifica",
@@ -1522,6 +1529,7 @@
       "pin_checked": "Verificato",
       "show_pin": "Mostra il PIN",
       "pin_mode_title": "Come si usano i comandi",
+      "pin_mode_help": "Scegline una.",
       "mode_direct": "Diretto",
       "mode_direct_help": "Il comando viene inviato al tocco, dopo la conferma. Il più comodo.",
       "mode_armed": "Prima sblocca",
@@ -1684,6 +1692,7 @@
       "charger_no_cars": "Brak samochodów",
       "charger_default_name": "Garaż",
       "charger_name": "Nazwa ładowarki",
+      "charger_window": "Ładowarka",
       "charger_name_help": "Nazwij ją, jak chcesz: Garaż, Praca, Dom letni…",
       "charger_deleted": "Ładowarka usunięta.",
       "edit": "Edytuj",
@@ -1903,6 +1912,7 @@
       "pin_checked": "Sprawdzono",
       "show_pin": "Pokaż PIN",
       "pin_mode_title": "Jak używane są polecenia",
+      "pin_mode_help": "Wybierz jedną.",
       "mode_direct": "Bezpośrednio",
       "mode_direct_help": "Polecenie jest wysyłane po dotknięciu i potwierdzeniu. Najwygodniejsze.",
       "mode_armed": "Najpierw odblokuj",
@@ -2065,6 +2075,7 @@
       "charger_no_cars": "Keine Autos",
       "charger_default_name": "Garage",
       "charger_name": "Name der Ladestation",
+      "charger_window": "Ladestation",
       "charger_name_help": "Nenne sie, wie du willst: Garage, Arbeit, Ferienhaus…",
       "charger_deleted": "Ladestation entfernt.",
       "edit": "Bearbeiten",
@@ -2284,6 +2295,7 @@
       "pin_checked": "Geprüft",
       "show_pin": "PIN anzeigen",
       "pin_mode_title": "Wie Befehle verwendet werden",
+      "pin_mode_help": "Wähle eine.",
       "mode_direct": "Direkt",
       "mode_direct_help": "Der Befehl wird beim Antippen nach einer Bestätigung gesendet. Am bequemsten.",
       "mode_armed": "Erst entsperren",
@@ -2446,6 +2458,7 @@
       "charger_no_cars": "Aucune voiture",
       "charger_default_name": "Garage",
       "charger_name": "Nom de la borne",
+      "charger_window": "Borne",
       "charger_name_help": "Nommez-la comme vous voulez : Garage, Travail, Maison de vacances…",
       "charger_deleted": "Borne supprimée.",
       "edit": "Modifier",
@@ -2665,6 +2678,7 @@
       "pin_checked": "Vérifié",
       "show_pin": "Afficher le code PIN",
       "pin_mode_title": "Comment les commandes sont utilisées",
+      "pin_mode_help": "Choisissez-en un.",
       "mode_direct": "Direct",
       "mode_direct_help": "La commande est envoyée quand vous touchez, après confirmation. Le plus pratique.",
       "mode_armed": "Déverrouiller d'abord",
@@ -2827,6 +2841,7 @@
       "charger_no_cars": "Geen auto's",
       "charger_default_name": "Garage",
       "charger_name": "Naam van de lader",
+      "charger_window": "Lader",
       "charger_name_help": "Geef hem een naam: Garage, Werk, Strandhuis…",
       "charger_deleted": "Lader verwijderd.",
       "edit": "Bewerken",
@@ -3046,6 +3061,7 @@
       "pin_checked": "Gecontroleerd",
       "show_pin": "Pincode tonen",
       "pin_mode_title": "Hoe opdrachten worden gebruikt",
+      "pin_mode_help": "Kies er een.",
       "mode_direct": "Direct",
       "mode_direct_help": "De opdracht wordt verstuurd als je tikt, na een bevestiging. Het handigst.",
       "mode_armed": "Eerst ontgrendelen",
@@ -3208,6 +3224,7 @@
       "charger_no_cars": "Ingen biler",
       "charger_default_name": "Garasje",
       "charger_name": "Ladernavn",
+      "charger_window": "Lader",
       "charger_name_help": "Gi den et navn: Garasje, Jobb, Hytta…",
       "charger_deleted": "Lader fjernet.",
       "edit": "Rediger",
@@ -3427,6 +3444,7 @@
       "pin_checked": "Sjekket",
       "show_pin": "Vis PIN-koden",
       "pin_mode_title": "Hvordan kommandoer brukes",
+      "pin_mode_help": "Velg én.",
       "mode_direct": "Direkte",
       "mode_direct_help": "Kommandoen sendes når du trykker, etter bekreftelse. Det mest praktiske.",
       "mode_armed": "Lås opp først",
@@ -3589,6 +3607,7 @@
       "charger_no_cars": "Ingen biler",
       "charger_default_name": "Garage",
       "charger_name": "Ladernavn",
+      "charger_window": "Lader",
       "charger_name_help": "Giv den et navn: Garage, Arbejde, Sommerhus…",
       "charger_deleted": "Lader fjernet.",
       "edit": "Rediger",
@@ -3808,6 +3827,7 @@
       "pin_checked": "Tjekket",
       "show_pin": "Vis pinkoden",
       "pin_mode_title": "Hvordan kommandoer bruges",
+      "pin_mode_help": "Vælg én.",
       "mode_direct": "Direkte",
       "mode_direct_help": "Kommandoen sendes, når du trykker, efter bekræftelse. Det nemmeste.",
       "mode_armed": "Lås op først",
@@ -3970,6 +3990,7 @@
       "charger_no_cars": "Χωρίς αυτοκίνητα",
       "charger_default_name": "Γκαράζ",
       "charger_name": "Όνομα φορτιστή",
+      "charger_window": "Φορτιστής",
       "charger_name_help": "Δώστε όποιο όνομα θέλετε: Γκαράζ, Δουλειά, Εξοχικό…",
       "charger_deleted": "Ο φορτιστής αφαιρέθηκε.",
       "edit": "Επεξεργασία",
@@ -4189,6 +4210,7 @@
       "pin_checked": "Ελέγχθηκε",
       "show_pin": "Εμφάνιση του PIN",
       "pin_mode_title": "Πώς χρησιμοποιούνται οι εντολές",
+      "pin_mode_help": "Επιλέξτε έναν.",
       "mode_direct": "Άμεσα",
       "mode_direct_help": "Η εντολή στέλνεται όταν πατάτε, μετά από επιβεβαίωση. Το πιο βολικό.",
       "mode_armed": "Πρώτα ξεκλείδωμα",
@@ -4351,6 +4373,7 @@
       "charger_no_cars": "Brez avtov",
       "charger_default_name": "Garaža",
       "charger_name": "Ime polnilnice",
+      "charger_window": "Polnilnica",
       "charger_name_help": "Poimenujte jo po želji: Garaža, Služba, Vikend…",
       "charger_deleted": "Polnilnica odstranjena.",
       "edit": "Uredi",
@@ -4570,6 +4593,7 @@
       "pin_checked": "Preverjeno",
       "show_pin": "Pokaži PIN",
       "pin_mode_title": "Kako se uporabljajo ukazi",
+      "pin_mode_help": "Izberite enega.",
       "mode_direct": "Neposredno",
       "mode_direct_help": "Ukaz se pošlje, ko tapnete, po potrditvi. Najbolj priročno.",
       "mode_armed": "Najprej odkleni",
@@ -4874,7 +4898,13 @@
     .row .ic { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color);
       display: flex; align-items: center; justify-content: center; flex: none; }
     .row .ic.grey { background: ${SOFT}; color: var(--secondary-text-color); }
-    .under { padding: 0 20px 14px; }
+    /* Selectores y campos debajo del texto de su fila, alineados con él (un solo formato). */
+    .row:has(+ .under) { padding-bottom: 6px; }
+    .under { padding: 0 20px 14px 74px; }
+    .under .pinbox { display: flex; } .under .pinbox input { flex: 1; width: auto; }
+    .under input.url { width: 100%; }
+    .mode.on b::before { content: "✓"; color: var(--primary-color); }
+    @media (max-width: 500px) { .under { padding-left: 20px; } }
     .seg.wide { display: flex; flex-wrap: nowrap; } .seg.wide button { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 8px 5px; font-size: 12.5px; }
     .seg.wide button.on::before { content: "✓ "; }
     .chg-chips { margin-top: 6px; } .chg-chips .chip { margin: 0 6px 4px 0; font-size: 12px; padding: 3px 10px; --mdc-icon-size: 16px; }
@@ -4903,7 +4933,7 @@
     .seg { display: inline-flex; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 18px; overflow: hidden; flex-wrap: wrap; }
     .seg button { padding: 7px 13px; font-size: 13px; border-right: 1px solid var(--divider-color, #e0e0e0); }
     .seg button:last-child { border: 0; } .seg button.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
-    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 0 20px 16px; }
+    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px 16px; }
     .mode { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 14px 16px; text-align: left; }
     .mode.on { border: 2px solid var(--primary-color); padding: 13px 15px; background: rgba(var(--rgb-primary-color, 3, 169, 244), .08); }
     .mode b { font-weight: 500; display: flex; gap: 8px; align-items: center; --mdc-icon-size: 20px; } .mode b ha-icon { color: var(--primary-color); }
@@ -4917,7 +4947,6 @@
 
     @media (max-width: 700px) {
       .view { padding: 12px; }
-      .modes { grid-template-columns: 1fr; }
       .grid3 { grid-template-columns: 1fr; }
       .hero img { width: 100%; margin: 0; }
       .tabs button { padding: 12px 10px; } .tabs button ha-icon { display: none; }
@@ -4926,7 +4955,9 @@
   `;
 
   const DIALOG_CSS = `
-    :host { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box;
+    :host { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; box-sizing: border-box;
+      /* En el iPhone, Home Assistant pinta bajo la hora y la batería: se respeta la zona segura. */
+      padding: max(16px, calc(env(safe-area-inset-top, 0px) + 8px)) 16px max(16px, calc(env(safe-area-inset-bottom, 0px) + 8px));
       background: rgba(0, 0, 0, .32); font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif); color: var(--primary-text-color); font-size: 14px; }
     * { box-sizing: border-box; }
     .dlg { width: 100%; max-width: 460px; max-height: 100%; overflow: auto; background: var(--ha-card-background, var(--card-background-color, #fff));
@@ -5031,11 +5062,19 @@
     /* Ventana de un cargador */
     .fsec h4 .num { width: 18px; height: 18px; border-radius: 50%; background: var(--primary-color); color: var(--text-primary-color, #fff); font-size: 11px;
       display: inline-flex; align-items: center; justify-content: center; }
-    label.cname { flex: 1; margin: 0; } label.cname > span:first-child { font-size: 12px; color: var(--primary-color); }
+    /* Ventana con cabecera y pie fijos (editor del cargador) */
+    .dlg.sheet { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+    .sheet .dhead { display: flex; align-items: center; gap: 8px; padding: 10px 12px 10px 8px; border-bottom: 1px solid var(--divider-color, #e0e0e0); }
+    .sheet .dhead h2 { flex: 1; margin: 0; font-size: 18px; min-width: 0; }
+    .sheet .dhead h2 small { display: block; font-size: 12px; color: var(--secondary-text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sheet .dbody { flex: 1; overflow: auto; padding: 12px 22px 8px; }
+    .sheet .dfoot { border-top: 1px solid var(--divider-color, #e0e0e0); padding: 0 16px; }
+    .sheet .dfoot .err:empty { display: none; } .sheet .dfoot .btns { margin: 10px 0; }
+    label.cname { flex: 1; margin: 0; display: block; } label.cname > span:first-child { font-size: 12px; color: var(--primary-color); }
     label.cname .cn { display: flex; align-items: center; gap: 6px; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 8px; padding: 0 10px 0 0; margin-top: 4px;
       color: var(--secondary-text-color); --mdc-icon-size: 18px; }
     label.cname input { border: 0; margin: 0; font-size: 18px; padding: 8px 10px; background: transparent; }
-    .cname-help { margin: -4px 0 4px 56px; }
+    .cname-help { margin: 6px 0 4px; }
     small.eid { display: block; font-size: 11px; color: var(--secondary-text-color); margin-top: 3px; word-break: break-all; }
     .cstack { margin: 12px 0; } .cstack b { display: block; font-weight: 400; font-size: 14px; color: var(--primary-text-color); }
     .cstack small { display: block; font-size: 12px; color: var(--secondary-text-color); margin: 2px 0 8px; }
@@ -6234,30 +6273,34 @@
       const toggle = (field) => `<button class="tog ${now[field] ? "on" : ""}" ${set(field, !now[field])} role="switch" aria-checked="${Boolean(now[field])}"></button>`;
       const row = (icon, title, help, control, grey) => `<div class="row"><div class="ic ${grey ? "grey" : ""}"><ha-icon icon="${icon}"></ha-icon></div>
         <div class="tx">${this._t(title)}<small>${this._t(help)}</small></div>${control}</div>`;
-      const segment = (field, values, unit) => `<span class="seg">${values.map((value) =>
-        `<button class="${Number(now[field]) === value ? "on" : ""}" ${set(field, value)}>${this._t(unit, { value })}</button>`).join("")}</span>`;
+      // Un solo formato: los interruptores, a la derecha del texto; los selectores
+      // y los campos, debajo (alineados con el texto), a todo lo ancho y en una línea.
+      const under = (control) => `<div class="under">${control}</div>`;
+      const segment = (field, values, unit) => under(`<span class="seg wide">${values.map((value) =>
+        `<button class="${Number(now[field]) === value ? "on" : ""}" ${set(field, value)}>${this._t(unit, { value })}</button>`).join("")}</span>`);
       const mode = (value, icon, extra) => `<button class="mode ${now.pin_mode === value ? "on" : ""}" ${set("pin_mode", value)} aria-pressed="${now.pin_mode === value}">
         <b><ha-icon icon="${icon}"></ha-icon>${this._t(`mode_${value}`)}</b><p>${this._t(`mode_${value}_help`)}</p></button>${extra || ""}`;
       const scan = [...new Set([2, 5, 10, 15, 30, Number(now.scan_minutes)])].sort((a, b) => a - b);
       const dirty = Boolean(this._settings && this._settings[account.entry_id]);
 
       const pin = !now.pin_enabled ? "" : `
-        ${row("mdi:form-textbox-password", "pin", "pin_field_help",
-          `<span class="pinbox"><input type="password" inputmode="numeric" autocomplete="off" data-input="pin" data-entry="${entry}" value="${escapeHtml(now.pin)}"
+        ${row("mdi:form-textbox-password", "pin", "pin_field_help", "")}
+        ${under(`<span class="pinbox"><input type="password" inputmode="numeric" autocomplete="off" data-input="pin" data-entry="${entry}" value="${escapeHtml(now.pin)}"
               placeholder="${account.pin_set ? "••••" : ""}" aria-label="${this._t("pin")}">
             <button data-action="reveal" aria-label="${this._t("show_pin")}"><ha-icon icon="mdi:eye-outline"></ha-icon></button></span>
            ${account.pin_set && !now.pin ? `<span class="badge ok"><ha-icon icon="mdi:check-circle"></ha-icon>${this._t("pin_checked")}</span>` : ""}`)}
-        <div class="lbl">${this._t("pin_mode_title")}</div>
-        <div class="modes">
+        ${row("mdi:gesture-tap", "pin_mode_title", "pin_mode_help", "")}
+        <div class="modes under">
           ${mode("direct", "mdi:flash")}
           ${mode("armed", "mdi:lock-clock")}
         </div>
         ${now.pin_mode !== "armed" ? "" : `
-          ${row("mdi:timer-sand", "arm_seconds", "arm_seconds_help", segment("arm_seconds", account.arm_choices, "seconds"))}
+          ${row("mdi:timer-sand", "arm_seconds", "arm_seconds_help", "")}
+          ${segment("arm_seconds", account.arm_choices, "seconds")}
           ${row("mdi:bell-outline", "arm_notify", "arm_notify_help", toggle("arm_notify"), true)}`}`;
 
-      const manual = !account.manual ? "" : row("mdi:book-open-variant", `manual_${account.manual.kind}`, "manual_help",
-        `<input class="url" type="url" data-input="manual_url" data-entry="${entry}" value="${escapeHtml(now.manual_url)}" placeholder="${escapeHtml(account.manual.official)}">`);
+      const manual = !account.manual ? "" : row("mdi:book-open-variant", `manual_${account.manual.kind}`, "manual_help", "") +
+        under(`<input class="url" type="url" data-input="manual_url" data-entry="${entry}" value="${escapeHtml(now.manual_url)}" placeholder="${escapeHtml(account.manual.official)}">`);
 
       return `${several ? `<div class="acct">${this._t("account", { name: escapeHtml(account.title) })}</div>` : ""}
         <div class="card" data-account="${entry}">
@@ -6265,7 +6308,8 @@
           ${row("mdi:shield-key", "pin_enabled", "pin_enabled_help", toggle("pin_enabled"))}
           ${pin}
           <h2 class="next">${this._t("reading_title")}</h2><div class="sub">${this._t("reading_help")}</div>
-          ${row("mdi:timer-outline", "scan_title", "scan_help", segment("scan_minutes", scan, "minutes"))}
+          ${row("mdi:timer-outline", "scan_title", "scan_help", "")}
+          ${segment("scan_minutes", scan, "minutes")}
           ${row("mdi:sleep-off", "wake_title", "wake_help", toggle("wake"))}
           ${row("mdi:scale-balance", "balance_title", "balance_help", toggle("charge_balance"))}
           ${manual}
@@ -6702,10 +6746,14 @@
           return `<button class="carpick ${on ? "on" : ""}" data-action="car" data-v="${escapeHtml(car.id)}" aria-pressed="${on}">${photo ? `<img src="${photo}" alt="">` : ""}<span>${escapeHtml(car.name)}</span></button>`;
         }).join("");
         const confirm = f.unlock === "confirm";
+        // Cabecera y pie fijos (no se pierden al desplazarse); en medio, el contenido.
         return `
-          <div class="thead"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
-            <label class="cname"><span>${this._t("charger_name")}</span>
-              <span class="cn"><input data-name value="${escapeHtml(f.name)}" maxlength="40"><ha-icon icon="mdi:pencil"></ha-icon></span></label></div>
+          <div class="dhead"><button class="x" data-action="close" aria-label="${this._t("cancel")}"><ha-icon icon="mdi:close"></ha-icon></button>
+            <h2>${this._t("charger_window")}<small>${escapeHtml(f.name || "")}</small></h2>
+            <button class="tb fill" data-action="ok">${this._t("save")}</button></div>
+          <div class="dbody">
+          <label class="cname"><span>${this._t("charger_name")}</span>
+            <span class="cn"><input data-name value="${escapeHtml(f.name)}" maxlength="40"><ha-icon icon="mdi:pencil"></ha-icon></span></label>
           <div class="hp cname-help">${this._t("charger_name_help")}</div>
           ${section(1, "entities_title", "entities_help", ["plugged", "charging", "power", "energy", "lock"].map(select).join(""))}
           ${f.entities.lock && lockDomain !== "lock" ? stack("lock_on", "lock_on_help", choices(opt("lock_on_locked", true, this._t("lock_on_locked")), opt("lock_on_locked", false, this._t("lock_on_unlocked")))) : ""}
@@ -6725,15 +6773,16 @@
             ${f.price_mode === "fixed" ? `<span class="fi wide"><input type="number" min="0" step="0.001" data-num="price" value="${escapeHtml(f.price == null ? "" : f.price)}"><em>€/kWh</em></span>` : ""}
             ${f.price_mode === "entity" ? `<select data-price>${["", ...Object.keys(this._hass.states).filter((id) => /^(sensor|input_number|number)\./.test(id))].map((id) =>
               `<option value="${escapeHtml(id)}" ${id === f.price_entity ? "selected" : ""}>${escapeHtml(id ? `${(this._hass.states[id].attributes.friendly_name || id)} (${id})` : this._t("role_none"))}</option>`).join("")}</select>` : ""}`)}
-          <div class="err"></div>
-          <div class="btns">${saved ? `<button class="tb danger left" data-action="delete">${this._t("delete")}</button>` : ""}
-            <button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div>`;
+          </div>
+          <div class="dfoot"><div class="err"></div>
+            <div class="btns">${saved ? `<button class="tb danger left" data-action="delete">${this._t("delete")}</button>` : ""}
+              <button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${this._t("save")}</button></div></div>`;
       };
       const paint = (open) => {
         const box = open.root.querySelector(".dlg");
-        const top = box.scrollTop;
+        const top = box.querySelector(".dbody").scrollTop;
         box.innerHTML = body();
-        box.scrollTop = top;
+        box.querySelector(".dbody").scrollTop = top;
       };
       const dialog = openDialog(body(), async (action, open, target) => {
         const value = target.dataset.v;
@@ -6762,7 +6811,7 @@
         }
         paint(open);
       });
-      dialog.root.querySelector(".dlg").classList.add("mid");
+      dialog.root.querySelector(".dlg").classList.add("mid", "sheet");
       dialog.root.addEventListener("change", (event) => {
         const target = event.target;
         if (target.dataset.role) {
@@ -6773,7 +6822,10 @@
       });
       dialog.root.addEventListener("input", (event) => {
         const target = event.target;
-        if (target.dataset.name !== undefined) f.name = target.value;
+        if (target.dataset.name !== undefined) {
+          f.name = target.value;
+          dialog.root.querySelector(".dhead small").textContent = target.value;
+        }
         else if (target.dataset.num) f[target.dataset.num] = target.value === "" ? null : Number(target.value);
       });
     }

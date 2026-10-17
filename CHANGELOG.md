@@ -3,6 +3,24 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b3] — 2026-10-18
+
+### Cambiado
+
+- **Ajustes con un solo formato.** Los interruptores van a la derecha del
+  texto; los selectores (intervalo de lectura, cuánto dura el desbloqueo,
+  quién puede desbloquear...) y los campos (PIN, enlace del manual), debajo,
+  alineados con el texto, a todo lo ancho, en una línea y con ✓ en la opción
+  elegida. «Directo / Desbloquear antes» también lleva ✓.
+- **Editor del cargador:** cabecera fija con ✕, el nombre y «Guardar», y
+  «Cancelar · Guardar» fijos abajo; en medio se desplaza el contenido.
+
+### Corregido
+
+- En el iPhone, las ventanas del panel y de la tarjeta se metían bajo la hora
+  y la batería (la parte de arriba quedaba tapada). Ahora respetan la zona
+  segura de arriba y de abajo.
+
 ## [2.6.0b2] — 2026-10-18
 
 ### Cambiado

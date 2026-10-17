@@ -64,7 +64,7 @@
 
   const DOMAINS = ["binary_sensor", "sensor", "switch", "input_boolean"];
   const initial = () => ({
-    version: "2.6.0b2",
+    version: "2.6.0b3",
     admin: true,
     chargers_enabled: false,
     chargers: {
