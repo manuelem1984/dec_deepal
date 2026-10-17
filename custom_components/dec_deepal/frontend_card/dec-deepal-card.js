@@ -177,7 +177,6 @@
       "comfort": "Confort",
       "charge_title": "Carga",
       "charge_open": "Ver la carga",
-      "refresh_short": "Actualizar",
       "charging_status": "Cargando · {type}",
       "charge_full_at": "lleno a las {time}",
       "charge_plugged": "Enchufado · no carga",
@@ -185,6 +184,7 @@
       "range_left": "{value} de autonomía",
       "time_left": "Tiempo restante",
       "ends_at": "Termina hacia las {time}",
+      "balance_included": "Incluye {minutes} min de equilibrado",
       "current": "Corriente",
       "current_ac": "Corriente alterna",
       "current_dc": "Corriente continua",
@@ -334,7 +334,6 @@
       "comfort": "Comfort",
       "charge_title": "Charging",
       "charge_open": "Show charging details",
-      "refresh_short": "Refresh",
       "charging_status": "Charging · {type}",
       "charge_full_at": "full at {time}",
       "charge_plugged": "Plugged in · not charging",
@@ -342,6 +341,7 @@
       "range_left": "{value} of range",
       "time_left": "Time remaining",
       "ends_at": "Finishes around {time}",
+      "balance_included": "Includes {minutes} min of balancing",
       "current": "Current",
       "current_ac": "Alternating current",
       "current_dc": "Direct current",
@@ -491,7 +491,6 @@
       "comfort": "Conforto",
       "charge_title": "Carregamento",
       "charge_open": "Ver o carregamento",
-      "refresh_short": "Atualizar",
       "charging_status": "A carregar · {type}",
       "charge_full_at": "cheio às {time}",
       "charge_plugged": "Ligado · não carrega",
@@ -499,6 +498,7 @@
       "range_left": "{value} de autonomia",
       "time_left": "Tempo restante",
       "ends_at": "Termina por volta das {time}",
+      "balance_included": "Inclui {minutes} min de equilíbrio",
       "current": "Corrente",
       "current_ac": "Corrente alternada",
       "current_dc": "Corrente contínua",
@@ -648,7 +648,6 @@
       "comfort": "Comfort",
       "charge_title": "Ricarica",
       "charge_open": "Mostra la ricarica",
-      "refresh_short": "Aggiorna",
       "charging_status": "In ricarica · {type}",
       "charge_full_at": "piena alle {time}",
       "charge_plugged": "Collegata · non carica",
@@ -656,6 +655,7 @@
       "range_left": "{value} di autonomia",
       "time_left": "Tempo rimanente",
       "ends_at": "Termina verso le {time}",
+      "balance_included": "Include {minutes} min di bilanciamento",
       "current": "Corrente",
       "current_ac": "Corrente alternata",
       "current_dc": "Corrente continua",
@@ -805,7 +805,6 @@
       "comfort": "Komfort",
       "charge_title": "Ładowanie",
       "charge_open": "Pokaż ładowanie",
-      "refresh_short": "Odśwież",
       "charging_status": "Ładowanie · {type}",
       "charge_full_at": "pełna o {time}",
       "charge_plugged": "Podłączony · nie ładuje",
@@ -813,6 +812,7 @@
       "range_left": "{value} zasięgu",
       "time_left": "Pozostały czas",
       "ends_at": "Koniec około {time}",
+      "balance_included": "Zawiera {minutes} min wyrównywania",
       "current": "Prąd",
       "current_ac": "Prąd przemienny",
       "current_dc": "Prąd stały",
@@ -962,7 +962,6 @@
       "comfort": "Komfort",
       "charge_title": "Laden",
       "charge_open": "Ladedetails anzeigen",
-      "refresh_short": "Aktualisieren",
       "charging_status": "Lädt · {type}",
       "charge_full_at": "voll um {time}",
       "charge_plugged": "Angeschlossen · lädt nicht",
@@ -970,6 +969,7 @@
       "range_left": "{value} Reichweite",
       "time_left": "Restzeit",
       "ends_at": "Endet gegen {time}",
+      "balance_included": "Inklusive {minutes} Min. Zellausgleich",
       "current": "Strom",
       "current_ac": "Wechselstrom",
       "current_dc": "Gleichstrom",
@@ -1119,7 +1119,6 @@
       "comfort": "Confort",
       "charge_title": "Recharge",
       "charge_open": "Afficher la recharge",
-      "refresh_short": "Actualiser",
       "charging_status": "En recharge · {type}",
       "charge_full_at": "pleine à {time}",
       "charge_plugged": "Branchée · ne charge pas",
@@ -1127,6 +1126,7 @@
       "range_left": "{value} d'autonomie",
       "time_left": "Temps restant",
       "ends_at": "Se termine vers {time}",
+      "balance_included": "Dont {minutes} min d'équilibrage",
       "current": "Courant",
       "current_ac": "Courant alternatif",
       "current_dc": "Courant continu",
@@ -1276,7 +1276,6 @@
       "comfort": "Comfort",
       "charge_title": "Laden",
       "charge_open": "Laadgegevens tonen",
-      "refresh_short": "Vernieuwen",
       "charging_status": "Laadt · {type}",
       "charge_full_at": "vol om {time}",
       "charge_plugged": "Aangesloten · laadt niet",
@@ -1284,6 +1283,7 @@
       "range_left": "{value} actieradius",
       "time_left": "Resterende tijd",
       "ends_at": "Klaar rond {time}",
+      "balance_included": "Inclusief {minutes} min balanceren",
       "current": "Stroom",
       "current_ac": "Wisselstroom",
       "current_dc": "Gelijkstroom",
@@ -1433,7 +1433,6 @@
       "comfort": "Komfort",
       "charge_title": "Lading",
       "charge_open": "Vis ladedetaljer",
-      "refresh_short": "Oppdater",
       "charging_status": "Lader · {type}",
       "charge_full_at": "full kl. {time}",
       "charge_plugged": "Tilkoblet · lader ikke",
@@ -1441,6 +1440,7 @@
       "range_left": "{value} rekkevidde",
       "time_left": "Gjenstående tid",
       "ends_at": "Ferdig rundt kl. {time}",
+      "balance_included": "Inkluderer {minutes} min balansering",
       "current": "Strøm",
       "current_ac": "Vekselstrøm",
       "current_dc": "Likestrøm",
@@ -1590,7 +1590,6 @@
       "comfort": "Komfort",
       "charge_title": "Opladning",
       "charge_open": "Vis opladningsdetaljer",
-      "refresh_short": "Opdater",
       "charging_status": "Oplader · {type}",
       "charge_full_at": "fuld kl. {time}",
       "charge_plugged": "Tilsluttet · oplader ikke",
@@ -1598,6 +1597,7 @@
       "range_left": "{value} rækkevidde",
       "time_left": "Resterende tid",
       "ends_at": "Færdig omkring kl. {time}",
+      "balance_included": "Inkluderer {minutes} min balancering",
       "current": "Strøm",
       "current_ac": "Vekselstrøm",
       "current_dc": "Jævnstrøm",
@@ -1747,7 +1747,6 @@
       "comfort": "Άνεση",
       "charge_title": "Φόρτιση",
       "charge_open": "Προβολή της φόρτισης",
-      "refresh_short": "Ανανέωση",
       "charging_status": "Φορτίζει · {type}",
       "charge_full_at": "γεμάτη στις {time}",
       "charge_plugged": "Συνδεδεμένο · δεν φορτίζει",
@@ -1755,6 +1754,7 @@
       "range_left": "{value} αυτονομία",
       "time_left": "Υπολειπόμενος χρόνος",
       "ends_at": "Τελειώνει γύρω στις {time}",
+      "balance_included": "Περιλαμβάνει {minutes} λεπτά εξισορρόπησης",
       "current": "Ρεύμα",
       "current_ac": "Εναλλασσόμενο ρεύμα",
       "current_dc": "Συνεχές ρεύμα",
@@ -1904,7 +1904,6 @@
       "comfort": "Udobje",
       "charge_title": "Polnjenje",
       "charge_open": "Prikaži polnjenje",
-      "refresh_short": "Osveži",
       "charging_status": "Polnjenje · {type}",
       "charge_full_at": "polna ob {time}",
       "charge_plugged": "Priklopljeno · ne polni",
@@ -1912,6 +1911,7 @@
       "range_left": "Doseg: {value}",
       "time_left": "Preostali čas",
       "ends_at": "Konec okoli {time}",
+      "balance_included": "Vključuje {minutes} min uravnoteženja",
       "current": "Tok",
       "current_ac": "Izmenični tok",
       "current_dc": "Enosmerni tok",
@@ -2187,6 +2187,7 @@
     .chg .st .k { font-size: 12px; color: var(--secondary-text-color); display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
     .chg .st .n { font-size: 19px; margin-top: 3px; }
     .chg .st .d { font-size: 12px; color: var(--secondary-text-color); min-height: 14px; }
+    .chg .st .bal { font-size: 11px; color: var(--primary-color); display: flex; gap: 4px; align-items: center; margin-top: 3px; --mdc-icon-size: 14px; }
     .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 12px 16px; }
     /* Menú con menos de tres opciones: centradas, con el mismo ancho que en una fila de tres. */
     .three.center { display: flex; justify-content: center; }
@@ -3154,13 +3155,17 @@
   // Enseña la vista de carga y lo que se sabe de la carga: porcentaje,
   // autonomía, tiempo que queda, corriente, conector, lo que lleva esta carga
   // y la última. Estas dos las apunta la integración (charging.py) y llegan
-  // como atributos del sensor "Cargando". Se repinta sola mientras está abierta.
+  // como atributos del sensor "Cargando", con los minutos de equilibrado que
+  // se suman al tiempo que da el coche (Panel → Ajustes, "Sumar el
+  // equilibrado"). Se repinta sola mientras está abierta; el ⟳ de la cabecera
+  // actualiza los datos.
   install(class {
     _openCharge() {
       if (this._charge) return;
       const html = `
         <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button>
-          <h2>${this._t("charge_title")}</h2></div>
+          <h2>${this._t("charge_title")}</h2>
+          <button class="icon-btn" data-action="refresh" aria-label="${this._t("refresh")}"><ha-icon icon="mdi:refresh"></ha-icon></button></div>
         <div class="chg">
           <div class="view" hidden><img alt=""></div>
           <div class="now"><ha-icon></ha-icon><span></span></div>
@@ -3168,7 +3173,7 @@
           <div class="lvl"><i></i></div>
           <div class="stats"></div>
         </div>
-        <div class="btns"><button class="tb" data-action="refresh">${this._t("refresh_short")}</button><button class="tb" data-action="close">${this._t("close")}</button></div>`;
+        <div class="btns"><button class="tb" data-action="close">${this._t("close")}</button></div>`;
       this._charge = openDialog(html, (action) => {
         if (action === "refresh") this._call("refresh", "button", "press", "button.refresh");
       });
@@ -3197,9 +3202,26 @@
       return minutes > 0 ? minutes : undefined;
     }
 
-    _chargeStat(icon, label, value, detail, wide) {
+    /** Minutos de equilibrado que se suman al final (0 si está desactivado). */
+    _balanceMinutes() {
+      const attributes = (this._state("binary_sensor.charging") || { attributes: {} }).attributes;
+      const minutes = Number(attributes.minutos_equilibrado);
+      return minutes > 0 ? minutes : 0;
+    }
+
+    /** Autonomía sin decimales ("318 km"), sea cual sea la precisión de la entidad. */
+    _rangeText() {
+      const km = this._number("sensor.range");
+      if (km === undefined) return this._format("sensor.range");
+      const state = this._state("sensor.range");
+      const unit = (state && state.attributes.unit_of_measurement) || "km";
+      return `${Math.round(km).toLocaleString(this._language())} ${unit}`;
+    }
+
+    _chargeStat(icon, label, value, detail, wide, note) {
       return `<div class="st${wide ? " wide" : ""}"><div class="k"><ha-icon icon="${icon}"></ha-icon>${this._t(label)}</div>
-        <div class="n">${escapeHtml(value)}</div><div class="d">${escapeHtml(detail || "")}</div></div>`;
+        <div class="n">${escapeHtml(value)}</div><div class="d">${escapeHtml(detail || "")}</div>${
+        note ? `<div class="bal"><ha-icon icon="mdi:scale-balance"></ha-icon>${escapeHtml(note)}</div>` : ""}</div>`;
     }
 
     _paintCharge() {
@@ -3216,8 +3238,11 @@
       const charging = this._value("binary_sensor.charging") === "on";
       const plugged = status !== "disconnected";
       const dc = status.endsWith("_dc");
-      const minutes = charging ? this._chargeMinutes() : undefined;
+      const balance = this._balanceMinutes();
+      const car = charging ? this._chargeMinutes() : undefined;
+      const minutes = car === undefined ? undefined : car + balance;
       const end = minutes === undefined ? null : new Date(Date.now() + minutes * 60000);
+      $('.head [data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
 
       // Línea de estado.
       let now = this._t(plugged ? "charge_plugged" : "charge_unplugged");
@@ -3231,7 +3256,7 @@
 
       // Porcentaje, autonomía y barra (mismos colores que en la tarjeta).
       const level = this._number("sensor.battery_level");
-      const range = this._format("sensor.range");
+      const range = this._rangeText();
       $(".pct b").textContent = level === undefined ? "—" : `${Math.round(level)} %`;
       $(".pct span").textContent = range ? this._t("range_left", { value: range }) : "";
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
@@ -3241,7 +3266,11 @@
 
       // Recuadros de datos: solo los que tienen algo que decir.
       const stats = [];
-      if (end) stats.push(this._chargeStat("mdi:timer-sand", "time_left", this._duration(minutes), this._t("ends_at", { time: this._clock(end) })));
+      if (end) {
+        const ends = this._t("ends_at", { time: this._clock(end) });
+        stats.push(this._chargeStat("mdi:timer-sand", "time_left", this._duration(minutes), ends,
+          false, balance ? this._t("balance_included", { minutes: balance }) : ""));
+      }
       const current = this._format("sensor.charge_current");
       if (plugged && current) {
         stats.push(this._chargeStat(dc ? "mdi:current-dc" : "mdi:current-ac", "current", current, this._t(charging ? (dc ? "current_dc" : "current_ac") : "no_charge")));

@@ -238,10 +238,15 @@ class DecBinarySensor(DecDeepalEntity, BinarySensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict[str, object] | None:
-        """En "Cargando": la carga en curso y la última (las enseña la tarjeta)."""
+        """En "Cargando": la carga en curso, la última y los minutos de
+        equilibrado que la tarjeta suma al tiempo que queda (los enseña la
+        ventana de carga)."""
         if self.entity_description.key != CHARGING_KEY:
             return None
-        return self.runtime.alerts.charge_info(self.vehicle.info.vehicle_id) or None
+        return {
+            **self.runtime.alerts.charge_info(self.vehicle.info.vehicle_id),
+            "minutos_equilibrado": self.runtime.charge_balance_minutes,
+        }
 
     def icon_state(self) -> str | None:
         """``"on"`` / ``"off"`` para elegir el icono."""

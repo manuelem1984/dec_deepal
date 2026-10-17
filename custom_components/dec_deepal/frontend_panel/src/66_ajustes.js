@@ -62,6 +62,7 @@
           <h2 class="next">${this._t("reading_title")}</h2><div class="sub">${this._t("reading_help")}</div>
           ${row("mdi:timer-outline", "scan_title", "scan_help", segment("scan_minutes", scan, "minutes"))}
           ${row("mdi:sleep-off", "wake_title", "wake_help", toggle("wake"))}
+          ${row("mdi:scale-balance", "balance_title", "balance_help", toggle("charge_balance"))}
           ${manual}
           ${row("mdi:bug-outline", "debug_title", "debug_help", toggle("debug"), true)}
           <div class="foot ${dirty ? "dirty" : ""}">
@@ -106,6 +107,7 @@
         arm_notify: Boolean(now.arm_notify),
         scan_minutes: Number(now.scan_minutes),
         wake: Boolean(now.wake),
+        charge_balance: Boolean(now.charge_balance),
         debug: Boolean(now.debug),
       };
       if (account.manual) message.manual_url = String(now.manual_url || "");

@@ -4,13 +4,17 @@
   // Enseña la vista de carga y lo que se sabe de la carga: porcentaje,
   // autonomía, tiempo que queda, corriente, conector, lo que lleva esta carga
   // y la última. Estas dos las apunta la integración (charging.py) y llegan
-  // como atributos del sensor "Cargando". Se repinta sola mientras está abierta.
+  // como atributos del sensor "Cargando", con los minutos de equilibrado que
+  // se suman al tiempo que da el coche (Panel → Ajustes, "Sumar el
+  // equilibrado"). Se repinta sola mientras está abierta; el ⟳ de la cabecera
+  // actualiza los datos.
   install(class {
     _openCharge() {
       if (this._charge) return;
       const html = `
         <div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button>
-          <h2>${this._t("charge_title")}</h2></div>
+          <h2>${this._t("charge_title")}</h2>
+          <button class="icon-btn" data-action="refresh" aria-label="${this._t("refresh")}"><ha-icon icon="mdi:refresh"></ha-icon></button></div>
         <div class="chg">
           <div class="view" hidden><img alt=""></div>
           <div class="now"><ha-icon></ha-icon><span></span></div>
@@ -18,7 +22,7 @@
           <div class="lvl"><i></i></div>
           <div class="stats"></div>
         </div>
-        <div class="btns"><button class="tb" data-action="refresh">${this._t("refresh_short")}</button><button class="tb" data-action="close">${this._t("close")}</button></div>`;
+        <div class="btns"><button class="tb" data-action="close">${this._t("close")}</button></div>`;
       this._charge = openDialog(html, (action) => {
         if (action === "refresh") this._call("refresh", "button", "press", "button.refresh");
       });
@@ -47,9 +51,26 @@
       return minutes > 0 ? minutes : undefined;
     }
 
-    _chargeStat(icon, label, value, detail, wide) {
+    /** Minutos de equilibrado que se suman al final (0 si está desactivado). */
+    _balanceMinutes() {
+      const attributes = (this._state("binary_sensor.charging") || { attributes: {} }).attributes;
+      const minutes = Number(attributes.minutos_equilibrado);
+      return minutes > 0 ? minutes : 0;
+    }
+
+    /** Autonomía sin decimales ("318 km"), sea cual sea la precisión de la entidad. */
+    _rangeText() {
+      const km = this._number("sensor.range");
+      if (km === undefined) return this._format("sensor.range");
+      const state = this._state("sensor.range");
+      const unit = (state && state.attributes.unit_of_measurement) || "km";
+      return `${Math.round(km).toLocaleString(this._language())} ${unit}`;
+    }
+
+    _chargeStat(icon, label, value, detail, wide, note) {
       return `<div class="st${wide ? " wide" : ""}"><div class="k"><ha-icon icon="${icon}"></ha-icon>${this._t(label)}</div>
-        <div class="n">${escapeHtml(value)}</div><div class="d">${escapeHtml(detail || "")}</div></div>`;
+        <div class="n">${escapeHtml(value)}</div><div class="d">${escapeHtml(detail || "")}</div>${
+        note ? `<div class="bal"><ha-icon icon="mdi:scale-balance"></ha-icon>${escapeHtml(note)}</div>` : ""}</div>`;
     }
 
     _paintCharge() {
@@ -66,8 +87,11 @@
       const charging = this._value("binary_sensor.charging") === "on";
       const plugged = status !== "disconnected";
       const dc = status.endsWith("_dc");
-      const minutes = charging ? this._chargeMinutes() : undefined;
+      const balance = this._balanceMinutes();
+      const car = charging ? this._chargeMinutes() : undefined;
+      const minutes = car === undefined ? undefined : car + balance;
       const end = minutes === undefined ? null : new Date(Date.now() + minutes * 60000);
+      $('.head [data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
 
       // Línea de estado.
       let now = this._t(plugged ? "charge_plugged" : "charge_unplugged");
@@ -81,7 +105,7 @@
 
       // Porcentaje, autonomía y barra (mismos colores que en la tarjeta).
       const level = this._number("sensor.battery_level");
-      const range = this._format("sensor.range");
+      const range = this._rangeText();
       $(".pct b").textContent = level === undefined ? "—" : `${Math.round(level)} %`;
       $(".pct span").textContent = range ? this._t("range_left", { value: range }) : "";
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
@@ -91,7 +115,11 @@
 
       // Recuadros de datos: solo los que tienen algo que decir.
       const stats = [];
-      if (end) stats.push(this._chargeStat("mdi:timer-sand", "time_left", this._duration(minutes), this._t("ends_at", { time: this._clock(end) })));
+      if (end) {
+        const ends = this._t("ends_at", { time: this._clock(end) });
+        stats.push(this._chargeStat("mdi:timer-sand", "time_left", this._duration(minutes), ends,
+          false, balance ? this._t("balance_included", { minutes: balance }) : ""));
+      }
       const current = this._format("sensor.charge_current");
       if (plugged && current) {
         stats.push(this._chargeStat(dc ? "mdi:current-dc" : "mdi:current-ac", "current", current, this._t(charging ? (dc ? "current_dc" : "current_ac") : "no_charge")));

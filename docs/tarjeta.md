@@ -45,14 +45,21 @@ abre la ventana de carga, igual en las dos tarjetas (2.5.0b6):
   fondo de la ventana, en tema claro y en oscuro.
 - El **porcentaje**, la autonomía y la barra (animada mientras carga).
 - **Tiempo restante** y a qué hora termina, **corriente** y **conector**
-  (AC · Tipo 2 o DC · CCS2), cuando hay algo enchufado.
+  (AC · Tipo 2 o DC · CCS2), cuando hay algo enchufado. Al tiempo que da el
+  coche se le suman 15 min de **equilibrado** de la batería («Incluye 15 min
+  de equilibrado»), salvo que se quite en Panel → Ajustes (2.5.2b1). El
+  sensor «Tiempo de carga restante» no cambia: es el dato del coche.
+- La **autonomía**, sin decimales («318 km»), aunque la entidad los tenga.
+- El botón **⟳** de la cabecera actualiza los datos (como el de la tarjeta);
+  gira mientras tanto. Abajo solo está «Cerrar».
 - **Esta carga**: cuánto ha subido y desde cuándo, mientras carga.
 - **Última carga**: de qué porcentaje a cuál, cuándo y cuánto duró.
 
 "Esta carga" y "Última carga" las apunta la integración desde que se instala
 esta versión (no hay historial anterior) y se conservan al reiniciar. Son
 atributos del sensor "Cargando" (`carga_actual` y `ultima_carga`), por si se
-quieren usar en automatizaciones. La ventana se actualiza sola mientras está
+quieren usar en automatizaciones. El mismo sensor lleva `minutos_equilibrado`
+(15, o 0 si el ajuste está quitado). La ventana se actualiza sola mientras está
 abierta.
 
 ## Qué muestra

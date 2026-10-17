@@ -105,6 +105,8 @@ class DecDeepalRuntime:
     alerts: AlertManager | None = None
     #: Últimas capturas por vehículo (servicio capture_snapshot).
     captures: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
+    #: Minutos de equilibrado que la tarjeta suma al tiempo de carga (0 = no).
+    charge_balance_minutes: int = 0
 
 
 type DecDeepalConfigEntry = ConfigEntry[DecDeepalRuntime]

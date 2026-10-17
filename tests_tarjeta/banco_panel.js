@@ -62,13 +62,13 @@
   const PEOPLE = [{ id: "person.ella", name: "Ella" }, { id: "person.manuel", name: "Manuel" }];
 
   const initial = () => ({
-    version: "2.5.1",
+    version: "2.5.2b1",
     admin: true,
     people: PEOPLE,
     models: MODELS,
     accounts: [{
       entry_id: "entry1", title: "manuel@example.com", pin_enabled: true, pin_set: true, pin_mode: "armed", arm_seconds: 30, arm_notify: false,
-      arm_choices: [10, 20, 30, 60], scan_minutes: 5, scan_limits: [2, 60], wake: true, debug: false,
+      arm_choices: [10, 20, 30, 60], scan_minutes: 5, scan_limits: [2, 60], wake: true, charge_balance: true, debug: false,
       manual: { kind: "bev", url: "https://example.com/manual.pdf", official: "https://example.com/manual.pdf" },
     }],
     cars: [

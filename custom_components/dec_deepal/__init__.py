@@ -49,6 +49,9 @@ from .const import (
     DEFAULT_SCAN_MINUTES,
     DOMAIN,
     OPT_APPEARANCE,
+    OPT_CHARGE_BALANCE,
+    CHARGE_BALANCE_MINUTES,
+    DEFAULT_CHARGE_BALANCE,
     OPT_ARM_NOTIFY,
     OPT_ARM_SECONDS,
     OPT_COLOR,
@@ -186,6 +189,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     await async_sync_vehicles(hass, entry, client)
     await _restore_appearance(hass, entry, registries.vehicles.models)
     options = entry.options
+    if options.get(OPT_CHARGE_BALANCE, DEFAULT_CHARGE_BALANCE):
+        runtime.charge_balance_minutes = CHARGE_BALANCE_MINUTES
     appearance_by_vehicle: dict = options.get(OPT_APPEARANCE, {})
     scan_minutes = int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES))
     for raw_vehicle in entry.data[CONF_VEHICLES]:

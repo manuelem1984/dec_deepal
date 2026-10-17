@@ -1,5 +1,17 @@
 # Hoja de ruta
 
+## Beta 2.5.2b1 (17-10-2026) — pendiente de probar
+
+- [ ] **Ventana de carga, cargando:** el tiempo restante y la hora de fin
+      llevan 15 min más que el coche, con «Incluye 15 min de equilibrado».
+      Comparar con la hora real a la que termina la carga.
+- [ ] **Ajustes → Sumar el equilibrado:** quitarlo y ver que la ventana
+      enseña el tiempo del coche, sin la nota.
+- [ ] **Botón ⟳** de la cabecera: actualiza y gira mientras tanto; abajo solo
+      «Cerrar».
+- [ ] La autonomía de la ventana sale sin decimales (Changuito tiene 2 en su
+      entidad).
+
 ## 2.5.1 (16-10-2026) — publicada
 
 Panel DEC Deepal (también en solo lectura para quien no es administrador),

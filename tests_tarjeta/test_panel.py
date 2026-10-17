@@ -363,6 +363,8 @@ def test_settings_tab(panel: Page) -> None:
     setting("arm_seconds", "60")
     setting("scan_minutes", "10")
     setting("debug", "true")
+    assert "Sumar el equilibrado" in panel.evaluate("banco.texto()")
+    setting("charge_balance", "false")
     # Un PIN que Deepal no acepta: se explica y no se pierde lo cambiado.
     typed("pin", "0000")
     click(panel, "[data-action=save-settings]")
@@ -376,7 +378,7 @@ def test_settings_tab(panel: Page) -> None:
     assert orders(panel)[-1] == {
         "type": "dec_deepal/panel/set_settings", "entry_id": "entry1", "pin_enabled": True, "pin": "2468",
         "pin_mode": "armed", "arm_seconds": 60, "arm_notify": False, "scan_minutes": 10, "wake": True,
-        "debug": True, "manual_url": "https://example.com/otro.pdf",
+        "charge_balance": False, "debug": True, "manual_url": "https://example.com/otro.pdf",
     }
     panel.wait_for_function("!banco.texto().includes('Hay cambios sin guardar')")
     # Guardar otra cosa sin escribir el PIN: se manda vacío (= no cambiarlo).

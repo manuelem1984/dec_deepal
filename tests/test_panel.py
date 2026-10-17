@@ -242,6 +242,11 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, hass_client_n
     assert entry.options["pin"] is None and entry.options["pin_mode"] == "direct"
     account = (await call("state"))["result"]["accounts"][0]
     assert account["pin_set"] is False and account["scan_minutes"] == 10
+    # Sumar el equilibrado: activado de fábrica; se puede quitar.
+    assert account["charge_balance"] is True
+    assert (await call("set_settings", **base, pin_enabled=False, charge_balance=False))["success"]
+    assert entry.options["charge_balance"] is False
+    assert (await call("state"))["result"]["accounts"][0]["charge_balance"] is False
 
     # --- Personas: a quién pertenece cada coche ---------------------------------------------
     hass.states.async_set("person.ana", "home", {"friendly_name": "Ana", "user_id": "otro"})

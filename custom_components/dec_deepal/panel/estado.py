@@ -24,6 +24,7 @@ from ..const import (
     DEFAULT_PIN_MODE,
     DEFAULT_SCAN_MINUTES,
     DEFAULT_WAKE,
+    DEFAULT_CHARGE_BALANCE,
     INTEGRATION_DIR,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,
@@ -36,6 +37,7 @@ from ..const import (
     OPT_PIN_MODE,
     OPT_SCAN_MINUTES,
     OPT_WAKE,
+    OPT_CHARGE_BALANCE,
     PHOTOS_URL,
     VERSION,
 )
@@ -127,6 +129,7 @@ def account_settings(entry: Any) -> dict[str, Any]:
         "scan_minutes": int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES)),
         "scan_limits": [MIN_SCAN_MINUTES, MAX_SCAN_MINUTES],
         "wake": bool(options.get(OPT_WAKE, DEFAULT_WAKE)),
+        "charge_balance": bool(options.get(OPT_CHARGE_BALANCE, DEFAULT_CHARGE_BALANCE)),
         "debug": bool(options.get(OPT_DEBUG, False)),
         "manual": (
             None

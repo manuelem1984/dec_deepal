@@ -106,6 +106,11 @@ OPT_DEBUG: Final = "debug"
 #: Permitir despertar el coche (botón Actualizar y órdenes con PIN).
 OPT_WAKE: Final = "wake"
 DEFAULT_WAKE: Final = True
+#: Sumar el equilibrado de la batería al tiempo de carga (ventana de carga).
+OPT_CHARGE_BALANCE: Final = "charge_balance"
+DEFAULT_CHARGE_BALANCE: Final = True
+#: Minutos de equilibrado que se suman al final de la carga.
+CHARGE_BALANCE_MINUTES: Final = 15
 
 #: Opción A: los comandos con PIN se ejecutan directamente.
 PIN_MODE_DIRECT: Final = "direct"

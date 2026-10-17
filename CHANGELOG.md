@@ -3,6 +3,25 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.5.2b1] — 2026-10-17
+
+### Añadido
+
+- **Ventana de carga: tiempo con el equilibrado.** Al tiempo que queda según
+  el coche se le suman 15 minutos al final, lo que tarda el equilibrado de la
+  batería; la hora de fin («lleno a las…», «Termina hacia las…») también. Lo
+  dice debajo: «Incluye 15 min de equilibrado». Se quita en Panel → Ajustes →
+  Lectura de datos → «Sumar el equilibrado» (activado de fábrica). El sensor
+  «Tiempo de carga restante» sigue siendo el dato del coche.
+- **Ventana de carga: botón ⟳ arriba a la derecha** para actualizar los
+  datos; gira mientras tanto. Sustituye al «Actualizar» de abajo, donde solo
+  queda «Cerrar».
+
+### Cambiado
+
+- La ventana de carga enseña la autonomía sin decimales («318 km»), aunque
+  la entidad tenga decimales configurados.
+
 ## [2.5.1] — 2026-10-16
 
 Versión estable. Reúne las betas `2.5.0b1` a `2.5.0b12`, probadas en una

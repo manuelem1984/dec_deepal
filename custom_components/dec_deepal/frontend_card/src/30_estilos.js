@@ -115,6 +115,7 @@
     .chg .st .k { font-size: 12px; color: var(--secondary-text-color); display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
     .chg .st .n { font-size: 19px; margin-top: 3px; }
     .chg .st .d { font-size: 12px; color: var(--secondary-text-color); min-height: 14px; }
+    .chg .st .bal { font-size: 11px; color: var(--primary-color); display: flex; gap: 4px; align-items: center; margin-top: 3px; --mdc-icon-size: 14px; }
     .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px 12px 16px; }
     /* Menú con menos de tres opciones: centradas, con el mismo ancho que en una fila de tres. */
     .three.center { display: flex; justify-content: center; }

@@ -135,36 +135,48 @@ def test_charge_window(page: Page) -> None:
     # Tema claro: el coche (translúcido y claro) se oscurece para que se vea.
     assert page.evaluate(f"getComputedStyle({window}.querySelector('.view img')).filter") != "none"
     assert charge_stats(page) == [["Última carga", "Del 22 % al 80 %", "11 oct, 22:10 – 3:40 · 5 h 30 min"]]
-    # No se abre dos veces, y "Actualizar" pide una lectura al coche.
+    # No se abre dos veces, y el ⟳ de la cabecera pide una lectura al coche.
     page.evaluate(f"{energy}.click()")
     assert page.evaluate("banco.ventanas().length") == 1
-    click_window(page, '[data-action="refresh"]')
+    click_window(page, '.head [data-action="refresh"]')
     assert services(page)[-1].startswith("button.press")
+    # Abajo solo queda "Cerrar".
+    assert page.evaluate(f"Array.from({window}.querySelectorAll('.btns button')).map(b => b.dataset.action)") == ["close"]
 
     # --- Se enchufa y empieza a cargar: la ventana abierta se repinta sola ------
     page.evaluate(
         """() => banco.cambiar({
             "sensor.battery_level": [56],
-            "sensor.range": [276, { unit_of_measurement: "km" }],
+            "sensor.range": [276.4, { unit_of_measurement: "km" }],
             "sensor.charge_status": ["charging_ac"],
             "sensor.remaining_charge_time_hhmm": ["3:25"],
             "sensor.charge_current": [16, { unit_of_measurement: "A" }],
             "binary_sensor.charging": ["on", {
                 carga_actual: { inicio: new Date(Date.now() - 65 * 60000).toISOString(), nivel_inicio: 44, autonomia_inicio: 217 },
                 ultima_carga: { inicio: "2026-10-11T22:10:00", fin: "2026-10-12T03:40:00", nivel_inicio: 22, nivel_fin: 80 },
+                minutos_equilibrado: 15,
             }],
         })"""
     )
     text = window_text(page)
+    # Autonomía sin decimales, aunque la entidad los tenga.
     assert "Cargando · AC · lleno a las " in text and "56 %" in text and "276 km de autonomía" in text
     assert page.evaluate(f"{window}.querySelector('.now').classList.contains('on')")
     stats = charge_stats(page)
     assert [stat[0] for stat in stats] == ["Tiempo restante", "Corriente", "Conector", "Esta carga"]
-    assert stats[0][1] == "3 h 25 min" and stats[0][2].startswith("Termina hacia las ")
+    # 3:25 del coche + 15 min de equilibrado; la hora de fin es la misma arriba y en el recuadro.
+    assert stats[0][1] == "3 h 40 min" and stats[0][2].startswith("Termina hacia las ")
+    assert page.evaluate(f"{window}.querySelector('.st .bal').textContent.trim()") == "Incluye 15 min de equilibrado"
+    assert text.split("lleno a las ")[1].split()[0] == stats[0][2].removeprefix("Termina hacia las ")
     assert stats[1][1:] == ["16 A", "Corriente alterna"]
     assert stats[2][1:] == ["AC · Tipo 2", "Enchufado"]
     assert stats[3][1] == "+12 % · +59 km" and stats[3][2].startswith("Desde las ") and stats[3][2].endswith("· 1 h 5 min")
-    click_window(page, '[data-action="close"]')
+
+    # Con "Sumar el equilibrado" desactivado, el tiempo es el del coche y sin nota.
+    page.evaluate("banco.cambiar({'binary_sensor.charging': ['on', { minutos_equilibrado: 0 }]})")
+    assert charge_stats(page)[0][1] == "3 h 25 min"
+    assert page.evaluate(f"{window}.querySelector('.st .bal')") is None
+    click_window(page, '.btns [data-action="close"]')
 
     # --- Enchufado sin cargar (DC), en tema oscuro y sin vista de carga ----------
     mount(

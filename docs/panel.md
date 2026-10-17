@@ -108,8 +108,10 @@ Son de la cuenta, no de un coche (con varias cuentas, una tarjeta por cuenta).
   **Desbloquear antes**, con cuánto dura el desbloqueo y si avisa. Un solo
   PIN para todos los coches de la cuenta. El panel nunca recibe el PIN
   guardado: el campo sale vacío, y vacío significa "no cambiarlo".
-- **Lectura de datos:** intervalo, despertar el coche cuando haga falta, el
-  enlace del manual (BEV o PHEV, según el coche) y el modo depuración.
+- **Lectura de datos:** intervalo, despertar el coche cuando haga falta,
+  **sumar el equilibrado** (15 min más al tiempo de carga de la ventana de
+  carga; activado de fábrica), el enlace del manual (BEV o PHEV, según el
+  coche) y el modo depuración.
 
 ## Tocar el panel
 
