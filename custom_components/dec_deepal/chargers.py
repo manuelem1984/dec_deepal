@@ -1,0 +1,1144 @@
+"""Cargadores: une la carga de los coches con los cargadores de casa o del trabajo.
+
+Sirve para **cualquier cargador** que tenga sus entidades en Home Assistant
+(V2C, Wallbox, Easee, Zaptec, OCPP...): en el panel DEC Deepal → Ajustes →
+Cargadores se elige qué entidad hace cada papel:
+
+==============  ==========================================  =============
+Papel           Entidad                                      ¿Obligatoria?
+==============  ==========================================  =============
+``plugged``     Manguera enchufada (``binary_sensor``)       Sí
+``charging``    Cargando (``binary_sensor``)                 No
+``power``       Potencia de carga (W o kW)                   No
+``energy``      Energía de la carga (kWh)                    No
+``lock``        Bloqueo (``switch`` o ``lock``)              No
+==============  ==========================================  =============
+
+Qué hace
+--------
+- **Solo bloquea y desbloquea.** Nunca inicia, pausa ni cambia la intensidad
+  de la carga: con OCPP, la compañía empieza a cargar en cuanto el cargador
+  queda desbloqueado.
+- **Desbloquear al confirmar el coche** (``unlock = "confirm"``): al
+  enchufar, el cargador sigue bloqueado hasta saber qué coche es:
+
+  * Con cobertura (o "no lo sé"), se espera a que un coche diga que tiene la
+    manguera puesta (``CHARGE_WAIT``): ese es, y se desbloquea solo.
+  * Si no lo dice ninguno (o no hay cobertura), se pregunta por
+    notificación, con un botón por coche (``mobile_app``). Al elegirlo, se
+    desbloquea. Si nadie contesta, se recuerda pasados ``remind_minutes``.
+- **Bloquear al desenchufar** (``relock``): desbloqueado y con la manguera
+  quitada, se bloquea pasados ``relock_minutes`` (si no se vuelve a enchufar).
+- **Cada carga** se apunta (coche, kWh, €, de qué % a cuál) y, sin cobertura,
+  se **estima** el % y el tiempo con los kWh del cargador menos las
+  **pérdidas** (10 % de fábrica). Cuando el coche vuelve a informar, se mide
+  la pérdida real de esa carga (``learn``) y el panel la ofrece.
+
+Avisos
+------
+Los del apartado "Cargador" de la pestaña Avisos, de cada coche. Si un coche
+no tiene destinos ahí, se usan los de sus avisos de carga. Ninguno es
+crítico. El título es ``DEC Deepal <coche>``; mientras no se sabe el coche,
+``DEC Deepal · <cargador>``.
+
+Todo se guarda en su almacén (``dec_deepal.chargers``): es de la casa, no de
+una cuenta, y un cargador puede servir a coches de cuentas distintas.
+"""
+
+from __future__ import annotations
+
+import logging
+import uuid
+from collections.abc import Callable, Iterable, Mapping
+from datetime import datetime, timedelta
+from typing import Any, Final
+
+from homeassistant.components import persistent_notification
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, State, callback
+from homeassistant.helpers.event import (
+    async_call_later,
+    async_track_state_change_event,
+    async_track_time_interval,
+)
+from homeassistant.helpers.storage import Store
+from homeassistant.util import dt as dt_util
+
+from .alert_rules import SECTION_CHARGE, TARGET_PANEL, texts
+from .const import DOMAIN, NAME
+from .runtime import vehicle_device
+from .telemetry import signals as s
+
+_LOGGER = logging.getLogger(__name__)
+
+STORAGE_KEY: Final = f"{DOMAIN}.chargers"
+STORAGE_VERSION: Final = 1
+_MANAGER_KEY: Final = "chargers"
+
+# --- Papeles de las entidades -------------------------------------------------------
+ROLE_PLUGGED: Final = "plugged"
+ROLE_CHARGING: Final = "charging"
+ROLE_POWER: Final = "power"
+ROLE_ENERGY: Final = "energy"
+ROLE_LOCK: Final = "lock"
+ROLES: Final = (ROLE_PLUGGED, ROLE_CHARGING, ROLE_POWER, ROLE_ENERGY, ROLE_LOCK)
+#: Dominios que admite cada papel.
+ROLE_DOMAINS: Final = {
+    ROLE_PLUGGED: ("binary_sensor", "sensor", "switch", "input_boolean"),
+    ROLE_CHARGING: ("binary_sensor", "sensor", "switch", "input_boolean"),
+    ROLE_POWER: ("sensor",),
+    ROLE_ENERGY: ("sensor",),
+    ROLE_LOCK: ("switch", "lock", "input_boolean"),
+}
+
+# --- Opciones de cada cargador ------------------------------------------------------
+COVERAGE_YES: Final = "yes"
+COVERAGE_NO: Final = "no"
+COVERAGE_UNKNOWN: Final = "unknown"
+COVERAGES: Final = (COVERAGE_YES, COVERAGE_NO, COVERAGE_UNKNOWN)
+UNLOCK_NONE: Final = "none"
+UNLOCK_CONFIRM: Final = "confirm"
+UNLOCK_MODES: Final = (UNLOCK_NONE, UNLOCK_CONFIRM)
+REMIND_CHOICES: Final = (5, 15, 60)
+RELOCK_CHOICES: Final = (3, 5, 10)
+DEFAULT_LOSS: Final = 10.0
+MAX_LOSS: Final = 40.0
+#: Quién puede desbloquear desde la tarjeta o las notificaciones.
+CONTROL_PEOPLE: Final = "people"  # las personas de los coches y los administradores
+CONTROL_ADMINS: Final = "admins"
+CONTROLS: Final = (CONTROL_PEOPLE, CONTROL_ADMINS)
+
+# --- Tiempos ------------------------------------------------------------------------
+#: Cuánto se espera a que el coche confirme la manguera antes de preguntar.
+CHARGE_WAIT: Final = timedelta(minutes=5)
+#: Cada cuánto se mira si algún coche lo ha confirmado.
+CHARGE_WAIT_STEP: Final = 30
+#: Desbloqueado y sin cargar pasado este tiempo: aviso "no carga".
+NOT_CHARGING_AFTER: Final = timedelta(minutes=10)
+#: Cada cuánto se intenta medir la pérdida de las cargas ya terminadas.
+LEARN_INTERVAL: Final = timedelta(minutes=10)
+#: Cargas que se guardan por cargador, y pérdidas medidas que se promedian.
+HISTORY_SIZE: Final = 60
+LOSS_SAMPLES: Final = 10
+
+# --- Notificaciones -----------------------------------------------------------------
+EVENT_ACTION: Final = "mobile_app_notification_action"
+ACTION_PREFIX: Final = "DEC_DEEPAL_CHARGER"
+ACTION_NO: Final = "-"
+ACTION_AGAIN: Final = "again"
+NOTICE_CONFIRM: Final = "charger_confirm"
+NOTICE_UNLOCKED: Final = "charger_unlocked"
+NOTICE_NOT_CHARGING: Final = "charger_not_charging"
+NOTICE_FINISHED: Final = "charger_finished"
+NOTICE_LOCKED: Final = "charger_locked"
+
+#: Cómo asignó la carga a un coche.
+BY_CAR: Final = "car"  # el coche dijo que tenía la manguera
+BY_USER: Final = "user"  # alguien lo eligió (notificación, tarjeta)
+BY_SINGLE: Final = "single"  # el cargador solo tiene un coche
+
+
+class ChargerError(ValueError):
+    """Un cargador mal configurado o una orden que no se puede cumplir."""
+
+    def __init__(self, code: str) -> None:
+        super().__init__(code)
+        self.code = code
+
+
+def _choice(value: Any, choices: Iterable[Any], default: Any) -> Any:
+    return value if value in tuple(choices) else default
+
+
+def clean_charger(raw: Mapping[str, Any], known: Iterable[str] = ()) -> dict[str, Any]:
+    """Un cargador válido a partir de lo que manda el panel.
+
+    Raises:
+        ChargerError: sin nombre (``charger_name``), sin entidad de manguera
+            (``charger_plugged``) o con un papel en un dominio que no vale
+            (``charger_entity``).
+    """
+    name = str(raw.get("name") or "").strip()[:40]
+    if not name:
+        raise ChargerError("charger_name")
+    entities: dict[str, str] = {}
+    for role in ROLES:
+        entity_id = str((raw.get("entities") or {}).get(role) or "").strip()
+        if not entity_id:
+            continue
+        if entity_id.split(".", 1)[0] not in ROLE_DOMAINS[role]:
+            raise ChargerError("charger_entity")
+        entities[role] = entity_id
+    if ROLE_PLUGGED not in entities:
+        raise ChargerError("charger_plugged")
+    known = set(known)
+    vehicles = [str(item) for item in dict.fromkeys(raw.get("vehicles") or ()) if not known or str(item) in known]
+    try:
+        loss = float(raw.get("loss", DEFAULT_LOSS))
+    except (TypeError, ValueError):
+        loss = DEFAULT_LOSS
+    price = raw.get("price")
+    try:
+        price = None if price in (None, "") else max(0.0, round(float(price), 4))
+    except (TypeError, ValueError):
+        price = None
+    price_entity = str(raw.get("price_entity") or "").strip()
+    if price_entity and price_entity.split(".", 1)[0] not in ("sensor", "input_number", "number"):
+        raise ChargerError("charger_entity")
+    return {
+        "id": str(raw.get("id") or uuid.uuid4().hex[:10]),
+        "name": name,
+        "entities": entities,
+        # En un interruptor: ¿encendido = bloqueado? (en una cerradura no hace falta).
+        "lock_on_locked": bool(raw.get("lock_on_locked", True)),
+        "vehicles": vehicles,
+        "coverage": _choice(raw.get("coverage"), COVERAGES, COVERAGE_UNKNOWN),
+        "unlock": _choice(raw.get("unlock"), UNLOCK_MODES, UNLOCK_NONE),
+        "notify_confirm": bool(raw.get("notify_confirm", True)),
+        "remind_minutes": _choice(raw.get("remind_minutes"), REMIND_CHOICES, 15),
+        "relock": bool(raw.get("relock", True)),
+        "relock_minutes": _choice(raw.get("relock_minutes"), RELOCK_CHOICES, 5),
+        "relock_notify": bool(raw.get("relock_notify", True)),
+        "loss": min(MAX_LOSS, max(0.0, round(loss, 1))),
+        "learn": bool(raw.get("learn", True)),
+        "price": price,
+        "price_entity": price_entity,
+    }
+
+
+def estimate_level(start: float | None, energy_kwh: float | None, loss: float, capacity: float | None) -> float | None:
+    """% de batería estimado: el de partida más los kWh que llegan a la batería."""
+    if start is None or energy_kwh is None or not capacity:
+        return None
+    return min(100.0, start + energy_kwh * (1 - loss / 100) / capacity * 100)
+
+
+def estimate_minutes(level: float | None, power_w: float | None, loss: float, capacity: float | None) -> float | None:
+    """Minutos que faltan para el 100 % con la potencia actual (sin el equilibrado)."""
+    if level is None or not power_w or power_w <= 0 or not capacity:
+        return None
+    missing_kwh = (100 - level) / 100 * capacity / max(0.01, 1 - loss / 100)
+    return missing_kwh / (power_w / 1000) * 60
+
+
+def measured_loss(start: float, end: float, energy_kwh: float, capacity: float) -> float | None:
+    """Pérdida real de una carga, o ``None`` si los datos no son creíbles."""
+    if energy_kwh < 1 or end <= start:
+        return None
+    stored = (end - start) / 100 * capacity
+    loss = (1 - stored / energy_kwh) * 100
+    return round(loss, 1) if 0 <= loss <= MAX_LOSS else None
+
+
+def _number(state: State | None) -> float | None:
+    if state is None or state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN, ""):
+        return None
+    try:
+        return float(state.state)
+    except ValueError:
+        return None
+
+
+def _flag(state: State | None) -> bool | None:
+    """Estado sí/no de una entidad (``None`` = no se sabe)."""
+    if state is None or state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
+        return None
+    if state.state in (STATE_ON, "true", "plugged", "connected", "charging", "locked"):
+        return True
+    number = _number(state)
+    if number is not None:
+        return number > 0
+    return False
+
+
+def _iso(when: datetime | None) -> str | None:
+    return None if when is None else when.isoformat()
+
+
+def _when(value: Any) -> datetime | None:
+    return dt_util.parse_datetime(value) if isinstance(value, str) else None
+
+
+class ChargerManager:
+    """Todos los cargadores de la casa (uno por instalación de Home Assistant)."""
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        self.hass = hass
+        self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, STORAGE_KEY)
+        self.enabled = False
+        self.control = CONTROL_PEOPLE
+        self.chargers: dict[str, dict[str, Any]] = {}
+        #: Carga en curso de cada cargador (se guarda: sobrevive a reinicios).
+        self._sessions: dict[str, dict[str, Any]] = {}
+        self._history: dict[str, list[dict[str, Any]]] = {}
+        self._losses: dict[str, list[float]] = {}
+        self._loaded = False
+        self._unsubscribe: list[CALLBACK_TYPE] = []
+        #: Temporizadores por cargador: {cargador: {nombre: cancelar}}.
+        self._timers: dict[str, dict[str, CALLBACK_TYPE]] = {}
+        self._listeners: list[Callable[[], None]] = []
+        #: La hora (las pruebas la cambian).
+        self._clock: Callable[[], datetime] = dt_util.utcnow
+
+    # ------------------------------------------------------------------
+    # Arranque, guardado y escuchas
+    # ------------------------------------------------------------------
+
+    async def async_load(self) -> None:
+        """Lee lo guardado y, si los cargadores están activados, empieza a escuchar."""
+        if self._loaded:
+            return
+        data = await self._store.async_load() or {}
+        self.enabled = bool(data.get("enabled", False))
+        self.control = _choice(data.get("control"), CONTROLS, CONTROL_PEOPLE)
+        for raw in data.get("chargers") or ():
+            try:
+                charger = clean_charger(raw)
+            except ChargerError:
+                continue
+            self.chargers[charger["id"]] = charger
+        self._sessions = {key: dict(value) for key, value in (data.get("sessions") or {}).items() if key in self.chargers}
+        self._history = {key: list(value) for key, value in (data.get("history") or {}).items()}
+        self._losses = {key: [float(item) for item in value] for key, value in (data.get("losses") or {}).items()}
+        self._loaded = True
+        if self.hass.is_running:
+            self._resubscribe()
+        else:
+            # Al arrancar, los coches aún no están: se espera a que arranque todo.
+            @callback
+            def _started(_event: Event) -> None:
+                self._resubscribe()
+
+            self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _started)
+
+    def _data(self) -> dict[str, Any]:
+        return {
+            "enabled": self.enabled,
+            "control": self.control,
+            "chargers": list(self.chargers.values()),
+            "sessions": self._sessions,
+            "history": self._history,
+            "losses": self._losses,
+        }
+
+    def _save(self) -> None:
+        self._store.async_delay_save(self._data, 2)
+
+    async def async_flush(self) -> None:
+        await self._store.async_save(self._data())
+
+    @callback
+    def async_add_listener(self, listener: Callable[[], None]) -> CALLBACK_TYPE:
+        """Avisa de cualquier cambio (la tarjeta se suscribe así)."""
+        self._listeners.append(listener)
+        return lambda: self._listeners.remove(listener) if listener in self._listeners else None
+
+    def _changed(self) -> None:
+        for listener in list(self._listeners):
+            listener()
+
+    @callback
+    def async_stop(self) -> None:
+        for unsubscribe in self._unsubscribe:
+            unsubscribe()
+        self._unsubscribe = []
+        for charger_id in list(self._timers):
+            self._cancel(charger_id)
+
+    @callback
+    def _resubscribe(self) -> None:
+        self.async_stop()
+        if not self.enabled or not self.chargers:
+            return
+        watched: dict[str, list[tuple[str, str]]] = {}
+        for charger in self.chargers.values():
+            for role, entity_id in charger["entities"].items():
+                watched.setdefault(entity_id, []).append((charger["id"], role))
+        # Tiene que ser @callback: sin eso, Home Assistant lo ejecuta en otro hilo.
+        @callback
+        def _changed(event: Event) -> None:
+            self._on_state(event, watched)
+
+        self._unsubscribe.append(async_track_state_change_event(self.hass, list(watched), _changed))
+        self._unsubscribe.append(self.hass.bus.async_listen(EVENT_ACTION, self._on_action))
+        self._unsubscribe.append(async_track_time_interval(self.hass, self._learn, LEARN_INTERVAL))
+        # Lo que pasó con Home Assistant parado: se pone al día con el estado actual.
+        for charger in self.chargers.values():
+            self._sync(charger["id"])
+
+    # ------------------------------------------------------------------
+    # Configuración (panel)
+    # ------------------------------------------------------------------
+
+    async def async_set_settings(self, enabled: bool, control: str) -> None:
+        await self.async_load()
+        self.enabled = bool(enabled)
+        self.control = _choice(control, CONTROLS, CONTROL_PEOPLE)
+        self._save()
+        self._resubscribe()
+        self._changed()
+
+    async def async_save_charger(self, raw: Mapping[str, Any]) -> dict[str, Any]:
+        await self.async_load()
+        charger = clean_charger(raw, self._vehicle_ids())
+        self.chargers[charger["id"]] = charger
+        self._save()
+        self._resubscribe()
+        self._changed()
+        return charger
+
+    async def async_delete_charger(self, charger_id: str) -> None:
+        await self.async_load()
+        if self.chargers.pop(charger_id, None) is None:
+            raise KeyError(charger_id)
+        self._cancel(charger_id)
+        for store in (self._sessions, self._history, self._losses):
+            store.pop(charger_id, None)
+        self._save()
+        self._resubscribe()
+        self._changed()
+
+    def measured(self, charger_id: str) -> dict[str, Any] | None:
+        """Pérdida medida con las últimas cargas: ``{"value": 11.8, "count": 4}``."""
+        samples = self._losses.get(charger_id) or []
+        if not samples:
+            return None
+        return {"value": round(sum(samples) / len(samples), 1), "count": len(samples)}
+
+    # ------------------------------------------------------------------
+    # Coches
+    # ------------------------------------------------------------------
+
+    def _entries(self) -> list[Any]:
+        return [
+            entry
+            for entry in self.hass.config_entries.async_entries(DOMAIN)
+            if getattr(getattr(entry, "runtime_data", None), "alerts", None) is not None
+        ]
+
+    def _vehicle(self, vehicle_id: str) -> tuple[Any, Any] | None:
+        for entry in self._entries():
+            if vehicle := entry.runtime_data.vehicles.get(vehicle_id):
+                return entry, vehicle
+        return None
+
+    def _vehicle_ids(self) -> list[str]:
+        return [vehicle_id for entry in self._entries() for vehicle_id in entry.runtime_data.vehicles]
+
+    def _candidates(self, charger: Mapping[str, Any]) -> list[str]:
+        """Coches del cargador que están cargados en Home Assistant."""
+        return [vehicle_id for vehicle_id in charger["vehicles"] if self._vehicle(vehicle_id)]
+
+    def _name(self, vehicle_id: str | None) -> str:
+        found = self._vehicle(vehicle_id) if vehicle_id else None
+        if found is None:
+            return ""
+        entry, vehicle = found
+        device = vehicle_device(self.hass, entry.entry_id, vehicle_id)
+        if device is not None and (device.name_by_user or device.name):
+            return device.name_by_user or device.name
+        return vehicle.info.display_name
+
+    def _device_id(self, vehicle_id: str | None) -> str | None:
+        found = self._vehicle(vehicle_id) if vehicle_id else None
+        if found is None:
+            return None
+        device = vehicle_device(self.hass, found[0].entry_id, vehicle_id)
+        return device.id if device else None
+
+    def _car_data(self, vehicle_id: str | None) -> Mapping[str, Any]:
+        found = self._vehicle(vehicle_id) if vehicle_id else None
+        return (found[1].coordinator.data or {}) if found else {}
+
+    def _capacity(self, vehicle_id: str | None) -> float | None:
+        found = self._vehicle(vehicle_id) if vehicle_id else None
+        if found is None:
+            return None
+        vehicle = found[1]
+        trim = vehicle.model.trims.get(vehicle.trim or "")
+        return getattr(trim, "battery_kwh", None)
+
+    def _balance(self, vehicle_id: str | None) -> int:
+        found = self._vehicle(vehicle_id) if vehicle_id else None
+        return int(getattr(found[0].runtime_data, "charge_balance_minutes", 0) or 0) if found else 0
+
+    def _reported_since(self, vehicle_id: str, since: datetime | None) -> bool:
+        """¿Ha informado el coche después de ``since``?"""
+        report = self._car_data(vehicle_id).get(s.REPORT_TIME)
+        return isinstance(report, datetime) and since is not None and report >= since - timedelta(minutes=2)
+
+    def _people_users(self, vehicle_ids: Iterable[str]) -> set[str]:
+        """Usuarios de Home Assistant de las personas de esos coches."""
+        users: set[str] = set()
+        for vehicle_id in vehicle_ids:
+            found = self._vehicle(vehicle_id)
+            if found is None:
+                continue
+            for person_id in found[0].runtime_data.alerts.people(vehicle_id):
+                state = self.hass.states.get(person_id)
+                if state is not None and state.attributes.get("user_id"):
+                    users.add(state.attributes["user_id"])
+        return users
+
+    def can_control(self, charger_id: str, user: Any) -> bool:
+        """¿Puede este usuario desbloquear el cargador o elegir el coche?"""
+        if user is None or getattr(user, "is_admin", False):
+            return user is not None
+        if self.control != CONTROL_PEOPLE:
+            return False
+        charger = self.chargers.get(charger_id)
+        return charger is not None and user.id in self._people_users(charger["vehicles"])
+
+    # ------------------------------------------------------------------
+    # Entidades del cargador
+    # ------------------------------------------------------------------
+
+    def _state(self, charger: Mapping[str, Any], role: str) -> State | None:
+        entity_id = charger["entities"].get(role)
+        return self.hass.states.get(entity_id) if entity_id else None
+
+    def plugged(self, charger: Mapping[str, Any]) -> bool | None:
+        return _flag(self._state(charger, ROLE_PLUGGED))
+
+    def charging(self, charger: Mapping[str, Any]) -> bool | None:
+        return _flag(self._state(charger, ROLE_CHARGING))
+
+    def power_w(self, charger: Mapping[str, Any]) -> float | None:
+        state = self._state(charger, ROLE_POWER)
+        value = _number(state)
+        if value is None:
+            return None
+        unit = str(state.attributes.get("unit_of_measurement") or "W")
+        return value * 1000 if unit.lower() == "kw" else value
+
+    def _energy_raw(self, charger: Mapping[str, Any]) -> float | None:
+        state = self._state(charger, ROLE_ENERGY)
+        value = _number(state)
+        if value is None:
+            return None
+        unit = str(state.attributes.get("unit_of_measurement") or "kWh")
+        return value / 1000 if unit.lower() == "wh" else value
+
+    def locked(self, charger: Mapping[str, Any]) -> bool | None:
+        state = self._state(charger, ROLE_LOCK)
+        if state is None or state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
+            return None
+        if state.domain == "lock":
+            return state.state == "locked"
+        on = state.state == STATE_ON
+        return on if charger["lock_on_locked"] else not on
+
+    def price(self, charger: Mapping[str, Any]) -> float | None:
+        if charger.get("price_entity"):
+            return _number(self.hass.states.get(charger["price_entity"]))
+        return charger.get("price")
+
+    async def _set_locked(self, charger: Mapping[str, Any], locked: bool) -> bool:
+        """Bloquea o desbloquea. ``False`` si el cargador no tiene bloqueo."""
+        entity_id = charger["entities"].get(ROLE_LOCK)
+        if not entity_id:
+            return False
+        domain = entity_id.split(".", 1)[0]
+        if domain == "lock":
+            service = "lock" if locked else "unlock"
+        else:
+            turn_on = locked if charger["lock_on_locked"] else not locked
+            service = "turn_on" if turn_on else "turn_off"
+        await self.hass.services.async_call(domain, service, {"entity_id": entity_id}, blocking=True)
+        return True
+
+    # ------------------------------------------------------------------
+    # Cambios del cargador
+    # ------------------------------------------------------------------
+
+    @callback
+    def _on_state(self, event: Event, watched: Mapping[str, list[tuple[str, str]]]) -> None:
+        for charger_id, role in watched.get(event.data["entity_id"], ()):
+            charger = self.chargers.get(charger_id)
+            if charger is None:
+                continue
+            if role in (ROLE_PLUGGED, ROLE_CHARGING, ROLE_LOCK):
+                self._sync(charger_id)
+            elif role == ROLE_ENERGY:
+                self._track_energy(charger)
+            self._changed()
+
+    @callback
+    def _sync(self, charger_id: str) -> None:
+        """Compara el cargador con la carga apuntada y hace lo que toque."""
+        charger = self.chargers[charger_id]
+        plugged = self.plugged(charger)
+        session = self._sessions.get(charger_id)
+        if plugged is None:
+            return
+        if plugged and session is None:
+            self._start(charger)
+        elif not plugged and session is not None:
+            self._end(charger)
+        elif not plugged and session is None:
+            self._maybe_relock(charger)
+        if plugged and (session := self._sessions.get(charger_id)) is not None:
+            charging = self.charging(charger)
+            if charging and not session.get("charging_since"):
+                session["charging_since"] = _iso(self._clock())
+                self._cancel(charger_id, "not_charging")
+                self._save()
+            elif charging is False and session.get("charging_since") and not session.get("finished_at"):
+                session["finished_at"] = _iso(self._clock())
+                self._save()
+                self._notify_finished(charger, session)
+            elif charging and session.get("finished_at"):
+                session.pop("finished_at", None)  # vuelve a cargar (p. ej. la compañía reanuda)
+                self._save()
+            if self.locked(charger) is False and session.get("unlocked_at") is None:
+                session["unlocked_at"] = _iso(self._clock())
+                self._cancel(charger_id, "remind")
+                self._save()
+        self._changed()
+
+    def _start(self, charger: dict[str, Any]) -> None:
+        charger_id = charger["id"]
+        self._cancel(charger_id, "relock")
+        now = self._clock()
+        candidates = self._candidates(charger)
+        session: dict[str, Any] = {
+            "plugged_at": _iso(now),
+            "vehicle_id": None,
+            "assigned": None,
+            "energy_start": self._energy_raw(charger),
+            "energy": 0.0,
+            "unlocked_at": _iso(now) if self.locked(charger) is False else None,
+            "asked": False,
+        }
+        self._sessions[charger_id] = session
+        if len(candidates) == 1 and (charger["unlock"] == UNLOCK_NONE or self.locked(charger) is not True):
+            self._assign(charger, candidates[0], BY_SINGLE)
+        self._save()
+        if charger["unlock"] == UNLOCK_CONFIRM and self.locked(charger):
+            if charger["coverage"] == COVERAGE_NO:
+                self._ask(charger)
+            else:
+                self._wait_for_car(charger, now + CHARGE_WAIT)
+        elif charger["unlock"] == UNLOCK_NONE and session["vehicle_id"] is None:
+            self._wait_for_car(charger, now + CHARGE_WAIT, ask=False)
+
+    def _assign(self, charger: Mapping[str, Any], vehicle_id: str, how: str) -> None:
+        session = self._sessions.get(charger["id"])
+        if session is None:
+            return
+        data = self._car_data(vehicle_id)
+        session.update(
+            vehicle_id=vehicle_id,
+            assigned=how,
+            soc_start=data.get(s.BATTERY_LEVEL),
+            range_start=data.get(s.RANGE_KM),
+            odometer=data.get(s.ODOMETER_KM),
+        )
+        self._save()
+
+    def _car_confirming(self, charger: Mapping[str, Any]) -> str | None:
+        """El coche que dice tener la manguera puesta desde que se enchufó."""
+        session = self._sessions.get(charger["id"]) or {}
+        since = _when(session.get("plugged_at"))
+        confirming = [
+            vehicle_id
+            for vehicle_id in self._candidates(charger)
+            if self._reported_since(vehicle_id, since)
+            and (self._car_data(vehicle_id).get(s.CHARGER_PLUGGED) or self._car_data(vehicle_id).get(s.CHARGING))
+        ]
+        return confirming[0] if len(confirming) == 1 else None
+
+    def _wait_for_car(self, charger: Mapping[str, Any], until: datetime, *, ask: bool = True) -> None:
+        charger_id = charger["id"]
+
+        @callback
+        def _check(_now: Any) -> None:
+            session = self._sessions.get(charger_id)
+            current = self.chargers.get(charger_id)
+            if session is None or current is None or session.get("vehicle_id"):
+                return
+            if (vehicle_id := self._car_confirming(current)) is not None:
+                self._assign(current, vehicle_id, BY_CAR)
+                if current["unlock"] == UNLOCK_CONFIRM and self.locked(current):
+                    self.hass.async_create_task(self._unlock_for(current, vehicle_id, by_car=True))
+                self._changed()
+                return
+            if self._clock() >= until:
+                if ask and current["unlock"] == UNLOCK_CONFIRM and self.locked(current):
+                    self._ask(current)
+                return
+            self._timer(charger_id, "wait", CHARGE_WAIT_STEP, _check)
+
+        self._timer(charger_id, "wait", CHARGE_WAIT_STEP, _check)
+
+    def _end(self, charger: dict[str, Any]) -> None:
+        charger_id = charger["id"]
+        session = self._sessions.pop(charger_id)
+        for name in ("wait", "remind", "not_charging"):
+            self._cancel(charger_id, name)
+        self._track_energy(charger, session)
+        now = self._clock()
+        price = self.price(charger)
+        energy = round(float(session.get("energy") or 0.0), 2)
+        vehicle_id = session.get("vehicle_id")
+        record = {
+            "start": session.get("plugged_at"),
+            "end": _iso(now),
+            "charging_since": session.get("charging_since"),
+            "finished_at": session.get("finished_at"),
+            "vehicle_id": vehicle_id,
+            "energy": energy,
+            "cost": None if price is None else round(energy * price, 2),
+            "soc_start": session.get("soc_start"),
+            "soc_end": self._level(charger, session) if vehicle_id else None,
+            "estimated": bool(vehicle_id) and not self._reported_since(vehicle_id, _when(session.get("charging_since") or session.get("plugged_at"))),
+            "odometer": session.get("odometer"),
+            "learned": False,
+        }
+        if session.get("charging_since") or energy > 0:
+            history = self._history.setdefault(charger_id, [])
+            history.append(record)
+            del history[:-HISTORY_SIZE]
+        self._save()
+        self._maybe_relock(charger)
+
+    def _maybe_relock(self, charger: Mapping[str, Any]) -> None:
+        """Desbloqueado y sin manguera: se bloquea pasados ``relock_minutes``."""
+        charger_id = charger["id"]
+        if not charger["relock"] or self.locked(charger) is not False or "relock" in self._timers.get(charger_id, {}):
+            return
+
+        @callback
+        def _relock(_now: Any) -> None:
+            current = self.chargers.get(charger_id)
+            if current is None or self.plugged(current) or self.locked(current) is not False:
+                return
+            self.hass.async_create_task(self._relock(current))
+
+        self._timer(charger_id, "relock", charger["relock_minutes"] * 60, _relock)
+
+    async def _relock(self, charger: Mapping[str, Any]) -> None:
+        if not await self._set_locked(charger, True):
+            return
+        if charger["relock_notify"]:
+            last = (self._history.get(charger["id"]) or [{}])[-1]
+            vehicles = [last["vehicle_id"]] if last.get("vehicle_id") else charger["vehicles"]
+            self._send(
+                charger,
+                NOTICE_LOCKED,
+                vehicles,
+                self._text("charger_locked", charger=charger["name"], minutes=charger["relock_minutes"]),
+                [(f"{ACTION_PREFIX}|{charger['id']}|{ACTION_AGAIN}", self._text("action_unlock_again"))],
+            )
+        self._changed()
+
+    def _track_energy(self, charger: Mapping[str, Any], session: dict[str, Any] | None = None) -> None:
+        """kWh de esta carga: lo que ha subido el contador desde que se enchufó."""
+        session = session if session is not None else self._sessions.get(charger["id"])
+        value = self._energy_raw(charger)
+        if session is None or value is None:
+            return
+        start = session.get("energy_start")
+        if start is None or value < start:
+            # Contador por sesión (se pone a 0 al enchufar) o reiniciado.
+            session["energy_start"] = start = 0.0 if start is None or value < start else start
+        session["energy"] = max(float(session.get("energy") or 0.0), value - start)
+        self._save()
+
+    # ------------------------------------------------------------------
+    # Preguntar, desbloquear y avisar
+    # ------------------------------------------------------------------
+
+    def _ask(self, charger: Mapping[str, Any], *, reminder: bool = False) -> None:
+        charger_id = charger["id"]
+        session = self._sessions.get(charger_id)
+        if session is None or session.get("vehicle_id") and not reminder:
+            return
+        session["asked"] = True
+        self._save()
+        if charger["notify_confirm"]:
+            candidates = self._candidates(charger)
+            if reminder:
+                text = self._text("charger_reminder", charger=charger["name"])
+            elif len(candidates) == 1:
+                text = self._text("charger_confirm_one", charger=charger["name"], car=self._name(candidates[0]))
+            else:
+                text = self._text("charger_confirm_many", charger=charger["name"])
+            if len(candidates) == 1:
+                actions = [(f"{ACTION_PREFIX}|{charger_id}|{candidates[0]}", self._text("action_unlock"))]
+                actions.append((f"{ACTION_PREFIX}|{charger_id}|{ACTION_NO}", self._text("action_no")))
+            else:
+                actions = [(f"{ACTION_PREFIX}|{charger_id}|{vehicle_id}", self._name(vehicle_id)) for vehicle_id in candidates]
+                if not reminder:
+                    actions.append((f"{ACTION_PREFIX}|{charger_id}|{ACTION_NO}", self._text("action_no_unlock")))
+            self._send(charger, NOTICE_CONFIRM, candidates, text, actions[:3] if len(candidates) <= 2 else actions)
+
+        @callback
+        def _remind(_now: Any) -> None:
+            current = self.chargers.get(charger_id)
+            session = self._sessions.get(charger_id)
+            if current is None or session is None or session.get("vehicle_id") or not self.locked(current):
+                return
+            self._ask(current, reminder=True)
+
+        if not reminder:
+            self._timer(charger_id, "remind", charger["remind_minutes"] * 60, _remind)
+        self._changed()
+
+    async def async_confirm(self, charger_id: str, vehicle_id: str | None, user: Any = None, *, check: bool = True) -> None:
+        """Alguien eligió el coche (o "no desbloquear"). Desbloquea si toca.
+
+        Raises:
+            ChargerError: sin permiso (``unauthorized``) o un coche que no es
+                de ese cargador (``charger_vehicle``).
+            KeyError: el cargador no existe.
+        """
+        charger = self.chargers[charger_id]
+        if check and not self.can_control(charger_id, user):
+            raise ChargerError("unauthorized")
+        if vehicle_id in (None, ACTION_NO):
+            self._cancel(charger_id, "remind")
+            self._changed()
+            return
+        if vehicle_id == ACTION_AGAIN:
+            await self._set_locked(charger, False)
+            self._changed()
+            return
+        if vehicle_id not in charger["vehicles"]:
+            raise ChargerError("charger_vehicle")
+        if (session := self._sessions.get(charger_id)) is not None:
+            self._assign(charger, vehicle_id, BY_USER)
+            session["asked"] = True
+        self._cancel(charger_id, "wait")
+        self._cancel(charger_id, "remind")
+        if self.locked(charger):
+            await self._unlock_for(charger, vehicle_id)
+        self._changed()
+
+    async def async_set_lock(self, charger_id: str, locked: bool, user: Any) -> None:
+        """Bloquear o desbloquear a mano (tarjeta)."""
+        charger = self.chargers[charger_id]
+        if not self.can_control(charger_id, user):
+            raise ChargerError("unauthorized")
+        if not charger["entities"].get(ROLE_LOCK):
+            raise ChargerError("charger_no_lock")
+        await self._set_locked(charger, locked)
+        if not locked:
+            self._cancel(charger_id, "remind")
+        self._changed()
+
+    async def _unlock_for(self, charger: Mapping[str, Any], vehicle_id: str, *, by_car: bool = False) -> None:
+        if not await self._set_locked(charger, False):
+            return
+        charger_id = charger["id"]
+        if (session := self._sessions.get(charger_id)) is not None:
+            session["unlocked_at"] = _iso(self._clock())
+            self._save()
+        if by_car:
+            self._send(
+                charger,
+                NOTICE_UNLOCKED,
+                [vehicle_id],
+                self._text("charger_unlocked", charger=charger["name"], car=self._name(vehicle_id)),
+            )
+        if charger["entities"].get(ROLE_CHARGING):
+
+            @callback
+            def _not_charging(_now: Any) -> None:
+                current = self.chargers.get(charger_id)
+                session = self._sessions.get(charger_id)
+                if current is None or session is None or session.get("charging_since") or self.charging(current):
+                    return
+                minutes = int(NOT_CHARGING_AFTER.total_seconds() // 60)
+                self._send(
+                    current,
+                    NOTICE_NOT_CHARGING,
+                    [session["vehicle_id"]] if session.get("vehicle_id") else current["vehicles"],
+                    self._text("charger_not_charging", charger=current["name"], minutes=minutes),
+                )
+
+            self._timer(charger_id, "not_charging", NOT_CHARGING_AFTER.total_seconds(), _not_charging)
+        self._changed()
+
+    def _notify_finished(self, charger: Mapping[str, Any], session: Mapping[str, Any]) -> None:
+        self._track_energy(charger, dict(session))
+        energy = float(session.get("energy") or 0.0)
+        price = self.price(charger)
+        parts = []
+        start, end = session.get("soc_start"), self._level(charger, session)
+        if start is not None and end is not None:
+            approx = "≈ " if self._is_estimated(session) else ""
+            parts.append(f"{round(start)} % → {approx}{round(end)} %")
+        if energy > 0:
+            parts.append(f"+{self._decimal(energy, 1)} kWh")
+        if price is not None and energy > 0:
+            parts.append(f"{self._decimal(energy * price, 2)} €")
+        details = (" · " + " · ".join(parts)) if parts else ""
+        vehicles = [session["vehicle_id"]] if session.get("vehicle_id") else charger["vehicles"]
+        self._send(charger, NOTICE_FINISHED, vehicles, self._text("charger_finished", charger=charger["name"], details=details))
+
+    def _decimal(self, value: float, digits: int) -> str:
+        """Número con la coma decimal del idioma (en inglés, punto)."""
+        text = f"{value:.{digits}f}"
+        return text if self.hass.config.language.startswith("en") else text.replace(".", ",")
+
+    def _text(self, key: str, **values: Any) -> str:
+        return texts(self.hass.config.language)[key].format(**values)
+
+    def _send(
+        self,
+        charger: Mapping[str, Any],
+        notice: str,
+        vehicle_ids: Iterable[str],
+        message: str,
+        actions: list[tuple[str, str]] | None = None,
+    ) -> None:
+        """Manda un aviso del cargador a los destinos de esos coches."""
+        vehicle_ids = [vehicle_id for vehicle_id in vehicle_ids if vehicle_id]
+        targets: dict[str, None] = {}
+        for vehicle_id in vehicle_ids:
+            found = self._vehicle(vehicle_id)
+            if found is None:
+                continue
+            route = found[0].runtime_data.alerts.route(vehicle_id)
+            for target in route.targets_for(notice) or route.targets_for(SECTION_CHARGE):
+                targets[target] = None
+        title = f"{NAME} {self._name(vehicle_ids[0])}" if len(vehicle_ids) == 1 else f"{NAME} · {charger['name']}"
+        data: dict[str, Any] = {"tag": f"{DOMAIN}_charger_{charger['id']}"}
+        if actions:
+            data["actions"] = [{"action": action, "title": label} for action, label in actions]
+        for service in targets:
+            if service == TARGET_PANEL:
+                persistent_notification.async_create(
+                    self.hass, message, title=title, notification_id=f"{DOMAIN}_charger_{charger['id']}"
+                )
+                continue
+            if not self.hass.services.has_service("notify", service):
+                continue
+            payload: dict[str, Any] = {"title": title, "message": message}
+            if service.startswith("mobile_app_"):
+                payload["data"] = data
+            self.hass.async_create_task(
+                self.hass.services.async_call("notify", service, payload, blocking=False)
+            )
+        _LOGGER.debug("Aviso del cargador %s (%s): %s", charger["name"], notice, message)
+
+    @callback
+    def _on_action(self, event: Event) -> None:
+        """Botón de una notificación: ``DEC_DEEPAL_CHARGER|<cargador>|<coche, - o again>``."""
+        action = str(event.data.get("action") or "")
+        if not action.startswith(f"{ACTION_PREFIX}|"):
+            return
+        try:
+            _prefix, charger_id, choice = action.split("|", 2)
+        except ValueError:
+            return
+        if charger_id not in self.chargers:
+            return
+        user_id = event.context.user_id
+
+        async def _run() -> None:
+            user = await self.hass.auth.async_get_user(user_id) if user_id else None
+            try:
+                # Sin usuario conocido: el botón solo lo tiene quien recibió el aviso.
+                await self.async_confirm(charger_id, choice, user, check=user is not None)
+            except (ChargerError, KeyError) as err:
+                _LOGGER.warning("Botón del cargador no atendido (%s): %s", charger_id, err)
+
+        self.hass.async_create_task(_run())
+
+    # ------------------------------------------------------------------
+    # Estimación y medida de pérdidas
+    # ------------------------------------------------------------------
+
+    def _is_estimated(self, session: Mapping[str, Any]) -> bool:
+        vehicle_id = session.get("vehicle_id")
+        return bool(vehicle_id) and not self._reported_since(vehicle_id, _when(session.get("charging_since") or session.get("plugged_at")))
+
+    def _level(self, charger: Mapping[str, Any], session: Mapping[str, Any]) -> float | None:
+        """% del coche: el real si ha informado durante la carga; si no, estimado."""
+        vehicle_id = session.get("vehicle_id")
+        if not vehicle_id:
+            return None
+        if not self._is_estimated(session):
+            return self._car_data(vehicle_id).get(s.BATTERY_LEVEL)
+        return estimate_level(session.get("soc_start"), session.get("energy"), charger["loss"], self._capacity(vehicle_id))
+
+    @callback
+    def _learn(self, _now: Any = None) -> None:
+        """Cargas terminadas sin cobertura: cuando el coche vuelve a informar, se mide la pérdida."""
+        changed = False
+        for charger_id, history in self._history.items():
+            charger = self.chargers.get(charger_id)
+            if charger is None:
+                continue
+            for record in history[-5:]:
+                vehicle_id = record.get("vehicle_id")
+                if record.get("learned") or not vehicle_id or record.get("soc_start") is None:
+                    continue
+                end = _when(record.get("end"))
+                data = self._car_data(vehicle_id)
+                if not self._reported_since(vehicle_id, end):
+                    continue
+                record["learned"] = True
+                changed = True
+                level = data.get(s.BATTERY_LEVEL)
+                odometer = data.get(s.ODOMETER_KM)
+                if level is None or (record.get("odometer") is not None and odometer is not None and odometer - record["odometer"] > 1):
+                    continue  # ya ha circulado: el % no sirve
+                record["soc_end"] = level
+                record["estimated"] = False
+                capacity = self._capacity(vehicle_id)
+                if charger["learn"] and capacity and (loss := measured_loss(record["soc_start"], level, record["energy"], capacity)) is not None:
+                    samples = self._losses.setdefault(charger_id, [])
+                    samples.append(loss)
+                    del samples[:-LOSS_SAMPLES]
+        if changed:
+            self._save()
+            self._changed()
+
+    # ------------------------------------------------------------------
+    # Temporizadores
+    # ------------------------------------------------------------------
+
+    def _timer(self, charger_id: str, name: str, seconds: float, action: Callable[[Any], None]) -> None:
+        self._cancel(charger_id, name)
+        timers = self._timers.setdefault(charger_id, {})
+
+        @callback
+        def _fire(now: Any) -> None:
+            timers.pop(name, None)
+            action(now)
+
+        timers[name] = async_call_later(self.hass, seconds, _fire)
+
+    def _cancel(self, charger_id: str, name: str | None = None) -> None:
+        timers = self._timers.get(charger_id, {})
+        for key in [name] if name else list(timers):
+            if (cancel := timers.pop(key, None)) is not None:
+                cancel()
+
+    # ------------------------------------------------------------------
+    # Lo que ven la tarjeta y el panel
+    # ------------------------------------------------------------------
+
+    def status(self, charger_id: str, user: Any = None) -> dict[str, Any]:
+        """Estado de un cargador para la tarjeta (y la ventana de carga del coche)."""
+        charger = self.chargers[charger_id]
+        session = self._sessions.get(charger_id)
+        if session is not None:
+            self._track_energy(charger, session)
+        price = self.price(charger)
+        power = self.power_w(charger)
+        locked = self.locked(charger)
+        current = None
+        if session is not None:
+            vehicle_id = session.get("vehicle_id")
+            energy = round(float(session.get("energy") or 0.0), 2)
+            level = self._level(charger, session)
+            estimated = self._is_estimated(session)
+            minutes = (
+                estimate_minutes(level, power, charger["loss"], self._capacity(vehicle_id))
+                if estimated and self.charging(charger)
+                else None
+            )
+            current = {
+                "since": session.get("plugged_at"),
+                "charging_since": session.get("charging_since"),
+                "finished_at": session.get("finished_at"),
+                "vehicle_id": vehicle_id,
+                "vehicle": self._name(vehicle_id) or None,
+                "device_id": self._device_id(vehicle_id),
+                "assigned": session.get("assigned"),
+                "waiting": vehicle_id is None and locked is True and charger["unlock"] == UNLOCK_CONFIRM,
+                "energy": energy,
+                "battery_energy": round(energy * (1 - charger["loss"] / 100), 2),
+                "cost": None if price is None else round(energy * price, 2),
+                "soc_start": session.get("soc_start"),
+                "level": None if level is None else round(level, 1),
+                "estimated": estimated,
+                "minutes_left": None if minutes is None else round(minutes),
+                # Minutos de equilibrado que se suman al final (Ajustes de la cuenta del coche).
+                "balance": self._balance(vehicle_id),
+            }
+        history = self._history.get(charger_id) or []
+        month = dt_util.now().strftime("%Y-%m")
+        this_month = [
+            item
+            for item in history
+            if (start := _when(item.get("start"))) is not None and dt_util.as_local(start).strftime("%Y-%m") == month
+        ]
+        by_vehicle: dict[str, int] = {}
+        for item in this_month:
+            name = self._name(item.get("vehicle_id")) or "?"
+            by_vehicle[name] = by_vehicle.get(name, 0) + 1
+        last = history[-1] if history else None
+        return {
+            "id": charger_id,
+            "name": charger["name"],
+            "plugged": self.plugged(charger),
+            "charging": self.charging(charger),
+            "locked": locked,
+            "has_lock": bool(charger["entities"].get(ROLE_LOCK)),
+            "power": power,
+            "unlock": charger["unlock"],
+            "coverage": charger["coverage"],
+            "loss": charger["loss"],
+            "price": price,
+            "vehicles": [
+                {"id": vehicle_id, "name": self._name(vehicle_id), "device_id": self._device_id(vehicle_id)}
+                for vehicle_id in self._candidates(charger)
+            ],
+            "session": current,
+            "last": None
+            if last is None
+            else {
+                **{key: last.get(key) for key in ("start", "end", "energy", "cost", "soc_start", "soc_end", "estimated")},
+                "vehicle": self._name(last.get("vehicle_id")) or None,
+            },
+            "month": {
+                "count": len(this_month),
+                "energy": round(sum(float(item.get("energy") or 0) for item in this_month), 1),
+                "cost": round(sum(float(item.get("cost") or 0) for item in this_month), 2) if price is not None else None,
+                "by_vehicle": by_vehicle,
+            },
+            "history": [
+                {
+                    **{key: item.get(key) for key in ("start", "end", "energy", "cost", "soc_start", "soc_end", "estimated")},
+                    "vehicle": self._name(item.get("vehicle_id")) or None,
+                }
+                for item in reversed(history[-20:])
+            ],
+            "can_control": self.can_control(charger_id, user),
+        }
+
+    def statuses(self, user: Any = None) -> dict[str, Any]:
+        """Todos los cargadores (lo que recibe la suscripción de la tarjeta)."""
+        return {
+            "enabled": self.enabled,
+            "chargers": [self.status(charger_id, user) for charger_id in self.chargers] if self.enabled else [],
+        }
+
+    def panel_config(self) -> dict[str, Any]:
+        """Configuración para el panel (Ajustes → Cargadores)."""
+        return {
+            "enabled": self.enabled,
+            "control": self.control,
+            "chargers": [
+                {**charger, "measured": self.measured(charger["id"]), "plugged": self.plugged(charger), "locked": self.locked(charger)}
+                for charger in self.chargers.values()
+            ],
+            "roles": {role: list(domains) for role, domains in ROLE_DOMAINS.items()},
+            "remind_choices": list(REMIND_CHOICES),
+            "relock_choices": list(RELOCK_CHOICES),
+            "default_loss": DEFAULT_LOSS,
+        }
+
+
+def async_get_manager(hass: HomeAssistant) -> ChargerManager:
+    """El gestor de cargadores de esta instalación (se crea la primera vez)."""
+    domain_data = hass.data.setdefault(DOMAIN, {})
+    manager = domain_data.get(_MANAGER_KEY)
+    if manager is None:
+        manager = domain_data[_MANAGER_KEY] = ChargerManager(hass)
+    return manager

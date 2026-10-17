@@ -51,6 +51,8 @@
       };
       const rows = [];
       for (const [section, icon] of SECTIONS) {
+        // El apartado "Cargador" solo con los cargadores activados (Ajustes).
+        if (section === "charger" && !this._state.chargers_enabled) continue;
         const notices = this._notices(car, section);
         if (!notices.length) continue;
         const open = this._open.has(`${car.id}/${section}`);

@@ -86,8 +86,11 @@ TARGET_PANEL: Final = "persistent_notification"
 #: Apartados del panel, en su orden.
 SECTION_CHARGE: Final = "charge"
 SECTION_WARNINGS: Final = "warnings"
+#: Avisos de los cargadores (``chargers.py``). Si un coche no tiene destinos
+#: aquí, el cargador usa los de sus avisos de carga.
+SECTION_CHARGER: Final = "charger"
 SECTIONS: Final = (
-    SECTION_CHARGE, SECTION_WARNINGS, GROUP_MAINTENANCE, GROUP_ITV, GROUP_INSURANCE,
+    SECTION_CHARGE, SECTION_WARNINGS, SECTION_CHARGER, GROUP_MAINTENANCE, GROUP_ITV, GROUP_INSURANCE,
 )  # fmt: skip
 UNIT_DAYS: Final = "days"
 UNIT_KM: Final = "km"
@@ -132,6 +135,11 @@ NOTICES: Final[tuple[Notice, ...]] = (
     Notice(ALERT_WARNINGS, SECTION_WARNINGS),
     Notice(ALERT_TIRES, SECTION_WARNINGS),
     Notice(ALERT_KEY_BATTERY, SECTION_WARNINGS),
+    _due(SECTION_CHARGER, "confirm"),
+    _due(SECTION_CHARGER, "unlocked"),
+    _due(SECTION_CHARGER, "not_charging"),
+    _due(SECTION_CHARGER, "finished"),
+    _due(SECTION_CHARGER, "locked"),
     _due(GROUP_MAINTENANCE, "t1", 60, UNIT_DAYS),
     _due(GROUP_MAINTENANCE, "t2", 30, UNIT_DAYS),
     _due(GROUP_MAINTENANCE, "t3", 15, UNIT_DAYS),
@@ -495,6 +503,11 @@ def ordinal(number: int, language: str) -> str:
 def format_date(value: date, language: str) -> str:
     """Fecha corta con el formato del idioma (``10/03/2027``, ``10.03.2027``)."""
     return value.strftime(_texts(language)["date_format"])
+
+
+def texts(language: str) -> dict[str, str]:
+    """Textos de los avisos en un idioma (con el de respaldo si falta alguno)."""
+    return _texts(language)
 
 
 def charge_text(alert: str, level: float | None, language: str) -> str:

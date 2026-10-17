@@ -24,6 +24,7 @@
   const SECTIONS = [
     ["charge", "mdi:battery-charging"],
     ["warnings", "mdi:car-brake-alert"],
+    ["charger", "mdi:ev-station"],
     ["maintenance", "mdi:wrench"],
     ["itv", "mdi:clipboard-check-outline"],
     ["insurance", "mdi:shield-car"],

@@ -106,6 +106,8 @@
      *   manual    respuesta de manual_info ({ available, url, itv, silent_warnings })
      *   seguro    respuesta de insurance_info, o null si no hay ficha
      *   textos    textos de Home Assistant para hass.localize ({ clave: texto })
+     *   cargadores  lo que manda la suscripción dec_deepal/chargers/subscribe
+     *               ({ enabled, chargers }); sin él, la suscripción falla
      */
     montar(opciones = {}) {
       document.getElementById("mount").replaceChildren();
@@ -148,7 +150,28 @@
           if (opciones.fallo) throw new Error(opciones.fallo);
           banco._react(domain, service, data);
         },
+        callWS: async (message) => {
+          const { type, ...data } = message;
+          banco.registro.push(`ws ${type} ${JSON.stringify(data)}`);
+          if (type === "dec_deepal/chargers/state") return banco._cargadores || { enabled: false, chargers: [] };
+          return null;
+        },
+        connection: {
+          // Suscripción a los cargadores: manda lo que haya y cada cambio (banco.cargadores).
+          subscribeMessage: (callback, message) => {
+            banco.suscripciones.push(message.type);
+            if (!opciones.cargadores) return Promise.reject(new Error("unknown_command"));
+            banco._suscritos.push(callback);
+            setTimeout(() => callback(banco._cargadores), 0);
+            return Promise.resolve(() => {
+              banco._suscritos = banco._suscritos.filter((item) => item !== callback);
+            });
+          },
+        },
       };
+      banco._cargadores = opciones.cargadores;
+      banco._suscritos = [];
+      banco.suscripciones = [];
       banco.hass = hass;
       // `tarjeta`: "dec-deepal-card" (por defecto) o "dec-deepal-top-card"; `config`: más opciones.
       const tag = opciones.tarjeta || "dec-deepal-card";
@@ -161,6 +184,12 @@
     },
 
     _localize: (textos) => (key) => (textos || {})[key] || "",
+
+    /** Cambia lo que mandan los cargadores (como la suscripción de verdad). */
+    cargadores(datos) {
+      banco._cargadores = datos;
+      for (const callback of banco._suscritos) callback(datos);
+    },
 
     /** Llega otra lectura del coche: `{ clave: [estado, atributos] }`. */
     cambiar(estados) {

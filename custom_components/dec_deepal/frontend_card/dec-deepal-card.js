@@ -184,6 +184,44 @@
       "range_left": "{value} de autonomía",
       "time_left": "Tiempo restante",
       "ends_at": "Termina hacia las {time}",
+      "charger_card_name": "Cargador",
+      "charger_card_description": "Un cargador vinculado a tus coches: estado, bloqueo y cargas.",
+      "charger_disabled": "Los cargadores están desactivados (panel DEC Deepal → Ajustes).",
+      "charger_missing": "No hay ese cargador. Añádelo en el panel DEC Deepal → Ajustes → Cargadores.",
+      "charger_select": "Cargador",
+      "charger_first": "El primero",
+      "ch_station": "Cargador",
+      "ch_waiting": "Enchufado · esperando confirmación",
+      "ch_waiting_help": "Bloqueado hasta que se elija el coche. Toca el tuyo.",
+      "ch_waiting_ro": "Bloqueado hasta que se elija el coche.",
+      "ch_charging": "Cargando",
+      "ch_full_at": "lleno hacia las {time}",
+      "ch_finished": "Carga terminada",
+      "ch_plugged": "Enchufado · no carga",
+      "ch_estimated": "estimado",
+      "ch_at_plug": "al enchufar {value} %",
+      "ch_unknown_car": "coche sin identificar",
+      "ch_no_coverage": "sin cobertura",
+      "ch_power": "Potencia",
+      "ch_energy": "Energía",
+      "ch_cost": "Coste",
+      "ch_free": "Libre",
+      "ch_locked": "Bloqueado",
+      "ch_unlocked": "Desbloqueado",
+      "ch_free_help": "Se desbloquea al enchufar y confirmar el coche.",
+      "ch_free_help_open": "Sin manguera.",
+      "ch_month": "Este mes: {count} cargas · {kwh} kWh{cost}",
+      "ch_last": "Última: {text}",
+      "ch_history": "Cargas",
+      "ch_no_history": "Todavía no hay cargas apuntadas.",
+      "ch_confirm_q": "¿Desbloquear {charger} para {car}?",
+      "ch_lock_q": "¿Bloquear {charger}?",
+      "ch_unlock_q": "¿Desbloquear {charger}? Podrá empezar a cargar.",
+      "ch_unlock": "Desbloquear",
+      "ch_lock": "Bloquear",
+      "coverage_yes": "Con cobertura",
+      "coverage_no": "Sin cobertura",
+      "coverage_unknown": "Cobertura: no lo sé",
       "balance_included": "Incluye {minutes} min de equilibrado",
       "current": "Corriente",
       "current_ac": "Corriente alterna",
@@ -341,6 +379,44 @@
       "range_left": "{value} of range",
       "time_left": "Time remaining",
       "ends_at": "Finishes around {time}",
+      "charger_card_name": "Charger",
+      "charger_card_description": "A charger linked to your cars: status, lock and charges.",
+      "charger_disabled": "Chargers are turned off (DEC Deepal panel → Settings).",
+      "charger_missing": "That charger doesn't exist. Add it in the DEC Deepal panel → Settings → Chargers.",
+      "charger_select": "Charger",
+      "charger_first": "The first one",
+      "ch_station": "Charger",
+      "ch_waiting": "Plugged in · waiting for confirmation",
+      "ch_waiting_help": "Locked until the car is chosen. Tap yours.",
+      "ch_waiting_ro": "Locked until the car is chosen.",
+      "ch_charging": "Charging",
+      "ch_full_at": "full around {time}",
+      "ch_finished": "Charging finished",
+      "ch_plugged": "Plugged in · not charging",
+      "ch_estimated": "estimated",
+      "ch_at_plug": "{value} % when plugged in",
+      "ch_unknown_car": "unidentified car",
+      "ch_no_coverage": "no signal",
+      "ch_power": "Power",
+      "ch_energy": "Energy",
+      "ch_cost": "Cost",
+      "ch_free": "Free",
+      "ch_locked": "Locked",
+      "ch_unlocked": "Unlocked",
+      "ch_free_help": "It unlocks when plugged in and the car is confirmed.",
+      "ch_free_help_open": "No cable plugged in.",
+      "ch_month": "This month: {count} charges · {kwh} kWh{cost}",
+      "ch_last": "Last: {text}",
+      "ch_history": "Charges",
+      "ch_no_history": "No charges recorded yet.",
+      "ch_confirm_q": "Unlock {charger} for {car}?",
+      "ch_lock_q": "Lock {charger}?",
+      "ch_unlock_q": "Unlock {charger}? Charging may start.",
+      "ch_unlock": "Unlock",
+      "ch_lock": "Lock",
+      "coverage_yes": "With signal",
+      "coverage_no": "No signal",
+      "coverage_unknown": "Signal: not sure",
       "balance_included": "Includes {minutes} min of balancing",
       "current": "Current",
       "current_ac": "Alternating current",
@@ -498,6 +574,44 @@
       "range_left": "{value} de autonomia",
       "time_left": "Tempo restante",
       "ends_at": "Termina por volta das {time}",
+      "charger_card_name": "Carregador",
+      "charger_card_description": "Um carregador ligado aos teus carros: estado, bloqueio e cargas.",
+      "charger_disabled": "Os carregadores estão desativados (painel DEC Deepal → Definições).",
+      "charger_missing": "Esse carregador não existe. Adiciona-o no painel DEC Deepal → Definições → Carregadores.",
+      "charger_select": "Carregador",
+      "charger_first": "O primeiro",
+      "ch_station": "Carregador",
+      "ch_waiting": "Ligado · à espera de confirmação",
+      "ch_waiting_help": "Bloqueado até se escolher o carro. Toca no teu.",
+      "ch_waiting_ro": "Bloqueado até se escolher o carro.",
+      "ch_charging": "A carregar",
+      "ch_full_at": "cheio por volta das {time}",
+      "ch_finished": "Carregamento terminado",
+      "ch_plugged": "Ligado · não carrega",
+      "ch_estimated": "estimado",
+      "ch_at_plug": "ao ligar {value} %",
+      "ch_unknown_car": "carro não identificado",
+      "ch_no_coverage": "sem rede",
+      "ch_power": "Potência",
+      "ch_energy": "Energia",
+      "ch_cost": "Custo",
+      "ch_free": "Livre",
+      "ch_locked": "Bloqueado",
+      "ch_unlocked": "Desbloqueado",
+      "ch_free_help": "Desbloqueia ao ligar e confirmar o carro.",
+      "ch_free_help_open": "Sem cabo.",
+      "ch_month": "Este mês: {count} cargas · {kwh} kWh{cost}",
+      "ch_last": "Última: {text}",
+      "ch_history": "Cargas",
+      "ch_no_history": "Ainda não há cargas registadas.",
+      "ch_confirm_q": "Desbloquear {charger} para {car}?",
+      "ch_lock_q": "Bloquear {charger}?",
+      "ch_unlock_q": "Desbloquear {charger}? Poderá começar a carregar.",
+      "ch_unlock": "Desbloquear",
+      "ch_lock": "Bloquear",
+      "coverage_yes": "Com rede",
+      "coverage_no": "Sem rede",
+      "coverage_unknown": "Rede: não sei",
       "balance_included": "Inclui {minutes} min de equilíbrio",
       "current": "Corrente",
       "current_ac": "Corrente alternada",
@@ -655,6 +769,44 @@
       "range_left": "{value} di autonomia",
       "time_left": "Tempo rimanente",
       "ends_at": "Termina verso le {time}",
+      "charger_card_name": "Caricatore",
+      "charger_card_description": "Un caricatore collegato alle tue auto: stato, blocco e ricariche.",
+      "charger_disabled": "I caricatori sono disattivati (pannello DEC Deepal → Impostazioni).",
+      "charger_missing": "Quel caricatore non esiste. Aggiungilo nel pannello DEC Deepal → Impostazioni → Caricatori.",
+      "charger_select": "Caricatore",
+      "charger_first": "Il primo",
+      "ch_station": "Caricatore",
+      "ch_waiting": "Collegato · in attesa di conferma",
+      "ch_waiting_help": "Bloccato finché non si sceglie l'auto. Tocca la tua.",
+      "ch_waiting_ro": "Bloccato finché non si sceglie l'auto.",
+      "ch_charging": "In carica",
+      "ch_full_at": "piena verso le {time}",
+      "ch_finished": "Ricarica terminata",
+      "ch_plugged": "Collegato · non carica",
+      "ch_estimated": "stimato",
+      "ch_at_plug": "al collegamento {value} %",
+      "ch_unknown_car": "auto non identificata",
+      "ch_no_coverage": "senza copertura",
+      "ch_power": "Potenza",
+      "ch_energy": "Energia",
+      "ch_cost": "Costo",
+      "ch_free": "Libero",
+      "ch_locked": "Bloccato",
+      "ch_unlocked": "Sbloccato",
+      "ch_free_help": "Si sblocca al collegamento e alla conferma dell'auto.",
+      "ch_free_help_open": "Nessun cavo.",
+      "ch_month": "Questo mese: {count} ricariche · {kwh} kWh{cost}",
+      "ch_last": "Ultima: {text}",
+      "ch_history": "Ricariche",
+      "ch_no_history": "Nessuna ricarica registrata.",
+      "ch_confirm_q": "Sbloccare {charger} per {car}?",
+      "ch_lock_q": "Bloccare {charger}?",
+      "ch_unlock_q": "Sbloccare {charger}? Potrà iniziare a caricare.",
+      "ch_unlock": "Sblocca",
+      "ch_lock": "Blocca",
+      "coverage_yes": "Con copertura",
+      "coverage_no": "Senza copertura",
+      "coverage_unknown": "Copertura: non lo so",
       "balance_included": "Include {minutes} min di bilanciamento",
       "current": "Corrente",
       "current_ac": "Corrente alternata",
@@ -812,6 +964,44 @@
       "range_left": "{value} zasięgu",
       "time_left": "Pozostały czas",
       "ends_at": "Koniec około {time}",
+      "charger_card_name": "Ładowarka",
+      "charger_card_description": "Ładowarka połączona z samochodami: stan, blokada i ładowania.",
+      "charger_disabled": "Ładowarki są wyłączone (panel DEC Deepal → Ustawienia).",
+      "charger_missing": "Nie ma tej ładowarki. Dodaj ją w panelu DEC Deepal → Ustawienia → Ładowarki.",
+      "charger_select": "Ładowarka",
+      "charger_first": "Pierwsza",
+      "ch_station": "Ładowarka",
+      "ch_waiting": "Podłączony · czeka na potwierdzenie",
+      "ch_waiting_help": "Zablokowana do wyboru samochodu. Dotknij swojego.",
+      "ch_waiting_ro": "Zablokowana do wyboru samochodu.",
+      "ch_charging": "Ładowanie",
+      "ch_full_at": "pełna około {time}",
+      "ch_finished": "Ładowanie zakończone",
+      "ch_plugged": "Podłączony · nie ładuje",
+      "ch_estimated": "szacunkowo",
+      "ch_at_plug": "po podłączeniu {value} %",
+      "ch_unknown_car": "nierozpoznany samochód",
+      "ch_no_coverage": "bez zasięgu",
+      "ch_power": "Moc",
+      "ch_energy": "Energia",
+      "ch_cost": "Koszt",
+      "ch_free": "Wolna",
+      "ch_locked": "Zablokowana",
+      "ch_unlocked": "Odblokowana",
+      "ch_free_help": "Odblokowuje się po podłączeniu i potwierdzeniu samochodu.",
+      "ch_free_help_open": "Bez kabla.",
+      "ch_month": "W tym miesiącu: {count} ładowań · {kwh} kWh{cost}",
+      "ch_last": "Ostatnie: {text}",
+      "ch_history": "Ładowania",
+      "ch_no_history": "Brak zapisanych ładowań.",
+      "ch_confirm_q": "Odblokować {charger} dla {car}?",
+      "ch_lock_q": "Zablokować {charger}?",
+      "ch_unlock_q": "Odblokować {charger}? Ładowanie może się rozpocząć.",
+      "ch_unlock": "Odblokuj",
+      "ch_lock": "Zablokuj",
+      "coverage_yes": "Z zasięgiem",
+      "coverage_no": "Bez zasięgu",
+      "coverage_unknown": "Zasięg: nie wiem",
       "balance_included": "Zawiera {minutes} min wyrównywania",
       "current": "Prąd",
       "current_ac": "Prąd przemienny",
@@ -969,6 +1159,44 @@
       "range_left": "{value} Reichweite",
       "time_left": "Restzeit",
       "ends_at": "Endet gegen {time}",
+      "charger_card_name": "Ladestation",
+      "charger_card_description": "Eine mit deinen Autos verbundene Ladestation: Status, Sperre und Ladungen.",
+      "charger_disabled": "Ladestationen sind ausgeschaltet (DEC-Deepal-Panel → Einstellungen).",
+      "charger_missing": "Diese Ladestation gibt es nicht. Füge sie im DEC-Deepal-Panel → Einstellungen → Ladestationen hinzu.",
+      "charger_select": "Ladestation",
+      "charger_first": "Die erste",
+      "ch_station": "Ladestation",
+      "ch_waiting": "Eingesteckt · wartet auf Bestätigung",
+      "ch_waiting_help": "Gesperrt, bis das Auto gewählt ist. Tippe auf deines.",
+      "ch_waiting_ro": "Gesperrt, bis das Auto gewählt ist.",
+      "ch_charging": "Lädt",
+      "ch_full_at": "voll gegen {time}",
+      "ch_finished": "Laden beendet",
+      "ch_plugged": "Eingesteckt · lädt nicht",
+      "ch_estimated": "geschätzt",
+      "ch_at_plug": "beim Einstecken {value} %",
+      "ch_unknown_car": "unbekanntes Auto",
+      "ch_no_coverage": "ohne Empfang",
+      "ch_power": "Leistung",
+      "ch_energy": "Energie",
+      "ch_cost": "Kosten",
+      "ch_free": "Frei",
+      "ch_locked": "Gesperrt",
+      "ch_unlocked": "Entsperrt",
+      "ch_free_help": "Entsperrt beim Einstecken und Bestätigen des Autos.",
+      "ch_free_help_open": "Kein Kabel.",
+      "ch_month": "Diesen Monat: {count} Ladungen · {kwh} kWh{cost}",
+      "ch_last": "Letzte: {text}",
+      "ch_history": "Ladungen",
+      "ch_no_history": "Noch keine Ladungen erfasst.",
+      "ch_confirm_q": "{charger} für {car} entsperren?",
+      "ch_lock_q": "{charger} sperren?",
+      "ch_unlock_q": "{charger} entsperren? Das Laden kann beginnen.",
+      "ch_unlock": "Entsperren",
+      "ch_lock": "Sperren",
+      "coverage_yes": "Mit Empfang",
+      "coverage_no": "Ohne Empfang",
+      "coverage_unknown": "Empfang: weiß nicht",
       "balance_included": "Inklusive {minutes} Min. Zellausgleich",
       "current": "Strom",
       "current_ac": "Wechselstrom",
@@ -1126,6 +1354,44 @@
       "range_left": "{value} d'autonomie",
       "time_left": "Temps restant",
       "ends_at": "Se termine vers {time}",
+      "charger_card_name": "Borne",
+      "charger_card_description": "Une borne liée à vos voitures : état, verrouillage et charges.",
+      "charger_disabled": "Les bornes sont désactivées (panneau DEC Deepal → Réglages).",
+      "charger_missing": "Cette borne n'existe pas. Ajoutez-la dans le panneau DEC Deepal → Réglages → Bornes.",
+      "charger_select": "Borne",
+      "charger_first": "La première",
+      "ch_station": "Borne",
+      "ch_waiting": "Branché · en attente de confirmation",
+      "ch_waiting_help": "Verrouillée jusqu'au choix de la voiture. Touchez la vôtre.",
+      "ch_waiting_ro": "Verrouillée jusqu'au choix de la voiture.",
+      "ch_charging": "En charge",
+      "ch_full_at": "plein vers {time}",
+      "ch_finished": "Charge terminée",
+      "ch_plugged": "Branché · ne charge pas",
+      "ch_estimated": "estimé",
+      "ch_at_plug": "au branchement {value} %",
+      "ch_unknown_car": "voiture non identifiée",
+      "ch_no_coverage": "sans réseau",
+      "ch_power": "Puissance",
+      "ch_energy": "Énergie",
+      "ch_cost": "Coût",
+      "ch_free": "Libre",
+      "ch_locked": "Verrouillée",
+      "ch_unlocked": "Déverrouillée",
+      "ch_free_help": "Se déverrouille au branchement et à la confirmation de la voiture.",
+      "ch_free_help_open": "Pas de câble.",
+      "ch_month": "Ce mois-ci : {count} charges · {kwh} kWh{cost}",
+      "ch_last": "Dernière : {text}",
+      "ch_history": "Charges",
+      "ch_no_history": "Aucune charge enregistrée.",
+      "ch_confirm_q": "Déverrouiller {charger} pour {car} ?",
+      "ch_lock_q": "Verrouiller {charger} ?",
+      "ch_unlock_q": "Déverrouiller {charger} ? La charge pourra commencer.",
+      "ch_unlock": "Déverrouiller",
+      "ch_lock": "Verrouiller",
+      "coverage_yes": "Avec réseau",
+      "coverage_no": "Sans réseau",
+      "coverage_unknown": "Réseau : je ne sais pas",
       "balance_included": "Dont {minutes} min d'équilibrage",
       "current": "Courant",
       "current_ac": "Courant alternatif",
@@ -1283,6 +1549,44 @@
       "range_left": "{value} actieradius",
       "time_left": "Resterende tijd",
       "ends_at": "Klaar rond {time}",
+      "charger_card_name": "Lader",
+      "charger_card_description": "Een lader gekoppeld aan je auto's: status, vergrendeling en laadbeurten.",
+      "charger_disabled": "Laders zijn uitgeschakeld (DEC Deepal-paneel → Instellingen).",
+      "charger_missing": "Die lader bestaat niet. Voeg hem toe in het DEC Deepal-paneel → Instellingen → Laders.",
+      "charger_select": "Lader",
+      "charger_first": "De eerste",
+      "ch_station": "Lader",
+      "ch_waiting": "Aangesloten · wacht op bevestiging",
+      "ch_waiting_help": "Vergrendeld tot de auto gekozen is. Tik op de jouwe.",
+      "ch_waiting_ro": "Vergrendeld tot de auto gekozen is.",
+      "ch_charging": "Laden",
+      "ch_full_at": "vol rond {time}",
+      "ch_finished": "Laden klaar",
+      "ch_plugged": "Aangesloten · laadt niet",
+      "ch_estimated": "geschat",
+      "ch_at_plug": "bij aansluiten {value} %",
+      "ch_unknown_car": "onbekende auto",
+      "ch_no_coverage": "geen bereik",
+      "ch_power": "Vermogen",
+      "ch_energy": "Energie",
+      "ch_cost": "Kosten",
+      "ch_free": "Vrij",
+      "ch_locked": "Vergrendeld",
+      "ch_unlocked": "Ontgrendeld",
+      "ch_free_help": "Ontgrendelt bij aansluiten en bevestigen van de auto.",
+      "ch_free_help_open": "Geen kabel.",
+      "ch_month": "Deze maand: {count} laadbeurten · {kwh} kWh{cost}",
+      "ch_last": "Laatste: {text}",
+      "ch_history": "Laadbeurten",
+      "ch_no_history": "Nog geen laadbeurten opgeslagen.",
+      "ch_confirm_q": "{charger} ontgrendelen voor {car}?",
+      "ch_lock_q": "{charger} vergrendelen?",
+      "ch_unlock_q": "{charger} ontgrendelen? Het laden kan beginnen.",
+      "ch_unlock": "Ontgrendelen",
+      "ch_lock": "Vergrendelen",
+      "coverage_yes": "Met bereik",
+      "coverage_no": "Geen bereik",
+      "coverage_unknown": "Bereik: weet ik niet",
       "balance_included": "Inclusief {minutes} min balanceren",
       "current": "Stroom",
       "current_ac": "Wisselstroom",
@@ -1440,6 +1744,44 @@
       "range_left": "{value} rekkevidde",
       "time_left": "Gjenstående tid",
       "ends_at": "Ferdig rundt kl. {time}",
+      "charger_card_name": "Lader",
+      "charger_card_description": "En lader koblet til bilene dine: status, lås og ladinger.",
+      "charger_disabled": "Ladere er slått av (DEC Deepal-panelet → Innstillinger).",
+      "charger_missing": "Den laderen finnes ikke. Legg den til i DEC Deepal-panelet → Innstillinger → Ladere.",
+      "charger_select": "Lader",
+      "charger_first": "Den første",
+      "ch_station": "Lader",
+      "ch_waiting": "Tilkoblet · venter på bekreftelse",
+      "ch_waiting_help": "Låst til bilen er valgt. Trykk på din.",
+      "ch_waiting_ro": "Låst til bilen er valgt.",
+      "ch_charging": "Lader",
+      "ch_full_at": "full rundt {time}",
+      "ch_finished": "Ladingen er ferdig",
+      "ch_plugged": "Tilkoblet · lader ikke",
+      "ch_estimated": "anslått",
+      "ch_at_plug": "ved tilkobling {value} %",
+      "ch_unknown_car": "ukjent bil",
+      "ch_no_coverage": "uten dekning",
+      "ch_power": "Effekt",
+      "ch_energy": "Energi",
+      "ch_cost": "Kostnad",
+      "ch_free": "Ledig",
+      "ch_locked": "Låst",
+      "ch_unlocked": "Låst opp",
+      "ch_free_help": "Låses opp ved tilkobling og bekreftelse av bilen.",
+      "ch_free_help_open": "Ingen kabel.",
+      "ch_month": "Denne måneden: {count} ladinger · {kwh} kWh{cost}",
+      "ch_last": "Siste: {text}",
+      "ch_history": "Ladinger",
+      "ch_no_history": "Ingen ladinger registrert ennå.",
+      "ch_confirm_q": "Låse opp {charger} for {car}?",
+      "ch_lock_q": "Låse {charger}?",
+      "ch_unlock_q": "Låse opp {charger}? Ladingen kan starte.",
+      "ch_unlock": "Lås opp",
+      "ch_lock": "Lås",
+      "coverage_yes": "Med dekning",
+      "coverage_no": "Uten dekning",
+      "coverage_unknown": "Dekning: vet ikke",
       "balance_included": "Inkluderer {minutes} min balansering",
       "current": "Strøm",
       "current_ac": "Vekselstrøm",
@@ -1597,6 +1939,44 @@
       "range_left": "{value} rækkevidde",
       "time_left": "Resterende tid",
       "ends_at": "Færdig omkring kl. {time}",
+      "charger_card_name": "Lader",
+      "charger_card_description": "En lader knyttet til dine biler: status, lås og opladninger.",
+      "charger_disabled": "Ladere er slået fra (DEC Deepal-panelet → Indstillinger).",
+      "charger_missing": "Den lader findes ikke. Tilføj den i DEC Deepal-panelet → Indstillinger → Ladere.",
+      "charger_select": "Lader",
+      "charger_first": "Den første",
+      "ch_station": "Lader",
+      "ch_waiting": "Tilsluttet · venter på bekræftelse",
+      "ch_waiting_help": "Låst, indtil bilen er valgt. Tryk på din.",
+      "ch_waiting_ro": "Låst, indtil bilen er valgt.",
+      "ch_charging": "Lader",
+      "ch_full_at": "fuld omkring {time}",
+      "ch_finished": "Opladningen er færdig",
+      "ch_plugged": "Tilsluttet · lader ikke",
+      "ch_estimated": "anslået",
+      "ch_at_plug": "ved tilslutning {value} %",
+      "ch_unknown_car": "ukendt bil",
+      "ch_no_coverage": "uden dækning",
+      "ch_power": "Effekt",
+      "ch_energy": "Energi",
+      "ch_cost": "Pris",
+      "ch_free": "Ledig",
+      "ch_locked": "Låst",
+      "ch_unlocked": "Låst op",
+      "ch_free_help": "Låses op ved tilslutning og bekræftelse af bilen.",
+      "ch_free_help_open": "Intet kabel.",
+      "ch_month": "Denne måned: {count} opladninger · {kwh} kWh{cost}",
+      "ch_last": "Seneste: {text}",
+      "ch_history": "Opladninger",
+      "ch_no_history": "Ingen opladninger registreret endnu.",
+      "ch_confirm_q": "Låse {charger} op for {car}?",
+      "ch_lock_q": "Låse {charger}?",
+      "ch_unlock_q": "Låse {charger} op? Opladningen kan starte.",
+      "ch_unlock": "Lås op",
+      "ch_lock": "Lås",
+      "coverage_yes": "Med dækning",
+      "coverage_no": "Uden dækning",
+      "coverage_unknown": "Dækning: ved ikke",
       "balance_included": "Inkluderer {minutes} min balancering",
       "current": "Strøm",
       "current_ac": "Vekselstrøm",
@@ -1754,6 +2134,44 @@
       "range_left": "{value} αυτονομία",
       "time_left": "Υπολειπόμενος χρόνος",
       "ends_at": "Τελειώνει γύρω στις {time}",
+      "charger_card_name": "Φορτιστής",
+      "charger_card_description": "Ένας φορτιστής συνδεδεμένος με τα αυτοκίνητά σας: κατάσταση, κλείδωμα και φορτίσεις.",
+      "charger_disabled": "Οι φορτιστές είναι απενεργοποιημένοι (πίνακας DEC Deepal → Ρυθμίσεις).",
+      "charger_missing": "Αυτός ο φορτιστής δεν υπάρχει. Προσθέστε τον στον πίνακα DEC Deepal → Ρυθμίσεις → Φορτιστές.",
+      "charger_select": "Φορτιστής",
+      "charger_first": "Ο πρώτος",
+      "ch_station": "Φορτιστής",
+      "ch_waiting": "Συνδεδεμένο · αναμονή επιβεβαίωσης",
+      "ch_waiting_help": "Κλειδωμένος μέχρι να επιλεγεί το αυτοκίνητο. Πατήστε το δικό σας.",
+      "ch_waiting_ro": "Κλειδωμένος μέχρι να επιλεγεί το αυτοκίνητο.",
+      "ch_charging": "Φόρτιση",
+      "ch_full_at": "γεμάτο γύρω στις {time}",
+      "ch_finished": "Η φόρτιση ολοκληρώθηκε",
+      "ch_plugged": "Συνδεδεμένο · δεν φορτίζει",
+      "ch_estimated": "εκτίμηση",
+      "ch_at_plug": "κατά τη σύνδεση {value} %",
+      "ch_unknown_car": "μη αναγνωρισμένο αυτοκίνητο",
+      "ch_no_coverage": "χωρίς σήμα",
+      "ch_power": "Ισχύς",
+      "ch_energy": "Ενέργεια",
+      "ch_cost": "Κόστος",
+      "ch_free": "Ελεύθερος",
+      "ch_locked": "Κλειδωμένος",
+      "ch_unlocked": "Ξεκλείδωτος",
+      "ch_free_help": "Ξεκλειδώνει με τη σύνδεση και την επιβεβαίωση του αυτοκινήτου.",
+      "ch_free_help_open": "Χωρίς καλώδιο.",
+      "ch_month": "Αυτόν τον μήνα: {count} φορτίσεις · {kwh} kWh{cost}",
+      "ch_last": "Τελευταία: {text}",
+      "ch_history": "Φορτίσεις",
+      "ch_no_history": "Δεν έχουν καταγραφεί φορτίσεις.",
+      "ch_confirm_q": "Ξεκλείδωμα {charger} για {car};",
+      "ch_lock_q": "Κλείδωμα {charger};",
+      "ch_unlock_q": "Ξεκλείδωμα {charger}; Η φόρτιση μπορεί να ξεκινήσει.",
+      "ch_unlock": "Ξεκλείδωμα",
+      "ch_lock": "Κλείδωμα",
+      "coverage_yes": "Με σήμα",
+      "coverage_no": "Χωρίς σήμα",
+      "coverage_unknown": "Σήμα: δεν ξέρω",
       "balance_included": "Περιλαμβάνει {minutes} λεπτά εξισορρόπησης",
       "current": "Ρεύμα",
       "current_ac": "Εναλλασσόμενο ρεύμα",
@@ -1911,6 +2329,44 @@
       "range_left": "Doseg: {value}",
       "time_left": "Preostali čas",
       "ends_at": "Konec okoli {time}",
+      "charger_card_name": "Polnilnica",
+      "charger_card_description": "Polnilnica, povezana z vašimi avti: stanje, zaklep in polnjenja.",
+      "charger_disabled": "Polnilnice so izklopljene (plošča DEC Deepal → Nastavitve).",
+      "charger_missing": "Te polnilnice ni. Dodajte jo na plošči DEC Deepal → Nastavitve → Polnilnice.",
+      "charger_select": "Polnilnica",
+      "charger_first": "Prva",
+      "ch_station": "Polnilnica",
+      "ch_waiting": "Priklopljen · čaka na potrditev",
+      "ch_waiting_help": "Zaklenjena, dokler ni izbran avto. Tapnite svojega.",
+      "ch_waiting_ro": "Zaklenjena, dokler ni izbran avto.",
+      "ch_charging": "Polni",
+      "ch_full_at": "polna okoli {time}",
+      "ch_finished": "Polnjenje končano",
+      "ch_plugged": "Priklopljen · ne polni",
+      "ch_estimated": "ocena",
+      "ch_at_plug": "ob priklopu {value} %",
+      "ch_unknown_car": "neprepoznan avto",
+      "ch_no_coverage": "brez signala",
+      "ch_power": "Moč",
+      "ch_energy": "Energija",
+      "ch_cost": "Strošek",
+      "ch_free": "Prosta",
+      "ch_locked": "Zaklenjena",
+      "ch_unlocked": "Odklenjena",
+      "ch_free_help": "Odklene se ob priklopu in potrditvi avta.",
+      "ch_free_help_open": "Brez kabla.",
+      "ch_month": "Ta mesec: {count} polnjenj · {kwh} kWh{cost}",
+      "ch_last": "Zadnje: {text}",
+      "ch_history": "Polnjenja",
+      "ch_no_history": "Še ni zabeleženih polnjenj.",
+      "ch_confirm_q": "Odkleni {charger} za {car}?",
+      "ch_lock_q": "Zakleni {charger}?",
+      "ch_unlock_q": "Odkleni {charger}? Polnjenje se lahko začne.",
+      "ch_unlock": "Odkleni",
+      "ch_lock": "Zakleni",
+      "coverage_yes": "S signalom",
+      "coverage_no": "Brez signala",
+      "coverage_unknown": "Signal: ne vem",
       "balance_included": "Vključuje {minutes} min uravnoteženja",
       "current": "Tok",
       "current_ac": "Izmenični tok",
@@ -2210,6 +2666,7 @@
     .tile b { font-size: 12px; font-weight: 500; color: var(--primary-text-color); }
     .tile small { font-size: 11px; color: var(--secondary-text-color); }
     .confirm { padding: 20px 24px 8px; }
+    .hist { margin: 4px 0 0; padding: 0 20px 0 36px; font-size: 13px; line-height: 1.6; color: var(--secondary-text-color); max-height: 50vh; overflow: auto; }
     .confirm h2 { margin: 0 0 10px; font-size: 22px; font-weight: 400; }
     .confirm p { margin: 0; font-size: 14px; color: var(--secondary-text-color); line-height: 1.5; }
     .btns { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 16px 16px; }
@@ -2310,6 +2767,7 @@
     }
 
     set hass(hass) {
+      if (!this._hass) this._subscribeChargers(hass);
       this._hass = hass;
       // Tema oscuro: fondo de estudio detrás de la foto (STUDIO_BG).
       this.toggleAttribute("dark", Boolean((hass.themes || {}).darkMode));
@@ -2332,6 +2790,32 @@
     disconnectedCallback() {
       if (this._comfort) this._comfort.close();
       if (this._charge) this._charge.close();
+      if (this._chargers) this._chargers.then((unsubscribe) => unsubscribe()).catch(() => undefined);
+      this._chargers = null;
+    }
+
+    connectedCallback() {
+      if (this._hass && !this._chargers) this._subscribeChargers(this._hass);
+    }
+
+    /** Cargadores (chargers.py): la ventana de carga enseña el que carga este coche. */
+    _subscribeChargers(hass) {
+      if (!hass || !hass.connection || !hass.connection.subscribeMessage || this._chargers) return;
+      this._chargers = hass.connection.subscribeMessage((data) => {
+        this._chargerData = data;
+        if (this._charge) this._paintCharge();
+      }, { type: "dec_deepal/chargers/subscribe" });
+      this._chargers.catch(() => {
+        this._chargers = null;
+      });
+    }
+
+    /** Cargador en el que está enchufado este coche, o `undefined`. */
+    _station() {
+      const data = this._chargerData;
+      if (!data || !data.enabled) return undefined;
+      const deviceId = this._deviceId();
+      return data.chargers.find((charger) => charger.session && charger.session.device_id && charger.session.device_id === deviceId);
     }
 
     // --- Entidades -------------------------------------------------------------
@@ -3234,12 +3718,15 @@
       $(".view").hidden = !src;
       if (src && $(".view img").getAttribute("src") !== src) $(".view img").setAttribute("src", src);
 
+      // Con un cargador vinculado y el coche sin cobertura, manda el cargador.
+      const station = this._station();
+      const offline = Boolean(station && station.session.estimated);
       const status = this._value("sensor.charge_status") || "disconnected";
-      const charging = this._value("binary_sensor.charging") === "on";
-      const plugged = status !== "disconnected";
+      const charging = offline ? Boolean(station.charging) : this._value("binary_sensor.charging") === "on";
+      const plugged = offline || status !== "disconnected";
       const dc = status.endsWith("_dc");
       const balance = this._balanceMinutes();
-      const car = charging ? this._chargeMinutes() : undefined;
+      const car = !charging ? undefined : offline ? (station.session.minutes_left == null ? undefined : station.session.minutes_left) : this._chargeMinutes();
       const minutes = car === undefined ? undefined : car + balance;
       const end = minutes === undefined ? null : new Date(Date.now() + minutes * 60000);
       $('.head [data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
@@ -3254,11 +3741,13 @@
       $(".now ha-icon").setAttribute("icon", charging ? "mdi:lightning-bolt" : plugged ? "mdi:power-plug" : "mdi:power-plug-off-outline");
       $(".now span").textContent = now;
 
-      // Porcentaje, autonomía y barra (mismos colores que en la tarjeta).
-      const level = this._number("sensor.battery_level");
+      // Porcentaje, autonomía y barra (mismos colores que en la tarjeta). Sin
+      // cobertura, con un cargador vinculado, el % se estima con sus kWh.
+      const estimated = offline && station.session.level != null;
+      const level = estimated ? station.session.level : this._number("sensor.battery_level");
       const range = this._rangeText();
-      $(".pct b").textContent = level === undefined ? "—" : `${Math.round(level)} %`;
-      $(".pct span").textContent = range ? this._t("range_left", { value: range }) : "";
+      $(".pct b").textContent = level === undefined ? "—" : `${estimated ? "≈ " : ""}${Math.round(level)} %`;
+      $(".pct span").textContent = estimated ? this._t("ch_estimated") : range ? this._t("range_left", { value: range }) : "";
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       $(".lvl").classList.toggle("on", charging);
       $(".lvl i").style.width = `${level === undefined ? 0 : Math.max(0, Math.min(100, level))}%`;
@@ -3299,11 +3788,346 @@
         const detail = `${day}, ${this._clock(start)} – ${this._clock(finish)} · ${this._duration((finish - start) / 60000)}`;
         stats.push(this._chargeStat("mdi:history", "last_charge", levels, detail, true));
       }
+      if (station) {
+        // El cargador: dónde carga, potencia real, kWh y coste.
+        const session = station.session;
+        const power = station.power != null ? `${(station.power / 1000).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kW` : "—";
+        const detail = [`+${Number(session.energy).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kWh`];
+        if (session.cost != null) detail.push(`${Number(session.cost).toLocaleString(this._language(), { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`);
+        if (session.estimated) detail.push(this._t("ch_no_coverage"));
+        stats.unshift(this._chargeStat("mdi:ev-station", "ch_station", `${station.name} · ${power}`, detail.join(" · "), true));
+      }
       const html = stats.join("");
       if (this._chargeHtml !== html || !$(".stats").childElementCount) $(".stats").innerHTML = html;
       this._chargeHtml = html;
     }
   });
+
+  // ── src/67_cargador.js ────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Tarjeta "DEC Deepal · Cargador" (custom:dec-deepal-charger-card)
+  // ---------------------------------------------------------------------------
+  //   type: custom:dec-deepal-charger-card
+  //   charger: <id del cargador>      (opcional: si falta, el primero)
+  //
+  // Un cargador de Panel → Ajustes → Cargadores (chargers.py). Recibe su estado
+  // por la suscripción dec_deepal/chargers/subscribe, así que se pinta al
+  // momento aunque lo que cambie no sea una entidad (el coche elegido, la
+  // carga apuntada). Estados: libre, esperando confirmación (los coches son
+  // botones), enchufado y cargando (con % y tiempo estimados sin cobertura).
+  // El candado bloquea o desbloquea a mano. Solo pueden tocar quienes tienen
+  // permiso (las personas de los coches y los administradores, o solo estos).
+  const CHARGER_TAG = "dec-deepal-charger-card";
+  const CHARGER_EDITOR_TAG = "dec-deepal-charger-card-editor";
+
+  /** Cargador dibujado: anillo de color según el estado, rayo si carga, candado si no. */
+  function wallboxSvg(state) {
+    const ring = { charging: "#43a047", waiting: "#ffa000", locked: "#03a9f4", open: "#03a9f4", idle: "#9e9e9e" }[state];
+    const center = state === "charging"
+      ? '<path d="M2 -14 L-6 2 H0 L-2 14 L6 -2 H0 Z" fill="#43a047"/>'
+      : `<path d="M-7 -1 h14 v11 h-14z M-4 -1 v-4 a4 4 0 0 1 8 0 ${state === "open" ? "" : "v4"}" fill="none" stroke="${ring}" stroke-width="2.4" stroke-linejoin="round"/>`;
+    const cable = state === "idle" || state === "locked" || state === "open"
+      ? '<path d="M46 118 C50 140 70 150 66 166" stroke="#37474f" stroke-width="7" fill="none" stroke-linecap="round"/><rect x="58" y="160" width="16" height="12" rx="3" fill="#263238"/>'
+      : '<path d="M46 118 C46 150 30 160 10 168" stroke="#37474f" stroke-width="7" fill="none" stroke-linecap="round"/>';
+    return `<svg class="wb" viewBox="0 0 92 175" aria-hidden="true"><rect x="6" y="4" width="80" height="112" rx="16" fill="#263238"/>
+      <rect x="12" y="10" width="68" height="100" rx="12" fill="#37474f"/><circle cx="46" cy="52" r="24" fill="#263238" stroke="${ring}" stroke-width="5"/>
+      <g transform="translate(46 52)">${center}</g>${cable}</svg>`;
+  }
+
+  const CHARGER_CSS = `
+    :host { display: block; }
+    ha-card { padding: 14px 16px 12px; }
+    button { font: inherit; color: inherit; border: 0; background: none; margin: 0; padding: 0; cursor: pointer; }
+    .hd { display: flex; align-items: flex-start; gap: 8px; }
+    .hd .t { flex: 1; font-size: 20px; } .hd .t small { display: block; font-size: 12px; color: var(--secondary-text-color); }
+    .body { display: flex; gap: 14px; align-items: center; margin: 6px 0 4px; }
+    .wb { width: 74px; height: 140px; flex: none; }
+    .side { flex: 1; min-width: 0; }
+    .car { text-align: center; } .car img { width: 100%; max-height: 120px; object-fit: contain; }
+    .car .who { font-size: 13px; color: var(--secondary-text-color); }
+    .status { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 500; margin: 6px 0 2px; --mdc-icon-size: 20px; }
+    .status.g { color: var(--success-color, #43a047); } .status.o { color: var(--warning-color, #ef6c00); }
+    .status.b { color: var(--primary-color); } .status.n { color: var(--secondary-text-color); }
+    .sub { font-size: 12.5px; color: var(--secondary-text-color); margin-bottom: 8px; }
+    .est { font-size: 11px; color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); border-radius: 8px; padding: 1px 6px; margin-left: 4px; }
+    .lvl { height: 9px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; margin: 4px 0 10px; }
+    .lvl i { display: block; height: 100%; border-radius: 5px; background: var(--success-color, #43a047);
+      background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .35) 0 8px, transparent 8px 16px); }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .t3 { background: ${TILE_BG}; border-radius: 12px; padding: 8px 10px; min-width: 0; }
+    .t3 .k { font-size: 11.5px; color: var(--secondary-text-color); display: flex; gap: 4px; align-items: center; --mdc-icon-size: 14px; }
+    .t3 .v { font-size: 17px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pick { display: flex; gap: 8px; margin-top: 8px; }
+    .pick button { flex: 1; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; text-align: center; padding: 4px; font-size: 12.5px; min-width: 0; }
+    .pick button img { width: 100%; height: 44px; object-fit: contain; display: block; }
+    .pick button[disabled] { cursor: default; opacity: .7; }
+    .acts { display: flex; gap: 8px; margin-top: 10px; }
+    .acts .b { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 4px; border-radius: 12px; background: ${TILE_BG};
+      font-size: 12px; font-weight: 500; --mdc-icon-size: 22px; }
+    .acts .b.on { color: var(--primary-color); background: rgba(var(--rgb-primary-color, 3, 169, 244), .14); }
+    .acts .b.warn { color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); }
+    .acts .b[disabled] { cursor: default; }
+    .last { font-size: 12px; color: var(--secondary-text-color); border-top: 1px solid var(--divider-color, #e0e0e0); margin-top: 10px; padding-top: 8px;
+      display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
+    .empty { color: var(--secondary-text-color); padding: 8px 0; }
+  `;
+
+  class DecDeepalChargerCard extends HTMLElement {
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" });
+      this._config = {};
+      this._data = null;
+      this.shadowRoot.addEventListener("click", (event) => this._onClick(event));
+    }
+
+    static getStubConfig() {
+      return { charger: "" };
+    }
+
+    static getConfigElement() {
+      return document.createElement(CHARGER_EDITOR_TAG);
+    }
+
+    setConfig(config) {
+      this._config = config || {};
+      this._render();
+    }
+
+    set hass(hass) {
+      const first = !this._hass;
+      this._hass = hass;
+      if (first || !this._unsubscribe) this._subscribe();
+      else this._render();
+    }
+
+    connectedCallback() {
+      if (this._hass && !this._unsubscribe) this._subscribe();
+    }
+
+    disconnectedCallback() {
+      if (this._unsubscribe) this._unsubscribe.then((unsubscribe) => unsubscribe()).catch(() => undefined);
+      this._unsubscribe = null;
+    }
+
+    getCardSize() {
+      return 5;
+    }
+
+    getGridOptions() {
+      return { columns: 12, min_columns: 6, min_rows: 4 };
+    }
+
+    _subscribe() {
+      if (!this._hass || !this._hass.connection || this._unsubscribe) return;
+      this._unsubscribe = this._hass.connection.subscribeMessage((data) => {
+        this._data = data;
+        this._render();
+      }, { type: "dec_deepal/chargers/subscribe" });
+      this._unsubscribe.catch(() => {
+        this._unsubscribe = null;
+      });
+    }
+
+    _language() {
+      const hass = this._hass || {};
+      return (hass.locale && hass.locale.language) || hass.language || BASE_LANGUAGE;
+    }
+
+    _t(key, values) {
+      return translate(this._language(), key, values);
+    }
+
+    _charger() {
+      const chargers = (this._data && this._data.chargers) || [];
+      return chargers.find((item) => item.id === this._config.charger) || (this._config.charger ? undefined : chargers[0]);
+    }
+
+    _decimal(value, digits) {
+      return Number(value).toLocaleString(this._language(), { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    }
+
+    _clock(iso) {
+      return new Date(iso).toLocaleTimeString(this._language(), { hour: "numeric", minute: "2-digit" });
+    }
+
+    _duration(minutes) {
+      const total = Math.max(0, Math.round(minutes));
+      const h = Math.floor(total / 60);
+      return h ? this._t("duration_hm", { h, m: total % 60 }) : this._t("duration_m", { m: total });
+    }
+
+    /** Foto del coche: su entidad de imagen (de lado; si no, la isométrica). */
+    _photo(deviceId) {
+      const hass = this._hass;
+      if (!deviceId || !hass) return "";
+      for (const key of ["dec_photo", "isometric_view"]) {
+        for (const [entityId, entry] of Object.entries(hass.entities || {})) {
+          if (entry.platform !== DOMAIN || entry.device_id !== deviceId || entry.translation_key !== key || !entityId.startsWith("image.")) continue;
+          const state = hass.states[entityId];
+          const picture = state && state.attributes.entity_picture;
+          if (picture) return `${picture}${picture.includes("?") ? "&" : "?"}state=${encodeURIComponent(state.state)}`;
+        }
+      }
+      return "";
+    }
+
+    _render() {
+      if (!this._hass) return;
+      const root = this.shadowRoot;
+      const charger = this._charger();
+      let html;
+      if (!this._data) html = `<div class="empty">…</div>`;
+      else if (!this._data.enabled) html = `<div class="empty">${this._t("charger_disabled")}</div>`;
+      else if (!charger) html = `<div class="empty">${this._t("charger_missing")}</div>`;
+      else html = this._chargerHtml(charger);
+      root.innerHTML = `<style>${CHARGER_CSS}</style><ha-card>${html}</ha-card>`;
+    }
+
+    _chargerHtml(c) {
+      const session = c.session;
+      const control = c.can_control;
+      const waiting = session && session.waiting;
+      const charging = Boolean(c.charging);
+      const state = charging ? "charging" : waiting ? "waiting" : c.plugged ? (c.locked ? "locked" : "open") : c.locked === false ? "open" : c.locked ? "locked" : "idle";
+      const stat = (icon, label, value) => `<div class="t3"><div class="k"><ha-icon icon="${icon}"></ha-icon>${this._t(label)}</div><div class="v">${escapeHtml(value)}</div></div>`;
+      let side;
+      let grid = "";
+      if (waiting) {
+        side = `<div class="status o"><ha-icon icon="mdi:lock-clock"></ha-icon>${this._t("ch_waiting")}</div>
+          <div class="sub">${this._t(control ? "ch_waiting_help" : "ch_waiting_ro")}</div>
+          <div class="pick">${c.vehicles.map((car) => `<button data-action="pick" data-car="${escapeHtml(car.id)}" ${control ? "" : "disabled"}>${
+            this._photo(car.device_id) ? `<img src="${this._photo(car.device_id)}" alt="">` : ""}${escapeHtml(car.name)}</button>`).join("")}</div>`;
+      } else if (session) {
+        const photo = this._photo(session.device_id);
+        const status = charging
+          ? `<div class="status g"><ha-icon icon="mdi:lightning-bolt"></ha-icon>${this._t("ch_charging")}${
+            session.minutes_left != null ? ` · ${this._t("ch_full_at", { time: this._clock(Date.now() + (session.minutes_left + (session.balance || 0)) * 60000) })}` : ""}</div>`
+          : `<div class="status ${session.finished_at ? "g" : "b"}"><ha-icon icon="mdi:power-plug"></ha-icon>${this._t(session.finished_at ? "ch_finished" : "ch_plugged")}</div>`;
+        const level = session.level != null
+          ? `<div class="sub">${session.estimated ? "≈ " : ""}${Math.round(session.level)} %${session.estimated ? `<span class="est">${this._t("ch_estimated")}</span>` : ""}${
+            session.soc_start != null ? ` · ${this._t("ch_at_plug", { value: Math.round(session.soc_start) })}` : ""}</div>
+            <div class="lvl"><i style="width:${Math.max(0, Math.min(100, session.level))}%"></i></div>`
+          : "";
+        side = `<div class="car">${photo ? `<img src="${photo}" alt="">` : ""}<div class="who">${escapeHtml(session.vehicle || this._t("ch_unknown_car"))}${
+          session.estimated ? ` · ${this._t("ch_no_coverage")}` : ""}</div></div>`;
+        grid = `${status}${level}<div class="grid">
+          ${stat("mdi:flash", "ch_power", c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—")}
+          ${stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`)}
+          ${stat("mdi:currency-eur", "ch_cost", session.cost != null ? `${this._decimal(session.cost, 2)} €` : "—")}</div>`;
+      } else {
+        const month = c.month;
+        side = `<div class="status n"><ha-icon icon="mdi:power-plug-off-outline"></ha-icon>${this._t("ch_free")}${c.has_lock ? ` · ${this._t(c.locked ? "ch_locked" : "ch_unlocked")}` : ""}</div>
+          <div class="sub">${this._t(c.unlock === "confirm" ? "ch_free_help" : "ch_free_help_open")}</div>
+          ${month.count ? `<div class="sub">${this._t("ch_month", { count: month.count, kwh: this._decimal(month.energy, 0), cost: month.cost != null ? ` · ${this._decimal(month.cost, 2)} €` : "" })}<br>${
+            Object.entries(month.by_vehicle).map(([name, count]) => `${escapeHtml(name)} ${count}`).join(" · ")}</div>` : ""}`;
+      }
+      const lockButton = c.has_lock
+        ? `<button class="b ${waiting ? "warn" : c.locked ? "" : "on"}" data-action="lock" ${control ? "" : "disabled"}><ha-icon icon="${c.locked ? "mdi:lock" : "mdi:lock-open-variant"}"></ha-icon>${this._t(c.locked ? "ch_locked" : "ch_unlocked")}</button>`
+        : "";
+      const middle = session && session.minutes_left != null && charging
+        ? `<div class="b"><ha-icon icon="mdi:timer-sand"></ha-icon>${this._duration(session.minutes_left + (session.balance || 0))}</div>`
+        : `<div class="b"><ha-icon icon="${charging ? "mdi:flash" : "mdi:flash-outline"}"></ha-icon>${c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—"}</div>`;
+      const last = c.last
+        ? `<div class="last"><ha-icon icon="mdi:history"></ha-icon>${escapeHtml(this._t("ch_last", { text: this._session(c.last) }))}</div>`
+        : "";
+      return `<div class="hd"><div class="t">${escapeHtml(c.name)}<small>${escapeHtml(this._t(`coverage_${c.coverage}`))}</small></div></div>
+        <div class="body">${wallboxSvg(state)}<div class="side">${side}</div></div>${grid}
+        <div class="acts">${lockButton}${middle}<button class="b" data-action="history"><ha-icon icon="mdi:history"></ha-icon>${this._t("ch_history")}</button></div>${last}`;
+    }
+
+    /** Una carga en una línea: "Changote · 12 oct, 22:12 – 6:05 · 65 % → 100 % · +22,1 kWh · 2,52 €". */
+    _session(item) {
+      const parts = [item.vehicle || this._t("ch_unknown_car")];
+      if (item.start) {
+        const day = new Date(item.start).toLocaleDateString(this._language(), { day: "numeric", month: "short" });
+        parts.push(`${day}, ${this._clock(item.start)}${item.end ? ` – ${this._clock(item.end)}` : ""}`);
+      }
+      if (item.soc_start != null && item.soc_end != null) parts.push(`${Math.round(item.soc_start)} % → ${item.estimated ? "≈ " : ""}${Math.round(item.soc_end)} %`);
+      if (item.energy) parts.push(`+${this._decimal(item.energy, 1)} kWh`);
+      if (item.cost != null) parts.push(`${this._decimal(item.cost, 2)} €`);
+      return parts.join(" · ");
+    }
+
+    async _ws(type, data) {
+      try {
+        await this._hass.callWS({ type: `dec_deepal/chargers/${type}`, ...data });
+        return true;
+      } catch (error) {
+        this.dispatchEvent(new CustomEvent("hass-notification", { detail: { message: (error && error.message) || this._t("command_failed") }, bubbles: true, composed: true }));
+        return false;
+      }
+    }
+
+    /** Pregunta antes de tocar el cargador. */
+    _ask(question, label, run) {
+      const dialog = openDialog(`<div class="confirm"><p>${escapeHtml(question)}</p>
+        <div class="btns"><button class="tb" data-action="close">${this._t("cancel")}</button><button class="tb fill" data-action="ok">${escapeHtml(label)}</button></div></div>`,
+      (action) => {
+        if (action !== "ok") return;
+        dialog.close();
+        run();
+      });
+    }
+
+    _onClick(event) {
+      const target = event.composedPath().find((node) => node.dataset && node.dataset.action);
+      const c = this._charger();
+      if (!target || !c) return;
+      if (target.dataset.action === "pick" && c.can_control) {
+        const car = c.vehicles.find((item) => item.id === target.dataset.car);
+        this._ask(this._t("ch_confirm_q", { charger: c.name, car: car ? car.name : "" }), this._t("ch_unlock"),
+          () => this._ws("confirm", { charger_id: c.id, vehicle_id: target.dataset.car }));
+      } else if (target.dataset.action === "lock" && c.can_control) {
+        const lock = !c.locked;
+        this._ask(this._t(lock ? "ch_lock_q" : "ch_unlock_q", { charger: c.name }), this._t(lock ? "ch_lock" : "ch_unlock"),
+          () => this._ws("lock", { charger_id: c.id, locked: lock }));
+      } else if (target.dataset.action === "history") {
+        const rows = c.history.map((item) => `<li>${escapeHtml(this._session(item))}</li>`).join("") || `<li>${this._t("ch_no_history")}</li>`;
+        openDialog(`<div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button>
+          <h2>${escapeHtml(c.name)}</h2></div><ul class="hist">${rows}</ul>
+          <div class="btns"><button class="tb" data-action="close">${this._t("close")}</button></div>`, () => undefined);
+      }
+    }
+  }
+
+  /** Editor de la tarjeta: elegir el cargador (sin YAML). */
+  class DecDeepalChargerCardEditor extends HTMLElement {
+    setConfig(config) {
+      this._config = config || {};
+      this._render();
+    }
+
+    set hass(hass) {
+      const first = !this._hass;
+      this._hass = hass;
+      if (first) this._load();
+    }
+
+    async _load() {
+      try {
+        this._list = (await this._hass.callWS({ type: "dec_deepal/chargers/state" })).chargers || [];
+      } catch (_error) {
+        this._list = [];
+      }
+      this._render();
+    }
+
+    _render() {
+      if (!this._hass) return;
+      const language = (this._hass.locale && this._hass.locale.language) || this._hass.language;
+      const text = (key) => translate(language, key);
+      const options = (this._list || []).map((item) => `<option value="${escapeHtml(item.id)}" ${item.id === this._config.charger ? "selected" : ""}>${escapeHtml(item.name)}</option>`).join("");
+      this.innerHTML = `<label style="display:block;font-size:13px;color:var(--secondary-text-color)">${text("charger_select")}
+        <select style="display:block;width:100%;margin-top:4px;padding:8px;font:inherit;border-radius:8px;border:1px solid var(--divider-color,#ccc);background:var(--card-background-color,#fff);color:var(--primary-text-color)">
+        <option value="">${text("charger_first")}</option>${options}</select></label>
+        ${this._list && !this._list.length ? `<p style="font-size:13px;color:var(--secondary-text-color)">${text("charger_missing")}</p>` : ""}`;
+      this.querySelector("select").addEventListener("change", (event) => {
+        this._config = { ...this._config, charger: event.target.value };
+        this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: this._config }, bubbles: true, composed: true }));
+      });
+    }
+  }
 
   // ── src/90_registro.js ────────────────────────────────────────────────────
   // ---------------------------------------------------------------------------
@@ -3318,11 +4142,14 @@
 
   customElements.define(TAG, DecDeepalCard);
   customElements.define(TOP_TAG, DecDeepalTopCard);
+  customElements.define(CHARGER_TAG, DecDeepalChargerCard);
+  customElements.define(CHARGER_EDITOR_TAG, DecDeepalChargerCardEditor);
   const cardText = (key) => translate(document.documentElement.lang || navigator.language, key);
   const documentationURL = "https://github.com/manuelem1984/dec_deepal";
   window.customCards = window.customCards || [];
   window.customCards.push(
     { type: TAG, name: "DEC Deepal", description: cardText("card_description"), preview: true, documentationURL },
-    { type: TOP_TAG, name: `DEC Deepal · ${cardText("top_view")}`, description: cardText("top_card_description"), preview: true, documentationURL }
+    { type: TOP_TAG, name: `DEC Deepal · ${cardText("top_view")}`, description: cardText("top_card_description"), preview: true, documentationURL },
+    { type: CHARGER_TAG, name: `DEC Deepal · ${cardText("charger_card_name")}`, description: cardText("charger_card_description"), preview: false, documentationURL }
   );
 })();

@@ -581,3 +581,45 @@ def test_errors_and_no_cars(panel: Page) -> None:
     panel.evaluate("banco.montar({ fallo: 'Sin conexión' })")
     panel.wait_for_function("banco.texto().includes('Sin conexión')")
     assert "Reintentar" in panel.evaluate("banco.texto()")
+
+
+# --- Ajustes → Cargadores ---------------------------------------------------------------
+
+
+def test_chargers(panel: Page) -> None:
+    """Activar los cargadores, añadir uno con sus entidades y el apartado de Avisos."""
+    mount(panel)
+    tab(panel, "settings")
+    assert "Cargadores" in panel.evaluate("banco.texto()")
+    assert "Añadir cargador" not in panel.evaluate("banco.texto()")  # desactivados
+    click(panel, "[data-action=chargers-enabled]")
+    panel.wait_for_function("banco.texto().includes('Añadir cargador')")
+    assert orders(panel)[-1] == {"type": "dec_deepal/panel/set_chargers", "enabled": True, "control": "people"}
+
+    # Nuevo cargador: sin «Enchufado» no se guarda.
+    click(panel, "[data-action=charger-edit]")
+    assert "Entidades del cargador" in window_text(panel)
+    click_window(panel, "ok")
+    assert "Elige la entidad «Enchufado»" in window_text(panel)
+    # Cada lista solo enseña lo que vale: la potencia, solo sensores en W o kW.
+    power = panel.evaluate("Array.from(banco.ventana().querySelectorAll('[data-role=power] option')).map(o => o.value)")
+    assert power == ["", "sensor.evse_energia_de_la_casa", "sensor.evse_potencia_de_carga"]
+    for role, entity in (("plugged", "binary_sensor.evse_conectado"), ("lock", "switch.evse_bloquear_evse")):
+        panel.evaluate(
+            "([role, entity]) => { const s = banco.ventana().querySelector(`[data-role=${role}]`); s.value = entity;"
+            " s.dispatchEvent(new Event('change', { bubbles: true })); }",
+            [role, entity],
+        )
+    text = window_text(panel)
+    assert "El bloqueo, encendido es…" in text and "Bloquear al desenchufar" in text and "Pérdidas de carga" in text
+    click_window(panel, "ok")
+    panel.wait_for_function("banco.ordenes().some(m => m.type === 'dec_deepal/panel/save_charger')")
+    saved = orders(panel)[-1]["charger"]
+    assert saved["entities"] == {"plugged": "binary_sensor.evse_conectado", "lock": "switch.evse_bloquear_evse"}
+    assert (saved["name"], saved["vehicles"], saved["unlock"], saved["coverage"]) == ("Garaje", ["car1", "car2"], "confirm", "unknown")
+    assert (saved["relock"], saved["relock_minutes"], saved["loss"], saved["price"]) == (True, 5, 10, None)
+    panel.wait_for_function("banco.texto().includes('Changote, Changuito')")
+
+    # Con los cargadores activados, Avisos tiene el apartado «Cargador».
+    tab(panel, "alerts")
+    assert "Cargador" in panel.evaluate("banco.texto()")

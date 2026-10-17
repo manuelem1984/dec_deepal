@@ -100,9 +100,13 @@ def test_top_view_card(page: Page) -> None:
     mount(page, tarjeta="dec-deepal-top-card", sin=["image.top_view"], estados={"image.dec_photo": ["x", {"entity_picture": "coche.svg"}]})
     assert page.evaluate(f"Array.from({box}.classList)") == ["carbox", "plain"]
 
-    # Las dos salen en el selector de tarjetas, y la de planta deja elegir la orientación.
+    # Las tres salen en el selector de tarjetas, y la de planta deja elegir la orientación.
     cards = page.evaluate("window.customCards.filter(c => c.type.startsWith('dec-deepal')).map(c => [c.type, c.name])")
-    assert cards == [["dec-deepal-card", "DEC Deepal"], ["dec-deepal-top-card", "DEC Deepal · Vista planta"]]
+    assert cards == [
+        ["dec-deepal-card", "DEC Deepal"],
+        ["dec-deepal-top-card", "DEC Deepal · Vista planta"],
+        ["dec-deepal-charger-card", "DEC Deepal · Cargador"],
+    ]
     form = "customElements.get('dec-deepal-top-card').getConfigForm()"
     assert page.evaluate(f"{form}.schema.map(f => f.name)") == ["device_id", "orientation"]
     assert page.evaluate(f"{form}.schema[1].selector.select.options.map(o => o.label)") == ["Horizontal (tumbado)", "Vertical (de pie)"]

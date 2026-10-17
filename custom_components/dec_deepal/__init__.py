@@ -72,6 +72,7 @@ from .debug.history import changes as signal_changes
 from .debug.recorder import DebugRecorder, VehicleRecorder
 from .frontend import async_register_frontend, async_remove_early_loader
 from .manual import async_register_manual
+from .chargers import async_get_manager
 from .panel import async_register_panel, async_unregister_panel
 from .registries import RegistryError
 from .registries.vehicles import FEATURE_MQTT
@@ -110,6 +111,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     async_register_manual(hass)
     async_register_export(hass)
     async_register_services(hass)
+    await async_get_manager(hass).async_load()
     return True
 
 

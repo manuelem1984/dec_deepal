@@ -1,5 +1,33 @@
 # Hoja de ruta
 
+## Beta 2.6.0b1 (18-10-2026) — pendiente de probar
+
+Cargadores (ver `docs/cargadores.md`). Antes de activarlo, desactivar las
+automatizaciones propias del cargador (en el V2C, «V2C Trydan - Inicio de
+Carga») para que no se pisen con el bloqueo.
+
+- [ ] **Configurar el Garaje** (V2C Trydan): Conectado, Cargando, Potencia de
+      carga, Energía de carga y Bloquear EVSE (encendido = bloqueado), los dos
+      coches, sin cobertura, desbloquear al confirmar, bloquear a los 5 min.
+- [ ] **Enchufar sin cobertura:** llega «¿Cuál es?» con Changote, Changuito y
+      «No desbloquear»; al elegir, se desbloquea y la compañía empieza a
+      cargar. Comprobar que el botón funciona desde el iPhone y desde Android.
+- [ ] **Nadie contesta:** recordatorio a los 15 min y el cargador sigue
+      bloqueado.
+- [ ] **Con cobertura** (un coche): se desbloquea solo y llega «Changote
+      confirmó la manguera».
+- [ ] **Tarjeta del cargador:** esperando (elegir el coche desde la tarjeta),
+      cargando (kW, kWh, €, % estimado), libre (resumen del mes), candado y
+      «Cargas». Con un usuario que no es de esos coches: sin botones.
+- [ ] **Fin de carga:** aviso con % estimado, kWh y €; «Última» en la tarjeta.
+- [ ] **Desenchufar:** a los 5 min se bloquea y avisa con «Desbloquear otra vez».
+- [ ] **Pérdidas medidas:** tras una carga sin cobertura, cuando el coche
+      vuelve a informar, sale «Medido: X %» en el editor del cargador.
+- [ ] **Ventana de carga del coche:** con el coche cargando sin cobertura,
+      sale «Cargador · Garaje · 3,9 kW» y el % estimado.
+- [ ] Pendiente: que el estado del cargador salga también como entidades
+      (para automatizaciones).
+
 ## Beta 2.5.2b1 (17-10-2026) — pendiente de probar
 
 - [ ] **Ventana de carga, cargando:** el tiempo restante y la hora de fin

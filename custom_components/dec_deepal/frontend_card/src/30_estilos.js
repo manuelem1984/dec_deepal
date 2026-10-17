@@ -138,6 +138,7 @@
     .tile b { font-size: 12px; font-weight: 500; color: var(--primary-text-color); }
     .tile small { font-size: 11px; color: var(--secondary-text-color); }
     .confirm { padding: 20px 24px 8px; }
+    .hist { margin: 4px 0 0; padding: 0 20px 0 36px; font-size: 13px; line-height: 1.6; color: var(--secondary-text-color); max-height: 50vh; overflow: auto; }
     .confirm h2 { margin: 0 0 10px; font-size: 22px; font-weight: 400; }
     .confirm p { margin: 0; font-size: 14px; color: var(--secondary-text-color); line-height: 1.5; }
     .btns { display: flex; justify-content: flex-end; gap: 8px; padding: 14px 16px 16px; }

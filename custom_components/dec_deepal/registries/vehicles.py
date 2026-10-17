@@ -77,6 +77,15 @@ KNOWN_VIEWS: Final = (VIEW_TOP, VIEW_ISOMETRIC, VIEW_INTERIOR, VIEW_CHARGING)
 PHOTO_EXTENSIONS: Final = (".png", ".jpg", ".jpeg", ".webp")
 
 
+def _battery_kwh(value: object, where: str) -> float | None:
+    """Capacidad de la batería (``bateria_kwh``): un número positivo o nada."""
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
+        raise RegistryError(f"{where}.bateria_kwh: debe ser un número de kWh mayor que 0")
+    return float(value)
+
+
 @dataclass(frozen=True, slots=True)
 class Trim:
     """Versión / acabado de un modelo."""
@@ -90,6 +99,8 @@ class Trim:
     wheel: str = ""
     #: ¿Se ha comprobado la ficha de esta versión en un coche real?
     verified: bool = False
+    #: Capacidad útil de la batería en kWh (``None`` = no se sabe).
+    battery_kwh: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -414,6 +425,7 @@ def load_vehicles(vehicles_dir: Path) -> VehicleRegistry:
                 features=_features(trim_raw.get("funciones"), f"{trim_where}.funciones"),
                 wheel=str(trim_raw.get("llanta") or ""),
                 verified=bool(trim_raw.get("verificada", False)),
+                battery_kwh=_battery_kwh(trim_raw.get("bateria_kwh"), trim_where),
             )
         colors: dict[str, Color] = {}
         for color_id, color_raw in as_dict(raw.get("colores"), f"{where}.colores").items():

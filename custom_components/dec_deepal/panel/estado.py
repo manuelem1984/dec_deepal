@@ -41,6 +41,7 @@ from ..const import (
     PHOTOS_URL,
     VERSION,
 )
+from ..chargers import async_get_manager
 from ..manual import manual_url
 from ..plates import plate
 from ..registries.vehicles import FEATURE_FUEL, GENERIC_MODEL_ID
@@ -319,6 +320,8 @@ def panel_state(hass: HomeAssistant, user: User) -> dict[str, Any]:
             for notice in NOTICES
         ],
         "insurance_kinds": list(doc.INSURANCE_KINDS),
+        # El apartado "Cargador" de Avisos solo sale con los cargadores activados.
+        "chargers_enabled": async_get_manager(hass).enabled,
     }
     if not user.is_admin:
         return state
@@ -337,6 +340,7 @@ def panel_state(hass: HomeAssistant, user: User) -> dict[str, Any]:
         "accounts": [account_settings(entry) for entry in entries],
         "people": [{"id": person["id"], "name": person["name"]} for person in people.values()],
         "stored": _stored(hass, cars),
+        "chargers": async_get_manager(hass).panel_config(),
         "history": {kind: sorted(events, key=lambda e: e["time"]) for kind, events in history.items()},
     }
 
@@ -345,6 +349,7 @@ def panel_state(hass: HomeAssistant, user: User) -> dict[str, Any]:
 async def ws_state(hass: HomeAssistant, msg: dict[str, Any], user: User) -> dict[str, Any]:
     """Todo lo que pinta el panel (lo puede pedir cualquier usuario)."""
     await async_get_store(hass).async_load()
+    await async_get_manager(hass).async_load()
     return panel_state(hass, user)
 
 

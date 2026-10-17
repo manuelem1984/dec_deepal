@@ -83,12 +83,15 @@
       $(".view").hidden = !src;
       if (src && $(".view img").getAttribute("src") !== src) $(".view img").setAttribute("src", src);
 
+      // Con un cargador vinculado y el coche sin cobertura, manda el cargador.
+      const station = this._station();
+      const offline = Boolean(station && station.session.estimated);
       const status = this._value("sensor.charge_status") || "disconnected";
-      const charging = this._value("binary_sensor.charging") === "on";
-      const plugged = status !== "disconnected";
+      const charging = offline ? Boolean(station.charging) : this._value("binary_sensor.charging") === "on";
+      const plugged = offline || status !== "disconnected";
       const dc = status.endsWith("_dc");
       const balance = this._balanceMinutes();
-      const car = charging ? this._chargeMinutes() : undefined;
+      const car = !charging ? undefined : offline ? (station.session.minutes_left == null ? undefined : station.session.minutes_left) : this._chargeMinutes();
       const minutes = car === undefined ? undefined : car + balance;
       const end = minutes === undefined ? null : new Date(Date.now() + minutes * 60000);
       $('.head [data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
@@ -103,11 +106,13 @@
       $(".now ha-icon").setAttribute("icon", charging ? "mdi:lightning-bolt" : plugged ? "mdi:power-plug" : "mdi:power-plug-off-outline");
       $(".now span").textContent = now;
 
-      // Porcentaje, autonomía y barra (mismos colores que en la tarjeta).
-      const level = this._number("sensor.battery_level");
+      // Porcentaje, autonomía y barra (mismos colores que en la tarjeta). Sin
+      // cobertura, con un cargador vinculado, el % se estima con sus kWh.
+      const estimated = offline && station.session.level != null;
+      const level = estimated ? station.session.level : this._number("sensor.battery_level");
       const range = this._rangeText();
-      $(".pct b").textContent = level === undefined ? "—" : `${Math.round(level)} %`;
-      $(".pct span").textContent = range ? this._t("range_left", { value: range }) : "";
+      $(".pct b").textContent = level === undefined ? "—" : `${estimated ? "≈ " : ""}${Math.round(level)} %`;
+      $(".pct span").textContent = estimated ? this._t("ch_estimated") : range ? this._t("range_left", { value: range }) : "";
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       $(".lvl").classList.toggle("on", charging);
       $(".lvl i").style.width = `${level === undefined ? 0 : Math.max(0, Math.min(100, level))}%`;
@@ -147,6 +152,15 @@
         const day = start.toLocaleDateString(this._dateLanguage(), { day: "numeric", month: "short" });
         const detail = `${day}, ${this._clock(start)} – ${this._clock(finish)} · ${this._duration((finish - start) / 60000)}`;
         stats.push(this._chargeStat("mdi:history", "last_charge", levels, detail, true));
+      }
+      if (station) {
+        // El cargador: dónde carga, potencia real, kWh y coste.
+        const session = station.session;
+        const power = station.power != null ? `${(station.power / 1000).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kW` : "—";
+        const detail = [`+${Number(session.energy).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kWh`];
+        if (session.cost != null) detail.push(`${Number(session.cost).toLocaleString(this._language(), { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`);
+        if (session.estimated) detail.push(this._t("ch_no_coverage"));
+        stats.unshift(this._chargeStat("mdi:ev-station", "ch_station", `${station.name} · ${power}`, detail.join(" · "), true));
       }
       const html = stats.join("");
       if (this._chargeHtml !== html || !$(".stats").childElementCount) $(".stats").innerHTML = html;

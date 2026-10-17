@@ -104,6 +104,9 @@
 #                                   se puede elegir otra).
 #                     verificada    (opcional) true si la ficha de esta versión
 #                                   se ha comprobado en un coche real.
+#                     bateria_kwh   (opcional) Capacidad útil de la batería en
+#                                   kWh. Con ella, los cargadores estiman el %
+#                                   que sube el coche cuando no tiene cobertura.
 #   colores         Colores oficiales. Clave = id interno.
 #                     nombre        Nombre comercial.
 #                     descripcion   Texto libre.
@@ -203,6 +206,7 @@ modelos:
           portón eléctrico. Sin verificar en un coche real.
         grupo_foto: pro
         llanta: pro                  # 18" con su tapacubos
+        bateria_kwh: 56.1            # catálogo oficial (sin verificar)
         funciones:
           asientos_calefaccion: false
           asientos_ventilacion: false
@@ -215,6 +219,7 @@ modelos:
           ventilados, volante calefactado y portón eléctrico.
         grupo_foto: max
         verificada: true             # dos coches reales (10-2026)
+        bateria_kwh: 68.8            # catálogo oficial
       max_awd:
         nombre: 4WD Max
         descripcion: >-
@@ -222,6 +227,7 @@ modelos:
           RWD Max y, por fuera, idéntica: comparte sus fotos (grupo_foto: max).
           Sin verificar en un coche real.
         grupo_foto: max
+        bateria_kwh: 68.8            # catálogo oficial (sin verificar)
     colores:
       andromeda_blue:
         nombre: Andromeda Blue
@@ -300,6 +306,7 @@ modelos:
           ventilados, volante calefactado ni portón eléctrico.
         grupo_foto: pro
         llanta: pro                  # 18"
+        bateria_kwh: 18.4            # catálogo oficial (sin verificar)
         funciones:
           asientos_calefaccion: false
           asientos_ventilacion: false
@@ -312,6 +319,7 @@ modelos:
           ventilados, volante calefactado y portón eléctrico.
         grupo_foto: max
         llanta: pro                  # la misma de 18" que los Pro
+        bateria_kwh: 18.4            # catálogo oficial (sin verificar)
 
   generico:
     nombre: Deepal (sin configurar)

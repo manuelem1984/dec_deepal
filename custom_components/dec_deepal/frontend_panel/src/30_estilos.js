@@ -126,6 +126,7 @@
     .row .ic { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary-color, 3, 169, 244), .15); color: var(--primary-color);
       display: flex; align-items: center; justify-content: center; flex: none; }
     .row .ic.grey { background: ${SOFT}; color: var(--secondary-text-color); }
+    .chg-chips { margin-top: 6px; } .chg-chips .chip { margin: 0 6px 4px 0; font-size: 12px; padding: 3px 10px; --mdc-icon-size: 16px; }
     .row .tx { flex: 1; min-width: 180px; } .row .tx small { display: block; color: var(--secondary-text-color); font-size: 13px; }
     select { font: inherit; color: inherit; padding: 7px 8px; border-radius: 8px; border: 1px solid var(--divider-color, #e0e0e0);
       background: var(--card-background-color, #fff); max-width: 100%; }
@@ -276,6 +277,22 @@
     .opt { border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 9px 14px; text-align: left; }
     .opt small { display: block; color: var(--secondary-text-color); font-size: 12px; margin-top: 2px; }
     .opt.on { border: 2px solid var(--primary-color); padding: 8px 13px; background: rgba(var(--rgb-primary-color, 3, 169, 244), .1); }
+    /* Ventana de un cargador */
+    .fsec h4 .num { width: 18px; height: 18px; border-radius: 50%; background: var(--primary-color); color: var(--text-primary-color, #fff); font-size: 11px;
+      display: inline-flex; align-items: center; justify-content: center; }
+    input.cname { font-size: 20px; padding: 4px 8px; margin: 0; }
+    label.ent { margin: 8px 0 0; } label.ent > span { display: flex; justify-content: space-between; gap: 8px; }
+    label.ent em { font-style: normal; color: var(--success-color, #43a047); }
+    .cline { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin: 10px 0; }
+    .cline b { font-weight: 400; color: var(--primary-text-color); font-size: 14px; } .cline small { display: block; font-size: 12px; color: var(--secondary-text-color); }
+    .seg.wide { display: flex; } .seg.wide button { flex: 1; }
+    .carpicks { display: flex; gap: 10px; flex-wrap: wrap; }
+    .carpick { flex: 1; min-width: 120px; border: 1px solid var(--divider-color, #e0e0e0); border-radius: 12px; padding: 6px; text-align: center; font-size: 13px; }
+    .carpick img { width: 100%; height: 56px; object-fit: contain; display: block; }
+    .carpick.on { border: 2px solid var(--primary-color); padding: 5px; background: rgba(var(--rgb-primary-color, 3, 169, 244), .08); }
+    .fi.small { width: 130px; flex: none; }
+    .learned { display: flex; gap: 8px; align-items: center; background: rgba(67, 160, 71, .12); color: var(--success-color, #2e7d32); border-radius: 10px;
+      padding: 6px 10px; font-size: 12px; --mdc-icon-size: 18px; } .learned span { flex: 1; }
     .sw { display: flex; gap: 8px; flex-wrap: wrap; }
     .sw button { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; width: 92px; padding: 4px 0; }
     .sw i { display: block; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--divider-color, #cfd8dc); }

@@ -3,6 +3,39 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b1] — 2026-10-18
+
+### Añadido
+
+- **Cargadores.** DEC Deepal puede unir la carga de tus coches con tus
+  cargadores (cualquiera con entidades en Home Assistant: V2C Trydan,
+  Wallbox, Easee, OCPP...). Se activa en Panel → Ajustes → Cargadores y,
+  desactivado, no cambia nada. **Solo bloquea y desbloquea el cargador:**
+  nunca inicia ni pausa la carga (con OCPP, la compañía carga en cuanto está
+  desbloqueado).
+  - **Desbloquear al confirmar el coche:** al enchufar, el cargador sigue
+    bloqueado hasta saber qué coche es. Con cobertura, lo dice el coche y se
+    desbloquea solo; sin cobertura (o con varios coches), llega una
+    notificación con un botón por coche y, al elegirlo, se desbloquea. Si
+    nadie contesta, se recuerda.
+  - **Bloquear al desenchufar**, pasados 3, 5 o 10 minutos, con aviso.
+  - **Sin cobertura**, el % y el tiempo se estiman con los kWh del cargador
+    y las **pérdidas** (10 % de fábrica, ajustables con tus propias cargas).
+  - Cada carga se apunta con su coche, kWh y **coste** (precio fijo o de una
+    entidad, como el PVPC).
+  - **Quién puede desbloquear:** las personas de los coches y los
+    administradores, o solo los administradores.
+  - Avisos nuevos en el apartado **Cargador** de la pestaña Avisos (si un
+    coche no tiene destinos ahí, se usan los de sus avisos de carga).
+- **Tarjeta «DEC Deepal · Cargador»** (`custom:dec-deepal-charger-card`):
+  el cargador, el coche que carga, kW, kWh, €, el candado y el historial de
+  cargas. Se añade desde el editor de paneles, sin YAML.
+- **Ventana de carga:** si el coche carga en un cargador vinculado, lo
+  enseña (potencia, kWh y coste) y, sin cobertura, el % estimado.
+- Catálogo: capacidad de la batería de cada versión (`bateria_kwh`).
+
+Ver `docs/cargadores.md`.
+
 ## [2.5.2b1] — 2026-10-17
 
 ### Añadido

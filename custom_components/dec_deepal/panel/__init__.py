@@ -23,6 +23,7 @@ de cada cosa:
 ``avisos.py``         A quién avisa cada coche de cada cosa
 ``datos.py``          Copia de seguridad y borrado
 ``ajustes.py``        PIN y lectura de datos de cada cuenta
+``cargadores.py``     Cargadores (Ajustes) y órdenes de su tarjeta
 ====================  ===================================================
 
 Los errores se mandan con un código; el panel enseña el texto
@@ -55,7 +56,7 @@ from ..const import (
     PHOTOS_URL,
     VERSION,
 )
-from . import ajustes, avisos, coches, datos, estado
+from . import ajustes, avisos, cargadores, coches, datos, estado
 from .avisos import notify_targets
 from .estado import panel_state
 
@@ -73,6 +74,7 @@ COMMANDS: Final = (
     *avisos.COMMANDS,
     *datos.COMMANDS,
     *ajustes.COMMANDS,
+    *cargadores.COMMANDS,
 )
 
 

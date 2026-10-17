@@ -108,6 +108,9 @@ Son de la cuenta, no de un coche (con varias cuentas, una tarjeta por cuenta).
   **Desbloquear antes**, con cuánto dura el desbloqueo y si avisa. Un solo
   PIN para todos los coches de la cuenta. El panel nunca recibe el PIN
   guardado: el campo sale vacío, y vacío significa "no cambiarlo".
+- **Cargadores:** activarlos, quién puede desbloquear y cada cargador con
+  sus entidades, coches, cobertura, desbloqueo, bloqueo al desenchufar,
+  pérdidas y precio (ver `docs/cargadores.md`).
 - **Lectura de datos:** intervalo, despertar el coche cuando haga falta,
   **sumar el equilibrado** (15 min más al tiempo de carga de la ventana de
   carga; activado de fábrica), el enlace del manual (BEV o PHEV, según el

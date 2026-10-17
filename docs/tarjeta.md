@@ -35,6 +35,10 @@ orientation: horizontal              # o "vertical"
 Las dos tarjetas pueden estar a la vez en el mismo panel. Si el modelo no
 tiene vista de planta, se enseña la imagen DEC.
 
+## Tarjeta del cargador
+
+`custom:dec-deepal-charger-card`: ver `docs/cargadores.md`.
+
 ## Ventana de carga
 
 Pulsar la franja de la batería (icono, autonomía, estado de carga y barra)

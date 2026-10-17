@@ -254,7 +254,11 @@ def test_each_notice_has_its_own_targets_and_thresholds() -> None:
     assert route.steps("insurance", "c") == (30, 15) and route.steps("insurance", "r") == (30, 15)
     assert route.thresholds == {"maintenance_t1": 90, "maintenance_k1": 4000}
     assert ar.route_for({"vehicles": {"c": route.to_dict()}}, "c") == route
-    assert len(ar.NOTICES) == 23 and [n.id for n in ar.NOTICES if n.opt_in] == ["insurance_r1", "insurance_r2"]
+    assert len(ar.NOTICES) == 28 and [n.id for n in ar.NOTICES if n.opt_in] == ["insurance_r1", "insurance_r2"]
+    # Los del cargador (2.6.0b1) nacen sin destinos: el cargador usa los de carga.
+    assert [n.id for n in ar.NOTICES if n.section == "charger"] == [
+        "charger_confirm", "charger_unlocked", "charger_not_charging", "charger_finished", "charger_locked",
+    ]
 
     # El apartado clásico de Configurar (por grupos) pisa los destinos del grupo
     # y respeta lo que no sabe tocar: plazos y avisos nuevos.

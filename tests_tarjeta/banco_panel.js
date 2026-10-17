@@ -22,6 +22,7 @@
   const NOTICES = [
     plain("charge_started", "charge"), plain("charge_interrupted", "charge"), plain("charge_finished", "charge"),
     plain("warnings", "warnings"), plain("tires", "warnings"), plain("key_battery", "warnings"),
+    due("charger", "confirm"), due("charger", "unlocked"), due("charger", "not_charging"), due("charger", "finished"), due("charger", "locked"),
     due("maintenance", "t1", 60, "days"), due("maintenance", "t2", 30, "days"), due("maintenance", "t3", 15, "days"),
     due("maintenance", "k1", 5000, "km"), due("maintenance", "k2", 2500, "km"), due("maintenance", "k3", 1000, "km"),
     due("maintenance", "overdue"),
@@ -61,9 +62,15 @@
 
   const PEOPLE = [{ id: "person.ella", name: "Ella" }, { id: "person.manuel", name: "Manuel" }];
 
+  const DOMAINS = ["binary_sensor", "sensor", "switch", "input_boolean"];
   const initial = () => ({
-    version: "2.5.2b1",
+    version: "2.6.0b1",
     admin: true,
+    chargers_enabled: false,
+    chargers: {
+      enabled: false, control: "people", chargers: [], default_loss: 10, remind_choices: [5, 15, 60], relock_choices: [3, 5, 10],
+      roles: { plugged: DOMAINS, charging: DOMAINS, power: ["sensor"], energy: ["sensor"], lock: ["switch", "lock", "input_boolean"] },
+    },
     people: PEOPLE,
     models: MODELS,
     accounts: [{
@@ -161,6 +168,15 @@
         entities[id] = { entity_id: id, device_id: device, platform: "dec_deepal", translation_key: "dec_photo" };
         states[id] = { entity_id: id, state: "2026-10-09T12:00:00", attributes: { entity_picture: picture } };
       }
+      // Entidades de un cargador V2C Trydan (para Ajustes → Cargadores).
+      for (const [id, state, attributes] of [
+        ["binary_sensor.evse_conectado", "off", { friendly_name: "EVSE Conectado" }],
+        ["binary_sensor.evse_cargando", "off", { friendly_name: "EVSE Cargando" }],
+        ["sensor.evse_potencia_de_carga", "0", { friendly_name: "EVSE Potencia de carga", unit_of_measurement: "W" }],
+        ["sensor.evse_energia_de_carga", "0", { friendly_name: "EVSE Energía de carga", unit_of_measurement: "kWh" }],
+        ["sensor.evse_energia_de_la_casa", "498", { friendly_name: "EVSE Energía de la casa", unit_of_measurement: "W" }],
+        ["switch.evse_bloquear_evse", "on", { friendly_name: "EVSE Bloquear EVSE" }],
+      ]) states[id] = { entity_id: id, state, attributes };
       const hass = {
         entities, states,
         locale: { language: opciones.idioma || "es" },
@@ -192,6 +208,22 @@
       if (type === "state") return JSON.parse(JSON.stringify(state));
       if (type === "export_url") return { url: "/api/dec_deepal/export?authSig=abc", absolute: "http://ha.local/api/dec_deepal/export?authSig=abc" };
       if (type === "send_backup") return null;
+      if (type === "set_chargers") {
+        state.chargers.enabled = message.enabled;
+        state.chargers.control = message.control;
+        state.chargers_enabled = message.enabled;
+        return null;
+      }
+      if (type === "save_charger") {
+        const charger = { ...message.charger, id: message.charger.id || "c1" };
+        if (!charger.entities.plugged) throw fail("charger_plugged");
+        state.chargers.chargers = [...state.chargers.chargers.filter((item) => item.id !== charger.id), charger];
+        return charger;
+      }
+      if (type === "delete_charger") {
+        state.chargers.chargers = state.chargers.chargers.filter((item) => item.id !== message.charger_id);
+        return null;
+      }
       if (type === "delete_data") {
         state.stored = state.stored.filter((item) => !message.keys.includes(item.key));
         return null;

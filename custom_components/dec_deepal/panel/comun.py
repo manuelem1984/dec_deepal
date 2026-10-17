@@ -13,6 +13,7 @@ from homeassistant.core import HomeAssistant
 
 from .. import vehicle_data as vd
 from ..alert_rules import ThresholdError
+from ..chargers import ChargerError
 from ..const import DOMAIN
 
 #: Esquema de las órdenes que actúan sobre un coche.
@@ -55,7 +56,7 @@ def command(schema: dict[Any, Any], *, admin: bool = True):  # noqa: ANN201
                 connection.send_error(msg["id"], "not_found", "not_found")
             except ThresholdError as err:
                 connection.send_error(msg["id"], err.code, err.notice)
-            except (PanelError, vd.BackupError) as err:
+            except (PanelError, vd.BackupError, ChargerError) as err:
                 connection.send_error(msg["id"], err.code, err.code)
             except ValueError as err:
                 connection.send_error(msg["id"], "invalid", str(err))

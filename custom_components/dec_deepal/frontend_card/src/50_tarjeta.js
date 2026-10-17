@@ -52,6 +52,7 @@
     }
 
     set hass(hass) {
+      if (!this._hass) this._subscribeChargers(hass);
       this._hass = hass;
       // Tema oscuro: fondo de estudio detrás de la foto (STUDIO_BG).
       this.toggleAttribute("dark", Boolean((hass.themes || {}).darkMode));
@@ -74,6 +75,32 @@
     disconnectedCallback() {
       if (this._comfort) this._comfort.close();
       if (this._charge) this._charge.close();
+      if (this._chargers) this._chargers.then((unsubscribe) => unsubscribe()).catch(() => undefined);
+      this._chargers = null;
+    }
+
+    connectedCallback() {
+      if (this._hass && !this._chargers) this._subscribeChargers(this._hass);
+    }
+
+    /** Cargadores (chargers.py): la ventana de carga enseña el que carga este coche. */
+    _subscribeChargers(hass) {
+      if (!hass || !hass.connection || !hass.connection.subscribeMessage || this._chargers) return;
+      this._chargers = hass.connection.subscribeMessage((data) => {
+        this._chargerData = data;
+        if (this._charge) this._paintCharge();
+      }, { type: "dec_deepal/chargers/subscribe" });
+      this._chargers.catch(() => {
+        this._chargers = null;
+      });
+    }
+
+    /** Cargador en el que está enchufado este coche, o `undefined`. */
+    _station() {
+      const data = this._chargerData;
+      if (!data || !data.enabled) return undefined;
+      const deviceId = this._deviceId();
+      return data.chargers.find((charger) => charger.session && charger.session.device_id && charger.session.device_id === deviceId);
     }
 
     // --- Entidades -------------------------------------------------------------
