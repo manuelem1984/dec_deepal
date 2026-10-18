@@ -211,6 +211,8 @@
       "ch_at_plug": "al enchufar {value} %",
       "ch_unknown_car": "coche sin identificar",
       "ch_no_coverage": "sin cobertura",
+      "ch_last_data": "último dato {time}",
+      "ch_energy_power": "Energía (potencia)",
       "ch_power": "Potencia",
       "ch_energy": "Energía",
       "ch_cost": "Coste",
@@ -415,6 +417,8 @@
       "ch_at_plug": "{value} % when plugged in",
       "ch_unknown_car": "unidentified car",
       "ch_no_coverage": "no signal",
+      "ch_last_data": "last data {time}",
+      "ch_energy_power": "Energy (from power)",
       "ch_power": "Power",
       "ch_energy": "Energy",
       "ch_cost": "Cost",
@@ -619,6 +623,8 @@
       "ch_at_plug": "ao ligar {value} %",
       "ch_unknown_car": "carro não identificado",
       "ch_no_coverage": "sem rede",
+      "ch_last_data": "último dado {time}",
+      "ch_energy_power": "Energia (potência)",
       "ch_power": "Potência",
       "ch_energy": "Energia",
       "ch_cost": "Custo",
@@ -823,6 +829,8 @@
       "ch_at_plug": "al collegamento {value} %",
       "ch_unknown_car": "auto non identificata",
       "ch_no_coverage": "senza copertura",
+      "ch_last_data": "ultimo dato {time}",
+      "ch_energy_power": "Energia (potenza)",
       "ch_power": "Potenza",
       "ch_energy": "Energia",
       "ch_cost": "Costo",
@@ -1027,6 +1035,8 @@
       "ch_at_plug": "po podłączeniu {value} %",
       "ch_unknown_car": "nierozpoznany samochód",
       "ch_no_coverage": "bez zasięgu",
+      "ch_last_data": "ostatnie dane {time}",
+      "ch_energy_power": "Energia (z mocy)",
       "ch_power": "Moc",
       "ch_energy": "Energia",
       "ch_cost": "Koszt",
@@ -1231,6 +1241,8 @@
       "ch_at_plug": "beim Einstecken {value} %",
       "ch_unknown_car": "unbekanntes Auto",
       "ch_no_coverage": "ohne Empfang",
+      "ch_last_data": "letzte Daten {time}",
+      "ch_energy_power": "Energie (Leistung)",
       "ch_power": "Leistung",
       "ch_energy": "Energie",
       "ch_cost": "Kosten",
@@ -1435,6 +1447,8 @@
       "ch_at_plug": "au branchement {value} %",
       "ch_unknown_car": "voiture non identifiée",
       "ch_no_coverage": "sans réseau",
+      "ch_last_data": "dernière donnée {time}",
+      "ch_energy_power": "Énergie (puissance)",
       "ch_power": "Puissance",
       "ch_energy": "Énergie",
       "ch_cost": "Coût",
@@ -1639,6 +1653,8 @@
       "ch_at_plug": "bij aansluiten {value} %",
       "ch_unknown_car": "onbekende auto",
       "ch_no_coverage": "geen bereik",
+      "ch_last_data": "laatste gegevens {time}",
+      "ch_energy_power": "Energie (vermogen)",
       "ch_power": "Vermogen",
       "ch_energy": "Energie",
       "ch_cost": "Kosten",
@@ -1843,6 +1859,8 @@
       "ch_at_plug": "ved tilkobling {value} %",
       "ch_unknown_car": "ukjent bil",
       "ch_no_coverage": "uten dekning",
+      "ch_last_data": "siste data {time}",
+      "ch_energy_power": "Energi (effekt)",
       "ch_power": "Effekt",
       "ch_energy": "Energi",
       "ch_cost": "Kostnad",
@@ -2047,6 +2065,8 @@
       "ch_at_plug": "ved tilslutning {value} %",
       "ch_unknown_car": "ukendt bil",
       "ch_no_coverage": "uden dækning",
+      "ch_last_data": "seneste data {time}",
+      "ch_energy_power": "Energi (effekt)",
       "ch_power": "Effekt",
       "ch_energy": "Energi",
       "ch_cost": "Pris",
@@ -2251,6 +2271,8 @@
       "ch_at_plug": "κατά τη σύνδεση {value} %",
       "ch_unknown_car": "μη αναγνωρισμένο αυτοκίνητο",
       "ch_no_coverage": "χωρίς σήμα",
+      "ch_last_data": "τελευταία δεδομένα {time}",
+      "ch_energy_power": "Ενέργεια (από ισχύ)",
       "ch_power": "Ισχύς",
       "ch_energy": "Ενέργεια",
       "ch_cost": "Κόστος",
@@ -2455,6 +2477,8 @@
       "ch_at_plug": "ob priklopu {value} %",
       "ch_unknown_car": "neprepoznan avto",
       "ch_no_coverage": "brez signala",
+      "ch_last_data": "zadnji podatki {time}",
+      "ch_energy_power": "Energija (iz moči)",
       "ch_power": "Moč",
       "ch_energy": "Energija",
       "ch_cost": "Strošek",
@@ -3921,7 +3945,10 @@
         const power = station.power != null ? `${(station.power / 1000).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kW` : "—";
         const detail = [`+${Number(session.energy).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kWh`];
         if (session.cost != null) detail.push(`${Number(session.cost).toLocaleString(this._language(), { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`);
-        if (session.estimated) detail.push(this._t("ch_no_coverage"));
+        if (session.estimated) {
+          detail.push(session.no_coverage ? this._t("ch_no_coverage")
+            : session.last_report ? this._t("ch_last_data", { time: this._clock(new Date(session.last_report)) }) : this._t("ch_estimated"));
+        }
         stats.unshift(this._chargeStat("mdi:ev-station", "ch_station", `${station.name} · ${power}`, detail.join(" · "), true));
       }
       const html = stats.join("");
@@ -4080,6 +4107,12 @@
       return chargers.find((item) => item.id === this._config.charger) || (this._config.charger ? undefined : chargers[0]);
     }
 
+    /** Por qué el % es estimado: sin cobertura (comprobado) o el coche aún no ha informado. */
+    _offline(session) {
+      if (session.no_coverage) return this._t("ch_no_coverage");
+      return session.last_report ? this._t("ch_last_data", { time: this._clock(session.last_report) }) : this._t("ch_estimated");
+    }
+
     _decimal(value, digits) {
       return Number(value).toLocaleString(this._language(), { minimumFractionDigits: digits, maximumFractionDigits: digits });
     }
@@ -4154,7 +4187,7 @@
         if (session.duration) parts.push(this._duration(session.duration));
         const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging)}` : "";
         side = `<div class="car">${photo ? `<img src="${photo}" alt="">` : ""}<div class="who">${escapeHtml(session.vehicle || this._t("ch_unknown_car"))}${
-          session.estimated ? ` · ${this._t("ch_no_coverage")}` : ""}</div></div>`;
+          session.estimated ? ` · ${escapeHtml(this._offline(session))}` : ""}</div></div>`;
         // Al terminar, la potencia (0 kW) deja sitio a lo que ha llegado a la batería.
         const first = finished
           ? stat("mdi:battery-charging-high", "ch_in_battery", `≈ ${this._decimal(session.battery_energy, 1)} kWh`)
@@ -4162,8 +4195,10 @@
         const cost = session.cost != null
           ? stat("mdi:currency-eur", "ch_cost", `${this._decimal(session.cost, 2)} €`)
           : `<div class="t3"><div class="k"><ha-icon icon="mdi:currency-eur"></ha-icon>${this._t("ch_cost")}</div><div class="v none">${this._t("ch_no_price")}</div></div>`;
+        // Si el contador del cargador no avanza, los kWh salen de la potencia.
+        const energy = stat("mdi:lightning-bolt-circle", session.energy_source === "power" ? "ch_energy_power" : "ch_energy", `+${this._decimal(session.energy, 1)} kWh`);
         grid = `${status}${level}<div class="grid">
-          ${finished ? stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`) + first : first + stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`)}
+          ${finished ? energy + first : first + energy}
           ${cost}</div>`;
       } else {
         const month = c.month;

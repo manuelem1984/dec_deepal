@@ -25,7 +25,7 @@ SESSION = {
     "since": "2026-10-17T20:10:00+00:00", "charging_since": "2026-10-17T20:12:00+00:00", "finished_at": None,
     "vehicle_id": "car1", "vehicle": "Changote", "device_id": None, "assigned": "user", "waiting": False,
     "energy": 4.2, "battery_energy": 3.78, "cost": 0.48, "soc_start": 65, "level": 72.3, "estimated": True,
-    "minutes_left": 455, "balance": 15,
+    "minutes_left": 455, "balance": 15, "no_coverage": True, "last_report": "2026-10-17T18:53:00+00:00",
 }
 
 
@@ -150,3 +150,12 @@ def test_car_card_shows_the_estimate(page: Page) -> None:
     page.evaluate("data => banco.cargadores(data)", {**data, "show_estimate": False})
     assert page.evaluate(f"{root}.querySelector('.estb').hidden") is True
     assert "≈" not in page.evaluate(f"{root}.querySelector('.km').textContent")
+
+
+def test_estimated_but_not_offline(page: Page) -> None:
+    """Con cobertura pero sin datos nuevos: «último dato» (no «sin cobertura»); kWh por potencia."""
+    session = {**SESSION, "no_coverage": False, "energy_source": "power"}
+    mount_charger(page, [_charger(charging=True, locked=False, power=1800, session=session)])
+    text = card_text(page)
+    assert "Changote · último dato " in text and "sin cobertura" not in text.split("Changote")[1].split("Cargando")[0]
+    assert "Energía (potencia)" in text

@@ -147,6 +147,12 @@
       return chargers.find((item) => item.id === this._config.charger) || (this._config.charger ? undefined : chargers[0]);
     }
 
+    /** Por qué el % es estimado: sin cobertura (comprobado) o el coche aún no ha informado. */
+    _offline(session) {
+      if (session.no_coverage) return this._t("ch_no_coverage");
+      return session.last_report ? this._t("ch_last_data", { time: this._clock(session.last_report) }) : this._t("ch_estimated");
+    }
+
     _decimal(value, digits) {
       return Number(value).toLocaleString(this._language(), { minimumFractionDigits: digits, maximumFractionDigits: digits });
     }
@@ -221,7 +227,7 @@
         if (session.duration) parts.push(this._duration(session.duration));
         const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging)}` : "";
         side = `<div class="car">${photo ? `<img src="${photo}" alt="">` : ""}<div class="who">${escapeHtml(session.vehicle || this._t("ch_unknown_car"))}${
-          session.estimated ? ` · ${this._t("ch_no_coverage")}` : ""}</div></div>`;
+          session.estimated ? ` · ${escapeHtml(this._offline(session))}` : ""}</div></div>`;
         // Al terminar, la potencia (0 kW) deja sitio a lo que ha llegado a la batería.
         const first = finished
           ? stat("mdi:battery-charging-high", "ch_in_battery", `≈ ${this._decimal(session.battery_energy, 1)} kWh`)
@@ -229,8 +235,10 @@
         const cost = session.cost != null
           ? stat("mdi:currency-eur", "ch_cost", `${this._decimal(session.cost, 2)} €`)
           : `<div class="t3"><div class="k"><ha-icon icon="mdi:currency-eur"></ha-icon>${this._t("ch_cost")}</div><div class="v none">${this._t("ch_no_price")}</div></div>`;
+        // Si el contador del cargador no avanza, los kWh salen de la potencia.
+        const energy = stat("mdi:lightning-bolt-circle", session.energy_source === "power" ? "ch_energy_power" : "ch_energy", `+${this._decimal(session.energy, 1)} kWh`);
         grid = `${status}${level}<div class="grid">
-          ${finished ? stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`) + first : first + stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`)}
+          ${finished ? energy + first : first + energy}
           ${cost}</div>`;
       } else {
         const month = c.month;

@@ -331,3 +331,60 @@ async def test_lock_when_full(hass: HomeAssistant, manager: ChargerManager, free
     # Con el ajuste quitado, la tarjeta del coche no recibe el % estimado.
     await manager.async_set_settings(True, "people", show_estimate=False)
     assert manager.statuses()["estimates"] == {} and manager.statuses()["show_estimate"] is False
+
+
+async def test_reads_the_car_while_charging(hass: HomeAssistant, manager: ChargerManager, freezer) -> None:  # noqa: ANN001
+    """Con cobertura: despierta y lee el coche cada 10 min; dos fallos = sin cobertura comprobada."""
+    results = ["informe_nuevo", "fallo", "sin_informe"]
+    calls: list[str] = []
+    car = manager._vehicle("car1")[1]
+
+    async def wake() -> str:
+        result = results[len(calls)]
+        calls.append(result)
+        if result == "informe_nuevo":
+            car.coordinator.data.update({s.BATTERY_LEVEL: 70, s.REPORT_TIME: dt_util.utcnow()})
+        return result
+
+    car.coordinator.wake_enabled = True
+    car.coordinator.async_wake_and_wait = wake
+    await manager.async_save_charger({**GARAJE, "vehicles": ["car1"], "unlock": "none", "coverage": "yes", "read_interval": 10})
+    await manager.async_set_settings(True, "people")
+    charger_id = next(iter(manager.chargers))
+    hass.states.async_set(PLUG, "on")
+    hass.states.async_set(CHARGING, "on")
+    await hass.async_block_till_done()
+    assert manager.status(charger_id)["session"]["estimated"] is True
+
+    for _ in range(3):
+        freezer.tick(timedelta(minutes=10, seconds=1))
+        async_fire_time_changed(hass)
+        await hass.async_block_till_done()
+        if len(calls) == 1:
+            # Primera lectura: dato real, ya no es estimado.
+            session = manager.status(charger_id)["session"]
+            assert session["estimated"] is False and session["level"] == 70 and session["no_coverage"] is False
+    assert calls == ["informe_nuevo", "fallo", "sin_informe"]
+    assert manager.status(charger_id)["session"]["no_coverage"] is True
+    # Comprobado sin cobertura: deja de intentarlo en esta carga.
+    freezer.tick(timedelta(minutes=30))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert len(calls) == 3
+
+
+async def test_energy_from_power(hass: HomeAssistant, manager: ChargerManager, freezer) -> None:  # noqa: ANN001
+    """Sin contador de energía (o parado), los kWh salen de la potencia por el tiempo."""
+    await manager.async_save_charger({**GARAJE, "vehicles": ["car1"], "unlock": "none", "coverage": "no",
+                                      "entities": {"plugged": PLUG, "charging": CHARGING, "power": POWER}})
+    await manager.async_set_settings(True, "people")
+    charger_id = next(iter(manager.chargers))
+    hass.states.async_set(PLUG, "on")
+    hass.states.async_set(POWER, "3600", {"unit_of_measurement": "W"})
+    hass.states.async_set(CHARGING, "on")
+    await hass.async_block_till_done()
+    freezer.tick(timedelta(minutes=30))
+    session = manager.status(charger_id)["session"]
+    assert session["energy"] == 1.8 and session["energy_source"] == "power"
+    # 56 % + 1,8 kWh × 0,9 en 68,8 kWh.
+    assert session["level"] == 58.4

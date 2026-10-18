@@ -105,6 +105,10 @@ RELOCK_CHOICES: Final = (3, 5, 10)
 LOCK_FULL_CHOICES: Final = (15, 30, 45)
 #: Desde qué % se da la carga por completa (real o estimado).
 FULL_LEVEL: Final = 99.0
+#: Leer el coche mientras carga: cada cuántos minutos (0 = no).
+READ_CHOICES: Final = (0, 10, 15, 30)
+#: Despertares fallidos seguidos que confirman que no hay cobertura.
+READ_FAILURES: Final = 2
 DEFAULT_LOSS: Final = 10.0
 MAX_LOSS: Final = 40.0
 #: Quién puede desbloquear desde la tarjeta o las notificaciones.
@@ -206,6 +210,8 @@ def clean_charger(raw: Mapping[str, Any], known: Iterable[str] = ()) -> dict[str
         # Bloquear al terminar: enchufado, al 100 % y sin cargar ``lock_full_minutes``.
         "lock_full": bool(raw.get("lock_full", True)),
         "lock_full_minutes": _choice(raw.get("lock_full_minutes"), LOCK_FULL_CHOICES, 30),
+        # Con cobertura (o "no lo sé"): despertar el coche cada N min mientras carga.
+        "read_interval": _choice(raw.get("read_interval"), READ_CHOICES, 15),
         "loss": min(MAX_LOSS, max(0.0, round(loss, 1))),
         "learn": bool(raw.get("learn", True)),
         "price": price,
@@ -570,10 +576,10 @@ class ChargerManager:
             charger = self.chargers.get(charger_id)
             if charger is None:
                 continue
+            if role in (ROLE_POWER, ROLE_ENERGY, ROLE_CHARGING):
+                self._track_energy(charger)
             if role in (ROLE_PLUGGED, ROLE_CHARGING, ROLE_LOCK):
                 self._sync(charger_id)
-            elif role == ROLE_ENERGY:
-                self._track_energy(charger)
             self._changed()
 
     @callback
@@ -596,6 +602,7 @@ class ChargerManager:
                 session["charging_since"] = _iso(self._clock())
                 self._cancel(charger_id, "not_charging")
                 self._save()
+                self._schedule_read(charger)
             elif charging is False and session.get("charging_since") and not session.get("finished_at"):
                 session["finished_at"] = _iso(self._clock())
                 self._save()
@@ -606,6 +613,7 @@ class ChargerManager:
                 session.pop("lock_at", None)
                 self._cancel(charger_id, "lock_full")
                 self._save()
+                self._schedule_read(charger)
             if self.locked(charger) is False and session.get("unlocked_at") is None:
                 session["unlocked_at"] = _iso(self._clock())
                 self._cancel(charger_id, "remind")
@@ -651,6 +659,8 @@ class ChargerManager:
             odometer=data.get(s.ODOMETER_KM),
         )
         self._save()
+        if self.charging(charger):
+            self._schedule_read(charger)
 
     def _car_confirming(self, charger: Mapping[str, Any]) -> str | None:
         """El coche que dice tener la manguera puesta desde que se enchufó."""
@@ -690,7 +700,7 @@ class ChargerManager:
     def _end(self, charger: dict[str, Any]) -> None:
         charger_id = charger["id"]
         session = self._sessions.pop(charger_id)
-        for name in ("wait", "remind", "not_charging", "lock_full"):
+        for name in ("wait", "remind", "not_charging", "lock_full", "read"):
             self._cancel(charger_id, name)
         self._track_energy(charger, session)
         now = self._clock()
@@ -789,18 +799,100 @@ class ChargerManager:
             )
         self._changed()
 
+    def _schedule_read(self, charger: Mapping[str, Any]) -> None:
+        """Mientras carga, despertar y leer el coche cada ``read_interval`` minutos.
+
+        Solo con cobertura (o "no lo sé") y con "Despertar el coche" activado
+        en la cuenta. Es lo mismo que el botón Actualizar: con la carga, el
+        coche está despierto y su batería de 12 V se recarga. Si falla
+        ``READ_FAILURES`` veces seguidas, se da por comprobado que no hay
+        cobertura y se deja de intentar en esta carga.
+        """
+        charger_id = charger["id"]
+        session = self._sessions.get(charger_id)
+        minutes = charger.get("read_interval") or 0
+        if (
+            not minutes
+            or charger["coverage"] == COVERAGE_NO
+            or session is None
+            or not session.get("vehicle_id")
+            or session.get("no_coverage")
+            or "read" in self._timers.get(charger_id, {})
+        ):
+            return
+
+        @callback
+        def _read(_now: Any) -> None:
+            current = self.chargers.get(charger_id)
+            session = self._sessions.get(charger_id)
+            if current is None or session is None or not self.charging(current) or not session.get("vehicle_id"):
+                return
+            found = self._vehicle(session["vehicle_id"])
+            coordinator = getattr(found[1], "coordinator", None) if found else None
+            if coordinator is None or not getattr(coordinator, "wake_enabled", False):
+                return
+            self.hass.async_create_task(self._read_car(current, coordinator))
+
+        self._timer(charger_id, "read", minutes * 60, _read)
+
+    async def _read_car(self, charger: Mapping[str, Any], coordinator: Any) -> None:
+        charger_id = charger["id"]
+        result = str(await coordinator.async_wake_and_wait())
+        session = self._sessions.get(charger_id)
+        if session is None:
+            return
+        if result in ("informe_nuevo", "no_hace_falta"):
+            session["read_failures"] = 0
+            session["read_ok"] = _iso(self._clock())
+        elif result in ("sin_informe", "fallo"):
+            session["read_failures"] = int(session.get("read_failures") or 0) + 1
+            if session["read_failures"] >= READ_FAILURES:
+                session["no_coverage"] = True
+        self._save()
+        self._changed()
+        self._schedule_read(charger)
+
+    def _track_power(self, charger: Mapping[str, Any], session: dict[str, Any]) -> None:
+        """kWh por la potencia: la última potencia leída por el tiempo que ha durado."""
+        now = self._clock()
+        last = _when(session.get("pw_at"))
+        watts = float(session.get("pw_w") or 0.0)
+        if last is not None and watts > 0:
+            session["energy_power"] = float(session.get("energy_power") or 0.0) + watts * (now - last).total_seconds() / 3_600_000
+        power = self.power_w(charger) if self.charging(charger) is not False else 0.0
+        session["pw_at"] = _iso(now)
+        session["pw_w"] = power or 0.0
+
     def _track_energy(self, charger: Mapping[str, Any], session: dict[str, Any] | None = None) -> None:
-        """kWh de esta carga: lo que ha subido el contador desde que se enchufó."""
+        """kWh de esta carga: los del contador del cargador o, si no avanza, por la potencia."""
         session = session if session is not None else self._sessions.get(charger["id"])
+        if session is None:
+            return
+        if charger["entities"].get(ROLE_POWER):
+            self._track_power(charger, session)
+        self._track_meter(charger, session)
+        meter = session.get("energy_meter")
+        power = float(session.get("energy_power") or 0.0)
+        # El contador manda; si no hay, o no se mueve mientras la potencia sí, la potencia.
+        if power > 0.3 and (meter is None or meter < 0.05 or (power > 1.0 and meter < power * 0.5)):
+            energy, source = power, "power"
+        else:
+            energy, source = float(meter or 0.0), "meter" if meter is not None else None
+        session["energy"] = max(float(session.get("energy") or 0.0), energy)
+        if source:
+            session["energy_source"] = source
+        self._save()
+
+    def _track_meter(self, charger: Mapping[str, Any], session: dict[str, Any]) -> None:
+        """kWh de esta carga: lo que ha subido el contador desde que se enchufó."""
         value = self._energy_raw(charger)
-        if session is None or value is None:
+        if value is None:
             return
         start = session.get("energy_start")
         if start is None or value < start:
             # Contador por sesión (se pone a 0 al enchufar) o reiniciado.
             session["energy_start"] = start = 0.0 if start is None or value < start else start
-        session["energy"] = max(float(session.get("energy") or 0.0), value - start)
-        self._save()
+        session["energy_meter"] = max(float(session.get("energy_meter") or 0.0), value - start)
 
     # ------------------------------------------------------------------
     # Preguntar, desbloquear y avisar
@@ -1120,6 +1212,9 @@ class ChargerManager:
                 "estimated": estimated,
                 "minutes_left": None if minutes is None else round(minutes),
                 # Cuánto ha durado (hasta que terminó, o hasta ahora) y cuándo se bloquea solo.
+                "energy_source": session.get("energy_source"),
+                "no_coverage": bool(session.get("no_coverage")),
+                "last_report": _iso(report) if isinstance(report := self._car_data(vehicle_id).get(s.REPORT_TIME), datetime) else None,
                 "duration": self._minutes_between(session.get("charging_since") or session.get("plugged_at"), session.get("finished_at")),
                 "lock_at": session.get("lock_at"),
                 # Minutos de equilibrado que se suman al final (Ajustes de la cuenta del coche).
@@ -1194,7 +1289,12 @@ class ChargerManager:
             if session is not None and session.get("vehicle_id") and self._is_estimated(session):
                 level = self._level(charger, session)
                 state = "charging" if self.charging(charger) else "finished" if session.get("finished_at") else "plugged"
-                entry = {"level": level, "energy": round(float(session.get("energy") or 0), 1), "state": state}
+                entry = {
+                    "level": level,
+                    "energy": round(float(session.get("energy") or 0), 1),
+                    "state": state,
+                    "no_coverage": bool(session.get("no_coverage")),
+                }
                 vehicle_id = session["vehicle_id"]
             else:
                 last = (self._history.get(charger_id) or [None])[-1]
@@ -1225,11 +1325,19 @@ class ChargerManager:
             "control": self.control,
             "show_estimate": self.show_estimate,
             "chargers": [
-                {**charger, "measured": self.measured(charger["id"]), "plugged": self.plugged(charger), "locked": self.locked(charger)}
+                {
+                    **charger,
+                    "measured": self.measured(charger["id"]),
+                    "plugged": self.plugged(charger),
+                    "locked": self.locked(charger),
+                    # kWh de la carga en curso sacados de la potencia: el contador no avanza.
+                    "energy_source": (self._sessions.get(charger["id"]) or {}).get("energy_source"),
+                }
                 for charger in self.chargers.values()
             ],
             "roles": {role: list(domains) for role, domains in ROLE_DOMAINS.items()},
             "remind_choices": list(REMIND_CHOICES),
+            "read_choices": list(READ_CHOICES),
             "relock_choices": list(RELOCK_CHOICES),
             "lock_full_choices": list(LOCK_FULL_CHOICES),
             "default_loss": DEFAULT_LOSS,

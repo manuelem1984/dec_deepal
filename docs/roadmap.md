@@ -1,5 +1,14 @@
 # Hoja de ruta
 
+## Beta 2.6.0b5 (18-10-2026) — pendiente de probar
+
+- [ ] **Con cobertura (caso del usuario):** cargando, cada 15 min el coche se
+      despierta y la tarjeta pasa a enseñar el % real (sin «estimado»).
+- [ ] **Sin cobertura (Garaje):** tras dos despertares fallidos, «sin
+      cobertura» y no lo vuelve a intentar en esa carga.
+- [ ] **Energía parada** (el usuario veía +0,0 kWh a 1,8 kW): los kWh avanzan
+      con la potencia y el panel enseña «kWh por potencia».
+
 ## Beta 2.6.0b4 (18-10-2026) — pendiente de probar
 
 - [ ] **Notificación en el iPhone:** mantenerla pulsada enseña los coches y

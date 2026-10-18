@@ -212,6 +212,10 @@
       "relock_after": "Pasados",
       "relock_notify": "Avisar al bloquear",
       "relock_notify_help": "Con un botón para desbloquearlo otra vez.",
+      "read_title": "Leer el coche mientras carga",
+      "read_help": "Lo despierta cada tanto para ver el % real, como el botón Actualizar (necesita «Despertar el coche» en Ajustes). Si no responde dos veces, se da por «sin cobertura».",
+      "read_off": "No",
+      "st_energy_power": "kWh por potencia",
       "lock_full": "Bloquear al terminar la carga",
       "lock_full_help": "Con la manguera puesta, al 100 % y sin cargar durante este tiempo. Si no llega al 100 % (una pausa de la compañía), no se bloquea.",
       "loss_title": "Pérdidas y precio",
@@ -604,6 +608,10 @@
       "relock_after": "After",
       "relock_notify": "Notify when locking",
       "relock_notify_help": "With a button to unlock it again.",
+      "read_title": "Read the car while charging",
+      "read_help": "Wakes it every so often to get the real %, like the Refresh button (needs “Wake the car” in Settings). If it doesn't answer twice, it's marked “no signal”.",
+      "read_off": "Off",
+      "st_energy_power": "kWh from power",
       "lock_full": "Lock when charging finishes",
       "lock_full_help": "With the cable plugged in, at 100 % and not charging for this long. If it doesn't reach 100 % (a supplier pause), it doesn't lock.",
       "loss_title": "Losses and price",
@@ -996,6 +1004,10 @@
       "relock_after": "Passados",
       "relock_notify": "Avisar ao bloquear",
       "relock_notify_help": "Com um botão para o desbloquear outra vez.",
+      "read_title": "Ler o carro enquanto carrega",
+      "read_help": "Acorda-o de vez em quando para ver a % real, como o botão Atualizar (precisa de «Acordar o carro» nas Definições). Se não responder duas vezes, fica «sem rede».",
+      "read_off": "Não",
+      "st_energy_power": "kWh pela potência",
       "lock_full": "Bloquear ao terminar o carregamento",
       "lock_full_help": "Com o cabo ligado, a 100 % e sem carregar durante este tempo. Se não chegar aos 100 % (uma pausa da comercializadora), não bloqueia.",
       "loss_title": "Perdas e preço",
@@ -1388,6 +1400,10 @@
       "relock_after": "Dopo",
       "relock_notify": "Avvisa al blocco",
       "relock_notify_help": "Con un pulsante per sbloccarlo di nuovo.",
+      "read_title": "Leggi l'auto durante la ricarica",
+      "read_help": "Lo sveglia ogni tanto per vedere la % reale, come il pulsante Aggiorna (serve «Sveglia l'auto» nelle Impostazioni). Se non risponde due volte, «senza copertura».",
+      "read_off": "No",
+      "st_energy_power": "kWh dalla potenza",
       "lock_full": "Blocca a fine ricarica",
       "lock_full_help": "Con il cavo collegato, al 100 % e senza caricare per questo tempo. Se non arriva al 100 % (una pausa del fornitore), non si blocca.",
       "loss_title": "Perdite e prezzo",
@@ -1780,6 +1796,10 @@
       "relock_after": "Po",
       "relock_notify": "Powiadom o blokadzie",
       "relock_notify_help": "Z przyciskiem do ponownego odblokowania.",
+      "read_title": "Odczytuj samochód podczas ładowania",
+      "read_help": "Co jakiś czas budzi go, by odczytać prawdziwy %, jak przycisk Odśwież (wymaga „Budź samochód” w Ustawieniach). Po dwóch brakach odpowiedzi: „bez zasięgu”.",
+      "read_off": "Nie",
+      "st_energy_power": "kWh z mocy",
       "lock_full": "Blokuj po zakończeniu ładowania",
       "lock_full_help": "Z podłączonym kablem, przy 100 % i bez ładowania przez ten czas. Jeśli nie dojdzie do 100 % (przerwa dostawcy), nie blokuje.",
       "loss_title": "Straty i cena",
@@ -2172,6 +2192,10 @@
       "relock_after": "Nach",
       "relock_notify": "Beim Sperren benachrichtigen",
       "relock_notify_help": "Mit einer Taste zum erneuten Entsperren.",
+      "read_title": "Auto beim Laden auslesen",
+      "read_help": "Weckt es ab und zu, um die echten % zu lesen, wie die Taste Aktualisieren („Auto wecken“ in den Einstellungen nötig). Antwortet es zweimal nicht: „ohne Empfang“.",
+      "read_off": "Aus",
+      "st_energy_power": "kWh aus Leistung",
       "lock_full": "Nach Ladeende sperren",
       "lock_full_help": "Mit eingestecktem Kabel, bei 100 % und so lange ohne Laden. Erreicht es keine 100 % (Pause des Anbieters), wird nicht gesperrt.",
       "loss_title": "Verluste und Preis",
@@ -2564,6 +2588,10 @@
       "relock_after": "Après",
       "relock_notify": "Prévenir au verrouillage",
       "relock_notify_help": "Avec un bouton pour la déverrouiller à nouveau.",
+      "read_title": "Lire la voiture pendant la charge",
+      "read_help": "La réveille de temps en temps pour lire le vrai %, comme le bouton Actualiser (« Réveiller la voiture » requis). Sans réponse deux fois : « sans réseau ».",
+      "read_off": "Non",
+      "st_energy_power": "kWh par puissance",
       "lock_full": "Verrouiller en fin de charge",
       "lock_full_help": "Câble branché, à 100 % et sans charger pendant ce temps. Si elle n'atteint pas 100 % (pause du fournisseur), pas de verrouillage.",
       "loss_title": "Pertes et prix",
@@ -2956,6 +2984,10 @@
       "relock_after": "Na",
       "relock_notify": "Melden bij vergrendelen",
       "relock_notify_help": "Met een knop om opnieuw te ontgrendelen.",
+      "read_title": "Auto uitlezen tijdens het laden",
+      "read_help": "Wekt hem af en toe om het echte % te lezen, zoals de knop Vernieuwen (‘Auto wekken’ nodig). Geen antwoord na twee keer: ‘geen bereik’.",
+      "read_off": "Uit",
+      "st_energy_power": "kWh uit vermogen",
       "lock_full": "Vergrendelen na het laden",
       "lock_full_help": "Met de kabel erin, op 100 % en zo lang niet aan het laden. Haalt hij geen 100 % (pauze van de leverancier), dan niet vergrendelen.",
       "loss_title": "Verliezen en prijs",
@@ -3348,6 +3380,10 @@
       "relock_after": "Etter",
       "relock_notify": "Varsle ved låsing",
       "relock_notify_help": "Med en knapp for å låse opp igjen.",
+      "read_title": "Les bilen under lading",
+      "read_help": "Vekker den av og til for å lese ekte %, som Oppdater-knappen (krever «Vekk bilen»). Svarer den ikke to ganger: «uten dekning».",
+      "read_off": "Av",
+      "st_energy_power": "kWh fra effekt",
       "lock_full": "Lås når ladingen er ferdig",
       "lock_full_help": "Med kabelen tilkoblet, på 100 % og uten lading så lenge. Når den ikke 100 % (pause fra leverandøren), låses den ikke.",
       "loss_title": "Tap og pris",
@@ -3740,6 +3776,10 @@
       "relock_after": "Efter",
       "relock_notify": "Giv besked ved låsning",
       "relock_notify_help": "Med en knap til at låse op igen.",
+      "read_title": "Læs bilen under opladning",
+      "read_help": "Vækker den en gang imellem for at læse den rigtige %, som Opdater-knappen (kræver »Væk bilen«). Svarer den ikke to gange: »uden dækning«.",
+      "read_off": "Fra",
+      "st_energy_power": "kWh fra effekt",
       "lock_full": "Lås når opladningen er færdig",
       "lock_full_help": "Med kablet i, på 100 % og uden opladning så længe. Når den ikke 100 % (pause fra leverandøren), låses den ikke.",
       "loss_title": "Tab og pris",
@@ -4132,6 +4172,10 @@
       "relock_after": "Μετά από",
       "relock_notify": "Ειδοποίηση κατά το κλείδωμα",
       "relock_notify_help": "Με κουμπί για νέο ξεκλείδωμα.",
+      "read_title": "Ανάγνωση αυτοκινήτου κατά τη φόρτιση",
+      "read_help": "Το ξυπνά κάθε τόσο για το πραγματικό %, όπως το κουμπί Ανανέωση (χρειάζεται «Αφύπνιση αυτοκινήτου»). Αν δεν απαντήσει δύο φορές: «χωρίς σήμα».",
+      "read_off": "Όχι",
+      "st_energy_power": "kWh από ισχύ",
       "lock_full": "Κλείδωμα στο τέλος της φόρτισης",
       "lock_full_help": "Με το καλώδιο συνδεδεμένο, στο 100 % και χωρίς φόρτιση για τόσο. Αν δεν φτάσει το 100 % (παύση του παρόχου), δεν κλειδώνει.",
       "loss_title": "Απώλειες και τιμή",
@@ -4524,6 +4568,10 @@
       "relock_after": "Po",
       "relock_notify": "Obvesti ob zaklepu",
       "relock_notify_help": "Z gumbom za ponovni odklep.",
+      "read_title": "Beri avto med polnjenjem",
+      "read_help": "Občasno ga zbudi za pravi %, kot gumb Osveži (potrebuje »Zbudi avto«). Če dvakrat ne odgovori: »brez signala«.",
+      "read_off": "Ne",
+      "st_energy_power": "kWh iz moči",
       "lock_full": "Zakleni po koncu polnjenja",
       "lock_full_help": "S priključenim kablom, pri 100 % in brez polnjenja toliko časa. Če ne doseže 100 % (premor dobavitelja), se ne zaklene.",
       "loss_title": "Izgube in cena",
@@ -6767,6 +6815,8 @@
       else if (charger.plugged === false) chips.push(["mdi:power-plug-off-outline", "st_free"]);
       if (charger.entities.lock) chips.push(charger.locked ? ["mdi:lock", "st_locked"] : ["mdi:lock-open-variant", "st_unlocked"]);
       if (charger.unlock === "none") chips.push(["mdi:eye-outline", "unlock_none"]);
+      // El contador de energía no avanza en esta carga: los kWh salen de la potencia.
+      if (charger.energy_source === "power") chips.push(["mdi:alert-outline", "st_energy_power"]);
       chips.push([charger.coverage === "no" ? "mdi:signal-off" : "mdi:signal", `coverage_${charger.coverage}`]);
       const cars = charger.vehicles.map((id) => (this._car(id) || { name: id }).name).join(", ");
       return `<div class="row chg-row"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
@@ -6870,7 +6920,7 @@
       const f = JSON.parse(JSON.stringify(saved || {
         id: "", name: this._t("charger_default_name"), entities: {}, lock_on_locked: true, vehicles: this._state.cars.map((car) => car.id),
         coverage: "unknown", unlock: "confirm", notify_confirm: true, remind_minutes: 15, relock: true, relock_minutes: 5,
-        relock_notify: true, lock_full: true, lock_full_minutes: 30, loss: config.default_loss, learn: true, price: null, price_entity: "",
+        relock_notify: true, lock_full: true, lock_full_minutes: 30, read_interval: 15, loss: config.default_loss, learn: true, price: null, price_entity: "",
       }));
       f.price_mode = f.price_entity ? "entity" : f.price != null ? "fixed" : "none";
       const opt = (name, value, label) => {
@@ -6919,7 +6969,9 @@
           ${section(1, "entities_title", "entities_help", ["plugged", "charging", "power", "energy", "lock"].map(select).join(""))}
           ${f.entities.lock && lockDomain !== "lock" ? stack("lock_on", "lock_on_help", choices(opt("lock_on_locked", true, this._t("lock_on_locked")), opt("lock_on_locked", false, this._t("lock_on_unlocked")))) : ""}
           ${section(2, "cars_title", "cars_help", `<div class="carpicks">${cars}</div>`)}
-          ${section(3, "coverage_title", "coverage_help", `<span class="seg wide">${["yes", "no", "unknown"].map((value) => opt("coverage", value, this._t(`coverage_${value}`))).join("")}</span>`)}
+          ${section(3, "coverage_title", "coverage_help", `<span class="seg wide">${["yes", "no", "unknown"].map((value) => opt("coverage", value, this._t(`coverage_${value}`))).join("")}</span>
+            ${f.coverage !== "no" ? stack("read_title", "read_help", choices(...this._state.chargers.read_choices.map((value) =>
+              opt("read_interval", value, value ? `${value} min` : this._t("read_off"))))) : ""}`)}
           ${section(4, "unlock_title", f.entities.lock ? "unlock_help" : "unlock_no_lock", f.entities.lock ? `<span class="seg wide">${opt("unlock", "none", this._t("unlock_none"))}${opt("unlock", "confirm", this._t("unlock_confirm"))}</span>
             ${confirm ? line("ask_title", "ask_help", tog("notify_confirm")) : ""}
             ${confirm && f.notify_confirm ? stack("remind_title", "remind_help", choices(...this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)))) : ""}` : "")}

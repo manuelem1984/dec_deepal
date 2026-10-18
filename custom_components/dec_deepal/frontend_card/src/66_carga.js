@@ -159,7 +159,10 @@
         const power = station.power != null ? `${(station.power / 1000).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kW` : "—";
         const detail = [`+${Number(session.energy).toLocaleString(this._language(), { maximumFractionDigits: 1 })} kWh`];
         if (session.cost != null) detail.push(`${Number(session.cost).toLocaleString(this._language(), { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`);
-        if (session.estimated) detail.push(this._t("ch_no_coverage"));
+        if (session.estimated) {
+          detail.push(session.no_coverage ? this._t("ch_no_coverage")
+            : session.last_report ? this._t("ch_last_data", { time: this._clock(new Date(session.last_report)) }) : this._t("ch_estimated"));
+        }
         stats.unshift(this._chargeStat("mdi:ev-station", "ch_station", `${station.name} · ${power}`, detail.join(" · "), true));
       }
       const html = stats.join("");

@@ -59,6 +59,17 @@ La **capacidad de la batería** de cada versión está en el catálogo
 - Al **desenchufar**: se apunta la carga y, con «Bloquear al desenchufar», se
   bloquea pasado el tiempo elegido.
 
+**Leer el coche mientras carga** (con cobertura o «no lo sé»): cada 10, 15 o
+30 minutos se despierta el coche, como con el botón Actualizar, para tener el
+% real; necesita «Despertar el coche» en Ajustes. Dos despertares fallidos
+seguidos confirman que no hay cobertura («sin cobertura») y se deja de
+intentar en esa carga. Mientras no hay dato nuevo, la tarjeta dice «último
+dato HH:MM».
+
+Los **kWh** salen del contador de energía del cargador; si no hay, o no
+avanza mientras la potencia sí, de la potencia por el tiempo (la tarjeta lo
+indica y el panel avisa «kWh por potencia»).
+
 Sin cobertura, el % se **estima**: % al enchufar + kWh del cargador × (1 −
 pérdidas) ÷ capacidad. Cuando el coche vuelve a informar sin haberse movido,
 se guarda el % real y la pérdida medida de esa carga.

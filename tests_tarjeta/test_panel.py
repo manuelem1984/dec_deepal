@@ -619,7 +619,7 @@ def test_chargers(panel: Page) -> None:
     assert saved["entities"] == {"plugged": "binary_sensor.evse_conectado", "lock": "switch.evse_bloquear_evse"}
     assert (saved["name"], saved["vehicles"], saved["unlock"], saved["coverage"]) == ("Garaje", ["car1", "car2"], "confirm", "unknown")
     assert (saved["relock"], saved["relock_minutes"], saved["loss"], saved["price"]) == (True, 5, 10, None)
-    assert (saved["lock_full"], saved["lock_full_minutes"]) == (True, 30)
+    assert (saved["lock_full"], saved["lock_full_minutes"], saved["read_interval"]) == (True, 30, 15)
     panel.wait_for_function("banco.texto().includes('Changote, Changuito')")
     # El % estimado en la tarjeta del coche se quita y se pone al momento.
     click(panel, "[data-action=chargers-estimate]")

@@ -33,6 +33,8 @@
       else if (charger.plugged === false) chips.push(["mdi:power-plug-off-outline", "st_free"]);
       if (charger.entities.lock) chips.push(charger.locked ? ["mdi:lock", "st_locked"] : ["mdi:lock-open-variant", "st_unlocked"]);
       if (charger.unlock === "none") chips.push(["mdi:eye-outline", "unlock_none"]);
+      // El contador de energía no avanza en esta carga: los kWh salen de la potencia.
+      if (charger.energy_source === "power") chips.push(["mdi:alert-outline", "st_energy_power"]);
       chips.push([charger.coverage === "no" ? "mdi:signal-off" : "mdi:signal", `coverage_${charger.coverage}`]);
       const cars = charger.vehicles.map((id) => (this._car(id) || { name: id }).name).join(", ");
       return `<div class="row chg-row"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
@@ -136,7 +138,7 @@
       const f = JSON.parse(JSON.stringify(saved || {
         id: "", name: this._t("charger_default_name"), entities: {}, lock_on_locked: true, vehicles: this._state.cars.map((car) => car.id),
         coverage: "unknown", unlock: "confirm", notify_confirm: true, remind_minutes: 15, relock: true, relock_minutes: 5,
-        relock_notify: true, lock_full: true, lock_full_minutes: 30, loss: config.default_loss, learn: true, price: null, price_entity: "",
+        relock_notify: true, lock_full: true, lock_full_minutes: 30, read_interval: 15, loss: config.default_loss, learn: true, price: null, price_entity: "",
       }));
       f.price_mode = f.price_entity ? "entity" : f.price != null ? "fixed" : "none";
       const opt = (name, value, label) => {
@@ -185,7 +187,9 @@
           ${section(1, "entities_title", "entities_help", ["plugged", "charging", "power", "energy", "lock"].map(select).join(""))}
           ${f.entities.lock && lockDomain !== "lock" ? stack("lock_on", "lock_on_help", choices(opt("lock_on_locked", true, this._t("lock_on_locked")), opt("lock_on_locked", false, this._t("lock_on_unlocked")))) : ""}
           ${section(2, "cars_title", "cars_help", `<div class="carpicks">${cars}</div>`)}
-          ${section(3, "coverage_title", "coverage_help", `<span class="seg wide">${["yes", "no", "unknown"].map((value) => opt("coverage", value, this._t(`coverage_${value}`))).join("")}</span>`)}
+          ${section(3, "coverage_title", "coverage_help", `<span class="seg wide">${["yes", "no", "unknown"].map((value) => opt("coverage", value, this._t(`coverage_${value}`))).join("")}</span>
+            ${f.coverage !== "no" ? stack("read_title", "read_help", choices(...this._state.chargers.read_choices.map((value) =>
+              opt("read_interval", value, value ? `${value} min` : this._t("read_off"))))) : ""}`)}
           ${section(4, "unlock_title", f.entities.lock ? "unlock_help" : "unlock_no_lock", f.entities.lock ? `<span class="seg wide">${opt("unlock", "none", this._t("unlock_none"))}${opt("unlock", "confirm", this._t("unlock_confirm"))}</span>
             ${confirm ? line("ask_title", "ask_help", tog("notify_confirm")) : ""}
             ${confirm && f.notify_confirm ? stack("remind_title", "remind_help", choices(...this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)))) : ""}` : "")}

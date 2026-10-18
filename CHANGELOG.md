@@ -3,6 +3,27 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b5] — 2026-10-18
+
+### Añadido
+
+- **Leer el coche mientras carga** (editor del cargador, con cobertura o «no
+  lo sé»; cada 15 min de fábrica, o 10, 30 o nunca): mientras el cargador
+  carga, se despierta el coche como con el botón Actualizar para tener el %
+  real. Necesita «Despertar el coche» activado en Ajustes. Si no responde dos
+  veces seguidas, se da por comprobado que no hay cobertura y se deja de
+  intentar en esa carga.
+- **kWh por la potencia:** si el cargador no tiene entidad de energía, o su
+  contador no avanza mientras la potencia sí, los kWh (y con ellos el %
+  estimado y el coste) salen de la potencia por el tiempo. La tarjeta lo dice
+  («Energía (potencia)») y el panel avisa («kWh por potencia»).
+
+### Cambiado
+
+- **«Sin cobertura» solo cuando está comprobado.** Antes salía siempre que el
+  coche no había informado desde que empezó a cargar, aunque tuviera
+  cobertura. Ahora, mientras tanto, la tarjeta dice «último dato HH:MM».
+
 ## [2.6.0b4] — 2026-10-18
 
 ### Añadido
