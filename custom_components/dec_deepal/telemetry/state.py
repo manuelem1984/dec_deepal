@@ -10,10 +10,14 @@ coche real:
    el último nivel configurado aunque esté apagado, así que no es fiable
    (✅ comprobado con dos capturas reales). Excepción: si el informe REST es
    *más antiguo* que el MQTT, no se usa (no pisar un dato nuevo con uno viejo).
-4. **Conservar el último valor** en confort y clima: si ninguna fuente lo
+4. **Conservar el último valor** en confort, clima, testigos y combustible: si ninguna fuente lo
    informa esta vez (módulo dormido, ``6``...), se mantiene el anterior en vez
    de mostrar "Desconocido" o, peor, "apagado".
-5. **Valores optimistas** (tras un comando) se aplican encima, en el
+5. **Testigos solo con el coche encendido:** con la alimentación a ``0``
+   (coche apagado o dormido), los testigos del cuadro no son de fiar (un S05
+   al que se despierta los manda encendidos sin motivo). Se descartan y se
+   conserva el último que llegó con el coche encendido.
+6. **Valores optimistas** (tras un comando) se aplican encima, en el
    coordinador (ver :func:`apply_holds`).
 
 Además se guarda de dónde salió cada valor (``sources``) para diagnóstico.
@@ -44,8 +48,29 @@ REST_PRIORITY: Final = frozenset(
     }
 )
 
+#: Testigos del cuadro (regla 5): solo son de fiar con el coche encendido.
+WARNING_SIGNALS: Final = frozenset(
+    {
+        s.WARNING_12V_BATTERY,
+        s.WARNING_TPMS,
+        s.WARNING_ABS,
+        s.WARNING_AIRBAG,
+        s.WARNING_BRAKE_FLUID,
+        s.WARNING_BRAKE,
+        s.WARNING_EPS,
+        s.WARNING_POWER_LIMIT,
+        s.WARNING_POWER_SYSTEM,
+        s.WARNING_TRACTION_BATTERY_LOW,
+        s.WARNING_COOLANT_TEMPERATURE,
+    }
+)
+
 #: Señales que conservan su último valor si esta vez no llegan (regla 4).
-KEEP_LAST: Final = REST_PRIORITY | {s.CLIMATE_ON, s.CLIMATE_TARGET_C}
+KEEP_LAST: Final = (
+    REST_PRIORITY
+    | WARNING_SIGNALS
+    | {s.CLIMATE_ON, s.CLIMATE_TARGET_C, s.FUEL_LEVEL, s.FUEL_RANGE_KM, s.FUEL_VOLUME_L, s.CHARGE_LIMIT}
+)
 
 SOURCE_MQTT: Final = "mqtt"
 SOURCE_REST: Final = "rest"
@@ -144,6 +169,15 @@ def build_state(
     if location is not None:
         values[s.LATITUDE], values[s.LONGITUDE] = location
         sources[s.LATITUDE] = sources[s.LONGITUDE] = SOURCE_MQTT if find_location(mqtt_params) else SOURCE_REST
+
+    # Regla 5: con el coche apagado (alimentación 0), los testigos no son de
+    # fiar: un S05 dormido al que se despierta los manda encendidos aunque no
+    # pase nada (falsos ABS y frenos). Se descartan y la regla 4 deja los
+    # últimos que llegaron con el coche encendido.
+    if values.get(s.POWER_STATUS) == 0:
+        for signal in WARNING_SIGNALS:
+            if values.pop(signal, None) is not None:
+                sources.pop(signal, None)
 
     # Regla 4: conservar el último valor conocido. Uno optimista (de un comando
     # que el coche aún no ha confirmado) no cuenta: si se conservara, seguiría

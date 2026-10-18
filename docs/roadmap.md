@@ -1,5 +1,15 @@
 # Hoja de ruta
 
+## Beta 2.6.0b6 (18-10-2026) — pendiente de probar
+
+- [ ] **S05 PHEV** (falta un PHEV real): «Nivel de gasolina», «Autonomía con
+      gasolina» y «Gasolina en el depósito»; y el control «Límite de carga»
+      (60-100 %) cambia el límite de verdad. En el EV no deben aparecer.
+- [ ] **Testigos:** pulsar Actualizar con el coche dormido ya no enciende ABS
+      ni frenos; con el coche encendido siguen funcionando.
+- [ ] **Menos llamadas:** en el diagnóstico, una lectura sin pedir otra vez
+      la configuración del broker ni el token (durante 10 minutos).
+
 ## Beta 2.6.0b5 (18-10-2026) — pendiente de probar
 
 - [ ] **Con cobertura (caso del usuario):** cargando, cada 15 min el coche se
@@ -153,6 +163,11 @@ Pendiente de comprobar:
 - [ ] Manual del PHEV: cuando se añada ese modelo al catálogo, con su enlace.
 
 ## Pendiente de diseño
+
+- [ ] **Panel generado:** que Home Assistant pueda crear solo un panel «DEC
+      Deepal» con nuestras tarjetas (coche, vista planta y cargador), para
+      quien instala por primera vez (estrategia de panel; Home Assistant
+      2026.5+ para el diálogo de paneles de la comunidad).
 
 - [ ] **Volante a la derecha** (Reino Unido, Irlanda, Malta, Australia):
       hoy se da por hecho que el delantero izquierdo es el del conductor

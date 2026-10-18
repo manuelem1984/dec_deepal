@@ -46,10 +46,12 @@ FEATURE_DEFROST: Final = "desempanado"
 FEATURE_PIN_COMMANDS: Final = "comandos_pin"
 FEATURE_POWER_TAILGATE: Final = "porton_electrico"
 FEATURE_FUEL: Final = "combustible"
+FEATURE_CHARGE_LIMIT: Final = "limite_carga"
 
 KNOWN_FEATURES: Final = frozenset(
     {
         FEATURE_MQTT,
+        FEATURE_CHARGE_LIMIT,
         FEATURE_CLIMATE,
         FEATURE_LIGHTS_HORN,
         FEATURE_SEAT_HEAT,

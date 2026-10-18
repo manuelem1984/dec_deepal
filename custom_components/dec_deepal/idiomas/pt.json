@@ -244,6 +244,15 @@
         },
         "insurance_cancel_date": {
           "name": "Prazo para cancelar o seguro"
+        },
+        "fuel_level": {
+          "name": "Nível de combustível"
+        },
+        "fuel_range": {
+          "name": "Autonomia com combustível"
+        },
+        "fuel_volume": {
+          "name": "Combustível no depósito"
         }
       },
       "binary_sensor": {
@@ -417,6 +426,9 @@
         },
         "seat_vent_passenger": {
           "name": "Ventilação do banco do passageiro"
+        },
+        "charge_limit": {
+          "name": "Limite de carga"
         }
       },
       "switch": {

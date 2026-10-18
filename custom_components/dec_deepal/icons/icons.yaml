@@ -64,6 +64,22 @@ range:
   plataforma: sensor
   descripcion: Autonomía estimada (km)
   defecto: mdi:map-marker-distance
+fuel_level:
+  plataforma: sensor
+  descripcion: Nivel del depósito de gasolina (%), solo PHEV
+  defecto: mdi:gas-station
+fuel_range:
+  plataforma: sensor
+  descripcion: Autonomía con gasolina (km), solo PHEV
+  defecto: mdi:gas-station-outline
+fuel_volume:
+  plataforma: sensor
+  descripcion: Litros de gasolina en el depósito, solo PHEV
+  defecto: mdi:fuel
+charge_limit:
+  plataforma: number
+  descripcion: Límite de carga en AC (%), solo PHEV
+  defecto: mdi:battery-charging-80
 itv_date:
   plataforma: sensor
   descripcion: Fecha límite de la próxima ITV

@@ -1,7 +1,11 @@
-"""Niveles de asientos delanteros: calefacción y ventilación (0 = apagado, 1-3). ⚠️
+"""Niveles de asientos delanteros (0 = apagado, 1-3) y límite de carga. ⚠️
 
 La ventilación solo se crea si el modelo/versión la tiene (en el S05, el Max).
 El icono puede cambiar con el nivel: ``icons/svg/seat_heat_driver_2.svg``...
+
+**Límite de carga** (% máximo en AC, 60-100): solo en los coches con
+``limite_carga`` en la ficha (el S05 PHEV). El EV acepta la orden pero no
+cambia el límite, así que en el EV no se crea. Sin verificar en un PHEV real.
 """
 
 from __future__ import annotations
@@ -13,7 +17,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .entity import DecDeepalEntity, remove_entities
-from .registries.vehicles import FEATURE_SEAT_HEAT, FEATURE_SEAT_VENT
+from .registries.vehicles import FEATURE_CHARGE_LIMIT, FEATURE_SEAT_HEAT, FEATURE_SEAT_VENT
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
 
@@ -73,6 +77,45 @@ async def async_setup_entry(
         for description in SEATS
         if vehicle.has(description.feature)
     )
+    async_add_entities(
+        DecChargeLimit(runtime, vehicle)
+        for vehicle in runtime.vehicles.values()
+        if vehicle.has(FEATURE_CHARGE_LIMIT)
+    )
+
+
+#: Límite de carga: lo que acepta la app oficial.
+CHARGE_LIMIT_MIN: int = 60
+CHARGE_LIMIT_MAX: int = 100
+
+
+class DecChargeLimit(DecDeepalEntity, NumberEntity):
+    """% máximo de carga en AC (S05 PHEV)."""
+
+    _attr_native_min_value = CHARGE_LIMIT_MIN
+    _attr_native_max_value = CHARGE_LIMIT_MAX
+    _attr_native_step = 1
+    _attr_native_unit_of_measurement = "%"
+    _attr_mode = NumberMode.SLIDER
+
+    def __init__(self, runtime: DecDeepalRuntime, vehicle: VehicleContext) -> None:
+        super().__init__(runtime, vehicle, "number", "charge_limit")
+
+    @property
+    def native_value(self) -> float | None:
+        """Límite actual, como lo da el coche."""
+        value = self.signal(s.CHARGE_LIMIT)
+        return None if value is None else float(value)
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Cambia el límite (60-100 %)."""
+        percent = max(CHARGE_LIMIT_MIN, min(CHARGE_LIMIT_MAX, int(round(value))))
+        vehicle_id = self.vehicle.info.vehicle_id
+        await self.vehicle.runner.run(
+            "charge_limit",
+            lambda: self.runtime.commands.charge_limit(vehicle_id, percent),
+            optimistic={s.CHARGE_LIMIT: percent},
+        )
 
 
 class DecSeatLevel(DecDeepalEntity, NumberEntity):

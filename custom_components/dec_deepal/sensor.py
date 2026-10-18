@@ -32,6 +32,7 @@ from homeassistant.const import (
     UnitOfSpeed,
     UnitOfTemperature,
     UnitOfTime,
+    UnitOfVolume,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -39,6 +40,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from .api.models import VehicleInfo
 from .entity import DecDeepalEntity, DecMaintenanceEntity, remove_entities
 from .maintenance import MaintenanceStatus
+from .registries.vehicles import FEATURE_FUEL
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
 from .telemetry.derived import CHARGE_STATUS_OPTIONS
@@ -101,6 +103,33 @@ SENSORS: tuple[DecSensorDescription, ...] = (
         device_class=SensorDeviceClass.DISTANCE,
         native_unit_of_measurement=UnitOfLength.KILOMETERS,
         state_class=SensorStateClass.MEASUREMENT,
+    ),
+    # Combustible: solo los coches con depósito (S05 PHEV, "combustible" en la ficha).
+    DecSensorDescription(
+        key="fuel_level",
+        signal=s.FUEL_LEVEL,
+        native_unit_of_measurement=PERCENTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        feature=FEATURE_FUEL,
+    ),
+    DecSensorDescription(
+        key="fuel_range",
+        signal=s.FUEL_RANGE_KM,
+        device_class=SensorDeviceClass.DISTANCE,
+        native_unit_of_measurement=UnitOfLength.KILOMETERS,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=0,
+        feature=FEATURE_FUEL,
+    ),
+    DecSensorDescription(
+        key="fuel_volume",
+        signal=s.FUEL_VOLUME_L,
+        device_class=SensorDeviceClass.VOLUME_STORAGE,
+        native_unit_of_measurement=UnitOfVolume.LITERS,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        feature=FEATURE_FUEL,
     ),
     DecSensorDescription(
         key="charge_status",

@@ -3,6 +3,37 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b6] — 2026-10-18
+
+### Añadido
+
+- **S05 PHEV: combustible.** «Nivel de gasolina» (%), «Autonomía con
+  gasolina» (km, preferiblemente el dato europeo WLTC) y «Gasolina en el
+  depósito» (litros). Solo en los coches con depósito; con el coche dormido
+  conservan el último valor. Sin verificar en un PHEV real.
+- **S05 PHEV: límite de carga** en AC (60-100 %), como en la app oficial.
+  Solo en el PHEV: el EV acepta la orden pero no cambia el límite. Sin
+  verificar en un PHEV real.
+
+### Cambiado
+
+- **Testigos solo con el coche encendido.** Al despertar un S05 dormido (por
+  ejemplo, con Actualizar o mientras carga), el coche manda testigos
+  encendidos sin motivo (ABS, frenos...). Ahora, con el coche apagado, se
+  conserva el último testigo que llegó con el coche encendido: sin falsos
+  avisos.
+- **Menos llamadas al servidor:** la configuración del broker y el token del
+  MQTT se reutilizan 10 minutos entre lecturas (dos peticiones menos en cada
+  una). Si fallan, se piden de nuevo.
+
+### Corregido
+
+- Si el servidor devolvía la lista de coches vacía (un fallo suyo), todos los
+  coches salían como «retirados» en Reparaciones. Ahora no se toca nada.
+- Un mensaje MQTT mal formado ya no corta la lectura entera: se salta.
+- La foto oficial del coche solo se descarga por https y sin seguir
+  redirecciones.
+
 ## [2.6.0b5] — 2026-10-18
 
 ### Añadido

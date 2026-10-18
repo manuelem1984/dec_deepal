@@ -244,6 +244,15 @@
         },
         "insurance_cancel_date": {
           "name": "Límite para desistir del seguro"
+        },
+        "fuel_level": {
+          "name": "Nivel de gasolina"
+        },
+        "fuel_range": {
+          "name": "Autonomía con gasolina"
+        },
+        "fuel_volume": {
+          "name": "Gasolina en el depósito"
         }
       },
       "binary_sensor": {
@@ -417,6 +426,9 @@
         },
         "seat_vent_passenger": {
           "name": "Ventilación asiento acompañante"
+        },
+        "charge_limit": {
+          "name": "Límite de carga"
         }
       },
       "switch": {

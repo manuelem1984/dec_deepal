@@ -164,6 +164,7 @@ modelos:
       comandos_pin: true             # puertas, ventanillas y maletero (con PIN)
       porton_electrico: true         # abrir/cerrar el maletero a distancia (el Pro no)
       combustible: false             # solo híbridos enchufables / autonomía extendida
+      limite_carga: false            # el EV acepta la orden pero no cambia el límite (probado por otros)
     carpeta_fotos: s05_2024
     foto_defecto: default.png
     # Max: 20" con tapacubos (cover) o sin él (open). El Pro lleva 18" (abajo).
@@ -268,7 +269,8 @@ modelos:
       nombre_contiene: ["PHEV"]      # (?) se supone que el código de modelo lo lleva
       codigo_serie: []
     funciones:
-      combustible: true              # depósito y autonomía de gasolina (sin entidades todavía)
+      combustible: true              # depósito, litros y autonomía de gasolina (2.6.0b6)
+      limite_carga: true             # % máximo de carga en AC (2.6.0b6, sin verificar)
     # Manual del S05 híbrido enchufable (PHEV) para España, en la web de Changan Europe.
     manual: "https://www.changaneurope.com/Portals/8/adam/ContentBlocks/lrfUbgl1KEGWVm6dnA8VPQ/Path/202607_S05_PHEV_Manual_de_Usuario_ES-compressed.pdf"
     # Manual de usuario del S05 PHEV (España, julio de 2026), "Tabla de

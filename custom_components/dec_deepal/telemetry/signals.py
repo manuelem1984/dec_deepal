@@ -113,6 +113,12 @@ WARNING_POWER_SYSTEM: Final = "warning_power_system"
 WARNING_TRACTION_BATTERY_LOW: Final = "warning_traction_battery_low"
 WARNING_COOLANT_TEMPERATURE: Final = "warning_coolant_temperature"
 
+# --- Combustible y límite de carga (S05 PHEV) ---------------------------------
+FUEL_LEVEL: Final = "fuel_level"  # % del depósito
+FUEL_RANGE_KM: Final = "fuel_range_km"  # km de autonomía con gasolina
+FUEL_VOLUME_L: Final = "fuel_volume_l"  # litros en el depósito
+CHARGE_LIMIT: Final = "charge_limit"  # % máximo de carga en AC (el PHEV lo admite)
+
 # --- Ubicación (hoy el S05 no la envía; ver location.py) --------------------
 LATITUDE: Final = "latitude"  # grados
 LONGITUDE: Final = "longitude"  # grados

@@ -243,6 +243,15 @@
       },
       "insurance_cancel_date": {
         "name": "Rok za odpoved zavarovanja"
+      },
+      "fuel_level": {
+        "name": "Raven goriva"
+      },
+      "fuel_range": {
+        "name": "Doseg z gorivom"
+      },
+      "fuel_volume": {
+        "name": "Gorivo v rezervoarju"
       }
     },
     "binary_sensor": {
@@ -416,6 +425,9 @@
       },
       "seat_vent_passenger": {
         "name": "Prezračevanje sovoznikovega sedeža"
+      },
+      "charge_limit": {
+        "name": "Omejitev polnjenja"
       }
     },
     "switch": {

@@ -244,6 +244,15 @@
         },
         "insurance_cancel_date": {
           "name": "Opzegtermijn verzekering"
+        },
+        "fuel_level": {
+          "name": "Brandstofniveau"
+        },
+        "fuel_range": {
+          "name": "Actieradius op brandstof"
+        },
+        "fuel_volume": {
+          "name": "Brandstof in de tank"
         }
       },
       "binary_sensor": {
@@ -417,6 +426,9 @@
         },
         "seat_vent_passenger": {
           "name": "Stoelventilatie passagier"
+        },
+        "charge_limit": {
+          "name": "Laadlimiet"
         }
       },
       "switch": {

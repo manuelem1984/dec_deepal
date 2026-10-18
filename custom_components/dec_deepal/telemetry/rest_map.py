@@ -51,6 +51,20 @@ REST_FIELDS: Final[tuple[RestField, ...]] = (
     RestField(s.AC_CHARGE_CURRENT, (("charge", "acChargeCurrent"),), c.charge_current),
     RestField(s.DC_CHARGE_CURRENT, (("charge", "dcChargeCurrent"),), c.charge_current),
     RestField(s.REMAINING_CHARGE_MIN, (("charge", "remainChargeTime"),), c.charge_minutes),
+    RestField(s.CHARGE_LIMIT, (("charge", "maxSocPercent"),), c.percent),
+    # Combustible (S05 PHEV): la autonomía, preferiblemente en el ciclo europeo (WLTC).
+    RestField(s.FUEL_LEVEL, (("fuel", "leftPercent"),), c.percent),
+    RestField(s.FUEL_VOLUME_L, (("fuel", "leftVolume"),), c.positive),
+    RestField(
+        s.FUEL_RANGE_KM,
+        (
+            ("fuel", "fuelWltcRemainingMileage"),
+            ("fuel", "fuelNedcRemainingMileage"),
+            ("fuel", "fuelCltcRemainingMileage"),
+            ("fuel", "fuelSumRemainingMileage"),
+        ),
+        c.positive,
+    ),
     # --- Estado general -----------------------------------------------------
     RestField(
         s.REPORT_TIME, (("lastUpdatedAt",), ("vehicleStatus", "lastUpdatedAt")), c.timestamp

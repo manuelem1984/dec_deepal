@@ -69,6 +69,8 @@ FLASHING_HONKING: Final = f"{_CONTROL}/control/flashing-honking"
 SEATS_HEAT: Final = f"{_CONTROL}/control/seats/heat"
 SEATS_WIND: Final = f"{_CONTROL}/control/seats/wind"
 STEERING_WHEEL_HEAT: Final = f"{_CONTROL}/control/steering-wheel/heat"
+#: % máximo de carga en AC (S05 PHEV). ⚠️ Sin verificar en un coche real.
+CHARGE_PERCENTAGE: Final = f"{_CONTROL}/charge/percentage"
 DEFROST: Final = f"{_CONTROL}/control/defrost"
 
 # Con PIN (rcToken):

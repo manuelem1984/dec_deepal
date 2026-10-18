@@ -244,6 +244,15 @@
         },
         "insurance_cancel_date": {
           "name": "Προθεσμία ακύρωσης ασφάλειας"
+        },
+        "fuel_level": {
+          "name": "Στάθμη καυσίμου"
+        },
+        "fuel_range": {
+          "name": "Αυτονομία με καύσιμο"
+        },
+        "fuel_volume": {
+          "name": "Καύσιμο στη δεξαμενή"
         }
       },
       "binary_sensor": {
@@ -417,6 +426,9 @@
         },
         "seat_vent_passenger": {
           "name": "Αερισμός καθίσματος συνοδηγού"
+        },
+        "charge_limit": {
+          "name": "Όριο φόρτισης"
         }
       },
       "switch": {

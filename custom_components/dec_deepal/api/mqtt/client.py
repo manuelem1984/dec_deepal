@@ -203,7 +203,12 @@ async def _read_telemetry(
                 break
             if protocol.packet_type(first_byte) != protocol.PACKET_PUBLISH:
                 continue
-            topic, payload, packet_id = protocol.parse_publish(first_byte, body)
+            try:
+                topic, payload, packet_id = protocol.parse_publish(first_byte, body)
+            except ValueError as err:
+                # Un mensaje roto no tira la lectura entera: se salta.
+                _LOGGER.debug("Mensaje MQTT mal formado, se ignora: %s", err)
+                continue
             if packet_id is not None:
                 writer.write(protocol.build_puback(packet_id))
                 await writer.drain()
@@ -409,7 +414,11 @@ async def _wake_vehicle(
                 break
             if protocol.packet_type(first_byte) != protocol.PACKET_PUBLISH:
                 continue
-            _topic, payload, packet_id = protocol.parse_publish(first_byte, body)
+            try:
+                _topic, payload, packet_id = protocol.parse_publish(first_byte, body)
+            except ValueError as err:
+                _LOGGER.debug("Mensaje MQTT mal formado, se ignora: %s", err)
+                continue
             if packet_id is not None:
                 writer.write(protocol.build_puback(packet_id))
                 await writer.drain()

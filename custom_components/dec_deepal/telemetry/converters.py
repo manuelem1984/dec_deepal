@@ -56,6 +56,18 @@ def to_bool(value: Any) -> bool | None:
     return None if number is None else number != 0
 
 
+def percent(value: Any) -> float | None:
+    """Un porcentaje de 0 a 100; fuera de ese rango es un dato falso → ``None``."""
+    number = to_float(value)
+    return number if number is not None and 0 <= number <= 100 else None
+
+
+def positive(value: Any) -> float | None:
+    """Una cantidad (km, litros) mayor o igual que 0; si no → ``None``."""
+    number = to_float(value)
+    return number if number is not None and number >= 0 else None
+
+
 def charge_state(value: Any) -> int | None:
     """Estado de carga ``ChrgSts`` (0-4). Cualquier otro valor → ``None``."""
     number = to_int(value)

@@ -243,6 +243,15 @@
       },
       "insurance_cancel_date": {
         "name": "Termin wypowiedzenia ubezpieczenia"
+      },
+      "fuel_level": {
+        "name": "Poziom paliwa"
+      },
+      "fuel_range": {
+        "name": "Zasięg na paliwie"
+      },
+      "fuel_volume": {
+        "name": "Paliwo w zbiorniku"
       }
     },
     "binary_sensor": {
@@ -416,6 +425,9 @@
       },
       "seat_vent_passenger": {
         "name": "Wentylacja fotela pasażera"
+      },
+      "charge_limit": {
+        "name": "Limit ładowania"
       }
     },
     "switch": {

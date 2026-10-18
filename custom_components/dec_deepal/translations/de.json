@@ -243,6 +243,15 @@
       },
       "insurance_cancel_date": {
         "name": "Kündigungsfrist der Versicherung"
+      },
+      "fuel_level": {
+        "name": "Tankfüllstand"
+      },
+      "fuel_range": {
+        "name": "Reichweite mit Kraftstoff"
+      },
+      "fuel_volume": {
+        "name": "Kraftstoff im Tank"
       }
     },
     "binary_sensor": {
@@ -416,6 +425,9 @@
       },
       "seat_vent_passenger": {
         "name": "Sitzbelüftung Beifahrer"
+      },
+      "charge_limit": {
+        "name": "Ladelimit"
       }
     },
     "switch": {

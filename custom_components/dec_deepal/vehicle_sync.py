@@ -87,6 +87,11 @@ async def async_sync_vehicles(hass: HomeAssistant, entry: Any, client: DeepalCli
     except DeepalError as err:
         _LOGGER.debug("No se pudo leer la lista de vehículos: %s", err)
         return
+    if not account:
+        # Una respuesta vacía es casi siempre un fallo del servidor: si se
+        # tomara en serio, todos los coches saldrían como "retirados".
+        _LOGGER.debug("La cuenta no devolvió coches; no se toca nada")
+        return
     fresh: dict[str, VehicleInfo] = {vehicle.vehicle_id: vehicle for vehicle in account}
 
     stored: list[dict[str, Any]] = entry.data[CONF_VEHICLES]

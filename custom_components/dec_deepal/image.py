@@ -89,9 +89,13 @@ async def fetch_official_image(
         vehicle.official_image_status = {"estado": "sin_url"}
         return None
     host = urlparse(url).netloc or "(URL relativa)"
+    if urlparse(url).scheme != "https":
+        # Solo por https: la dirección la da el servidor y no se sigue a ciegas.
+        vehicle.official_image_status = {"estado": "no_https", "servidor": host}
+        return None
     try:
         async with async_get_clientsession(hass).get(
-            url, timeout=aiohttp.ClientTimeout(total=DOWNLOAD_TIMEOUT)
+            url, timeout=aiohttp.ClientTimeout(total=DOWNLOAD_TIMEOUT), allow_redirects=False
         ) as response:
             data = await response.read()
             header = response.headers.get("Content-Type")

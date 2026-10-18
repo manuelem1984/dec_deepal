@@ -243,6 +243,15 @@
       },
       "insurance_cancel_date": {
         "name": "Insurance cancellation deadline"
+      },
+      "fuel_level": {
+        "name": "Fuel level"
+      },
+      "fuel_range": {
+        "name": "Fuel range"
+      },
+      "fuel_volume": {
+        "name": "Fuel in the tank"
       }
     },
     "binary_sensor": {
@@ -416,6 +425,9 @@
       },
       "seat_vent_passenger": {
         "name": "Passenger seat ventilation"
+      },
+      "charge_limit": {
+        "name": "Charge limit"
       }
     },
     "switch": {

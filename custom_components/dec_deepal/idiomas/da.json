@@ -244,6 +244,15 @@
         },
         "insurance_cancel_date": {
           "name": "Opsigelsesfrist for forsikring"
+        },
+        "fuel_level": {
+          "name": "Brændstofniveau"
+        },
+        "fuel_range": {
+          "name": "Rækkevidde på brændstof"
+        },
+        "fuel_volume": {
+          "name": "Brændstof i tanken"
         }
       },
       "binary_sensor": {
@@ -417,6 +426,9 @@
         },
         "seat_vent_passenger": {
           "name": "Sædeventilation passager"
+        },
+        "charge_limit": {
+          "name": "Opladningsgrænse"
         }
       },
       "switch": {

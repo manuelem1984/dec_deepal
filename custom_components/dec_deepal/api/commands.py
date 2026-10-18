@@ -115,10 +115,10 @@ class DeepalCommands:
     # Núcleo: firmar y enviar
     # ------------------------------------------------------------------
 
-    async def _serial_number(self) -> str:
-        """Pide y descifra el número de serie para firmar."""
+    async def _serial_number(self, serial_type: str = "1") -> str:
+        """Pide y descifra el número de serie para firmar (los de carga, tipo "2")."""
         encrypted = await self.account.call(
-            lambda: self._transport.post(endpoints.SERIAL_NO, {"type": "1"})
+            lambda: self._transport.post(endpoints.SERIAL_NO, {"type": serial_type})
         )
         if not isinstance(encrypted, str) or not encrypted:
             raise DeepalApiError("serial-no/get no devolvió texto")
@@ -145,6 +145,7 @@ class DeepalCommands:
         payload: dict[str, Any],
         *,
         needs_pin: bool = False,
+        serial_type: str = "1",
     ) -> str:
         """Firma y envía un comando. Devuelve su ``commandId``.
 
@@ -153,6 +154,7 @@ class DeepalCommands:
             vehicle_id: ``carId`` del vehículo.
             payload: datos propios del comando (incluido ``command``).
             needs_pin: ``True`` para puertas, ventanillas y maletero.
+            serial_type: tipo de número de serie ("2" en las órdenes de carga).
         """
         self._private_key()  # falla pronto y claro si no hay clave
         reused_token = False
@@ -167,7 +169,7 @@ class DeepalCommands:
                 )
 
         async def _build_and_post() -> Any:
-            serial = await self._serial_number()
+            serial = await self._serial_number(serial_type)
             signed: dict[str, Any] = {**payload, "seriralNo": serial, "vehicleId": vehicle_id}
             if needs_pin and self.rc_token:
                 signed["rcToken"] = self.rc_token
@@ -276,6 +278,15 @@ class DeepalCommands:
             endpoints.STEERING_WHEEL_HEAT,
             vehicle_id,
             {"command": "steering_wheel_heating", "open": enabled},
+        )
+
+    async def charge_limit(self, vehicle_id: str, percent: int) -> str:
+        """% máximo de carga en AC (S05 PHEV; el EV la acepta sin cambiar nada). ⚠️"""
+        return await self.send(
+            endpoints.CHARGE_PERCENTAGE,
+            vehicle_id,
+            {"command": "charge_max", "chargePercentageMax": int(percent)},
+            serial_type="2",
         )
 
     async def defrost(self, vehicle_id: str, enabled: bool) -> str:

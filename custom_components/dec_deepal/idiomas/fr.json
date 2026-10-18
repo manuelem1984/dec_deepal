@@ -244,6 +244,15 @@
         },
         "insurance_cancel_date": {
           "name": "Date limite de résiliation de l'assurance"
+        },
+        "fuel_level": {
+          "name": "Niveau de carburant"
+        },
+        "fuel_range": {
+          "name": "Autonomie carburant"
+        },
+        "fuel_volume": {
+          "name": "Carburant dans le réservoir"
         }
       },
       "binary_sensor": {
@@ -417,6 +426,9 @@
         },
         "seat_vent_passenger": {
           "name": "Ventilation siège passager"
+        },
+        "charge_limit": {
+          "name": "Limite de charge"
         }
       },
       "switch": {

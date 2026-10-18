@@ -29,6 +29,9 @@ from .mqtt.topics import MqttConnection, parse_connection_config
 
 _LOGGER = logging.getLogger(__name__)
 
+#: Cuánto se reutilizan la configuración del broker y el token MQTT (segundos).
+MQTT_SESSION_TTL: Final = 600
+
 #: Categorías que se piden al endpoint REST de estado. Pedirlas todas cuesta lo
 #: mismo y permite descubrir datos nuevos (temperatura exterior, etc.). La
 #: clave ``vechileCriteria`` (sic) es una errata del propio servidor.
@@ -56,6 +59,9 @@ class DeepalClient:
         # abre otra, cierra la anterior. Con dos coches leyendo a la vez,
         # ninguno conseguía leer (visto el 01-10-2026). Así van en fila.
         self._mqtt_lock = asyncio.Lock()
+        #: Configuración del broker y token de cada coche, reutilizados entre
+        #: lecturas (``MQTT_SESSION_TTL``): ahorra dos peticiones por lectura.
+        self._mqtt_sessions: dict[str, tuple[float, MqttConnection, str]] = {}
 
     @property
     def _transport(self):  # noqa: ANN202 - atajo interno
@@ -152,7 +158,11 @@ class DeepalClient:
 
         async def _read() -> MqttReading:
             connection, token = await self._mqtt_session(vehicle)
-            return await read_telemetry(connection, token, ssl_context)
+            try:
+                return await read_telemetry(connection, token, ssl_context)
+            except Exception:
+                self._mqtt_sessions.pop(vehicle.vehicle_id, None)  # se pide de nuevo
+                raise
 
         async with self._mqtt_lock:
             return await self._with_ca_retry(_read)
@@ -170,7 +180,11 @@ class DeepalClient:
 
         async def _wake() -> str:
             connection, token = await self._mqtt_session(vehicle)
-            return await wake_vehicle(connection, token, ssl_context)
+            try:
+                return await wake_vehicle(connection, token, ssl_context)
+            except Exception:
+                self._mqtt_sessions.pop(vehicle.vehicle_id, None)  # se pide de nuevo
+                raise
 
         async with self._mqtt_lock:
             return await self._with_ca_retry(_wake)
@@ -185,10 +199,24 @@ class DeepalClient:
             _LOGGER.debug("Token de la pasarela CA rechazado (%s); renovando", err.code)
             if not await self.account.refresh(force=True):
                 raise
+            self._mqtt_sessions.clear()
             return await action()
 
     async def _mqtt_session(self, vehicle: VehicleInfo) -> tuple[MqttConnection, str]:
-        """Configuración del broker + token de acceso (sin reintentos propios)."""
+        """Configuración del broker + token de acceso (sin reintentos propios).
+
+        Se reutilizan ``MQTT_SESSION_TTL`` segundos. Si una lectura o un
+        despertar fallan con ellos, se olvidan y la siguiente vez se piden de
+        nuevo (también si la pasarela rechaza el token: ver ``_with_ca_retry``).
+        """
+        cached = self._mqtt_sessions.get(vehicle.vehicle_id)
+        if cached is not None and time.monotonic() < cached[0]:
+            return cached[1], cached[2]
+        connection, token = await self._new_mqtt_session(vehicle)
+        self._mqtt_sessions[vehicle.vehicle_id] = (time.monotonic() + MQTT_SESSION_TTL, connection, token)
+        return connection, token
+
+    async def _new_mqtt_session(self, vehicle: VehicleInfo) -> tuple[MqttConnection, str]:
         session = self.account.session
         if not session.user_id:
             raise DeepalAuthError("La sesión no tiene user_id; vuelve a iniciar sesión")
