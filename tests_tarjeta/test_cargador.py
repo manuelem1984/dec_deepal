@@ -61,7 +61,9 @@ def test_charging_without_coverage(page: Page) -> None:
     mount_charger(page, [_charger(charging=True, locked=False, power=3900, session=SESSION)])
     text = card_text(page)
     assert "Cargando · lleno hacia las" in text and "Changote · sin cobertura" in text
-    assert "≈ 72 %estimado · al enchufar 65 %" in text
+    # De qué % a cuál (con la marca del % al enchufar en la barra) y cuánto lleva.
+    assert "65 % → ≈ 72 %estimado" in text
+    assert page.evaluate("banco.card.shadowRoot.querySelector('.lvl .gain').classList.contains('anim')")
     tiles = page.evaluate("Array.from(banco.card.shadowRoot.querySelectorAll('.t3 .v')).map(v => v.textContent)")
     assert tiles == ["3,9 kW", "+4,2 kWh", "0,48 €"]
     buttons = page.evaluate("Array.from(banco.card.shadowRoot.querySelectorAll('.acts .b')).map(b => b.textContent.trim())")
@@ -113,3 +115,38 @@ def test_charge_window_with_a_charger(page: Page) -> None:
     assert first == ["Cargador", "Garaje · 3,9 kW", "+4,2 kWh · 0,48 € · sin cobertura"]
     # Sin cobertura manda el cargador: carga aunque el coche diga que no.
     assert "Cargando · AC" in " ".join(page.evaluate(f"{window}.querySelector('.dlg').textContent").split())
+
+
+def test_finished_and_locks_soon(page: Page) -> None:
+    """Terminada: ✓, barra quieta, «En la batería», «Sin precio» y cuenta atrás del bloqueo."""
+    from datetime import UTC, datetime, timedelta
+
+    lock_at = (datetime.now(UTC) + timedelta(minutes=28, seconds=30)).isoformat()
+    session = {**SESSION, "finished_at": "2026-10-18T12:05:00+00:00", "level": 100, "soc_start": 88, "energy": 9.1,
+               "battery_energy": 8.19, "cost": None, "minutes_left": None, "duration": 163, "lock_at": lock_at}
+    mount_charger(page, [_charger(charging=False, locked=False, price=None, session=session)])
+    text = card_text(page)
+    assert "Carga terminada · " in text and "88 % → ≈ 100 %estimado · 2 h 43 min" in text
+    assert not page.evaluate("banco.card.shadowRoot.querySelector('.lvl .gain').classList.contains('anim')")
+    tiles = page.evaluate("Array.from(banco.card.shadowRoot.querySelectorAll('.t3')).map(t => t.textContent.trim().replace(/\\s+/g, ' '))")
+    assert tiles == ["Energía+9,1 kWh", "En la batería≈ 8,2 kWh", "CosteSin precio"]
+    buttons = page.evaluate("Array.from(banco.card.shadowRoot.querySelectorAll('.acts .b')).map(b => b.textContent.trim())")
+    assert buttons == ["Desbloqueado", "Se bloquea en 29 min", "Cargas"]
+
+
+def test_car_card_shows_the_estimate(page: Page) -> None:
+    """Sin cobertura: la tarjeta del coche enseña «≈ 100 %», «estimado» y el estado del cargador."""
+    device = page.evaluate("() => { banco.montar({}); return Object.values(banco.hass.entities)[0].device_id; }")
+    data = {"enabled": True, "show_estimate": True, "chargers": [],
+            "estimates": {device: {"level": 99.6, "energy": 9.1, "state": "finished", "charger": "V2C Trydan"}}}
+    page.evaluate("options => banco.montar(options)", {"cargadores": data})
+    page.wait_for_function("banco.card.shadowRoot.querySelector('.km').textContent.includes('≈')")
+    root = "banco.card.shadowRoot"
+    assert page.evaluate(f"{root}.querySelector('.km').textContent") == "≈ 100 %"
+    assert page.evaluate(f"{root}.querySelector('.estb').textContent") == "estimado"
+    assert page.evaluate(f"{root}.querySelector('.charge span').textContent") == "Carga terminada"
+    assert page.evaluate(f"{root}.querySelector('.upd').textContent").endswith("· % estimado por V2C Trydan")
+    # Sin el ajuste (o cuando el coche vuelve a informar), el dato real.
+    page.evaluate("data => banco.cargadores(data)", {**data, "show_estimate": False})
+    assert page.evaluate(f"{root}.querySelector('.estb').hidden") is True
+    assert "≈" not in page.evaluate(f"{root}.querySelector('.km').textContent")

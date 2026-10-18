@@ -197,6 +197,15 @@
       "ch_charging": "Cargando",
       "ch_full_at": "lleno hacia las {time}",
       "ch_finished": "Carga terminada",
+      "ch_finished_at": "Carga terminada · {time}",
+      "ch_in_battery": "En la batería",
+      "ch_no_price": "Sin precio",
+      "ch_locks_in": "Se bloquea en {minutes} min",
+      "est_by": "% estimado por {charger}",
+      "est_charging": "Cargando",
+      "est_finished": "Carga terminada",
+      "est_plugged": "Enchufado",
+      "est_unplugged": "Desenchufado",
       "ch_plugged": "Enchufado · no carga",
       "ch_estimated": "estimado",
       "ch_at_plug": "al enchufar {value} %",
@@ -392,6 +401,15 @@
       "ch_charging": "Charging",
       "ch_full_at": "full around {time}",
       "ch_finished": "Charging finished",
+      "ch_finished_at": "Charging finished · {time}",
+      "ch_in_battery": "In the battery",
+      "ch_no_price": "No price",
+      "ch_locks_in": "Locks in {minutes} min",
+      "est_by": "% estimated by {charger}",
+      "est_charging": "Charging",
+      "est_finished": "Charging finished",
+      "est_plugged": "Plugged in",
+      "est_unplugged": "Unplugged",
       "ch_plugged": "Plugged in · not charging",
       "ch_estimated": "estimated",
       "ch_at_plug": "{value} % when plugged in",
@@ -587,6 +605,15 @@
       "ch_charging": "A carregar",
       "ch_full_at": "cheio por volta das {time}",
       "ch_finished": "Carregamento terminado",
+      "ch_finished_at": "Carregamento terminado · {time}",
+      "ch_in_battery": "Na bateria",
+      "ch_no_price": "Sem preço",
+      "ch_locks_in": "Bloqueia em {minutes} min",
+      "est_by": "% estimada por {charger}",
+      "est_charging": "A carregar",
+      "est_finished": "Carregamento terminado",
+      "est_plugged": "Ligado",
+      "est_unplugged": "Desligado",
       "ch_plugged": "Ligado · não carrega",
       "ch_estimated": "estimado",
       "ch_at_plug": "ao ligar {value} %",
@@ -782,6 +809,15 @@
       "ch_charging": "In carica",
       "ch_full_at": "piena verso le {time}",
       "ch_finished": "Ricarica terminata",
+      "ch_finished_at": "Ricarica terminata · {time}",
+      "ch_in_battery": "In batteria",
+      "ch_no_price": "Nessun prezzo",
+      "ch_locks_in": "Si blocca tra {minutes} min",
+      "est_by": "% stimata da {charger}",
+      "est_charging": "In carica",
+      "est_finished": "Ricarica terminata",
+      "est_plugged": "Collegato",
+      "est_unplugged": "Scollegato",
       "ch_plugged": "Collegato · non carica",
       "ch_estimated": "stimato",
       "ch_at_plug": "al collegamento {value} %",
@@ -977,6 +1013,15 @@
       "ch_charging": "Ładowanie",
       "ch_full_at": "pełna około {time}",
       "ch_finished": "Ładowanie zakończone",
+      "ch_finished_at": "Ładowanie zakończone · {time}",
+      "ch_in_battery": "W baterii",
+      "ch_no_price": "Bez ceny",
+      "ch_locks_in": "Blokada za {minutes} min",
+      "est_by": "% szacowany przez {charger}",
+      "est_charging": "Ładowanie",
+      "est_finished": "Ładowanie zakończone",
+      "est_plugged": "Podłączony",
+      "est_unplugged": "Odłączony",
       "ch_plugged": "Podłączony · nie ładuje",
       "ch_estimated": "szacunkowo",
       "ch_at_plug": "po podłączeniu {value} %",
@@ -1172,6 +1217,15 @@
       "ch_charging": "Lädt",
       "ch_full_at": "voll gegen {time}",
       "ch_finished": "Laden beendet",
+      "ch_finished_at": "Laden beendet · {time}",
+      "ch_in_battery": "In der Batterie",
+      "ch_no_price": "Kein Preis",
+      "ch_locks_in": "Sperrt in {minutes} Min.",
+      "est_by": "% geschätzt von {charger}",
+      "est_charging": "Lädt",
+      "est_finished": "Laden beendet",
+      "est_plugged": "Eingesteckt",
+      "est_unplugged": "Abgesteckt",
       "ch_plugged": "Eingesteckt · lädt nicht",
       "ch_estimated": "geschätzt",
       "ch_at_plug": "beim Einstecken {value} %",
@@ -1367,6 +1421,15 @@
       "ch_charging": "En charge",
       "ch_full_at": "plein vers {time}",
       "ch_finished": "Charge terminée",
+      "ch_finished_at": "Charge terminée · {time}",
+      "ch_in_battery": "Dans la batterie",
+      "ch_no_price": "Sans prix",
+      "ch_locks_in": "Verrouillage dans {minutes} min",
+      "est_by": "% estimé par {charger}",
+      "est_charging": "En charge",
+      "est_finished": "Charge terminée",
+      "est_plugged": "Branché",
+      "est_unplugged": "Débranché",
       "ch_plugged": "Branché · ne charge pas",
       "ch_estimated": "estimé",
       "ch_at_plug": "au branchement {value} %",
@@ -1562,6 +1625,15 @@
       "ch_charging": "Laden",
       "ch_full_at": "vol rond {time}",
       "ch_finished": "Laden klaar",
+      "ch_finished_at": "Laden klaar · {time}",
+      "ch_in_battery": "In de accu",
+      "ch_no_price": "Geen prijs",
+      "ch_locks_in": "Vergrendelt over {minutes} min",
+      "est_by": "% geschat door {charger}",
+      "est_charging": "Laden",
+      "est_finished": "Laden klaar",
+      "est_plugged": "Aangesloten",
+      "est_unplugged": "Losgekoppeld",
       "ch_plugged": "Aangesloten · laadt niet",
       "ch_estimated": "geschat",
       "ch_at_plug": "bij aansluiten {value} %",
@@ -1757,6 +1829,15 @@
       "ch_charging": "Lader",
       "ch_full_at": "full rundt {time}",
       "ch_finished": "Ladingen er ferdig",
+      "ch_finished_at": "Lading ferdig · {time}",
+      "ch_in_battery": "I batteriet",
+      "ch_no_price": "Ingen pris",
+      "ch_locks_in": "Låses om {minutes} min",
+      "est_by": "% anslått av {charger}",
+      "est_charging": "Lader",
+      "est_finished": "Lading ferdig",
+      "est_plugged": "Tilkoblet",
+      "est_unplugged": "Frakoblet",
       "ch_plugged": "Tilkoblet · lader ikke",
       "ch_estimated": "anslått",
       "ch_at_plug": "ved tilkobling {value} %",
@@ -1952,6 +2033,15 @@
       "ch_charging": "Lader",
       "ch_full_at": "fuld omkring {time}",
       "ch_finished": "Opladningen er færdig",
+      "ch_finished_at": "Opladning færdig · {time}",
+      "ch_in_battery": "I batteriet",
+      "ch_no_price": "Ingen pris",
+      "ch_locks_in": "Låses om {minutes} min",
+      "est_by": "% anslået af {charger}",
+      "est_charging": "Lader",
+      "est_finished": "Opladning færdig",
+      "est_plugged": "Tilsluttet",
+      "est_unplugged": "Frakoblet",
       "ch_plugged": "Tilsluttet · lader ikke",
       "ch_estimated": "anslået",
       "ch_at_plug": "ved tilslutning {value} %",
@@ -2147,6 +2237,15 @@
       "ch_charging": "Φόρτιση",
       "ch_full_at": "γεμάτο γύρω στις {time}",
       "ch_finished": "Η φόρτιση ολοκληρώθηκε",
+      "ch_finished_at": "Τέλος φόρτισης · {time}",
+      "ch_in_battery": "Στη μπαταρία",
+      "ch_no_price": "Χωρίς τιμή",
+      "ch_locks_in": "Κλειδώνει σε {minutes} λεπτά",
+      "est_by": "% εκτίμηση από {charger}",
+      "est_charging": "Φόρτιση",
+      "est_finished": "Τέλος φόρτισης",
+      "est_plugged": "Συνδεδεμένο",
+      "est_unplugged": "Αποσυνδεδεμένο",
       "ch_plugged": "Συνδεδεμένο · δεν φορτίζει",
       "ch_estimated": "εκτίμηση",
       "ch_at_plug": "κατά τη σύνδεση {value} %",
@@ -2342,6 +2441,15 @@
       "ch_charging": "Polni",
       "ch_full_at": "polna okoli {time}",
       "ch_finished": "Polnjenje končano",
+      "ch_finished_at": "Polnjenje končano · {time}",
+      "ch_in_battery": "V bateriji",
+      "ch_no_price": "Brez cene",
+      "ch_locks_in": "Zaklep čez {minutes} min",
+      "est_by": "% ocenila {charger}",
+      "est_charging": "Polni",
+      "est_finished": "Polnjenje končano",
+      "est_plugged": "Priklopljen",
+      "est_unplugged": "Izklopljen",
       "ch_plugged": "Priklopljen · ne polni",
       "ch_estimated": "ocena",
       "ch_at_plug": "ob priklopu {value} %",
@@ -2566,7 +2674,10 @@
     .energy:active { opacity: .7; }
     .range { display: flex; align-items: center; gap: 8px; padding: 0 16px; }
     .range .batt { --mdc-icon-size: 26px; }
-    .range .km { font-size: 24px; color: var(--primary-text-color); }
+    .range .km { font-size: 24px; color: var(--primary-text-color); white-space: nowrap; }
+    .range .estb { font-size: 11px; color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); border-radius: 8px; padding: 1px 7px; margin-left: 6px; white-space: nowrap; }
+    .range .charge.est { color: var(--success-color, #43a047); font-weight: 500; }
+    .upd.est { color: var(--warning-color, #e65100); }
     .range .charge { font-size: 14px; color: var(--secondary-text-color); display: flex; align-items: center; gap: 4px; --mdc-icon-size: 18px; }
     .bar { height: 8px; border-radius: 4px; background: ${TILE_BG}; margin: 6px 16px 14px; overflow: hidden; }
     .bar i { display: block; height: 100%; border-radius: 4px; transition: width .4s; }
@@ -2805,11 +2916,19 @@
       if (!hass || !hass.connection || !hass.connection.subscribeMessage || this._chargers) return;
       this._chargers = hass.connection.subscribeMessage((data) => {
         this._chargerData = data;
+        this._repaint();
         if (this._charge) this._paintCharge();
       }, { type: "dec_deepal/chargers/subscribe" });
       this._chargers.catch(() => {
         this._chargers = null;
       });
+    }
+
+    /** % estimado de este coche por un cargador (sin cobertura), si está activado; o `undefined`. */
+    _estimate() {
+      const data = this._chargerData;
+      if (!data || !data.enabled || !data.show_estimate || !data.estimates) return undefined;
+      return data.estimates[this._deviceId()];
     }
 
     /** Cargador en el que está enchufado este coche, o `undefined`. */
@@ -2962,7 +3081,7 @@
           <div class="status"></div>
           <div class="energy" data-action="charge" role="button" tabindex="0" aria-label="${this._t("charge_open")}">
             <div class="range">
-              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="grow"></span>
+              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="estb" hidden></span><span class="grow"></span>
               <span class="charge"><ha-icon></ha-icon><span></span></span>
             </div>
             <div class="bar"><i></i></div>
@@ -2980,7 +3099,10 @@
       $(".msg").hidden = found;
       $(".msg").textContent = found ? "" : this._t("not_found");
       $(".name").textContent = this._name();
-      $(".upd").textContent = this._t("updated", { when: this._updatedText() });
+      // Sin cobertura, con un cargador vinculado: % estimado por el cargador (chargers.py).
+      const estimate = this._estimate();
+      $(".upd").textContent = this._t("updated", { when: this._updatedText() }) + (estimate ? ` · ${this._t("est_by", { charger: estimate.charger })}` : "");
+      $(".upd").classList.toggle("est", Boolean(estimate));
       $('[data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
 
       // Imagen: la vista de esta tarjeta (isométrica o de planta) o, si el
@@ -2998,19 +3120,22 @@
       if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
 
       // Batería y autonomía.
-      const level = this._number("sensor.battery_level");
-      const charging = this._value("binary_sensor.charging") === "on";
+      const level = estimate ? estimate.level : this._number("sensor.battery_level");
+      const charging = estimate ? estimate.state === "charging" : this._value("binary_sensor.charging") === "on";
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       $(".batt").setAttribute("icon", this._batteryIcon(level, charging));
       $(".batt").style.color = color;
-      $(".km").textContent = this._format("sensor.range") || "—";
+      $(".km").textContent = estimate ? `≈ ${Math.round(level)} %` : this._format("sensor.range") || "—";
+      $(".estb").hidden = !estimate;
+      $(".estb").textContent = estimate ? this._t("ch_estimated") : "";
       $(".bar i").style.width = `${level === undefined ? 0 : Math.max(0, Math.min(100, level))}%`;
       $(".bar i").style.background = color;
-      const plugged = (this._value("sensor.charge_status") || "disconnected") !== "disconnected";
-      let chargeText = this._format("sensor.charge_status") || "";
+      const plugged = estimate ? estimate.state !== "unplugged" : (this._value("sensor.charge_status") || "disconnected") !== "disconnected";
+      let chargeText = estimate ? this._t(`est_${estimate.state}`) : this._format("sensor.charge_status") || "";
       const remaining = this._value("sensor.remaining_charge_time_hhmm");
-      if (charging && remaining) chargeText += ` · ${remaining} h`;
-      $(".charge ha-icon").setAttribute("icon", plugged ? "mdi:power-plug" : "mdi:power-plug-off-outline");
+      if (!estimate && charging && remaining) chargeText += ` · ${remaining} h`;
+      $(".charge ha-icon").setAttribute("icon", estimate ? "mdi:ev-station" : plugged ? "mdi:power-plug" : "mdi:power-plug-off-outline");
+      $(".charge").classList.toggle("est", Boolean(estimate) && estimate.state !== "unplugged");
       $(".charge span").textContent = chargeText;
       $(".charge").hidden = !chargeText;
 
@@ -3824,9 +3949,11 @@
 
   /** Cargador dibujado: anillo de color según el estado, rayo si carga, candado si no. */
   function wallboxSvg(state) {
-    const ring = { charging: "#43a047", waiting: "#ffa000", locked: "#03a9f4", open: "#03a9f4", idle: "#9e9e9e" }[state];
+    const ring = { charging: "#43a047", done: "#43a047", waiting: "#ffa000", locked: "#03a9f4", open: "#03a9f4", idle: "#9e9e9e" }[state];
     const center = state === "charging"
       ? '<path d="M2 -14 L-6 2 H0 L-2 14 L6 -2 H0 Z" fill="#43a047"/>'
+      : state === "done"
+      ? '<path d="M-9 0 L-3 7 L10 -7" fill="none" stroke="#43a047" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'
       : `<path d="M-7 -1 h14 v11 h-14z M-4 -1 v-4 a4 4 0 0 1 8 0 ${state === "open" ? "" : "v4"}" fill="none" stroke="${ring}" stroke-width="2.4" stroke-linejoin="round"/>`;
     const cable = state === "idle" || state === "locked" || state === "open"
       ? '<path d="M46 118 C50 140 70 150 66 166" stroke="#37474f" stroke-width="7" fill="none" stroke-linecap="round"/><rect x="58" y="160" width="16" height="12" rx="3" fill="#263238"/>'
@@ -3855,6 +3982,15 @@
     .lvl { height: 9px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; margin: 4px 0 10px; }
     .lvl i { display: block; height: 100%; border-radius: 5px; background: var(--success-color, #43a047);
       background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .35) 0 8px, transparent 8px 16px); }
+    .lvl.two { display: flex; } .lvl.two i { border-radius: 0; background-image: none; }
+    .lvl.two i.from { opacity: .38; border-radius: 5px 0 0 5px; } .lvl.two i.gain { border-radius: 0 5px 5px 0; }
+    .lvl.two i.gain.anim { background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .4) 0 8px, transparent 8px 16px);
+      background-size: 32px 100%; animation: dec-stripes 1s linear infinite; }
+    @keyframes dec-stripes { to { background-position: 32px 0; } }
+    .marks { position: relative; height: 14px; font-size: 10.5px; color: var(--secondary-text-color); margin: -8px 0 4px; }
+    .marks span { position: absolute; transform: translateX(-50%); }
+    .t3 .v.none { font-size: 13px; color: var(--secondary-text-color); padding-top: 3px; }
+    .acts .b.warn { color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .t3 { background: ${TILE_BG}; border-radius: 12px; padding: 8px 10px; min-width: 0; }
     .t3 .k { font-size: 11.5px; color: var(--secondary-text-color); display: flex; gap: 4px; align-items: center; --mdc-icon-size: 14px; }
@@ -3867,7 +4003,6 @@
     .acts .b { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 4px; border-radius: 12px; background: ${TILE_BG};
       font-size: 12px; font-weight: 500; --mdc-icon-size: 22px; }
     .acts .b.on { color: var(--primary-color); background: rgba(var(--rgb-primary-color, 3, 169, 244), .14); }
-    .acts .b.warn { color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); }
     .acts .b[disabled] { cursor: default; }
     .last { font-size: 12px; color: var(--secondary-text-color); border-top: 1px solid var(--divider-color, #e0e0e0); margin-top: 10px; padding-top: 8px;
       display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
@@ -3991,7 +4126,8 @@
       const control = c.can_control;
       const waiting = session && session.waiting;
       const charging = Boolean(c.charging);
-      const state = charging ? "charging" : waiting ? "waiting" : c.plugged ? (c.locked ? "locked" : "open") : c.locked === false ? "open" : c.locked ? "locked" : "idle";
+      const finished = Boolean(session && session.finished_at && !charging);
+      const state = charging ? "charging" : waiting ? "waiting" : finished ? "done" : c.plugged ? (c.locked ? "locked" : "open") : c.locked === false ? "open" : c.locked ? "locked" : "idle";
       const stat = (icon, label, value) => `<div class="t3"><div class="k"><ha-icon icon="${icon}"></ha-icon>${this._t(label)}</div><div class="v">${escapeHtml(value)}</div></div>`;
       let side;
       let grid = "";
@@ -4005,18 +4141,30 @@
         const status = charging
           ? `<div class="status g"><ha-icon icon="mdi:lightning-bolt"></ha-icon>${this._t("ch_charging")}${
             session.minutes_left != null ? ` · ${this._t("ch_full_at", { time: this._clock(Date.now() + (session.minutes_left + (session.balance || 0)) * 60000) })}` : ""}</div>`
-          : `<div class="status ${session.finished_at ? "g" : "b"}"><ha-icon icon="mdi:power-plug"></ha-icon>${this._t(session.finished_at ? "ch_finished" : "ch_plugged")}</div>`;
-        const level = session.level != null
-          ? `<div class="sub">${session.estimated ? "≈ " : ""}${Math.round(session.level)} %${session.estimated ? `<span class="est">${this._t("ch_estimated")}</span>` : ""}${
-            session.soc_start != null ? ` · ${this._t("ch_at_plug", { value: Math.round(session.soc_start) })}` : ""}</div>
-            <div class="lvl"><i style="width:${Math.max(0, Math.min(100, session.level))}%"></i></div>`
-          : "";
+          : finished
+          ? `<div class="status g"><ha-icon icon="mdi:check-circle"></ha-icon>${this._t("ch_finished_at", { time: this._clock(session.finished_at) })}</div>`
+          : `<div class="status b"><ha-icon icon="mdi:power-plug"></ha-icon>${this._t("ch_plugged")}</div>`;
+        // De qué % a cuál, y cuánto lleva (o duró).
+        const from = session.soc_start;
+        const approx = session.estimated ? "≈ " : "";
+        const parts = [];
+        if (session.level != null) {
+          parts.push(`${from != null ? `${Math.round(from)} % → ` : ""}${approx}${Math.round(session.level)} %${session.estimated ? `<span class="est">${this._t("ch_estimated")}</span>` : ""}`);
+        }
+        if (session.duration) parts.push(this._duration(session.duration));
+        const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging)}` : "";
         side = `<div class="car">${photo ? `<img src="${photo}" alt="">` : ""}<div class="who">${escapeHtml(session.vehicle || this._t("ch_unknown_car"))}${
           session.estimated ? ` · ${this._t("ch_no_coverage")}` : ""}</div></div>`;
+        // Al terminar, la potencia (0 kW) deja sitio a lo que ha llegado a la batería.
+        const first = finished
+          ? stat("mdi:battery-charging-high", "ch_in_battery", `≈ ${this._decimal(session.battery_energy, 1)} kWh`)
+          : stat("mdi:flash", "ch_power", c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—");
+        const cost = session.cost != null
+          ? stat("mdi:currency-eur", "ch_cost", `${this._decimal(session.cost, 2)} €`)
+          : `<div class="t3"><div class="k"><ha-icon icon="mdi:currency-eur"></ha-icon>${this._t("ch_cost")}</div><div class="v none">${this._t("ch_no_price")}</div></div>`;
         grid = `${status}${level}<div class="grid">
-          ${stat("mdi:flash", "ch_power", c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—")}
-          ${stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`)}
-          ${stat("mdi:currency-eur", "ch_cost", session.cost != null ? `${this._decimal(session.cost, 2)} €` : "—")}</div>`;
+          ${finished ? stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`) + first : first + stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`)}
+          ${cost}</div>`;
       } else {
         const month = c.month;
         side = `<div class="status n"><ha-icon icon="mdi:power-plug-off-outline"></ha-icon>${this._t("ch_free")}${c.has_lock ? ` · ${this._t(c.locked ? "ch_locked" : "ch_unlocked")}` : ""}</div>
@@ -4027,7 +4175,10 @@
       const lockButton = c.has_lock
         ? `<button class="b ${waiting ? "warn" : c.locked ? "" : "on"}" data-action="lock" ${control ? "" : "disabled"}><ha-icon icon="${c.locked ? "mdi:lock" : "mdi:lock-open-variant"}"></ha-icon>${this._t(c.locked ? "ch_locked" : "ch_unlocked")}</button>`
         : "";
-      const middle = session && session.minutes_left != null && charging
+      const lockIn = session && session.lock_at ? Math.max(0, Math.ceil((new Date(session.lock_at) - Date.now()) / 60000)) : null;
+      const middle = lockIn != null && !charging
+        ? `<div class="b warn"><ha-icon icon="mdi:lock-clock"></ha-icon>${this._t("ch_locks_in", { minutes: lockIn })}</div>`
+        : session && session.minutes_left != null && charging
         ? `<div class="b"><ha-icon icon="mdi:timer-sand"></ha-icon>${this._duration(session.minutes_left + (session.balance || 0))}</div>`
         : `<div class="b"><ha-icon icon="${charging ? "mdi:flash" : "mdi:flash-outline"}"></ha-icon>${c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—"}</div>`;
       const last = c.last
@@ -4036,6 +4187,20 @@
       return `<div class="hd"><div class="t">${escapeHtml(c.name)}<small>${escapeHtml(this._t(`coverage_${c.coverage}`))}</small></div></div>
         <div class="body">${wallboxSvg(state)}<div class="side">${side}</div></div>${grid}
         <div class="acts">${lockButton}${middle}<button class="b" data-action="history"><ha-icon icon="mdi:history"></ha-icon>${this._t("ch_history")}</button></div>${last}`;
+    }
+
+    /**
+     * Barra en dos tramos: hasta el % con el que se enchufó (claro) y lo cargado
+     * (fuerte). Las rayas que se mueven, solo en lo cargado y mientras carga.
+     */
+    _levelBar(from, level, charging) {
+      const clamp = (value) => Math.max(0, Math.min(100, Number(value) || 0));
+      const end = clamp(level);
+      const start = from == null ? end : Math.min(clamp(from), end);
+      const color = end < 15 ? "var(--error-color, #db4437)" : end < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
+      const mark = from != null && end - start >= 1 && start >= 8 && start <= 92
+        ? `<div class="marks"><span style="left:${start}%">${Math.round(from)} %</span></div>` : "";
+      return `<div class="lvl two"><i class="from" style="width:${start}%;background:${color}"></i><i class="gain ${charging ? "anim" : ""}" style="width:${end - start}%;background-color:${color}"></i></div>${mark}`;
     }
 
     /** Una carga en una línea: "Changote · 12 oct, 22:12 – 6:05 · 65 % → 100 % · +22,1 kWh · 2,52 €". */

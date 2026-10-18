@@ -219,7 +219,9 @@ async def test_one_car_without_answer_asks_one(hass: HomeAssistant, manager: Cha
         freezer.tick(timedelta(seconds=31))
         async_fire_time_changed(hass)
         await hass.async_block_till_done()
-    assert sent[0].data["message"] == "Changote está enchufado en Garaje. ¿Desbloqueo el cargador?"
+    assert sent[0].data["message"].startswith("Changote está enchufado en Garaje. ¿Desbloqueo el cargador? Mantén pulsada")
+    # Al tocarla se abre el panel en la ventana de elegir el coche.
+    assert sent[0].data["data"]["url"].startswith("/dec-deepal-panel?elegir=")
     assert [action["title"] for action in sent[0].data["data"]["actions"]] == ["Desbloquear", "No"]
 
 
@@ -286,3 +288,46 @@ async def test_websocket_commands(hass: HomeAssistant, manager: ChargerManager, 
         pass
     assert reply["success"] and [call.data["entity_id"] for call in turn_off] == [LOCK]
     assert manager.status(charger_id)["session"]["vehicle"] == "Changuito"
+
+
+async def test_lock_when_full(hass: HomeAssistant, manager: ChargerManager, freezer) -> None:  # noqa: ANN001
+    """Al 100 % y sin cargar 30 min: se bloquea solo. Una pausa antes del 100 %, no."""
+    sent = _notify(hass)
+    async_mock_service(hass, "switch", "turn_off")
+    turn_on = async_mock_service(hass, "switch", "turn_on")
+    manager._vehicle("car1")[1].coordinator.data[s.BATTERY_LEVEL] = 92
+    await manager.async_save_charger({**GARAJE, "vehicles": ["car1"], "unlock": "none"})
+    await manager.async_set_settings(True, "people")
+    charger_id = next(iter(manager.chargers))
+    manager._device_id = lambda vehicle_id: f"dev_{vehicle_id}" if vehicle_id else None
+    hass.states.async_set(LOCK, "off")
+    hass.states.async_set(PLUG, "on")
+    hass.states.async_set(CHARGING, "on")
+    await hass.async_block_till_done()
+
+    # Una pausa al 95 % (la compañía): no se programa el bloqueo.
+    hass.states.async_set(ENERGY, "2.3", {"unit_of_measurement": "kWh"})
+    hass.states.async_set(CHARGING, "off")
+    await hass.async_block_till_done()
+    assert manager.status(charger_id)["session"]["lock_at"] is None
+    # El % estimado sale para la tarjeta del coche, mientras no informe.
+    estimate = manager.statuses()["estimates"]["dev_car1"]
+    assert (estimate["state"], estimate["charger"], round(estimate["level"])) == ("finished", "Garaje", 95)
+
+    # Reanuda y llega al 100 %: a los 30 min sin cargar, se bloquea y avisa.
+    hass.states.async_set(CHARGING, "on")
+    hass.states.async_set(ENERGY, "6.2", {"unit_of_measurement": "kWh"})
+    await hass.async_block_till_done()
+    hass.states.async_set(CHARGING, "off")
+    await hass.async_block_till_done()
+    session = manager.status(charger_id)["session"]
+    assert session["lock_at"] is not None and session["level"] == 100
+    freezer.tick(timedelta(minutes=30, seconds=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    assert [call.data["entity_id"] for call in turn_on] == [LOCK]
+    assert sent[-1].data["message"] == "Garaje bloqueado: la carga terminó hace 30 min."
+
+    # Con el ajuste quitado, la tarjeta del coche no recibe el % estimado.
+    await manager.async_set_settings(True, "people", show_estimate=False)
+    assert manager.statuses()["estimates"] == {} and manager.statuses()["show_estimate"] is False

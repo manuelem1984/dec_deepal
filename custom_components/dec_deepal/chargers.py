@@ -65,7 +65,7 @@ from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from .alert_rules import SECTION_CHARGE, TARGET_PANEL, texts
-from .const import DOMAIN, NAME
+from .const import DOMAIN, NAME, PANEL_URL_PATH
 from .runtime import vehicle_device
 from .telemetry import signals as s
 
@@ -101,6 +101,10 @@ UNLOCK_CONFIRM: Final = "confirm"
 UNLOCK_MODES: Final = (UNLOCK_NONE, UNLOCK_CONFIRM)
 REMIND_CHOICES: Final = (5, 15, 60)
 RELOCK_CHOICES: Final = (3, 5, 10)
+#: Bloquear al terminar la carga: minutos sin cargar (con el coche al 100 %).
+LOCK_FULL_CHOICES: Final = (15, 30, 45)
+#: Desde qué % se da la carga por completa (real o estimado).
+FULL_LEVEL: Final = 99.0
 DEFAULT_LOSS: Final = 10.0
 MAX_LOSS: Final = 40.0
 #: Quién puede desbloquear desde la tarjeta o las notificaciones.
@@ -199,6 +203,9 @@ def clean_charger(raw: Mapping[str, Any], known: Iterable[str] = ()) -> dict[str
         "relock": bool(raw.get("relock", True)),
         "relock_minutes": _choice(raw.get("relock_minutes"), RELOCK_CHOICES, 5),
         "relock_notify": bool(raw.get("relock_notify", True)),
+        # Bloquear al terminar: enchufado, al 100 % y sin cargar ``lock_full_minutes``.
+        "lock_full": bool(raw.get("lock_full", True)),
+        "lock_full_minutes": _choice(raw.get("lock_full_minutes"), LOCK_FULL_CHOICES, 30),
         "loss": min(MAX_LOSS, max(0.0, round(loss, 1))),
         "learn": bool(raw.get("learn", True)),
         "price": price,
@@ -267,6 +274,8 @@ class ChargerManager:
         self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, STORAGE_KEY)
         self.enabled = False
         self.control = CONTROL_PEOPLE
+        #: ¿Enseña la tarjeta del coche el % estimado mientras no tiene cobertura?
+        self.show_estimate = True
         self.chargers: dict[str, dict[str, Any]] = {}
         #: Carga en curso de cada cargador (se guarda: sobrevive a reinicios).
         self._sessions: dict[str, dict[str, Any]] = {}
@@ -291,6 +300,7 @@ class ChargerManager:
         data = await self._store.async_load() or {}
         self.enabled = bool(data.get("enabled", False))
         self.control = _choice(data.get("control"), CONTROLS, CONTROL_PEOPLE)
+        self.show_estimate = bool(data.get("show_estimate", True))
         for raw in data.get("chargers") or ():
             try:
                 charger = clean_charger(raw)
@@ -315,6 +325,7 @@ class ChargerManager:
         return {
             "enabled": self.enabled,
             "control": self.control,
+            "show_estimate": self.show_estimate,
             "chargers": list(self.chargers.values()),
             "sessions": self._sessions,
             "history": self._history,
@@ -370,10 +381,12 @@ class ChargerManager:
     # Configuración (panel)
     # ------------------------------------------------------------------
 
-    async def async_set_settings(self, enabled: bool, control: str) -> None:
+    async def async_set_settings(self, enabled: bool, control: str, show_estimate: bool | None = None) -> None:
         await self.async_load()
         self.enabled = bool(enabled)
         self.control = _choice(control, CONTROLS, CONTROL_PEOPLE)
+        if show_estimate is not None:
+            self.show_estimate = bool(show_estimate)
         self._save()
         self._resubscribe()
         self._changed()
@@ -587,8 +600,11 @@ class ChargerManager:
                 session["finished_at"] = _iso(self._clock())
                 self._save()
                 self._notify_finished(charger, session)
+                self._schedule_lock_full(charger)
             elif charging and session.get("finished_at"):
                 session.pop("finished_at", None)  # vuelve a cargar (p. ej. la compañía reanuda)
+                session.pop("lock_at", None)
+                self._cancel(charger_id, "lock_full")
                 self._save()
             if self.locked(charger) is False and session.get("unlocked_at") is None:
                 session["unlocked_at"] = _iso(self._clock())
@@ -674,7 +690,7 @@ class ChargerManager:
     def _end(self, charger: dict[str, Any]) -> None:
         charger_id = charger["id"]
         session = self._sessions.pop(charger_id)
-        for name in ("wait", "remind", "not_charging"):
+        for name in ("wait", "remind", "not_charging", "lock_full"):
             self._cancel(charger_id, name)
         self._track_energy(charger, session)
         now = self._clock()
@@ -701,6 +717,47 @@ class ChargerManager:
             del history[:-HISTORY_SIZE]
         self._save()
         self._maybe_relock(charger)
+
+    def _schedule_lock_full(self, charger: Mapping[str, Any]) -> None:
+        """Carga terminada: bloquear pasados ``lock_full_minutes`` si sigue al 100 % y sin cargar.
+
+        Solo con el coche al 100 % (real o estimado): si la compañía hace una
+        pausa programada antes, no se bloquea (cortaría la carga).
+        """
+        charger_id = charger["id"]
+        session = self._sessions.get(charger_id)
+        if not charger["lock_full"] or not charger["entities"].get(ROLE_LOCK) or session is None:
+            return
+        level = self._level(charger, session)
+        if level is None or level < FULL_LEVEL or self.locked(charger) is not False:
+            return
+        minutes = charger["lock_full_minutes"]
+        session["lock_at"] = _iso(self._clock() + timedelta(minutes=minutes))
+        self._save()
+
+        @callback
+        def _lock(_now: Any) -> None:
+            current = self.chargers.get(charger_id)
+            session = self._sessions.get(charger_id)
+            if current is None or session is None or self.charging(current) or self.locked(current) is not False:
+                return
+            session.pop("lock_at", None)
+            self.hass.async_create_task(self._lock_full(current, session.get("vehicle_id"), minutes))
+
+        self._timer(charger_id, "lock_full", minutes * 60, _lock)
+
+    async def _lock_full(self, charger: Mapping[str, Any], vehicle_id: str | None, minutes: int) -> None:
+        if not await self._set_locked(charger, True):
+            return
+        if charger["relock_notify"]:
+            self._send(
+                charger,
+                NOTICE_LOCKED,
+                [vehicle_id] if vehicle_id else charger["vehicles"],
+                self._text("charger_locked_full", charger=charger["name"], minutes=minutes),
+                [(f"{ACTION_PREFIX}|{charger['id']}|{ACTION_AGAIN}", self._text("action_unlock_again"))],
+            )
+        self._changed()
 
     def _maybe_relock(self, charger: Mapping[str, Any]) -> None:
         """Desbloqueado y sin manguera: se bloquea pasados ``relock_minutes``."""
@@ -905,6 +962,10 @@ class ChargerManager:
                 targets[target] = None
         title = f"{NAME} {self._name(vehicle_ids[0])}" if len(vehicle_ids) == 1 else f"{NAME} · {charger['name']}"
         data: dict[str, Any] = {"tag": f"{DOMAIN}_charger_{charger['id']}"}
+        if notice == NOTICE_CONFIRM:
+            # Tocar la notificación abre el panel en la ventana de elegir el coche
+            # (en el iPhone, los botones solo salen al mantenerla pulsada).
+            data["url"] = data["clickAction"] = f"/{PANEL_URL_PATH}?elegir={charger['id']}"
         if actions:
             data["actions"] = [{"action": action, "title": label} for action, label in actions]
         for service in targets:
@@ -1058,6 +1119,9 @@ class ChargerManager:
                 "level": None if level is None else round(level, 1),
                 "estimated": estimated,
                 "minutes_left": None if minutes is None else round(minutes),
+                # Cuánto ha durado (hasta que terminó, o hasta ahora) y cuándo se bloquea solo.
+                "duration": self._minutes_between(session.get("charging_since") or session.get("plugged_at"), session.get("finished_at")),
+                "lock_at": session.get("lock_at"),
                 # Minutos de equilibrado que se suman al final (Ajustes de la cuenta del coche).
                 "balance": self._balance(vehicle_id),
             }
@@ -1112,11 +1176,46 @@ class ChargerManager:
             "can_control": self.can_control(charger_id, user),
         }
 
+    def _minutes_between(self, start: Any, end: Any) -> int | None:
+        begin = _when(start)
+        if begin is None:
+            return None
+        return max(0, round(((_when(end) or self._clock()) - begin).total_seconds() / 60))
+
+    def estimates(self) -> dict[str, dict[str, Any]]:
+        """% estimado de cada coche sin cobertura, por dispositivo (tarjeta del coche).
+
+        Mientras carga (o sigue enchufado) y, después, el de la última carga
+        hasta que el coche vuelva a informar.
+        """
+        result: dict[str, dict[str, Any]] = {}
+        for charger_id, charger in self.chargers.items():
+            session = self._sessions.get(charger_id)
+            if session is not None and session.get("vehicle_id") and self._is_estimated(session):
+                level = self._level(charger, session)
+                state = "charging" if self.charging(charger) else "finished" if session.get("finished_at") else "plugged"
+                entry = {"level": level, "energy": round(float(session.get("energy") or 0), 1), "state": state}
+                vehicle_id = session["vehicle_id"]
+            else:
+                last = (self._history.get(charger_id) or [None])[-1]
+                if not last or not last.get("estimated") or not last.get("vehicle_id") or last.get("soc_end") is None:
+                    continue
+                vehicle_id = last["vehicle_id"]
+                if self._reported_since(vehicle_id, _when(last.get("end"))):
+                    continue
+                entry = {"level": last["soc_end"], "energy": last.get("energy"), "state": "unplugged"}
+            device_id = self._device_id(vehicle_id)
+            if device_id and entry["level"] is not None:
+                result[device_id] = {**entry, "level": round(float(entry["level"]), 1), "charger": charger["name"]}
+        return result
+
     def statuses(self, user: Any = None) -> dict[str, Any]:
         """Todos los cargadores (lo que recibe la suscripción de la tarjeta)."""
         return {
             "enabled": self.enabled,
+            "show_estimate": self.show_estimate,
             "chargers": [self.status(charger_id, user) for charger_id in self.chargers] if self.enabled else [],
+            "estimates": self.estimates() if self.enabled and self.show_estimate else {},
         }
 
     def panel_config(self) -> dict[str, Any]:
@@ -1124,6 +1223,7 @@ class ChargerManager:
         return {
             "enabled": self.enabled,
             "control": self.control,
+            "show_estimate": self.show_estimate,
             "chargers": [
                 {**charger, "measured": self.measured(charger["id"]), "plugged": self.plugged(charger), "locked": self.locked(charger)}
                 for charger in self.chargers.values()
@@ -1131,6 +1231,7 @@ class ChargerManager:
             "roles": {role: list(domains) for role, domains in ROLE_DOMAINS.items()},
             "remind_choices": list(REMIND_CHOICES),
             "relock_choices": list(RELOCK_CHOICES),
+            "lock_full_choices": list(LOCK_FULL_CHOICES),
             "default_loss": DEFAULT_LOSS,
         }
 

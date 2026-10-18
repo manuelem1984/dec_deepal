@@ -64,11 +64,12 @@
 
   const DOMAINS = ["binary_sensor", "sensor", "switch", "input_boolean"];
   const initial = () => ({
-    version: "2.6.0b3",
+    version: "2.6.0b4",
     admin: true,
     chargers_enabled: false,
     chargers: {
-      enabled: false, control: "people", chargers: [], default_loss: 10, remind_choices: [5, 15, 60], relock_choices: [3, 5, 10],
+      enabled: false, control: "people", show_estimate: true, chargers: [], default_loss: 10, remind_choices: [5, 15, 60], relock_choices: [3, 5, 10],
+      lock_full_choices: [15, 30, 45],
       roles: { plugged: DOMAINS, charging: DOMAINS, power: ["sensor"], energy: ["sensor"], lock: ["switch", "lock", "input_boolean"] },
     },
     people: PEOPLE,
@@ -211,6 +212,7 @@
       if (type === "set_chargers") {
         state.chargers.enabled = message.enabled;
         state.chargers.control = message.control;
+        if ("show_estimate" in message) state.chargers.show_estimate = message.show_estimate;
         state.chargers_enabled = message.enabled;
         return null;
       }

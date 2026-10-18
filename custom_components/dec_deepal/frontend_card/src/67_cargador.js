@@ -16,9 +16,11 @@
 
   /** Cargador dibujado: anillo de color según el estado, rayo si carga, candado si no. */
   function wallboxSvg(state) {
-    const ring = { charging: "#43a047", waiting: "#ffa000", locked: "#03a9f4", open: "#03a9f4", idle: "#9e9e9e" }[state];
+    const ring = { charging: "#43a047", done: "#43a047", waiting: "#ffa000", locked: "#03a9f4", open: "#03a9f4", idle: "#9e9e9e" }[state];
     const center = state === "charging"
       ? '<path d="M2 -14 L-6 2 H0 L-2 14 L6 -2 H0 Z" fill="#43a047"/>'
+      : state === "done"
+      ? '<path d="M-9 0 L-3 7 L10 -7" fill="none" stroke="#43a047" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'
       : `<path d="M-7 -1 h14 v11 h-14z M-4 -1 v-4 a4 4 0 0 1 8 0 ${state === "open" ? "" : "v4"}" fill="none" stroke="${ring}" stroke-width="2.4" stroke-linejoin="round"/>`;
     const cable = state === "idle" || state === "locked" || state === "open"
       ? '<path d="M46 118 C50 140 70 150 66 166" stroke="#37474f" stroke-width="7" fill="none" stroke-linecap="round"/><rect x="58" y="160" width="16" height="12" rx="3" fill="#263238"/>'
@@ -47,6 +49,15 @@
     .lvl { height: 9px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; margin: 4px 0 10px; }
     .lvl i { display: block; height: 100%; border-radius: 5px; background: var(--success-color, #43a047);
       background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .35) 0 8px, transparent 8px 16px); }
+    .lvl.two { display: flex; } .lvl.two i { border-radius: 0; background-image: none; }
+    .lvl.two i.from { opacity: .38; border-radius: 5px 0 0 5px; } .lvl.two i.gain { border-radius: 0 5px 5px 0; }
+    .lvl.two i.gain.anim { background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .4) 0 8px, transparent 8px 16px);
+      background-size: 32px 100%; animation: dec-stripes 1s linear infinite; }
+    @keyframes dec-stripes { to { background-position: 32px 0; } }
+    .marks { position: relative; height: 14px; font-size: 10.5px; color: var(--secondary-text-color); margin: -8px 0 4px; }
+    .marks span { position: absolute; transform: translateX(-50%); }
+    .t3 .v.none { font-size: 13px; color: var(--secondary-text-color); padding-top: 3px; }
+    .acts .b.warn { color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .t3 { background: ${TILE_BG}; border-radius: 12px; padding: 8px 10px; min-width: 0; }
     .t3 .k { font-size: 11.5px; color: var(--secondary-text-color); display: flex; gap: 4px; align-items: center; --mdc-icon-size: 14px; }
@@ -59,7 +70,6 @@
     .acts .b { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 9px 4px; border-radius: 12px; background: ${TILE_BG};
       font-size: 12px; font-weight: 500; --mdc-icon-size: 22px; }
     .acts .b.on { color: var(--primary-color); background: rgba(var(--rgb-primary-color, 3, 169, 244), .14); }
-    .acts .b.warn { color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); }
     .acts .b[disabled] { cursor: default; }
     .last { font-size: 12px; color: var(--secondary-text-color); border-top: 1px solid var(--divider-color, #e0e0e0); margin-top: 10px; padding-top: 8px;
       display: flex; gap: 6px; align-items: center; --mdc-icon-size: 16px; }
@@ -183,7 +193,8 @@
       const control = c.can_control;
       const waiting = session && session.waiting;
       const charging = Boolean(c.charging);
-      const state = charging ? "charging" : waiting ? "waiting" : c.plugged ? (c.locked ? "locked" : "open") : c.locked === false ? "open" : c.locked ? "locked" : "idle";
+      const finished = Boolean(session && session.finished_at && !charging);
+      const state = charging ? "charging" : waiting ? "waiting" : finished ? "done" : c.plugged ? (c.locked ? "locked" : "open") : c.locked === false ? "open" : c.locked ? "locked" : "idle";
       const stat = (icon, label, value) => `<div class="t3"><div class="k"><ha-icon icon="${icon}"></ha-icon>${this._t(label)}</div><div class="v">${escapeHtml(value)}</div></div>`;
       let side;
       let grid = "";
@@ -197,18 +208,30 @@
         const status = charging
           ? `<div class="status g"><ha-icon icon="mdi:lightning-bolt"></ha-icon>${this._t("ch_charging")}${
             session.minutes_left != null ? ` · ${this._t("ch_full_at", { time: this._clock(Date.now() + (session.minutes_left + (session.balance || 0)) * 60000) })}` : ""}</div>`
-          : `<div class="status ${session.finished_at ? "g" : "b"}"><ha-icon icon="mdi:power-plug"></ha-icon>${this._t(session.finished_at ? "ch_finished" : "ch_plugged")}</div>`;
-        const level = session.level != null
-          ? `<div class="sub">${session.estimated ? "≈ " : ""}${Math.round(session.level)} %${session.estimated ? `<span class="est">${this._t("ch_estimated")}</span>` : ""}${
-            session.soc_start != null ? ` · ${this._t("ch_at_plug", { value: Math.round(session.soc_start) })}` : ""}</div>
-            <div class="lvl"><i style="width:${Math.max(0, Math.min(100, session.level))}%"></i></div>`
-          : "";
+          : finished
+          ? `<div class="status g"><ha-icon icon="mdi:check-circle"></ha-icon>${this._t("ch_finished_at", { time: this._clock(session.finished_at) })}</div>`
+          : `<div class="status b"><ha-icon icon="mdi:power-plug"></ha-icon>${this._t("ch_plugged")}</div>`;
+        // De qué % a cuál, y cuánto lleva (o duró).
+        const from = session.soc_start;
+        const approx = session.estimated ? "≈ " : "";
+        const parts = [];
+        if (session.level != null) {
+          parts.push(`${from != null ? `${Math.round(from)} % → ` : ""}${approx}${Math.round(session.level)} %${session.estimated ? `<span class="est">${this._t("ch_estimated")}</span>` : ""}`);
+        }
+        if (session.duration) parts.push(this._duration(session.duration));
+        const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging)}` : "";
         side = `<div class="car">${photo ? `<img src="${photo}" alt="">` : ""}<div class="who">${escapeHtml(session.vehicle || this._t("ch_unknown_car"))}${
           session.estimated ? ` · ${this._t("ch_no_coverage")}` : ""}</div></div>`;
+        // Al terminar, la potencia (0 kW) deja sitio a lo que ha llegado a la batería.
+        const first = finished
+          ? stat("mdi:battery-charging-high", "ch_in_battery", `≈ ${this._decimal(session.battery_energy, 1)} kWh`)
+          : stat("mdi:flash", "ch_power", c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—");
+        const cost = session.cost != null
+          ? stat("mdi:currency-eur", "ch_cost", `${this._decimal(session.cost, 2)} €`)
+          : `<div class="t3"><div class="k"><ha-icon icon="mdi:currency-eur"></ha-icon>${this._t("ch_cost")}</div><div class="v none">${this._t("ch_no_price")}</div></div>`;
         grid = `${status}${level}<div class="grid">
-          ${stat("mdi:flash", "ch_power", c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—")}
-          ${stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`)}
-          ${stat("mdi:currency-eur", "ch_cost", session.cost != null ? `${this._decimal(session.cost, 2)} €` : "—")}</div>`;
+          ${finished ? stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`) + first : first + stat("mdi:lightning-bolt-circle", "ch_energy", `+${this._decimal(session.energy, 1)} kWh`)}
+          ${cost}</div>`;
       } else {
         const month = c.month;
         side = `<div class="status n"><ha-icon icon="mdi:power-plug-off-outline"></ha-icon>${this._t("ch_free")}${c.has_lock ? ` · ${this._t(c.locked ? "ch_locked" : "ch_unlocked")}` : ""}</div>
@@ -219,7 +242,10 @@
       const lockButton = c.has_lock
         ? `<button class="b ${waiting ? "warn" : c.locked ? "" : "on"}" data-action="lock" ${control ? "" : "disabled"}><ha-icon icon="${c.locked ? "mdi:lock" : "mdi:lock-open-variant"}"></ha-icon>${this._t(c.locked ? "ch_locked" : "ch_unlocked")}</button>`
         : "";
-      const middle = session && session.minutes_left != null && charging
+      const lockIn = session && session.lock_at ? Math.max(0, Math.ceil((new Date(session.lock_at) - Date.now()) / 60000)) : null;
+      const middle = lockIn != null && !charging
+        ? `<div class="b warn"><ha-icon icon="mdi:lock-clock"></ha-icon>${this._t("ch_locks_in", { minutes: lockIn })}</div>`
+        : session && session.minutes_left != null && charging
         ? `<div class="b"><ha-icon icon="mdi:timer-sand"></ha-icon>${this._duration(session.minutes_left + (session.balance || 0))}</div>`
         : `<div class="b"><ha-icon icon="${charging ? "mdi:flash" : "mdi:flash-outline"}"></ha-icon>${c.power != null ? `${this._decimal(c.power / 1000, 1)} kW` : "—"}</div>`;
       const last = c.last
@@ -228,6 +254,20 @@
       return `<div class="hd"><div class="t">${escapeHtml(c.name)}<small>${escapeHtml(this._t(`coverage_${c.coverage}`))}</small></div></div>
         <div class="body">${wallboxSvg(state)}<div class="side">${side}</div></div>${grid}
         <div class="acts">${lockButton}${middle}<button class="b" data-action="history"><ha-icon icon="mdi:history"></ha-icon>${this._t("ch_history")}</button></div>${last}`;
+    }
+
+    /**
+     * Barra en dos tramos: hasta el % con el que se enchufó (claro) y lo cargado
+     * (fuerte). Las rayas que se mueven, solo en lo cargado y mientras carga.
+     */
+    _levelBar(from, level, charging) {
+      const clamp = (value) => Math.max(0, Math.min(100, Number(value) || 0));
+      const end = clamp(level);
+      const start = from == null ? end : Math.min(clamp(from), end);
+      const color = end < 15 ? "var(--error-color, #db4437)" : end < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
+      const mark = from != null && end - start >= 1 && start >= 8 && start <= 92
+        ? `<div class="marks"><span style="left:${start}%">${Math.round(from)} %</span></div>` : "";
+      return `<div class="lvl two"><i class="from" style="width:${start}%;background:${color}"></i><i class="gain ${charging ? "anim" : ""}" style="width:${end - start}%;background-color:${color}"></i></div>${mark}`;
     }
 
     /** Una carga en una línea: "Changote · 12 oct, 22:12 – 6:05 · 65 % → 100 % · +22,1 kWh · 2,52 €". */

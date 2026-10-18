@@ -36,7 +36,9 @@ Panel DEC Deepal → **Ajustes → Cargadores**:
      coche», con la notificación de confirmación y el recordatorio a los 5,
      15 o 60 minutos.
   5. **Bloquear solo**: al desenchufar, pasados 3, 5 o 10 minutos (si no se
-     vuelve a enchufar antes), con aviso opcional.
+     vuelve a enchufar antes), y **al terminar la carga**: con la manguera
+     puesta, al 100 % (real o estimado) y sin cargar 15, 30 o 45 minutos. Una
+     pausa antes del 100 % (la compañía) no bloquea. Aviso opcional.
   6. **Pérdidas** (10 % de fábrica), «ajustar con mis cargas» (enseña la
      pérdida medida y un botón para usarla) y el **precio del kWh** (fijo o
      de una entidad, como el PVPC).
@@ -86,7 +88,13 @@ tiempo estimados), gris libre (resumen del mes). El candado bloquea o
 desbloquea a mano (con confirmación) y «Cargas» abre el historial.
 
 La **ventana de carga** de la tarjeta del coche enseña también el cargador en
-el que carga y, sin cobertura, el % estimado.
+el que carga y, sin cobertura, el % estimado. Con «Mostrar el % estimado en la
+tarjeta del coche» (Ajustes → Cargadores), la **tarjeta del coche** enseña
+«≈ %» con la etiqueta «estimado» mientras el coche no informa.
+
+Tocar la notificación de elegir el coche abre el panel en la ventana de
+elegir (`/dec-deepal-panel?elegir=<cargador>`); en el iPhone, los botones
+salen al mantenerla pulsada.
 
 ## Órdenes (WebSocket)
 

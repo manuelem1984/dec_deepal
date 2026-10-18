@@ -33,11 +33,12 @@ from .comun import command
         vol.Required("type"): "dec_deepal/panel/set_chargers",
         vol.Required("enabled"): bool,
         vol.Required("control"): vol.In(CONTROLS),
+        vol.Optional("show_estimate"): bool,
     }
 )
 async def ws_set_chargers(hass: HomeAssistant, msg: dict[str, Any], user: User) -> None:
-    """Activa o desactiva los cargadores y dice quién puede controlarlos."""
-    await async_get_manager(hass).async_set_settings(msg["enabled"], msg["control"])
+    """Activa o desactiva los cargadores, quién los controla y el % estimado en la tarjeta del coche."""
+    await async_get_manager(hass).async_set_settings(msg["enabled"], msg["control"], msg.get("show_estimate"))
 
 
 @command({vol.Required("type"): "dec_deepal/panel/save_charger", vol.Required("charger"): dict})

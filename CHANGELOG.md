@@ -3,6 +3,32 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b4] — 2026-10-18
+
+### Añadido
+
+- **Bloquear al terminar la carga** (editor del cargador, de fábrica a los 30
+  min; también 15 o 45): con la manguera puesta, al 100 % (real o estimado)
+  y sin cargar ese tiempo, el cargador se bloquea y avisa. Si la compañía hace
+  una pausa antes del 100 %, no se bloquea. La tarjeta enseña «Se bloquea en
+  N min».
+- **% estimado en la tarjeta del coche** (Ajustes → Cargadores → «Mostrar el
+  % estimado en la tarjeta del coche», activado de fábrica): mientras el coche
+  no tiene cobertura, la tarjeta enseña «≈ 100 %» con la etiqueta
+  «estimado», el estado del cargador y de qué cargador sale. Cuando el coche
+  vuelve a informar, el dato real.
+
+### Cambiado
+
+- **Tarjeta del cargador al terminar:** ✓ verde, «Carga terminada · hora»,
+  de qué % a cuál y cuánto duró; «En la batería» en vez de la potencia a 0 y
+  «Sin precio» en vez de un guion.
+- **Barra de carga dinámica:** claro hasta el % con el que se enchufó (con su
+  marca) y fuerte lo cargado; las rayas solo se mueven mientras carga.
+- **Notificación de elegir el coche:** dice que hay que mantenerla pulsada
+  (en el iPhone, los botones solo salen así) y, al tocarla, abre el panel en
+  la ventana de elegir el coche.
+
 ## [2.6.0b3] — 2026-10-18
 
 ### Cambiado

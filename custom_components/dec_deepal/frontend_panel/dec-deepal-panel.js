@@ -153,6 +153,13 @@
       "chargers_enabled_help": "Desactivado, todo funciona como siempre y no se toca ningún cargador.",
       "chargers_control": "Quién puede desbloquear",
       "chargers_control_help": "Desde la tarjeta del cargador y las notificaciones.",
+      "chargers_estimate": "Mostrar el % estimado en la tarjeta del coche",
+      "chargers_estimate_help": "Mientras el coche no tenga cobertura, con la etiqueta «estimado».",
+      "pick_title": "Elige el coche que está enchufado",
+      "pick_done": "Ya no hay que elegir: el coche ya está elegido o se ha desenchufado.",
+      "pick_help": "Al elegirlo se desbloquea el cargador.",
+      "pick_no_permission": "No tienes permiso para desbloquear este cargador.",
+      "pick_unlocked": "{charger} desbloqueado.",
       "control_people": "Personas y admins",
       "control_admins": "Solo admins",
       "charger_none": "Todavía no hay cargadores.",
@@ -205,6 +212,8 @@
       "relock_after": "Pasados",
       "relock_notify": "Avisar al bloquear",
       "relock_notify_help": "Con un botón para desbloquearlo otra vez.",
+      "lock_full": "Bloquear al terminar la carga",
+      "lock_full_help": "Con la manguera puesta, al 100 % y sin cargar durante este tiempo. Si no llega al 100 % (una pausa de la compañía), no se bloquea.",
       "loss_title": "Pérdidas y precio",
       "loss_help": "Lo que mide el cargador y no llega a la batería. Sirve para estimar el % sin cobertura.",
       "loss_value": "Pérdidas de carga",
@@ -536,6 +545,13 @@
       "chargers_enabled_help": "When off, everything works as usual and no charger is touched.",
       "chargers_control": "Who can unlock",
       "chargers_control_help": "From the charger card and notifications.",
+      "chargers_estimate": "Show the estimated % on the car card",
+      "chargers_estimate_help": "While the car has no signal, labelled “estimated”.",
+      "pick_title": "Choose the car that's plugged in",
+      "pick_done": "Nothing to choose any more: the car is already chosen or was unplugged.",
+      "pick_help": "Choosing it unlocks the charger.",
+      "pick_no_permission": "You aren't allowed to unlock this charger.",
+      "pick_unlocked": "{charger} unlocked.",
       "control_people": "Owners and admins",
       "control_admins": "Admins only",
       "charger_none": "No chargers yet.",
@@ -588,6 +604,8 @@
       "relock_after": "After",
       "relock_notify": "Notify when locking",
       "relock_notify_help": "With a button to unlock it again.",
+      "lock_full": "Lock when charging finishes",
+      "lock_full_help": "With the cable plugged in, at 100 % and not charging for this long. If it doesn't reach 100 % (a supplier pause), it doesn't lock.",
       "loss_title": "Losses and price",
       "loss_help": "What the charger measures that doesn't reach the battery. Used to estimate % without signal.",
       "loss_value": "Charging losses",
@@ -919,6 +937,13 @@
       "chargers_enabled_help": "Desativado, tudo funciona como sempre e nenhum carregador é tocado.",
       "chargers_control": "Quem pode desbloquear",
       "chargers_control_help": "A partir do cartão do carregador e das notificações.",
+      "chargers_estimate": "Mostrar a % estimada no cartão do carro",
+      "chargers_estimate_help": "Enquanto o carro não tiver rede, com a etiqueta «estimado».",
+      "pick_title": "Escolhe o carro que está ligado",
+      "pick_done": "Já não é preciso escolher: o carro já está escolhido ou foi desligado.",
+      "pick_help": "Ao escolhê-lo, o carregador é desbloqueado.",
+      "pick_no_permission": "Não tens permissão para desbloquear este carregador.",
+      "pick_unlocked": "{charger} desbloqueado.",
       "control_people": "Pessoas e admins",
       "control_admins": "Só admins",
       "charger_none": "Ainda não há carregadores.",
@@ -971,6 +996,8 @@
       "relock_after": "Passados",
       "relock_notify": "Avisar ao bloquear",
       "relock_notify_help": "Com um botão para o desbloquear outra vez.",
+      "lock_full": "Bloquear ao terminar o carregamento",
+      "lock_full_help": "Com o cabo ligado, a 100 % e sem carregar durante este tempo. Se não chegar aos 100 % (uma pausa da comercializadora), não bloqueia.",
       "loss_title": "Perdas e preço",
       "loss_help": "O que o carregador mede e não chega à bateria. Serve para estimar a % sem rede.",
       "loss_value": "Perdas de carregamento",
@@ -1302,6 +1329,13 @@
       "chargers_enabled_help": "Disattivato, tutto funziona come sempre e nessun caricatore viene toccato.",
       "chargers_control": "Chi può sbloccare",
       "chargers_control_help": "Dalla scheda del caricatore e dalle notifiche.",
+      "chargers_estimate": "Mostra la % stimata nella scheda dell'auto",
+      "chargers_estimate_help": "Finché l'auto non ha copertura, con l'etichetta «stimato».",
+      "pick_title": "Scegli l'auto collegata",
+      "pick_done": "Non c'è più da scegliere: l'auto è già scelta o è stata scollegata.",
+      "pick_help": "Sceglierla sblocca il caricatore.",
+      "pick_no_permission": "Non hai il permesso di sbloccare questo caricatore.",
+      "pick_unlocked": "{charger} sbloccato.",
       "control_people": "Persone e admin",
       "control_admins": "Solo admin",
       "charger_none": "Ancora nessun caricatore.",
@@ -1354,6 +1388,8 @@
       "relock_after": "Dopo",
       "relock_notify": "Avvisa al blocco",
       "relock_notify_help": "Con un pulsante per sbloccarlo di nuovo.",
+      "lock_full": "Blocca a fine ricarica",
+      "lock_full_help": "Con il cavo collegato, al 100 % e senza caricare per questo tempo. Se non arriva al 100 % (una pausa del fornitore), non si blocca.",
       "loss_title": "Perdite e prezzo",
       "loss_help": "Ciò che il caricatore misura e non arriva alla batteria. Serve a stimare la % senza copertura.",
       "loss_value": "Perdite di ricarica",
@@ -1685,6 +1721,13 @@
       "chargers_enabled_help": "Wyłączone: wszystko działa jak zwykle, a żadna ładowarka nie jest używana.",
       "chargers_control": "Kto może odblokować",
       "chargers_control_help": "Z karty ładowarki i powiadomień.",
+      "chargers_estimate": "Pokaż szacowany % na karcie samochodu",
+      "chargers_estimate_help": "Dopóki samochód nie ma zasięgu, z etykietą „szacunkowo”.",
+      "pick_title": "Wybierz podłączony samochód",
+      "pick_done": "Nie trzeba już wybierać: samochód jest wybrany lub odłączony.",
+      "pick_help": "Wybór odblokuje ładowarkę.",
+      "pick_no_permission": "Nie masz uprawnień do odblokowania tej ładowarki.",
+      "pick_unlocked": "{charger} odblokowana.",
       "control_people": "Osoby i admini",
       "control_admins": "Tylko admini",
       "charger_none": "Brak ładowarek.",
@@ -1737,6 +1780,8 @@
       "relock_after": "Po",
       "relock_notify": "Powiadom o blokadzie",
       "relock_notify_help": "Z przyciskiem do ponownego odblokowania.",
+      "lock_full": "Blokuj po zakończeniu ładowania",
+      "lock_full_help": "Z podłączonym kablem, przy 100 % i bez ładowania przez ten czas. Jeśli nie dojdzie do 100 % (przerwa dostawcy), nie blokuje.",
       "loss_title": "Straty i cena",
       "loss_help": "To, co mierzy ładowarka, a nie trafia do baterii. Służy do szacowania % bez zasięgu.",
       "loss_value": "Straty ładowania",
@@ -2068,6 +2113,13 @@
       "chargers_enabled_help": "Ausgeschaltet funktioniert alles wie immer und keine Ladestation wird angesteuert.",
       "chargers_control": "Wer entsperren darf",
       "chargers_control_help": "Über die Ladestations-Karte und Benachrichtigungen.",
+      "chargers_estimate": "Geschätzte % auf der Autokarte zeigen",
+      "chargers_estimate_help": "Solange das Auto keinen Empfang hat, mit dem Hinweis „geschätzt“.",
+      "pick_title": "Wähle das eingesteckte Auto",
+      "pick_done": "Nichts mehr zu wählen: Das Auto ist schon gewählt oder abgesteckt.",
+      "pick_help": "Die Auswahl entsperrt die Ladestation.",
+      "pick_no_permission": "Du darfst diese Ladestation nicht entsperren.",
+      "pick_unlocked": "{charger} entsperrt.",
       "control_people": "Personen und Admins",
       "control_admins": "Nur Admins",
       "charger_none": "Noch keine Ladestationen.",
@@ -2120,6 +2172,8 @@
       "relock_after": "Nach",
       "relock_notify": "Beim Sperren benachrichtigen",
       "relock_notify_help": "Mit einer Taste zum erneuten Entsperren.",
+      "lock_full": "Nach Ladeende sperren",
+      "lock_full_help": "Mit eingestecktem Kabel, bei 100 % und so lange ohne Laden. Erreicht es keine 100 % (Pause des Anbieters), wird nicht gesperrt.",
       "loss_title": "Verluste und Preis",
       "loss_help": "Was die Ladestation misst, aber nicht in der Batterie ankommt. Dient zur Schätzung der % ohne Empfang.",
       "loss_value": "Ladeverluste",
@@ -2451,6 +2505,13 @@
       "chargers_enabled_help": "Désactivé, tout fonctionne comme d'habitude et aucune borne n'est touchée.",
       "chargers_control": "Qui peut déverrouiller",
       "chargers_control_help": "Depuis la carte de la borne et les notifications.",
+      "chargers_estimate": "Afficher le % estimé sur la carte de la voiture",
+      "chargers_estimate_help": "Tant que la voiture n'a pas de réseau, avec l'étiquette « estimé ».",
+      "pick_title": "Choisissez la voiture branchée",
+      "pick_done": "Plus rien à choisir : la voiture est déjà choisie ou débranchée.",
+      "pick_help": "La choisir déverrouille la borne.",
+      "pick_no_permission": "Vous n'avez pas le droit de déverrouiller cette borne.",
+      "pick_unlocked": "{charger} déverrouillée.",
       "control_people": "Personnes et admins",
       "control_admins": "Admins seuls",
       "charger_none": "Aucune borne pour l'instant.",
@@ -2503,6 +2564,8 @@
       "relock_after": "Après",
       "relock_notify": "Prévenir au verrouillage",
       "relock_notify_help": "Avec un bouton pour la déverrouiller à nouveau.",
+      "lock_full": "Verrouiller en fin de charge",
+      "lock_full_help": "Câble branché, à 100 % et sans charger pendant ce temps. Si elle n'atteint pas 100 % (pause du fournisseur), pas de verrouillage.",
       "loss_title": "Pertes et prix",
       "loss_help": "Ce que mesure la borne et qui n'arrive pas à la batterie. Sert à estimer le % sans réseau.",
       "loss_value": "Pertes de charge",
@@ -2834,6 +2897,13 @@
       "chargers_enabled_help": "Uit werkt alles zoals altijd en wordt geen lader aangestuurd.",
       "chargers_control": "Wie mag ontgrendelen",
       "chargers_control_help": "Vanaf de laderkaart en meldingen.",
+      "chargers_estimate": "Geschat % op de autokaart tonen",
+      "chargers_estimate_help": "Zolang de auto geen bereik heeft, met het label ‘geschat’.",
+      "pick_title": "Kies de aangesloten auto",
+      "pick_done": "Niets meer te kiezen: de auto is al gekozen of losgekoppeld.",
+      "pick_help": "Kiezen ontgrendelt de lader.",
+      "pick_no_permission": "Je mag deze lader niet ontgrendelen.",
+      "pick_unlocked": "{charger} ontgrendeld.",
       "control_people": "Personen en beheerders",
       "control_admins": "Alleen beheerders",
       "charger_none": "Nog geen laders.",
@@ -2886,6 +2956,8 @@
       "relock_after": "Na",
       "relock_notify": "Melden bij vergrendelen",
       "relock_notify_help": "Met een knop om opnieuw te ontgrendelen.",
+      "lock_full": "Vergrendelen na het laden",
+      "lock_full_help": "Met de kabel erin, op 100 % en zo lang niet aan het laden. Haalt hij geen 100 % (pauze van de leverancier), dan niet vergrendelen.",
       "loss_title": "Verliezen en prijs",
       "loss_help": "Wat de lader meet maar niet in de accu komt. Om het % zonder bereik te schatten.",
       "loss_value": "Laadverliezen",
@@ -3217,6 +3289,13 @@
       "chargers_enabled_help": "Når av, fungerer alt som vanlig og ingen lader berøres.",
       "chargers_control": "Hvem kan låse opp",
       "chargers_control_help": "Fra laderkortet og varslene.",
+      "chargers_estimate": "Vis estimert % på bilkortet",
+      "chargers_estimate_help": "Så lenge bilen ikke har dekning, merket «anslått».",
+      "pick_title": "Velg bilen som er tilkoblet",
+      "pick_done": "Ingenting å velge lenger: bilen er valgt eller koblet fra.",
+      "pick_help": "Når du velger den, låses laderen opp.",
+      "pick_no_permission": "Du har ikke lov til å låse opp denne laderen.",
+      "pick_unlocked": "{charger} låst opp.",
       "control_people": "Personer og admin",
       "control_admins": "Bare admin",
       "charger_none": "Ingen ladere ennå.",
@@ -3269,6 +3348,8 @@
       "relock_after": "Etter",
       "relock_notify": "Varsle ved låsing",
       "relock_notify_help": "Med en knapp for å låse opp igjen.",
+      "lock_full": "Lås når ladingen er ferdig",
+      "lock_full_help": "Med kabelen tilkoblet, på 100 % og uten lading så lenge. Når den ikke 100 % (pause fra leverandøren), låses den ikke.",
       "loss_title": "Tap og pris",
       "loss_help": "Det laderen måler som ikke når batteriet. Brukes til å anslå % uten dekning.",
       "loss_value": "Ladetap",
@@ -3600,6 +3681,13 @@
       "chargers_enabled_help": "Slået fra fungerer alt som altid, og ingen lader røres.",
       "chargers_control": "Hvem kan låse op",
       "chargers_control_help": "Fra laderkortet og notifikationerne.",
+      "chargers_estimate": "Vis anslået % på bilkortet",
+      "chargers_estimate_help": "Så længe bilen ikke har dækning, mærket »anslået«.",
+      "pick_title": "Vælg bilen, der er sat til",
+      "pick_done": "Intet at vælge længere: bilen er valgt eller taget ud.",
+      "pick_help": "Når du vælger den, låses laderen op.",
+      "pick_no_permission": "Du må ikke låse denne lader op.",
+      "pick_unlocked": "{charger} låst op.",
       "control_people": "Personer og admin",
       "control_admins": "Kun admin",
       "charger_none": "Ingen ladere endnu.",
@@ -3652,6 +3740,8 @@
       "relock_after": "Efter",
       "relock_notify": "Giv besked ved låsning",
       "relock_notify_help": "Med en knap til at låse op igen.",
+      "lock_full": "Lås når opladningen er færdig",
+      "lock_full_help": "Med kablet i, på 100 % og uden opladning så længe. Når den ikke 100 % (pause fra leverandøren), låses den ikke.",
       "loss_title": "Tab og pris",
       "loss_help": "Det, laderen måler, men som ikke når batteriet. Bruges til at anslå % uden dækning.",
       "loss_value": "Ladetab",
@@ -3983,6 +4073,13 @@
       "chargers_enabled_help": "Απενεργοποιημένο, όλα λειτουργούν όπως πάντα και κανένας φορτιστής δεν αγγίζεται.",
       "chargers_control": "Ποιος μπορεί να ξεκλειδώσει",
       "chargers_control_help": "Από την κάρτα του φορτιστή και τις ειδοποιήσεις.",
+      "chargers_estimate": "Εμφάνιση εκτιμώμενου % στην κάρτα του αυτοκινήτου",
+      "chargers_estimate_help": "Όσο το αυτοκίνητο δεν έχει σήμα, με την ένδειξη «εκτίμηση».",
+      "pick_title": "Επιλέξτε το συνδεδεμένο αυτοκίνητο",
+      "pick_done": "Δεν χρειάζεται πια επιλογή: το αυτοκίνητο έχει επιλεγεί ή αποσυνδέθηκε.",
+      "pick_help": "Η επιλογή ξεκλειδώνει τον φορτιστή.",
+      "pick_no_permission": "Δεν έχετε άδεια να ξεκλειδώσετε αυτόν τον φορτιστή.",
+      "pick_unlocked": "Ο {charger} ξεκλειδώθηκε.",
       "control_people": "Άτομα και διαχ.",
       "control_admins": "Μόνο διαχ.",
       "charger_none": "Δεν υπάρχουν ακόμη φορτιστές.",
@@ -4035,6 +4132,8 @@
       "relock_after": "Μετά από",
       "relock_notify": "Ειδοποίηση κατά το κλείδωμα",
       "relock_notify_help": "Με κουμπί για νέο ξεκλείδωμα.",
+      "lock_full": "Κλείδωμα στο τέλος της φόρτισης",
+      "lock_full_help": "Με το καλώδιο συνδεδεμένο, στο 100 % και χωρίς φόρτιση για τόσο. Αν δεν φτάσει το 100 % (παύση του παρόχου), δεν κλειδώνει.",
       "loss_title": "Απώλειες και τιμή",
       "loss_help": "Ό,τι μετρά ο φορτιστής και δεν φτάνει στη μπαταρία. Για εκτίμηση του % χωρίς σήμα.",
       "loss_value": "Απώλειες φόρτισης",
@@ -4366,6 +4465,13 @@
       "chargers_enabled_help": "Izklopljeno: vse deluje kot običajno in nobena polnilnica se ne spreminja.",
       "chargers_control": "Kdo lahko odklene",
       "chargers_control_help": "Prek kartice polnilnice in obvestil.",
+      "chargers_estimate": "Pokaži ocenjeni % na kartici avta",
+      "chargers_estimate_help": "Dokler avto nima signala, z oznako »ocena«.",
+      "pick_title": "Izberite priključeni avto",
+      "pick_done": "Ni več treba izbirati: avto je že izbran ali izklopljen.",
+      "pick_help": "Izbira odklene polnilnico.",
+      "pick_no_permission": "Nimate dovoljenja za odklep te polnilnice.",
+      "pick_unlocked": "{charger} odklenjena.",
       "control_people": "Osebe in skrbniki",
       "control_admins": "Samo skrbniki",
       "charger_none": "Še ni polnilnic.",
@@ -4418,6 +4524,8 @@
       "relock_after": "Po",
       "relock_notify": "Obvesti ob zaklepu",
       "relock_notify_help": "Z gumbom za ponovni odklep.",
+      "lock_full": "Zakleni po koncu polnjenja",
+      "lock_full_help": "S priključenim kablom, pri 100 % in brez polnjenja toliko časa. Če ne doseže 100 % (premor dobavitelja), se ne zaklene.",
       "loss_title": "Izgube in cena",
       "loss_help": "Kar polnilnica izmeri, a ne pride v baterijo. Za oceno % brez signala.",
       "loss_value": "Izgube polnjenja",
@@ -5237,6 +5345,7 @@
         this._error = (error && error.message) || this._t("error_generic");
       }
       this._render();
+      if (this._state) this._pickFromLink();
     }
 
     /**
@@ -6645,7 +6754,9 @@
       return `<div class="card" data-chargers>
           <h2>${this._t("chargers_title")}</h2><div class="sub">${this._t("chargers_help")}</div>
           ${row("mdi:ev-station", "chargers_enabled", "chargers_enabled_help", toggle)}
-          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", "")}${control}${list}
+          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", "")}${control}
+          ${row("mdi:battery-sync", "chargers_estimate", "chargers_estimate_help",
+            `<button class="tog ${config.show_estimate ? "on" : ""}" data-action="chargers-estimate" role="switch" aria-checked="${Boolean(config.show_estimate)}"></button>`)}${list}
           <div class="foot"><span></span><button class="btn" data-action="charger-edit" data-id=""><ha-icon icon="mdi:plus"></ha-icon>${this._t("charger_add")}</button></div>` : ""}
         </div>`;
     }
@@ -6671,6 +6782,56 @@
 
     _do_chargers_control(data) {
       this._run("set_chargers", { enabled: true, control: data.value }, this._t("saved"));
+    }
+
+    _do_chargers_estimate() {
+      const config = this._state.chargers;
+      this._run("set_chargers", { enabled: true, control: config.control, show_estimate: !config.show_estimate }, this._t("saved"));
+    }
+
+    /**
+     * Ventana "elegir el coche" de un cargador. Se abre al tocar la notificación
+     * de confirmación (?elegir=<cargador> en la dirección del panel): en el iPhone,
+     * los botones de la notificación solo salen al mantenerla pulsada.
+     */
+    async _pickFromLink() {
+      const params = new URLSearchParams(window.location.search);
+      const chargerId = params.get("elegir");
+      if (!chargerId || this._picked === chargerId) return;
+      this._picked = chargerId;
+      let data;
+      try {
+        data = await this._hass.callWS({ type: "dec_deepal/chargers/state" });
+      } catch (_error) {
+        return;
+      }
+      const charger = (data.chargers || []).find((item) => item.id === chargerId);
+      if (!charger) return;
+      const session = charger.session;
+      const cars = charger.vehicles.map((car) => {
+        const photo = this._photo(car);
+        return `<button class="carpick" data-action="pick" data-v="${escapeHtml(car.id)}">${photo ? `<img src="${photo}" alt="">` : ""}<span>${escapeHtml(car.name)}</span></button>`;
+      }).join("");
+      const waiting = session && session.waiting;
+      const body = `<div class="thead"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
+          <h2>${escapeHtml(charger.name)}<small>${this._t(waiting ? "pick_title" : "pick_done")}</small></h2></div>
+        ${waiting ? `<p>${this._t(charger.can_control ? "pick_help" : "pick_no_permission")}</p><div class="carpicks">${cars}</div>` : ""}
+        <div class="err"></div><div class="btns"><button class="tb" data-action="close">${this._t("close")}</button></div>`;
+      openDialog(body, async (action, open, target) => {
+        if (action !== "pick" || !charger.can_control) return;
+        try {
+          await this._hass.callWS({ type: "dec_deepal/chargers/confirm", charger_id: chargerId, vehicle_id: target.dataset.v });
+        } catch (error) {
+          open.error(this._errorText(error));
+          return;
+        }
+        open.close();
+        this._toast(this._t("pick_unlocked", { charger: charger.name }));
+      });
+      // Que no se vuelva a abrir al recargar el panel.
+      params.delete("elegir");
+      const query = params.toString();
+      window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
     }
 
     // --- Ventana de un cargador --------------------------------------------------
@@ -6709,7 +6870,7 @@
       const f = JSON.parse(JSON.stringify(saved || {
         id: "", name: this._t("charger_default_name"), entities: {}, lock_on_locked: true, vehicles: this._state.cars.map((car) => car.id),
         coverage: "unknown", unlock: "confirm", notify_confirm: true, remind_minutes: 15, relock: true, relock_minutes: 5,
-        relock_notify: true, loss: config.default_loss, learn: true, price: null, price_entity: "",
+        relock_notify: true, lock_full: true, lock_full_minutes: 30, loss: config.default_loss, learn: true, price: null, price_entity: "",
       }));
       f.price_mode = f.price_entity ? "entity" : f.price != null ? "fixed" : "none";
       const opt = (name, value, label) => {
@@ -6764,7 +6925,9 @@
             ${confirm && f.notify_confirm ? stack("remind_title", "remind_help", choices(...this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)))) : ""}` : "")}
           ${f.entities.lock ? section(5, "relock_title", "", `${line("relock_on", "relock_help", tog("relock"))}
             ${f.relock ? stack("relock_after", "", choices(...this._state.chargers.relock_choices.map((value) => opt("relock_minutes", value, `${value} min`)))) : ""}
-            ${f.relock ? line("relock_notify", "relock_notify_help", tog("relock_notify")) : ""}`) : ""}
+            ${line("lock_full", "lock_full_help", tog("lock_full"))}
+            ${f.lock_full ? stack("", "", choices(...this._state.chargers.lock_full_choices.map((value) => opt("lock_full_minutes", value, `${value} min`)))) : ""}
+            ${f.relock || f.lock_full ? line("relock_notify", "relock_notify_help", tog("relock_notify")) : ""}`) : ""}
           ${section(f.entities.lock ? 6 : 5, "loss_title", "loss_help", `
             ${line("loss_value", "", `<span class="fi small"><input type="number" min="0" max="40" step="0.1" data-num="loss" value="${escapeHtml(f.loss)}"><em>%</em></span>`)}
             ${line("learn_title", "learn_help", tog("learn"))}

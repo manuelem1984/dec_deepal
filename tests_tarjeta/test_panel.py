@@ -612,13 +612,18 @@ def test_chargers(panel: Page) -> None:
         )
     text = window_text(panel)
     assert "El bloqueo, encendido es…" in text and "Bloquear al desenchufar" in text and "Pérdidas de carga" in text
+    assert "Bloquear al terminar la carga" in text
     click_window(panel, "ok")
     panel.wait_for_function("banco.ordenes().some(m => m.type === 'dec_deepal/panel/save_charger')")
     saved = orders(panel)[-1]["charger"]
     assert saved["entities"] == {"plugged": "binary_sensor.evse_conectado", "lock": "switch.evse_bloquear_evse"}
     assert (saved["name"], saved["vehicles"], saved["unlock"], saved["coverage"]) == ("Garaje", ["car1", "car2"], "confirm", "unknown")
     assert (saved["relock"], saved["relock_minutes"], saved["loss"], saved["price"]) == (True, 5, 10, None)
+    assert (saved["lock_full"], saved["lock_full_minutes"]) == (True, 30)
     panel.wait_for_function("banco.texto().includes('Changote, Changuito')")
+    # El % estimado en la tarjeta del coche se quita y se pone al momento.
+    click(panel, "[data-action=chargers-estimate]")
+    panel.wait_for_function("banco.ordenes().some(m => m.show_estimate === false)")
 
     # Con los cargadores activados, Avisos tiene el apartado «Cargador».
     tab(panel, "alerts")

@@ -38,7 +38,10 @@
     .energy:active { opacity: .7; }
     .range { display: flex; align-items: center; gap: 8px; padding: 0 16px; }
     .range .batt { --mdc-icon-size: 26px; }
-    .range .km { font-size: 24px; color: var(--primary-text-color); }
+    .range .km { font-size: 24px; color: var(--primary-text-color); white-space: nowrap; }
+    .range .estb { font-size: 11px; color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); border-radius: 8px; padding: 1px 7px; margin-left: 6px; white-space: nowrap; }
+    .range .charge.est { color: var(--success-color, #43a047); font-weight: 500; }
+    .upd.est { color: var(--warning-color, #e65100); }
     .range .charge { font-size: 14px; color: var(--secondary-text-color); display: flex; align-items: center; gap: 4px; --mdc-icon-size: 18px; }
     .bar { height: 8px; border-radius: 4px; background: ${TILE_BG}; margin: 6px 16px 14px; overflow: hidden; }
     .bar i { display: block; height: 100%; border-radius: 4px; transition: width .4s; }

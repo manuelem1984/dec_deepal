@@ -20,7 +20,9 @@
       return `<div class="card" data-chargers>
           <h2>${this._t("chargers_title")}</h2><div class="sub">${this._t("chargers_help")}</div>
           ${row("mdi:ev-station", "chargers_enabled", "chargers_enabled_help", toggle)}
-          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", "")}${control}${list}
+          ${config.enabled ? `${row("mdi:account-key", "chargers_control", "chargers_control_help", "")}${control}
+          ${row("mdi:battery-sync", "chargers_estimate", "chargers_estimate_help",
+            `<button class="tog ${config.show_estimate ? "on" : ""}" data-action="chargers-estimate" role="switch" aria-checked="${Boolean(config.show_estimate)}"></button>`)}${list}
           <div class="foot"><span></span><button class="btn" data-action="charger-edit" data-id=""><ha-icon icon="mdi:plus"></ha-icon>${this._t("charger_add")}</button></div>` : ""}
         </div>`;
     }
@@ -46,6 +48,56 @@
 
     _do_chargers_control(data) {
       this._run("set_chargers", { enabled: true, control: data.value }, this._t("saved"));
+    }
+
+    _do_chargers_estimate() {
+      const config = this._state.chargers;
+      this._run("set_chargers", { enabled: true, control: config.control, show_estimate: !config.show_estimate }, this._t("saved"));
+    }
+
+    /**
+     * Ventana "elegir el coche" de un cargador. Se abre al tocar la notificación
+     * de confirmación (?elegir=<cargador> en la dirección del panel): en el iPhone,
+     * los botones de la notificación solo salen al mantenerla pulsada.
+     */
+    async _pickFromLink() {
+      const params = new URLSearchParams(window.location.search);
+      const chargerId = params.get("elegir");
+      if (!chargerId || this._picked === chargerId) return;
+      this._picked = chargerId;
+      let data;
+      try {
+        data = await this._hass.callWS({ type: "dec_deepal/chargers/state" });
+      } catch (_error) {
+        return;
+      }
+      const charger = (data.chargers || []).find((item) => item.id === chargerId);
+      if (!charger) return;
+      const session = charger.session;
+      const cars = charger.vehicles.map((car) => {
+        const photo = this._photo(car);
+        return `<button class="carpick" data-action="pick" data-v="${escapeHtml(car.id)}">${photo ? `<img src="${photo}" alt="">` : ""}<span>${escapeHtml(car.name)}</span></button>`;
+      }).join("");
+      const waiting = session && session.waiting;
+      const body = `<div class="thead"><div class="ic"><ha-icon icon="mdi:ev-station"></ha-icon></div>
+          <h2>${escapeHtml(charger.name)}<small>${this._t(waiting ? "pick_title" : "pick_done")}</small></h2></div>
+        ${waiting ? `<p>${this._t(charger.can_control ? "pick_help" : "pick_no_permission")}</p><div class="carpicks">${cars}</div>` : ""}
+        <div class="err"></div><div class="btns"><button class="tb" data-action="close">${this._t("close")}</button></div>`;
+      openDialog(body, async (action, open, target) => {
+        if (action !== "pick" || !charger.can_control) return;
+        try {
+          await this._hass.callWS({ type: "dec_deepal/chargers/confirm", charger_id: chargerId, vehicle_id: target.dataset.v });
+        } catch (error) {
+          open.error(this._errorText(error));
+          return;
+        }
+        open.close();
+        this._toast(this._t("pick_unlocked", { charger: charger.name }));
+      });
+      // Que no se vuelva a abrir al recargar el panel.
+      params.delete("elegir");
+      const query = params.toString();
+      window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
     }
 
     // --- Ventana de un cargador --------------------------------------------------
@@ -84,7 +136,7 @@
       const f = JSON.parse(JSON.stringify(saved || {
         id: "", name: this._t("charger_default_name"), entities: {}, lock_on_locked: true, vehicles: this._state.cars.map((car) => car.id),
         coverage: "unknown", unlock: "confirm", notify_confirm: true, remind_minutes: 15, relock: true, relock_minutes: 5,
-        relock_notify: true, loss: config.default_loss, learn: true, price: null, price_entity: "",
+        relock_notify: true, lock_full: true, lock_full_minutes: 30, loss: config.default_loss, learn: true, price: null, price_entity: "",
       }));
       f.price_mode = f.price_entity ? "entity" : f.price != null ? "fixed" : "none";
       const opt = (name, value, label) => {
@@ -139,7 +191,9 @@
             ${confirm && f.notify_confirm ? stack("remind_title", "remind_help", choices(...this._state.chargers.remind_choices.map((value) => opt("remind_minutes", value, value === 60 ? "1 h" : `${value} min`)))) : ""}` : "")}
           ${f.entities.lock ? section(5, "relock_title", "", `${line("relock_on", "relock_help", tog("relock"))}
             ${f.relock ? stack("relock_after", "", choices(...this._state.chargers.relock_choices.map((value) => opt("relock_minutes", value, `${value} min`)))) : ""}
-            ${f.relock ? line("relock_notify", "relock_notify_help", tog("relock_notify")) : ""}`) : ""}
+            ${line("lock_full", "lock_full_help", tog("lock_full"))}
+            ${f.lock_full ? stack("", "", choices(...this._state.chargers.lock_full_choices.map((value) => opt("lock_full_minutes", value, `${value} min`)))) : ""}
+            ${f.relock || f.lock_full ? line("relock_notify", "relock_notify_help", tog("relock_notify")) : ""}`) : ""}
           ${section(f.entities.lock ? 6 : 5, "loss_title", "loss_help", `
             ${line("loss_value", "", `<span class="fi small"><input type="number" min="0" max="40" step="0.1" data-num="loss" value="${escapeHtml(f.loss)}"><em>%</em></span>`)}
             ${line("learn_title", "learn_help", tog("learn"))}

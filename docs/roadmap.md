@@ -1,5 +1,17 @@
 # Hoja de ruta
 
+## Beta 2.6.0b4 (18-10-2026) — pendiente de probar
+
+- [ ] **Notificación en el iPhone:** mantenerla pulsada enseña los coches y
+      elegir uno desbloquea; tocarla abre el panel en la ventana de elegir.
+      (En la carga del 18-10, la pulsación no llegó a Home Assistant.)
+- [ ] **Bloquear al terminar:** tras llegar al 100 %, a los 30 min se bloquea
+      y avisa; la tarjeta cuenta los minutos que faltan.
+- [ ] **Tarjeta del coche sin cobertura:** «≈ %» y «estimado» mientras el
+      coche no informa; vuelve al dato real cuando informa.
+- [ ] **Tarjeta del cargador:** ✓ al terminar, barra en dos tramos y rayas
+      solo cargando.
+
 ## Beta 2.6.0b3 (18-10-2026) — pendiente de probar
 
 - [ ] **iPhone:** el editor del cargador (y las demás ventanas) ya no se mete

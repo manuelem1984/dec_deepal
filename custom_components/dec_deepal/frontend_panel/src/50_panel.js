@@ -92,6 +92,7 @@
         this._error = (error && error.message) || this._t("error_generic");
       }
       this._render();
+      if (this._state) this._pickFromLink();
     }
 
     /**

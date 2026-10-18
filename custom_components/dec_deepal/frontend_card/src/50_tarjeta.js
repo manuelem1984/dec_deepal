@@ -88,11 +88,19 @@
       if (!hass || !hass.connection || !hass.connection.subscribeMessage || this._chargers) return;
       this._chargers = hass.connection.subscribeMessage((data) => {
         this._chargerData = data;
+        this._repaint();
         if (this._charge) this._paintCharge();
       }, { type: "dec_deepal/chargers/subscribe" });
       this._chargers.catch(() => {
         this._chargers = null;
       });
+    }
+
+    /** % estimado de este coche por un cargador (sin cobertura), si está activado; o `undefined`. */
+    _estimate() {
+      const data = this._chargerData;
+      if (!data || !data.enabled || !data.show_estimate || !data.estimates) return undefined;
+      return data.estimates[this._deviceId()];
     }
 
     /** Cargador en el que está enchufado este coche, o `undefined`. */
@@ -245,7 +253,7 @@
           <div class="status"></div>
           <div class="energy" data-action="charge" role="button" tabindex="0" aria-label="${this._t("charge_open")}">
             <div class="range">
-              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="grow"></span>
+              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="estb" hidden></span><span class="grow"></span>
               <span class="charge"><ha-icon></ha-icon><span></span></span>
             </div>
             <div class="bar"><i></i></div>
@@ -263,7 +271,10 @@
       $(".msg").hidden = found;
       $(".msg").textContent = found ? "" : this._t("not_found");
       $(".name").textContent = this._name();
-      $(".upd").textContent = this._t("updated", { when: this._updatedText() });
+      // Sin cobertura, con un cargador vinculado: % estimado por el cargador (chargers.py).
+      const estimate = this._estimate();
+      $(".upd").textContent = this._t("updated", { when: this._updatedText() }) + (estimate ? ` · ${this._t("est_by", { charger: estimate.charger })}` : "");
+      $(".upd").classList.toggle("est", Boolean(estimate));
       $('[data-action="refresh"]').classList.toggle("spin", this._busy.has("refresh"));
 
       // Imagen: la vista de esta tarjeta (isométrica o de planta) o, si el
@@ -281,19 +292,22 @@
       if (src && img.getAttribute("src") !== src) img.setAttribute("src", src);
 
       // Batería y autonomía.
-      const level = this._number("sensor.battery_level");
-      const charging = this._value("binary_sensor.charging") === "on";
+      const level = estimate ? estimate.level : this._number("sensor.battery_level");
+      const charging = estimate ? estimate.state === "charging" : this._value("binary_sensor.charging") === "on";
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       $(".batt").setAttribute("icon", this._batteryIcon(level, charging));
       $(".batt").style.color = color;
-      $(".km").textContent = this._format("sensor.range") || "—";
+      $(".km").textContent = estimate ? `≈ ${Math.round(level)} %` : this._format("sensor.range") || "—";
+      $(".estb").hidden = !estimate;
+      $(".estb").textContent = estimate ? this._t("ch_estimated") : "";
       $(".bar i").style.width = `${level === undefined ? 0 : Math.max(0, Math.min(100, level))}%`;
       $(".bar i").style.background = color;
-      const plugged = (this._value("sensor.charge_status") || "disconnected") !== "disconnected";
-      let chargeText = this._format("sensor.charge_status") || "";
+      const plugged = estimate ? estimate.state !== "unplugged" : (this._value("sensor.charge_status") || "disconnected") !== "disconnected";
+      let chargeText = estimate ? this._t(`est_${estimate.state}`) : this._format("sensor.charge_status") || "";
       const remaining = this._value("sensor.remaining_charge_time_hhmm");
-      if (charging && remaining) chargeText += ` · ${remaining} h`;
-      $(".charge ha-icon").setAttribute("icon", plugged ? "mdi:power-plug" : "mdi:power-plug-off-outline");
+      if (!estimate && charging && remaining) chargeText += ` · ${remaining} h`;
+      $(".charge ha-icon").setAttribute("icon", estimate ? "mdi:ev-station" : plugged ? "mdi:power-plug" : "mdi:power-plug-off-outline");
+      $(".charge").classList.toggle("est", Boolean(estimate) && estimate.state !== "unplugged");
       $(".charge span").textContent = chargeText;
       $(".charge").hidden = !chargeText;
 
