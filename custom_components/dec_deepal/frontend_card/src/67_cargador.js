@@ -46,7 +46,8 @@
     .status.b { color: var(--primary-color); } .status.n { color: var(--secondary-text-color); }
     .sub { font-size: 12.5px; color: var(--secondary-text-color); margin-bottom: 8px; }
     .est { font-size: 11px; color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); border-radius: 8px; padding: 1px 6px; margin-left: 4px; }
-    .lvl { height: 9px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; margin: 4px 0 10px; }
+    .lvl { position: relative; height: 9px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; margin: 4px 0 10px; }
+    .lvl .tgt { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--primary-text-color); opacity: .7; }
     .lvl i { display: block; height: 100%; border-radius: 5px; background: var(--success-color, #43a047);
       background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .35) 0 8px, transparent 8px 16px); }
     .lvl.two { display: flex; } .lvl.two i { border-radius: 0; background-image: none; }
@@ -211,9 +212,13 @@
             this._photo(car.device_id) ? `<img src="${this._photo(car.device_id)}" alt="">` : ""}${escapeHtml(car.name)}</button>`).join("")}</div>`;
       } else if (session) {
         const photo = this._photo(session.device_id);
+        // Con límite de carga: "Cargando · se para al 80 %" (y la marca en la barra).
+        const stops = session.target ? ` · ${this._t("ch_stops", { limit: session.target })}` : "";
         const status = charging
-          ? `<div class="status g"><ha-icon icon="mdi:lightning-bolt"></ha-icon>${this._t("ch_charging")}${
-            session.minutes_left != null ? ` · ${this._t("ch_full_at", { time: this._clock(Date.now() + (session.minutes_left + (session.balance || 0)) * 60000) })}` : ""}</div>`
+          ? `<div class="status g"><ha-icon icon="mdi:lightning-bolt"></ha-icon>${this._t("ch_charging")}${stops ||
+            (session.minutes_left != null ? ` · ${this._t("ch_full_at", { time: this._clock(Date.now() + (session.minutes_left + (session.balance || 0)) * 60000) })}` : "")}</div>`
+          : finished && session.limit_hit && session.target
+          ? `<div class="status b"><ha-icon icon="mdi:battery-lock"></ha-icon>${this._t("ch_limit_stopped", { limit: session.target })}</div>`
           : finished
           ? `<div class="status g"><ha-icon icon="mdi:check-circle"></ha-icon>${this._t("ch_finished_at", { time: this._clock(session.finished_at) })}</div>`
           : `<div class="status b"><ha-icon icon="mdi:power-plug"></ha-icon>${this._t("ch_plugged")}</div>`;
@@ -225,7 +230,7 @@
           parts.push(`${from != null ? `${Math.round(from)} % → ` : ""}${approx}${Math.round(session.level)} %${session.estimated ? `<span class="est">${this._t("ch_estimated")}</span>` : ""}`);
         }
         if (session.duration) parts.push(this._duration(session.duration));
-        const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging)}` : "";
+        const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging, session.target)}` : "";
         side = `<div class="car">${photo ? `<img src="${photo}" alt="">` : ""}<div class="who">${escapeHtml(session.vehicle || this._t("ch_unknown_car"))}${
           session.estimated ? ` · ${escapeHtml(this._offline(session))}` : ""}</div></div>`;
         // Al terminar, la potencia (0 kW) deja sitio a lo que ha llegado a la batería.
@@ -251,7 +256,11 @@
         ? `<button class="b ${waiting ? "warn" : c.locked ? "" : "on"}" data-action="lock" ${control ? "" : "disabled"}><ha-icon icon="${c.locked ? "mdi:lock" : "mdi:lock-open-variant"}"></ha-icon>${this._t(c.locked ? "ch_locked" : "ch_unlocked")}</button>`
         : "";
       const lockIn = session && session.lock_at ? Math.max(0, Math.ceil((new Date(session.lock_at) - Date.now()) / 60000)) : null;
-      const middle = lockIn != null && !charging
+      const middle = session && session.limit_locked && control
+        ? `<button class="b on" data-action="full"><ha-icon icon="mdi:battery-charging-100"></ha-icon>${this._t("ch_full")}</button>`
+        : session && session.minutes_to_target != null && charging
+        ? `<div class="b warn"><ha-icon icon="mdi:battery-lock"></ha-icon>${this._t("ch_stops_in", { time: this._duration(session.minutes_to_target) })}</div>`
+        : lockIn != null && !charging
         ? `<div class="b warn"><ha-icon icon="mdi:lock-clock"></ha-icon>${this._t("ch_locks_in", { minutes: lockIn })}</div>`
         : session && session.minutes_left != null && charging
         ? `<div class="b"><ha-icon icon="mdi:timer-sand"></ha-icon>${this._duration(session.minutes_left + (session.balance || 0))}</div>`
@@ -268,14 +277,15 @@
      * Barra en dos tramos: hasta el % con el que se enchufó (claro) y lo cargado
      * (fuerte). Las rayas que se mueven, solo en lo cargado y mientras carga.
      */
-    _levelBar(from, level, charging) {
+    _levelBar(from, level, charging, target) {
       const clamp = (value) => Math.max(0, Math.min(100, Number(value) || 0));
       const end = clamp(level);
       const start = from == null ? end : Math.min(clamp(from), end);
       const color = end < 15 ? "var(--error-color, #db4437)" : end < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       const mark = from != null && end - start >= 1 && start >= 8 && start <= 92
         ? `<div class="marks"><span style="left:${start}%">${Math.round(from)} %</span></div>` : "";
-      return `<div class="lvl two"><i class="from" style="width:${start}%;background:${color}"></i><i class="gain ${charging ? "anim" : ""}" style="width:${end - start}%;background-color:${color}"></i></div>${mark}`;
+      const limit = target ? `<b class="tgt" style="left:calc(${clamp(target)}% - 1px)"></b>` : "";
+      return `<div class="lvl two"><i class="from" style="width:${start}%;background:${color}"></i><i class="gain ${charging ? "anim" : ""}" style="width:${end - start}%;background-color:${color}"></i>${limit}</div>${mark}`;
     }
 
     /** Una carga en una línea: "Changote · 12 oct, 22:12 – 6:05 · 65 % → 100 % · +22,1 kWh · 2,52 €". */
@@ -324,6 +334,9 @@
         const lock = !c.locked;
         this._ask(this._t(lock ? "ch_lock_q" : "ch_unlock_q", { charger: c.name }), this._t(lock ? "ch_lock" : "ch_unlock"),
           () => this._ws("lock", { charger_id: c.id, locked: lock }));
+      } else if (target.dataset.action === "full" && c.can_control) {
+        // Parada por el límite: esta carga sigue hasta el 100 % (desbloquea).
+        this._ws("confirm", { charger_id: c.id, vehicle_id: "full" });
       } else if (target.dataset.action === "history") {
         const rows = c.history.map((item) => `<li>${escapeHtml(this._session(item))}</li>`).join("") || `<li>${this._t("ch_no_history")}</li>`;
         openDialog(`<div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button>

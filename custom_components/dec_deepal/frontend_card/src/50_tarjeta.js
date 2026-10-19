@@ -111,6 +111,76 @@
       return data.chargers.find((charger) => charger.session && charger.session.device_id && charger.session.device_id === deviceId);
     }
 
+    /** Límite de carga de este coche (activado y con cargador), o `undefined`. */
+    _limitCar() {
+      const data = this._chargerData;
+      if (!data || !data.enabled || !data.limit || !data.limit.enabled || !data.cars) return undefined;
+      return data.cars[this._deviceId()];
+    }
+
+    /** Debajo de la barra: 70 · 80 · 90 · 100 %, la marca del límite y qué va a pasar. */
+    _paintLimit($) {
+      const car = this._limitCar();
+      const row = $(".limits");
+      const hint = $(".lhint");
+      const marker = $(".bar .tgt");
+      row.hidden = !car;
+      marker.hidden = !car || car.limit >= 100;
+      if (!car) {
+        hint.hidden = true;
+        return;
+      }
+      for (const button of row.querySelectorAll("button")) {
+        const on = Number(button.dataset.v) === car.limit;
+        button.classList.toggle("on", on);
+        button.setAttribute("aria-pressed", String(on));
+        button.disabled = !car.can_control;
+      }
+      marker.style.left = `calc(${car.limit}% - 1px)`;
+      const station = this._station();
+      const session = station && station.session;
+      let text = "";
+      let icon = "mdi:information-outline";
+      let warn = false;
+      if (session && session.limit_hit && session.target) {
+        text = this._t("limit_stopped", { limit: session.target });
+        icon = "mdi:battery-lock";
+      } else if (car.once_full) {
+        text = this._t("limit_once_on");
+        icon = "mdi:battery-charging-100";
+      } else if (session && session.target && session.minutes_to_target != null && station.charging) {
+        text = this._t("limit_stops_in", { limit: session.target, time: this._duration(session.minutes_to_target) });
+        icon = "mdi:lock-clock";
+        warn = true;
+      } else if (car.limit < 100) {
+        text = this._t("limit_stops", { limit: car.limit });
+      }
+      const once = car.limit < 100 || car.once_full;
+      hint.hidden = !text && !once;
+      hint.classList.toggle("warn", warn);
+      hint.querySelector("ha-icon").setAttribute("icon", icon);
+      hint.querySelector(".tx").textContent = text;
+      const button = hint.querySelector(".once");
+      button.hidden = !once;
+      button.textContent = this._t("limit_once");
+      button.classList.toggle("on", Boolean(car.once_full));
+      button.setAttribute("aria-pressed", String(Boolean(car.once_full)));
+      button.disabled = !car.can_control;
+    }
+
+    /** Cambia el límite o «Solo esta: 100 %» (se ve al momento; la suscripción lo confirma). */
+    async _setLimit(change) {
+      const car = this._limitCar();
+      if (!car || !car.can_control || !this._hass.callWS) return;
+      Object.assign(car, change);
+      this._repaint();
+      try {
+        await this._hass.callWS({ type: "dec_deepal/chargers/car_limit", device_id: this._deviceId(), ...change });
+      } catch (error) {
+        this._toast((error && error.message) || this._t("command_failed"));
+      }
+    }
+
     // --- Entidades -------------------------------------------------------------
 
     _deviceId() {
@@ -256,8 +326,11 @@
               <ha-icon class="batt"></ha-icon><span class="km"></span><span class="estb" hidden></span><span class="grow"></span>
               <span class="charge"><ha-icon></ha-icon><span></span></span>
             </div>
-            <div class="bar"><i></i></div>
+            <div class="bar"><i></i><b class="tgt" hidden></b></div>
           </div>
+          <div class="limits" hidden><span class="lbl"><ha-icon icon="mdi:battery-lock"></ha-icon>${this._t("limit")}</span>
+            <span class="lseg">${[70, 80, 90, 100].map((value) => `<button data-action="limit" data-v="${value}">${value} %</button>`).join("")}</span></div>
+          <div class="lhint" hidden><ha-icon></ha-icon><span class="tx"></span><button class="once" data-action="limit-once" hidden></button></div>
           <div class="tiles">
             ${tile("comfort")}${tile("lock")}${tile("trunk")}
             ${tile("vent")}${tile("locate")}${tile("others")}
@@ -310,6 +383,7 @@
       $(".charge").classList.toggle("est", Boolean(estimate) && estimate.state !== "unplugged");
       $(".charge span").textContent = chargeText;
       $(".charge").hidden = !chargeText;
+      this._paintLimit($);
 
       // Línea de estado: tic verde, o el icono de cada testigo encendido.
       // Los de vencimiento (mantenimiento, ITV, seguro) van al final y se pueden pulsar.
@@ -531,6 +605,14 @@
         case "charge":
           this._openCharge();
           break;
+        case "limit":
+          this._setLimit({ limit: Number(target.dataset.v) });
+          break;
+        case "limit-once": {
+          const car = this._limitCar();
+          if (car) this._setLimit({ once_full: !car.once_full });
+          break;
+        }
         case "lock":
           if (tiles.lock.on) this._pinCommand("lock", this._t("lock_q"), this._t("lock_do"), "lock", "lock", "lock.doors");
           else this._pinCommand("lock", this._t("unlock_q"), this._t("unlock_do"), "lock", "unlock", "lock.doors");

@@ -33,6 +33,13 @@ Qué hace
   se **estima** el % y el tiempo con los kWh del cargador menos las
   **pérdidas** (10 % de fábrica). Cuando el coche vuelve a informar, se mide
   la pérdida real de esa carga (``learn``) y el panel la ofrece.
+- **Límite de carga** (70, 80, 90 o 100 %, por coche; se elige en la tarjeta
+  del coche): al llegarle (real o estimado), se **bloquea el cargador**. Es lo
+  único que puede parar la carga del EV, que no aplica el límite del servidor;
+  en el PHEV, además, se le manda su límite propio. Sin bloqueo, solo se
+  avisa. «Solo esta: 100 %» hace la siguiente carga completa.
+- **Recordar cargar al 100 %** cada 3-6 cargas seguidas sin llegar (para que
+  la batería se equilibre y el % sea exacto), o hacerla al 100 % sin preguntar.
 
 Avisos
 ------
@@ -56,6 +63,7 @@ from typing import Any, Final
 from homeassistant.components import persistent_notification
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, State, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import (
     async_call_later,
     async_track_state_change_event,
@@ -66,6 +74,7 @@ from homeassistant.util import dt as dt_util
 
 from .alert_rules import SECTION_CHARGE, TARGET_PANEL, texts
 from .const import DOMAIN, NAME, PANEL_URL_PATH
+from .registries.vehicles import FEATURE_CHARGE_LIMIT
 from .runtime import vehicle_device
 from .telemetry import signals as s
 
@@ -129,6 +138,17 @@ LEARN_INTERVAL: Final = timedelta(minutes=10)
 HISTORY_SIZE: Final = 60
 LOSS_SAMPLES: Final = 10
 
+# --- Límite de carga ----------------------------------------------------------------
+#: % a los que se puede limitar la carga de un coche (100 = sin límite).
+LIMIT_CHOICES: Final = (70, 80, 90, 100)
+DEFAULT_LIMIT: Final = 100
+#: Recordar cargar al 100 % cada N cargas seguidas sin llegar.
+FULL_EVERY_CHOICES: Final = (3, 4, 5, 6)
+#: A menos de estos puntos del límite, el coche se lee más a menudo...
+LIMIT_NEAR: Final = 5.0
+#: ...cada estos minutos (si "Leer el coche mientras carga" está activado).
+LIMIT_READ_MINUTES: Final = 5
+
 # --- Notificaciones -----------------------------------------------------------------
 EVENT_ACTION: Final = "mobile_app_notification_action"
 ACTION_PREFIX: Final = "DEC_DEEPAL_CHARGER"
@@ -139,6 +159,11 @@ NOTICE_UNLOCKED: Final = "charger_unlocked"
 NOTICE_NOT_CHARGING: Final = "charger_not_charging"
 NOTICE_FINISHED: Final = "charger_finished"
 NOTICE_LOCKED: Final = "charger_locked"
+NOTICE_LIMIT: Final = "charger_limit"
+NOTICE_FULL: Final = "charger_full"
+#: Botones del límite: seguir hasta el 100 % (esta carga) y la próxima al 100 %.
+ACTION_FULL: Final = "full"
+ACTION_NEXT_FULL: Final = "nextfull:"
 
 #: Cómo asignó la carga a un coche.
 BY_CAR: Final = "car"  # el coche dijo que tenía la manguera
@@ -219,6 +244,29 @@ def clean_charger(raw: Mapping[str, Any], known: Iterable[str] = ()) -> dict[str
     }
 
 
+def clean_limit(raw: Mapping[str, Any]) -> dict[str, Any]:
+    """Opciones del límite de carga y del recordatorio del 100 % (Ajustes)."""
+    return {
+        "enabled": bool(raw.get("enabled", False)),
+        "notify": bool(raw.get("notify", True)),
+        "remind": bool(raw.get("remind", False)),
+        "every": _choice(raw.get("every"), FULL_EVERY_CHOICES, 4),
+        "auto": bool(raw.get("auto", False)),
+    }
+
+
+def _clean_car(raw: Mapping[str, Any]) -> dict[str, Any]:
+    try:
+        incomplete = max(0, int(raw.get("incomplete") or 0))
+    except (TypeError, ValueError):
+        incomplete = 0
+    return {
+        "limit": _choice(raw.get("limit"), LIMIT_CHOICES, DEFAULT_LIMIT),
+        "once_full": bool(raw.get("once_full", False)),
+        "incomplete": incomplete,
+    }
+
+
 def estimate_level(start: float | None, energy_kwh: float | None, loss: float, capacity: float | None) -> float | None:
     """% de batería estimado: el de partida más los kWh que llegan a la batería."""
     if start is None or energy_kwh is None or not capacity:
@@ -226,11 +274,13 @@ def estimate_level(start: float | None, energy_kwh: float | None, loss: float, c
     return min(100.0, start + energy_kwh * (1 - loss / 100) / capacity * 100)
 
 
-def estimate_minutes(level: float | None, power_w: float | None, loss: float, capacity: float | None) -> float | None:
-    """Minutos que faltan para el 100 % con la potencia actual (sin el equilibrado)."""
+def estimate_minutes(
+    level: float | None, power_w: float | None, loss: float, capacity: float | None, target: float = 100
+) -> float | None:
+    """Minutos que faltan para ``target`` % con la potencia actual (sin el equilibrado)."""
     if level is None or not power_w or power_w <= 0 or not capacity:
         return None
-    missing_kwh = (100 - level) / 100 * capacity / max(0.01, 1 - loss / 100)
+    missing_kwh = max(0.0, target - level) / 100 * capacity / max(0.01, 1 - loss / 100)
     return missing_kwh / (power_w / 1000) * 60
 
 
@@ -287,6 +337,10 @@ class ChargerManager:
         self._sessions: dict[str, dict[str, Any]] = {}
         self._history: dict[str, list[dict[str, Any]]] = {}
         self._losses: dict[str, list[float]] = {}
+        #: Límite de carga y recordatorio del 100 % (Ajustes).
+        self.limit: dict[str, Any] = clean_limit({})
+        #: Por coche: límite, «la próxima al 100 %» y cargas seguidas sin llegar al 100 %.
+        self._cars: dict[str, dict[str, Any]] = {}
         self._loaded = False
         self._unsubscribe: list[CALLBACK_TYPE] = []
         #: Temporizadores por cargador: {cargador: {nombre: cancelar}}.
@@ -316,6 +370,8 @@ class ChargerManager:
         self._sessions = {key: dict(value) for key, value in (data.get("sessions") or {}).items() if key in self.chargers}
         self._history = {key: list(value) for key, value in (data.get("history") or {}).items()}
         self._losses = {key: [float(item) for item in value] for key, value in (data.get("losses") or {}).items()}
+        self.limit = clean_limit(data.get("limit") or {})
+        self._cars = {str(key): _clean_car(value) for key, value in (data.get("cars") or {}).items() if isinstance(value, Mapping)}
         self._loaded = True
         if self.hass.is_running:
             self._resubscribe()
@@ -336,6 +392,8 @@ class ChargerManager:
             "sessions": self._sessions,
             "history": self._history,
             "losses": self._losses,
+            "limit": self.limit,
+            "cars": self._cars,
         }
 
     def _save(self) -> None:
@@ -416,6 +474,107 @@ class ChargerManager:
         self._save()
         self._resubscribe()
         self._changed()
+
+    async def async_set_limit_settings(self, raw: Mapping[str, Any]) -> None:
+        """Opciones del límite de carga y del recordatorio del 100 % (lo que no llega, se queda)."""
+        await self.async_load()
+        self.limit = clean_limit({**self.limit, **raw})
+        self._save()
+        for vehicle_id, car in self._cars.items():
+            if car["limit"] < 100:
+                self._native_limit(vehicle_id)
+        for charger_id in list(self._sessions):
+            self._check_limit(self.chargers[charger_id])
+        self._changed()
+
+    async def async_set_car_limit(
+        self,
+        vehicle_id: str,
+        user: Any,
+        *,
+        limit: int | None = None,
+        once_full: bool | None = None,
+        check: bool = True,
+    ) -> None:
+        """Límite de un coche y «Solo esta: 100 %» (tarjeta del coche, panel o notificación).
+
+        Raises:
+            ChargerError: sin permiso (``unauthorized``) o un coche que no está
+                (``charger_vehicle``).
+        """
+        await self.async_load()
+        if self._vehicle(vehicle_id) is None:
+            raise ChargerError("charger_vehicle")
+        if check and not self.can_control_vehicle(vehicle_id, user):
+            raise ChargerError("unauthorized")
+        car = self._car(vehicle_id)
+        if limit is not None:
+            car["limit"] = _choice(int(limit), LIMIT_CHOICES, car["limit"])
+        if once_full is not None:
+            car["once_full"] = bool(once_full)
+        self._save()
+        self._native_limit(vehicle_id)
+        for charger_id, session in list(self._sessions.items()):
+            if session.get("vehicle_id") != vehicle_id:
+                continue
+            charger = self.chargers[charger_id]
+            level = self._level(charger, session)
+            if session.get("limit_hit") and (level is None or level < self.target(vehicle_id, session)):
+                # Parada por el límite y ahora el objetivo es mayor: sigue cargando.
+                session.pop("limit_hit", None)
+                if session.pop("limit_locked", None):
+                    await self._set_locked(charger, False)
+                self._save()
+            else:
+                self._check_limit(charger)
+        self._changed()
+
+    def _car(self, vehicle_id: str) -> dict[str, Any]:
+        return self._cars.setdefault(vehicle_id, _clean_car({}))
+
+    def target(self, vehicle_id: str | None, session: Mapping[str, Any] | None = None) -> int:
+        """% al que se para la carga de este coche (100 = no se para)."""
+        if not vehicle_id or not self.limit["enabled"]:
+            return 100
+        car = self._cars.get(vehicle_id) or {}
+        if car.get("once_full") or (session or {}).get("full"):
+            return 100
+        return int(car.get("limit", DEFAULT_LIMIT))
+
+    def vehicle_for_device(self, device_id: str) -> str | None:
+        """El coche de un dispositivo de Home Assistant (la tarjeta habla en dispositivos)."""
+        return next((vehicle_id for vehicle_id in self._vehicle_ids() if self._device_id(vehicle_id) == device_id), None)
+
+    def _linked(self) -> list[str]:
+        """Coches que tienen algún cargador (los únicos a los que se puede parar la carga)."""
+        return [vehicle_id for vehicle_id in dict.fromkeys(v for c in self.chargers.values() for v in c["vehicles"]) if self._vehicle(vehicle_id)]
+
+    @callback
+    def _native_limit(self, vehicle_id: str) -> None:
+        """S05 PHEV: también se le manda su límite propio (el EV lo acepta pero no lo aplica)."""
+        found = self._vehicle(vehicle_id)
+        if found is None:
+            return
+        entry, vehicle = found
+        if not vehicle.has(FEATURE_CHARGE_LIMIT):
+            return
+        target = self.target(vehicle_id)
+        current = (vehicle.coordinator.data or {}).get(s.CHARGE_LIMIT)
+        if current is not None and round(float(current)) == target:
+            return
+        commands = entry.runtime_data.commands
+
+        async def _send() -> None:
+            try:
+                await vehicle.runner.run(
+                    "charge_limit",
+                    lambda: commands.charge_limit(vehicle_id, target),
+                    optimistic={s.CHARGE_LIMIT: target},
+                )
+            except HomeAssistantError as err:
+                _LOGGER.warning("No se pudo mandar el límite de carga al coche: %s", err)
+
+        self.hass.async_create_task(_send())
 
     def measured(self, charger_id: str) -> dict[str, Any] | None:
         """Pérdida medida con las últimas cargas: ``{"value": 11.8, "count": 4}``."""
@@ -499,6 +658,12 @@ class ChargerManager:
                     users.add(state.attributes["user_id"])
         return users
 
+    def can_control_vehicle(self, vehicle_id: str, user: Any) -> bool:
+        """¿Puede este usuario cambiar el límite de carga de este coche?"""
+        if user is None or getattr(user, "is_admin", False):
+            return user is not None
+        return self.control == CONTROL_PEOPLE and user.id in self._people_users([vehicle_id])
+
     def can_control(self, charger_id: str, user: Any) -> bool:
         """¿Puede este usuario desbloquear el cargador o elegir el coche?"""
         if user is None or getattr(user, "is_admin", False):
@@ -578,6 +743,7 @@ class ChargerManager:
                 continue
             if role in (ROLE_POWER, ROLE_ENERGY, ROLE_CHARGING):
                 self._track_energy(charger)
+                self._check_limit(charger)
             if role in (ROLE_PLUGGED, ROLE_CHARGING, ROLE_LOCK):
                 self._sync(charger_id)
             self._changed()
@@ -603,10 +769,13 @@ class ChargerManager:
                 self._cancel(charger_id, "not_charging")
                 self._save()
                 self._schedule_read(charger)
+                self._check_limit(charger)
             elif charging is False and session.get("charging_since") and not session.get("finished_at"):
                 session["finished_at"] = _iso(self._clock())
                 self._save()
-                self._notify_finished(charger, session)
+                # Parada por el límite: ese aviso ya lo ha contado.
+                if not (session.get("limit_hit") and self.limit["notify"]):
+                    self._notify_finished(charger, session)
                 self._schedule_lock_full(charger)
             elif charging and session.get("finished_at"):
                 session.pop("finished_at", None)  # vuelve a cargar (p. ej. la compañía reanuda)
@@ -661,6 +830,7 @@ class ChargerManager:
         self._save()
         if self.charging(charger):
             self._schedule_read(charger)
+            self._check_limit(charger)
 
     def _car_confirming(self, charger: Mapping[str, Any]) -> str | None:
         """El coche que dice tener la manguera puesta desde que se enchufó."""
@@ -725,8 +895,87 @@ class ChargerManager:
             history = self._history.setdefault(charger_id, [])
             history.append(record)
             del history[:-HISTORY_SIZE]
+            if vehicle_id:
+                self._count_charge(charger, vehicle_id, record["soc_end"])
         self._save()
-        self._maybe_relock(charger)
+        if session.get("limit_locked") and charger["unlock"] == UNLOCK_NONE and not charger["relock"]:
+            # Bloqueado solo por el límite: se deja como estaba (desbloqueado).
+            self.hass.async_create_task(self._set_locked(charger, False))
+        else:
+            self._maybe_relock(charger)
+
+    def _count_charge(self, charger: Mapping[str, Any], vehicle_id: str, level: float | None) -> None:
+        """Cuenta las cargas seguidas sin llegar al 100 % y, cada N, recuerda hacer una completa."""
+        if level is None:
+            return
+        car = self._car(vehicle_id)
+        if level >= FULL_LEVEL:
+            car["incomplete"] = 0
+            if car["once_full"]:
+                car["once_full"] = False
+                self._native_limit(vehicle_id)
+            return
+        car["incomplete"] += 1
+        if not self.limit["remind"] or car["once_full"] or car["incomplete"] % self.limit["every"]:
+            return
+        count = car["incomplete"]
+        if self.limit["auto"]:
+            car["once_full"] = True
+            self._native_limit(vehicle_id)
+            self._send(charger, NOTICE_FULL, [vehicle_id], self._text("charger_full_auto", count=count))
+            return
+        self._send(
+            charger,
+            NOTICE_FULL,
+            [vehicle_id],
+            self._text("charger_full_reminder", count=count),
+            [
+                (f"{ACTION_PREFIX}|{charger['id']}|{ACTION_NEXT_FULL}{vehicle_id}", self._text("action_next_full")),
+                (f"{ACTION_PREFIX}|{charger['id']}|{ACTION_NO}", self._text("action_not_now")),
+            ],
+        )
+
+    @callback
+    def _check_limit(self, charger: Mapping[str, Any]) -> None:
+        """Al llegar al límite del coche (real o estimado), se para la carga."""
+        session = self._sessions.get(charger["id"])
+        if session is None or not self.limit["enabled"] or session.get("limit_hit"):
+            return
+        vehicle_id = session.get("vehicle_id")
+        target = self.target(vehicle_id, session)
+        if not vehicle_id or target >= 100 or self.charging(charger) is False:
+            return
+        level = self._level(charger, session)
+        if level is None or level < target:
+            return
+        session["limit_hit"] = _iso(self._clock())
+        self._save()
+        self.hass.async_create_task(self._stop_at_limit(charger, vehicle_id, target, level))
+
+    async def _stop_at_limit(self, charger: Mapping[str, Any], vehicle_id: str, target: int, level: float) -> None:
+        """Bloquea el cargador (lo único que para la carga) y avisa. Sin bloqueo, solo avisa."""
+        locked = False
+        if charger["entities"].get(ROLE_LOCK) and self.locked(charger) is not True:
+            locked = await self._set_locked(charger, True)
+        session = self._sessions.get(charger["id"])
+        if session is not None and locked:
+            session["limit_locked"] = True
+            self._save()
+        if self.limit["notify"]:
+            approx = "≈ " if session is not None and self._is_estimated(session) else ""
+            self._send(
+                charger,
+                NOTICE_LIMIT,
+                [vehicle_id],
+                self._text(
+                    "charger_limit_locked" if locked else "charger_limit_reached",
+                    charger=charger["name"],
+                    level=f"{approx}{round(level)}",
+                    limit=target,
+                ),
+                [(f"{ACTION_PREFIX}|{charger['id']}|{ACTION_FULL}", self._text("action_full"))] if locked else None,
+            )
+        self._changed()
 
     def _schedule_lock_full(self, charger: Mapping[str, Any]) -> None:
         """Carga terminada: bloquear pasados ``lock_full_minutes`` si sigue al 100 % y sin cargar.
@@ -811,6 +1060,10 @@ class ChargerManager:
         charger_id = charger["id"]
         session = self._sessions.get(charger_id)
         minutes = charger.get("read_interval") or 0
+        if minutes and session is not None and (target := self.target(session.get("vehicle_id"), session)) < 100:
+            level = self._level(charger, session)
+            if level is not None and target - level <= LIMIT_NEAR:
+                minutes = min(minutes, LIMIT_READ_MINUTES)
         if (
             not minutes
             or charger["coverage"] == COVERAGE_NO
@@ -849,6 +1102,7 @@ class ChargerManager:
             if session["read_failures"] >= READ_FAILURES:
                 session["no_coverage"] = True
         self._save()
+        self._check_limit(charger)
         self._changed()
         self._schedule_read(charger)
 
@@ -952,6 +1206,22 @@ class ChargerManager:
         if vehicle_id == ACTION_AGAIN:
             await self._set_locked(charger, False)
             self._changed()
+            return
+        if vehicle_id == ACTION_FULL:
+            # Parada por el límite: esta carga sigue hasta el 100 %.
+            if (session := self._sessions.get(charger_id)) is not None:
+                session["full"] = True
+                session.pop("limit_hit", None)
+                session.pop("limit_locked", None)
+                self._save()
+            await self._set_locked(charger, False)
+            self._changed()
+            return
+        if vehicle_id.startswith(ACTION_NEXT_FULL):
+            car_id = vehicle_id.removeprefix(ACTION_NEXT_FULL)
+            if car_id not in charger["vehicles"]:
+                raise ChargerError("charger_vehicle")
+            await self.async_set_car_limit(car_id, user, once_full=True, check=False)
             return
         if vehicle_id not in charger["vehicles"]:
             raise ChargerError("charger_vehicle")
@@ -1078,7 +1348,7 @@ class ChargerManager:
 
     @callback
     def _on_action(self, event: Event) -> None:
-        """Botón de una notificación: ``DEC_DEEPAL_CHARGER|<cargador>|<coche, - o again>``."""
+        """Botón de una notificación: ``DEC_DEEPAL_CHARGER|<cargador>|<coche, -, again, full o nextfull:coche>``."""
         action = str(event.data.get("action") or "")
         if not action.startswith(f"{ACTION_PREFIX}|"):
             return
@@ -1119,7 +1389,14 @@ class ChargerManager:
 
     @callback
     def _learn(self, _now: Any = None) -> None:
-        """Cargas terminadas sin cobertura: cuando el coche vuelve a informar, se mide la pérdida."""
+        """Cargas terminadas sin cobertura: cuando el coche vuelve a informar, se mide la pérdida.
+
+        De paso, mira el límite de las cargas en curso (el coche puede haber
+        informado por su cuenta).
+        """
+        for charger_id in list(self._sessions):
+            if (charger := self.chargers.get(charger_id)) is not None:
+                self._check_limit(charger)
         changed = False
         for charger_id, history in self._history.items():
             charger = self.chargers.get(charger_id)
@@ -1195,6 +1472,12 @@ class ChargerManager:
                 if estimated and self.charging(charger)
                 else None
             )
+            target = self.target(vehicle_id, session)
+            to_target = (
+                estimate_minutes(level, power, charger["loss"], self._capacity(vehicle_id), target)
+                if target < 100 and self.charging(charger) and level is not None and level < target
+                else None
+            )
             current = {
                 "since": session.get("plugged_at"),
                 "charging_since": session.get("charging_since"),
@@ -1219,6 +1502,11 @@ class ChargerManager:
                 "lock_at": session.get("lock_at"),
                 # Minutos de equilibrado que se suman al final (Ajustes de la cuenta del coche).
                 "balance": self._balance(vehicle_id),
+                # Límite de carga: a qué % se para (None = no se para), cuánto falta y si ya paró.
+                "target": target if target < 100 else None,
+                "minutes_to_target": None if to_target is None else round(to_target),
+                "limit_hit": bool(session.get("limit_hit")),
+                "limit_locked": bool(session.get("limit_locked")),
             }
         history = self._history.get(charger_id) or []
         month = dt_util.now().strftime("%Y-%m")
@@ -1309,6 +1597,24 @@ class ChargerManager:
                 result[device_id] = {**entry, "level": round(float(entry["level"]), 1), "charger": charger["name"]}
         return result
 
+    def cars(self, user: Any = None) -> dict[str, dict[str, Any]]:
+        """Límite de carga de cada coche con cargador, por dispositivo (tarjeta del coche)."""
+        result: dict[str, dict[str, Any]] = {}
+        for vehicle_id in self._linked():
+            device_id = self._device_id(vehicle_id)
+            if not device_id:
+                continue
+            car = self._cars.get(vehicle_id) or _clean_car({})
+            result[device_id] = {
+                "vehicle_id": vehicle_id,
+                "limit": car["limit"],
+                "once_full": car["once_full"],
+                "incomplete": car["incomplete"],
+                "target": self.target(vehicle_id),
+                "can_control": self.can_control_vehicle(vehicle_id, user),
+            }
+        return result
+
     def statuses(self, user: Any = None) -> dict[str, Any]:
         """Todos los cargadores (lo que recibe la suscripción de la tarjeta)."""
         return {
@@ -1316,6 +1622,8 @@ class ChargerManager:
             "show_estimate": self.show_estimate,
             "chargers": [self.status(charger_id, user) for charger_id in self.chargers] if self.enabled else [],
             "estimates": self.estimates() if self.enabled and self.show_estimate else {},
+            "limit": {**self.limit, "choices": list(LIMIT_CHOICES)} if self.enabled else {"enabled": False},
+            "cars": self.cars(user) if self.enabled and self.limit["enabled"] else {},
         }
 
     def panel_config(self) -> dict[str, Any]:
@@ -1341,6 +1649,15 @@ class ChargerManager:
             "relock_choices": list(RELOCK_CHOICES),
             "lock_full_choices": list(LOCK_FULL_CHOICES),
             "default_loss": DEFAULT_LOSS,
+            "limit": {
+                **self.limit,
+                "choices": list(LIMIT_CHOICES),
+                "every_choices": list(FULL_EVERY_CHOICES),
+                "cars": [
+                    {"id": vehicle_id, "limit": (self._cars.get(vehicle_id) or _clean_car({}))["limit"]}
+                    for vehicle_id in self._linked()
+                ],
+            },
         }
 
 

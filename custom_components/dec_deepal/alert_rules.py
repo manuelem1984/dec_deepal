@@ -140,6 +140,8 @@ NOTICES: Final[tuple[Notice, ...]] = (
     _due(SECTION_CHARGER, "not_charging"),
     _due(SECTION_CHARGER, "finished"),
     _due(SECTION_CHARGER, "locked"),
+    _due(SECTION_CHARGER, "limit"),
+    _due(SECTION_CHARGER, "full"),
     _due(GROUP_MAINTENANCE, "t1", 60, UNIT_DAYS),
     _due(GROUP_MAINTENANCE, "t2", 30, UNIT_DAYS),
     _due(GROUP_MAINTENANCE, "t3", 15, UNIT_DAYS),

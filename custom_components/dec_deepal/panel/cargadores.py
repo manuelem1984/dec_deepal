@@ -4,6 +4,7 @@ Del panel (solo administradores):
 
 - ``dec_deepal/panel/set_chargers``: activar o desactivar y quién controla.
 - ``dec_deepal/panel/save_charger`` / ``delete_charger``.
+- ``dec_deepal/panel/set_limit``: límite de carga y recordatorio del 100 %.
 
 De la tarjeta del cargador (cualquier usuario; las que cambian algo miran
 :meth:`ChargerManager.can_control`):
@@ -13,6 +14,8 @@ De la tarjeta del cargador (cualquier usuario; las que cambian algo miran
 - ``dec_deepal/chargers/state``: lo mismo, una vez (el editor de la tarjeta).
 - ``dec_deepal/chargers/confirm``: elegir el coche (desbloquea si toca).
 - ``dec_deepal/chargers/lock``: bloquear o desbloquear a mano.
+- ``dec_deepal/chargers/car_limit``: límite de un coche y «Solo esta: 100 %»
+  (tarjeta del coche y panel; mira :meth:`ChargerManager.can_control_vehicle`).
 """
 
 from __future__ import annotations
@@ -24,7 +27,7 @@ from homeassistant.auth.models import User
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
 
-from ..chargers import CONTROLS, ChargerError, async_get_manager
+from ..chargers import CONTROLS, FULL_EVERY_CHOICES, LIMIT_CHOICES, ChargerError, async_get_manager
 from .comun import command
 
 
@@ -51,6 +54,21 @@ async def ws_save_charger(hass: HomeAssistant, msg: dict[str, Any], user: User) 
 async def ws_delete_charger(hass: HomeAssistant, msg: dict[str, Any], user: User) -> None:
     """Quita un cargador (y lo apuntado de él)."""
     await async_get_manager(hass).async_delete_charger(msg["charger_id"])
+
+
+@command(
+    {
+        vol.Required("type"): "dec_deepal/panel/set_limit",
+        vol.Optional("enabled"): bool,
+        vol.Optional("notify"): bool,
+        vol.Optional("remind"): bool,
+        vol.Optional("every"): vol.In(FULL_EVERY_CHOICES),
+        vol.Optional("auto"): bool,
+    }
+)
+async def ws_set_limit(hass: HomeAssistant, msg: dict[str, Any], user: User) -> None:
+    """Opciones del límite de carga y del recordatorio de cargar al 100 %."""
+    await async_get_manager(hass).async_set_limit_settings({key: value for key, value in msg.items() if key not in ("type", "id")})
 
 
 @websocket_api.websocket_command({vol.Required("type"): "dec_deepal/chargers/subscribe"})
@@ -104,14 +122,36 @@ async def ws_lock(hass: HomeAssistant, msg: dict[str, Any], user: User) -> None:
     await async_get_manager(hass).async_set_lock(msg["charger_id"], msg["locked"], user)
 
 
+@command(
+    {
+        vol.Required("type"): "dec_deepal/chargers/car_limit",
+        vol.Exclusive("vehicle_id", "car"): str,
+        vol.Exclusive("device_id", "car"): str,
+        vol.Optional("limit"): vol.In(LIMIT_CHOICES),
+        vol.Optional("once_full"): bool,
+    },
+    admin=False,
+)
+async def ws_car_limit(hass: HomeAssistant, msg: dict[str, Any], user: User) -> None:
+    """Límite de carga de un coche (70-100 %) y «Solo esta: 100 %»."""
+    manager = async_get_manager(hass)
+    await manager.async_load()
+    vehicle_id = msg.get("vehicle_id") or manager.vehicle_for_device(msg.get("device_id") or "")
+    if not vehicle_id:
+        raise ChargerError("charger_vehicle")
+    await manager.async_set_car_limit(vehicle_id, user, limit=msg.get("limit"), once_full=msg.get("once_full"))
+
+
 COMMANDS: Final = (
     ws_set_chargers,
     ws_save_charger,
     ws_delete_charger,
+    ws_set_limit,
     ws_subscribe,
     ws_charger_state,
     ws_confirm,
     ws_lock,
+    ws_car_limit,
 )
 
 __all__ = ["COMMANDS", "ChargerError"]

@@ -74,11 +74,37 @@ Sin cobertura, el % se **estima**: % al enchufar + kWh del cargador × (1 −
 pérdidas) ÷ capacidad. Cuando el coche vuelve a informar sin haberse movido,
 se guarda el % real y la pérdida medida de esa carga.
 
+## Límite de carga y recordatorio del 100 %
+
+Panel → Ajustes → **Límite de carga** (sale con los cargadores activados):
+
+- **Usar el límite de carga** y el **límite de cada coche** (70, 80, 90 o
+  100 %; 100 = no se para). También se elige en la **tarjeta del coche**,
+  debajo de la barra de batería, que enseña la marca del límite y qué va a
+  pasar («Se para al 80 % · en ≈ 25 min»). Pueden cambiarlo los
+  administradores y, con «Quién controla: personas», las de ese coche.
+- Al llegar al límite (el % real o, sin cobertura, el estimado), **se bloquea
+  el cargador**. El EV no aplica el límite que se le manda; el **PHEV** sí:
+  además del bloqueo, se le manda su límite propio (60-100 %). Si el cargador
+  no tiene entidad de bloqueo, solo se avisa. Si estaba en «No desbloquear» y
+  sin «Bloquear al desenchufar», al desenchufar vuelve a desbloquearse.
+- Cerca del límite (a menos de 5 puntos), si «Leer el coche mientras carga»
+  está activado, el coche se lee cada 5 min.
+- **«Solo esta: 100 %»** (tarjeta del coche) hace la siguiente carga completa;
+  se quita sola al llegar al 100 %. Si la carga ya se paró en el límite,
+  subirlo (o «Solo esta: 100 %») desbloquea y sigue cargando.
+- **Avisar al llegar al límite**, con el botón «Seguir hasta el 100 %».
+- **Recordar cargar al 100 %** cada 3, 4, 5 o 6 cargas seguidas sin llegar
+  (para que la batería se equilibre y el % sea exacto): aviso con «La
+  próxima al 100 %» y «Ahora no». Con **Hacerla al 100 % sin preguntar**, la
+  siguiente ya no se para (y se avisa).
+
 ## Avisos
 
 Apartado **Cargador** de la pestaña Avisos (sale con los cargadores
 activados): elegir el coche, desbloqueado por el coche, desbloqueado y no
-carga, carga terminada y bloqueado al desenchufar. Si un coche no tiene
+carga, carga terminada, bloqueado al desenchufar, llegó al límite de carga y
+recordar cargar al 100 %. Si un coche no tiene
 destinos ahí, se usan los de sus avisos de carga. Ninguno es crítico. Título:
 `DEC Deepal <coche>` o, mientras no se sabe el coche, `DEC Deepal · <cargador>`.
 
@@ -110,9 +136,11 @@ salen al mantenerla pulsada.
 ## Órdenes (WebSocket)
 
 - Panel (administradores): `dec_deepal/panel/set_chargers`, `save_charger`,
-  `delete_charger`.
+  `delete_charger` y `set_limit` (límite de carga y recordatorio del 100 %).
 - Tarjeta: `dec_deepal/chargers/subscribe` (estado y cambios),
   `dec_deepal/chargers/state`, `dec_deepal/chargers/confirm` y
-  `dec_deepal/chargers/lock` (estas dos comprueban el permiso).
+  `dec_deepal/chargers/lock` y `dec_deepal/chargers/car_limit` (límite de un
+  coche, por `vehicle_id` o `device_id`, y `once_full`; estas tres comprueban
+  el permiso).
 
 Todo se guarda en `.storage/dec_deepal.chargers`.

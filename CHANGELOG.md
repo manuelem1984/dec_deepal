@@ -3,6 +3,30 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b7] — 2026-10-19
+
+### Añadido
+
+- **Límite de carga (70, 80, 90 o 100 %).** Se elige en la tarjeta de cada
+  coche, debajo de la barra de batería (con una marca en la barra), o en
+  Ajustes → Límite de carga. Al llegar al límite (el % real o, sin cobertura,
+  el estimado), DEC Deepal **bloquea el cargador vinculado**: es lo único que
+  para la carga del EV, que no aplica el límite del servidor. En el PHEV,
+  además, se le manda su límite propio. Sin bloqueo en el cargador, solo se
+  avisa. Cerca del límite (a menos de 5 puntos), el coche se lee cada 5 min si
+  «Leer el coche mientras carga» está activado.
+- **«Solo esta: 100 %»** en la tarjeta del coche: la siguiente carga llega al
+  100 % sin cambiar el límite.
+- **Avisos nuevos (apartado Cargador):** «Llegó al límite de carga», con el
+  botón «Seguir hasta el 100 %» (desbloquea y esa carga ya no se para); y
+  «Recordar cargar al 100 %».
+- **Recordar cargar al 100 %** cada 3, 4, 5 o 6 cargas seguidas sin llegar,
+  para que la batería se equilibre y el % sea exacto, con «La próxima al
+  100 %» / «Ahora no»; o «Hacerla al 100 % sin preguntar». Desactivado de
+  fábrica.
+- **Tarjeta del cargador:** «Cargando · se para al 80 %», la marca en la barra,
+  «Para en ≈ 25 min» y, parada por el límite, «Seguir al 100 %».
+
 ## [2.6.0b6] — 2026-10-18
 
 ### Añadido

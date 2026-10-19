@@ -190,6 +190,16 @@
       "charger_missing": "No hay ese cargador. Añádelo en el panel DEC Deepal → Ajustes → Cargadores.",
       "charger_select": "Cargador",
       "charger_first": "El primero",
+      "limit": "Límite",
+      "limit_once": "Solo esta: 100 %",
+      "limit_stops": "Se para al {limit} %: se bloquea el cargador.",
+      "limit_stops_in": "Se para al {limit} % · en ≈ {time}",
+      "limit_stopped": "Parada al llegar al {limit} %.",
+      "limit_once_on": "La próxima carga llegará al 100 %.",
+      "ch_stops": "se para al {limit} %",
+      "ch_stops_in": "Para en ≈ {time}",
+      "ch_limit_stopped": "Parada en el límite ({limit} %)",
+      "ch_full": "Seguir al 100 %",
       "ch_station": "Cargador",
       "ch_waiting": "Enchufado · esperando confirmación",
       "ch_waiting_help": "Bloqueado hasta que se elija el coche. Toca el tuyo.",
@@ -396,6 +406,16 @@
       "charger_missing": "That charger doesn't exist. Add it in the DEC Deepal panel → Settings → Chargers.",
       "charger_select": "Charger",
       "charger_first": "The first one",
+      "limit": "Limit",
+      "limit_once": "Just this one: 100 %",
+      "limit_stops": "Stops at {limit} %: the charger locks.",
+      "limit_stops_in": "Stops at {limit} % · in ≈ {time}",
+      "limit_stopped": "Stopped on reaching {limit} %.",
+      "limit_once_on": "The next charge will go to 100 %.",
+      "ch_stops": "stops at {limit} %",
+      "ch_stops_in": "Stops in ≈ {time}",
+      "ch_limit_stopped": "Stopped at the limit ({limit} %)",
+      "ch_full": "Go on to 100 %",
       "ch_station": "Charger",
       "ch_waiting": "Plugged in · waiting for confirmation",
       "ch_waiting_help": "Locked until the car is chosen. Tap yours.",
@@ -602,6 +622,16 @@
       "charger_missing": "Esse carregador não existe. Adiciona-o no painel DEC Deepal → Definições → Carregadores.",
       "charger_select": "Carregador",
       "charger_first": "O primeiro",
+      "limit": "Limite",
+      "limit_once": "Só este: 100 %",
+      "limit_stops": "Para nos {limit} %: o carregador bloqueia.",
+      "limit_stops_in": "Para nos {limit} % · em ≈ {time}",
+      "limit_stopped": "Parou ao chegar aos {limit} %.",
+      "limit_once_on": "O próximo carregamento vai até aos 100 %.",
+      "ch_stops": "para nos {limit} %",
+      "ch_stops_in": "Para em ≈ {time}",
+      "ch_limit_stopped": "Parado no limite ({limit} %)",
+      "ch_full": "Seguir até 100 %",
       "ch_station": "Carregador",
       "ch_waiting": "Ligado · à espera de confirmação",
       "ch_waiting_help": "Bloqueado até se escolher o carro. Toca no teu.",
@@ -808,6 +838,16 @@
       "charger_missing": "Quel caricatore non esiste. Aggiungilo nel pannello DEC Deepal → Impostazioni → Caricatori.",
       "charger_select": "Caricatore",
       "charger_first": "Il primo",
+      "limit": "Limite",
+      "limit_once": "Solo questa: 100 %",
+      "limit_stops": "Si ferma al {limit} %: il caricatore si blocca.",
+      "limit_stops_in": "Si ferma al {limit} % · tra ≈ {time}",
+      "limit_stopped": "Fermata al {limit} %.",
+      "limit_once_on": "La prossima ricarica arriverà al 100 %.",
+      "ch_stops": "si ferma al {limit} %",
+      "ch_stops_in": "Si ferma tra ≈ {time}",
+      "ch_limit_stopped": "Fermata al limite ({limit} %)",
+      "ch_full": "Continua al 100 %",
       "ch_station": "Caricatore",
       "ch_waiting": "Collegato · in attesa di conferma",
       "ch_waiting_help": "Bloccato finché non si sceglie l'auto. Tocca la tua.",
@@ -1014,6 +1054,16 @@
       "charger_missing": "Nie ma tej ładowarki. Dodaj ją w panelu DEC Deepal → Ustawienia → Ładowarki.",
       "charger_select": "Ładowarka",
       "charger_first": "Pierwsza",
+      "limit": "Limit",
+      "limit_once": "Tylko to: 100 %",
+      "limit_stops": "Zatrzyma się na {limit} %: ładowarka się zablokuje.",
+      "limit_stops_in": "Zatrzyma się na {limit} % · za ≈ {time}",
+      "limit_stopped": "Zatrzymane po osiągnięciu {limit} %.",
+      "limit_once_on": "Następne ładowanie będzie do 100 %.",
+      "ch_stops": "do {limit} %",
+      "ch_stops_in": "Koniec za ≈ {time}",
+      "ch_limit_stopped": "Zatrzymane na limicie ({limit} %)",
+      "ch_full": "Ładuj do 100 %",
       "ch_station": "Ładowarka",
       "ch_waiting": "Podłączony · czeka na potwierdzenie",
       "ch_waiting_help": "Zablokowana do wyboru samochodu. Dotknij swojego.",
@@ -1220,6 +1270,16 @@
       "charger_missing": "Diese Ladestation gibt es nicht. Füge sie im DEC-Deepal-Panel → Einstellungen → Ladestationen hinzu.",
       "charger_select": "Ladestation",
       "charger_first": "Die erste",
+      "limit": "Limit",
+      "limit_once": "Nur diese: 100 %",
+      "limit_stops": "Stoppt bei {limit} %: die Ladestation sperrt.",
+      "limit_stops_in": "Stoppt bei {limit} % · in ≈ {time}",
+      "limit_stopped": "Bei {limit} % gestoppt.",
+      "limit_once_on": "Die nächste Ladung geht auf 100 %.",
+      "ch_stops": "stoppt bei {limit} %",
+      "ch_stops_in": "Stopp in ≈ {time}",
+      "ch_limit_stopped": "Am Limit gestoppt ({limit} %)",
+      "ch_full": "Weiter auf 100 %",
       "ch_station": "Ladestation",
       "ch_waiting": "Eingesteckt · wartet auf Bestätigung",
       "ch_waiting_help": "Gesperrt, bis das Auto gewählt ist. Tippe auf deines.",
@@ -1426,6 +1486,16 @@
       "charger_missing": "Cette borne n'existe pas. Ajoutez-la dans le panneau DEC Deepal → Réglages → Bornes.",
       "charger_select": "Borne",
       "charger_first": "La première",
+      "limit": "Limite",
+      "limit_once": "Juste celle-ci : 100 %",
+      "limit_stops": "S'arrête à {limit} % : la borne se verrouille.",
+      "limit_stops_in": "S'arrête à {limit} % · dans ≈ {time}",
+      "limit_stopped": "Arrêtée à {limit} %.",
+      "limit_once_on": "La prochaine charge ira jusqu'à 100 %.",
+      "ch_stops": "s'arrête à {limit} %",
+      "ch_stops_in": "Arrêt dans ≈ {time}",
+      "ch_limit_stopped": "Arrêtée à la limite ({limit} %)",
+      "ch_full": "Continuer à 100 %",
       "ch_station": "Borne",
       "ch_waiting": "Branché · en attente de confirmation",
       "ch_waiting_help": "Verrouillée jusqu'au choix de la voiture. Touchez la vôtre.",
@@ -1632,6 +1702,16 @@
       "charger_missing": "Die lader bestaat niet. Voeg hem toe in het DEC Deepal-paneel → Instellingen → Laders.",
       "charger_select": "Lader",
       "charger_first": "De eerste",
+      "limit": "Limiet",
+      "limit_once": "Alleen deze: 100 %",
+      "limit_stops": "Stopt bij {limit} %: de lader vergrendelt.",
+      "limit_stops_in": "Stopt bij {limit} % · over ≈ {time}",
+      "limit_stopped": "Gestopt bij {limit} %.",
+      "limit_once_on": "De volgende laadbeurt gaat tot 100 %.",
+      "ch_stops": "stopt bij {limit} %",
+      "ch_stops_in": "Stopt over ≈ {time}",
+      "ch_limit_stopped": "Gestopt op de limiet ({limit} %)",
+      "ch_full": "Door tot 100 %",
       "ch_station": "Lader",
       "ch_waiting": "Aangesloten · wacht op bevestiging",
       "ch_waiting_help": "Vergrendeld tot de auto gekozen is. Tik op de jouwe.",
@@ -1838,6 +1918,16 @@
       "charger_missing": "Den laderen finnes ikke. Legg den til i DEC Deepal-panelet → Innstillinger → Ladere.",
       "charger_select": "Lader",
       "charger_first": "Den første",
+      "limit": "Grense",
+      "limit_once": "Bare denne: 100 %",
+      "limit_stops": "Stopper på {limit} %: laderen låses.",
+      "limit_stops_in": "Stopper på {limit} % · om ≈ {time}",
+      "limit_stopped": "Stoppet ved {limit} %.",
+      "limit_once_on": "Neste lading går til 100 %.",
+      "ch_stops": "stopper på {limit} %",
+      "ch_stops_in": "Stopper om ≈ {time}",
+      "ch_limit_stopped": "Stoppet ved grensen ({limit} %)",
+      "ch_full": "Fortsett til 100 %",
       "ch_station": "Lader",
       "ch_waiting": "Tilkoblet · venter på bekreftelse",
       "ch_waiting_help": "Låst til bilen er valgt. Trykk på din.",
@@ -2044,6 +2134,16 @@
       "charger_missing": "Den lader findes ikke. Tilføj den i DEC Deepal-panelet → Indstillinger → Ladere.",
       "charger_select": "Lader",
       "charger_first": "Den første",
+      "limit": "Grænse",
+      "limit_once": "Kun denne: 100 %",
+      "limit_stops": "Stopper ved {limit} %: laderen låses.",
+      "limit_stops_in": "Stopper ved {limit} % · om ≈ {time}",
+      "limit_stopped": "Stoppet ved {limit} %.",
+      "limit_once_on": "Næste opladning går til 100 %.",
+      "ch_stops": "stopper ved {limit} %",
+      "ch_stops_in": "Stopper om ≈ {time}",
+      "ch_limit_stopped": "Stoppet ved grænsen ({limit} %)",
+      "ch_full": "Fortsæt til 100 %",
       "ch_station": "Lader",
       "ch_waiting": "Tilsluttet · venter på bekræftelse",
       "ch_waiting_help": "Låst, indtil bilen er valgt. Tryk på din.",
@@ -2250,6 +2350,16 @@
       "charger_missing": "Αυτός ο φορτιστής δεν υπάρχει. Προσθέστε τον στον πίνακα DEC Deepal → Ρυθμίσεις → Φορτιστές.",
       "charger_select": "Φορτιστής",
       "charger_first": "Ο πρώτος",
+      "limit": "Όριο",
+      "limit_once": "Μόνο αυτή: 100 %",
+      "limit_stops": "Σταματά στο {limit} %: ο φορτιστής κλειδώνει.",
+      "limit_stops_in": "Σταματά στο {limit} % · σε ≈ {time}",
+      "limit_stopped": "Σταμάτησε στο {limit} %.",
+      "limit_once_on": "Η επόμενη φόρτιση θα φτάσει στο 100 %.",
+      "ch_stops": "σταματά στο {limit} %",
+      "ch_stops_in": "Σταματά σε ≈ {time}",
+      "ch_limit_stopped": "Σταμάτησε στο όριο ({limit} %)",
+      "ch_full": "Συνέχεια στο 100 %",
       "ch_station": "Φορτιστής",
       "ch_waiting": "Συνδεδεμένο · αναμονή επιβεβαίωσης",
       "ch_waiting_help": "Κλειδωμένος μέχρι να επιλεγεί το αυτοκίνητο. Πατήστε το δικό σας.",
@@ -2456,6 +2566,16 @@
       "charger_missing": "Te polnilnice ni. Dodajte jo na plošči DEC Deepal → Nastavitve → Polnilnice.",
       "charger_select": "Polnilnica",
       "charger_first": "Prva",
+      "limit": "Omejitev",
+      "limit_once": "Samo to: 100 %",
+      "limit_stops": "Ustavi se pri {limit} %: polnilnica se zaklene.",
+      "limit_stops_in": "Ustavi se pri {limit} % · čez ≈ {time}",
+      "limit_stopped": "Ustavljeno pri {limit} %.",
+      "limit_once_on": "Naslednje polnjenje bo do 100 %.",
+      "ch_stops": "do {limit} %",
+      "ch_stops_in": "Ustavi čez ≈ {time}",
+      "ch_limit_stopped": "Ustavljeno pri omejitvi ({limit} %)",
+      "ch_full": "Naprej do 100 %",
       "ch_station": "Polnilnica",
       "ch_waiting": "Priklopljen · čaka na potrditev",
       "ch_waiting_help": "Zaklenjena, dokler ni izbran avto. Tapnite svojega.",
@@ -2703,8 +2823,23 @@
     .range .charge.est { color: var(--success-color, #43a047); font-weight: 500; }
     .upd.est { color: var(--warning-color, #e65100); }
     .range .charge { font-size: 14px; color: var(--secondary-text-color); display: flex; align-items: center; gap: 4px; --mdc-icon-size: 18px; }
-    .bar { height: 8px; border-radius: 4px; background: ${TILE_BG}; margin: 6px 16px 14px; overflow: hidden; }
+    .bar { position: relative; height: 8px; border-radius: 4px; background: ${TILE_BG}; margin: 6px 16px 14px; overflow: hidden; }
     .bar i { display: block; height: 100%; border-radius: 4px; transition: width .4s; }
+    /* Límite de carga: la marca en la barra, el selector y qué va a pasar. */
+    .bar .tgt { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--primary-text-color); opacity: .7; }
+    .limits { display: flex; align-items: center; gap: 8px; padding: 0 16px; margin: -6px 0 10px; }
+    .limits[hidden], .lhint[hidden], .lhint .once[hidden] { display: none; }
+    .limits .lbl { font-size: 12.5px; color: var(--secondary-text-color); display: flex; gap: 4px; align-items: center; white-space: nowrap; --mdc-icon-size: 16px; }
+    .lseg { flex: 1; display: flex; border: 1px solid var(--divider-color, #ddd); border-radius: 16px; overflow: hidden; }
+    .lseg button { flex: 1; padding: 6px 2px; font-size: 12.5px; white-space: nowrap; color: var(--primary-text-color); border-right: 1px solid var(--divider-color, #ddd); }
+    .lseg button:last-child { border-right: 0; }
+    .lseg button.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .limits button:disabled, .lhint .once:disabled { cursor: default; opacity: .55; }
+    .lhint { display: flex; align-items: center; gap: 6px; padding: 0 16px; margin: -4px 0 10px; font-size: 12px; color: var(--primary-color); --mdc-icon-size: 15px; }
+    .lhint.warn { color: var(--warning-color, #e65100); }
+    .lhint .tx { flex: 1; min-width: 0; }
+    .lhint .once { font-size: 12px; color: var(--primary-color); border: 1px solid rgba(var(--rgb-primary-color, 3, 169, 244), .4); border-radius: 14px; padding: 3px 10px; white-space: nowrap; }
+    .lhint .once.on { background: var(--primary-color); color: var(--text-primary-color, #fff); border-color: var(--primary-color); }
     .status { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 0 16px 10px; min-height: 22px; --mdc-icon-size: 22px; }
     .status .ok { color: var(--success-color, #43a047); }
     .status button { padding: 0; display: flex; }
@@ -2963,6 +3098,76 @@
       return data.chargers.find((charger) => charger.session && charger.session.device_id && charger.session.device_id === deviceId);
     }
 
+    /** Límite de carga de este coche (activado y con cargador), o `undefined`. */
+    _limitCar() {
+      const data = this._chargerData;
+      if (!data || !data.enabled || !data.limit || !data.limit.enabled || !data.cars) return undefined;
+      return data.cars[this._deviceId()];
+    }
+
+    /** Debajo de la barra: 70 · 80 · 90 · 100 %, la marca del límite y qué va a pasar. */
+    _paintLimit($) {
+      const car = this._limitCar();
+      const row = $(".limits");
+      const hint = $(".lhint");
+      const marker = $(".bar .tgt");
+      row.hidden = !car;
+      marker.hidden = !car || car.limit >= 100;
+      if (!car) {
+        hint.hidden = true;
+        return;
+      }
+      for (const button of row.querySelectorAll("button")) {
+        const on = Number(button.dataset.v) === car.limit;
+        button.classList.toggle("on", on);
+        button.setAttribute("aria-pressed", String(on));
+        button.disabled = !car.can_control;
+      }
+      marker.style.left = `calc(${car.limit}% - 1px)`;
+      const station = this._station();
+      const session = station && station.session;
+      let text = "";
+      let icon = "mdi:information-outline";
+      let warn = false;
+      if (session && session.limit_hit && session.target) {
+        text = this._t("limit_stopped", { limit: session.target });
+        icon = "mdi:battery-lock";
+      } else if (car.once_full) {
+        text = this._t("limit_once_on");
+        icon = "mdi:battery-charging-100";
+      } else if (session && session.target && session.minutes_to_target != null && station.charging) {
+        text = this._t("limit_stops_in", { limit: session.target, time: this._duration(session.minutes_to_target) });
+        icon = "mdi:lock-clock";
+        warn = true;
+      } else if (car.limit < 100) {
+        text = this._t("limit_stops", { limit: car.limit });
+      }
+      const once = car.limit < 100 || car.once_full;
+      hint.hidden = !text && !once;
+      hint.classList.toggle("warn", warn);
+      hint.querySelector("ha-icon").setAttribute("icon", icon);
+      hint.querySelector(".tx").textContent = text;
+      const button = hint.querySelector(".once");
+      button.hidden = !once;
+      button.textContent = this._t("limit_once");
+      button.classList.toggle("on", Boolean(car.once_full));
+      button.setAttribute("aria-pressed", String(Boolean(car.once_full)));
+      button.disabled = !car.can_control;
+    }
+
+    /** Cambia el límite o «Solo esta: 100 %» (se ve al momento; la suscripción lo confirma). */
+    async _setLimit(change) {
+      const car = this._limitCar();
+      if (!car || !car.can_control || !this._hass.callWS) return;
+      Object.assign(car, change);
+      this._repaint();
+      try {
+        await this._hass.callWS({ type: "dec_deepal/chargers/car_limit", device_id: this._deviceId(), ...change });
+      } catch (error) {
+        this._toast((error && error.message) || this._t("command_failed"));
+      }
+    }
+
     // --- Entidades -------------------------------------------------------------
 
     _deviceId() {
@@ -3108,8 +3313,11 @@
               <ha-icon class="batt"></ha-icon><span class="km"></span><span class="estb" hidden></span><span class="grow"></span>
               <span class="charge"><ha-icon></ha-icon><span></span></span>
             </div>
-            <div class="bar"><i></i></div>
+            <div class="bar"><i></i><b class="tgt" hidden></b></div>
           </div>
+          <div class="limits" hidden><span class="lbl"><ha-icon icon="mdi:battery-lock"></ha-icon>${this._t("limit")}</span>
+            <span class="lseg">${[70, 80, 90, 100].map((value) => `<button data-action="limit" data-v="${value}">${value} %</button>`).join("")}</span></div>
+          <div class="lhint" hidden><ha-icon></ha-icon><span class="tx"></span><button class="once" data-action="limit-once" hidden></button></div>
           <div class="tiles">
             ${tile("comfort")}${tile("lock")}${tile("trunk")}
             ${tile("vent")}${tile("locate")}${tile("others")}
@@ -3162,6 +3370,7 @@
       $(".charge").classList.toggle("est", Boolean(estimate) && estimate.state !== "unplugged");
       $(".charge span").textContent = chargeText;
       $(".charge").hidden = !chargeText;
+      this._paintLimit($);
 
       // Línea de estado: tic verde, o el icono de cada testigo encendido.
       // Los de vencimiento (mantenimiento, ITV, seguro) van al final y se pueden pulsar.
@@ -3383,6 +3592,14 @@
         case "charge":
           this._openCharge();
           break;
+        case "limit":
+          this._setLimit({ limit: Number(target.dataset.v) });
+          break;
+        case "limit-once": {
+          const car = this._limitCar();
+          if (car) this._setLimit({ once_full: !car.once_full });
+          break;
+        }
         case "lock":
           if (tiles.lock.on) this._pinCommand("lock", this._t("lock_q"), this._t("lock_do"), "lock", "lock", "lock.doors");
           else this._pinCommand("lock", this._t("unlock_q"), this._t("unlock_do"), "lock", "unlock", "lock.doors");
@@ -4006,7 +4223,8 @@
     .status.b { color: var(--primary-color); } .status.n { color: var(--secondary-text-color); }
     .sub { font-size: 12.5px; color: var(--secondary-text-color); margin-bottom: 8px; }
     .est { font-size: 11px; color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); border-radius: 8px; padding: 1px 6px; margin-left: 4px; }
-    .lvl { height: 9px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; margin: 4px 0 10px; }
+    .lvl { position: relative; height: 9px; border-radius: 5px; background: ${TILE_BG}; overflow: hidden; margin: 4px 0 10px; }
+    .lvl .tgt { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--primary-text-color); opacity: .7; }
     .lvl i { display: block; height: 100%; border-radius: 5px; background: var(--success-color, #43a047);
       background-image: repeating-linear-gradient(110deg, rgba(255, 255, 255, .35) 0 8px, transparent 8px 16px); }
     .lvl.two { display: flex; } .lvl.two i { border-radius: 0; background-image: none; }
@@ -4171,9 +4389,13 @@
             this._photo(car.device_id) ? `<img src="${this._photo(car.device_id)}" alt="">` : ""}${escapeHtml(car.name)}</button>`).join("")}</div>`;
       } else if (session) {
         const photo = this._photo(session.device_id);
+        // Con límite de carga: "Cargando · se para al 80 %" (y la marca en la barra).
+        const stops = session.target ? ` · ${this._t("ch_stops", { limit: session.target })}` : "";
         const status = charging
-          ? `<div class="status g"><ha-icon icon="mdi:lightning-bolt"></ha-icon>${this._t("ch_charging")}${
-            session.minutes_left != null ? ` · ${this._t("ch_full_at", { time: this._clock(Date.now() + (session.minutes_left + (session.balance || 0)) * 60000) })}` : ""}</div>`
+          ? `<div class="status g"><ha-icon icon="mdi:lightning-bolt"></ha-icon>${this._t("ch_charging")}${stops ||
+            (session.minutes_left != null ? ` · ${this._t("ch_full_at", { time: this._clock(Date.now() + (session.minutes_left + (session.balance || 0)) * 60000) })}` : "")}</div>`
+          : finished && session.limit_hit && session.target
+          ? `<div class="status b"><ha-icon icon="mdi:battery-lock"></ha-icon>${this._t("ch_limit_stopped", { limit: session.target })}</div>`
           : finished
           ? `<div class="status g"><ha-icon icon="mdi:check-circle"></ha-icon>${this._t("ch_finished_at", { time: this._clock(session.finished_at) })}</div>`
           : `<div class="status b"><ha-icon icon="mdi:power-plug"></ha-icon>${this._t("ch_plugged")}</div>`;
@@ -4185,7 +4407,7 @@
           parts.push(`${from != null ? `${Math.round(from)} % → ` : ""}${approx}${Math.round(session.level)} %${session.estimated ? `<span class="est">${this._t("ch_estimated")}</span>` : ""}`);
         }
         if (session.duration) parts.push(this._duration(session.duration));
-        const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging)}` : "";
+        const level = session.level != null ? `<div class="sub">${parts.join(" · ")}</div>${this._levelBar(from, session.level, charging, session.target)}` : "";
         side = `<div class="car">${photo ? `<img src="${photo}" alt="">` : ""}<div class="who">${escapeHtml(session.vehicle || this._t("ch_unknown_car"))}${
           session.estimated ? ` · ${escapeHtml(this._offline(session))}` : ""}</div></div>`;
         // Al terminar, la potencia (0 kW) deja sitio a lo que ha llegado a la batería.
@@ -4211,7 +4433,11 @@
         ? `<button class="b ${waiting ? "warn" : c.locked ? "" : "on"}" data-action="lock" ${control ? "" : "disabled"}><ha-icon icon="${c.locked ? "mdi:lock" : "mdi:lock-open-variant"}"></ha-icon>${this._t(c.locked ? "ch_locked" : "ch_unlocked")}</button>`
         : "";
       const lockIn = session && session.lock_at ? Math.max(0, Math.ceil((new Date(session.lock_at) - Date.now()) / 60000)) : null;
-      const middle = lockIn != null && !charging
+      const middle = session && session.limit_locked && control
+        ? `<button class="b on" data-action="full"><ha-icon icon="mdi:battery-charging-100"></ha-icon>${this._t("ch_full")}</button>`
+        : session && session.minutes_to_target != null && charging
+        ? `<div class="b warn"><ha-icon icon="mdi:battery-lock"></ha-icon>${this._t("ch_stops_in", { time: this._duration(session.minutes_to_target) })}</div>`
+        : lockIn != null && !charging
         ? `<div class="b warn"><ha-icon icon="mdi:lock-clock"></ha-icon>${this._t("ch_locks_in", { minutes: lockIn })}</div>`
         : session && session.minutes_left != null && charging
         ? `<div class="b"><ha-icon icon="mdi:timer-sand"></ha-icon>${this._duration(session.minutes_left + (session.balance || 0))}</div>`
@@ -4228,14 +4454,15 @@
      * Barra en dos tramos: hasta el % con el que se enchufó (claro) y lo cargado
      * (fuerte). Las rayas que se mueven, solo en lo cargado y mientras carga.
      */
-    _levelBar(from, level, charging) {
+    _levelBar(from, level, charging, target) {
       const clamp = (value) => Math.max(0, Math.min(100, Number(value) || 0));
       const end = clamp(level);
       const start = from == null ? end : Math.min(clamp(from), end);
       const color = end < 15 ? "var(--error-color, #db4437)" : end < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       const mark = from != null && end - start >= 1 && start >= 8 && start <= 92
         ? `<div class="marks"><span style="left:${start}%">${Math.round(from)} %</span></div>` : "";
-      return `<div class="lvl two"><i class="from" style="width:${start}%;background:${color}"></i><i class="gain ${charging ? "anim" : ""}" style="width:${end - start}%;background-color:${color}"></i></div>${mark}`;
+      const limit = target ? `<b class="tgt" style="left:calc(${clamp(target)}% - 1px)"></b>` : "";
+      return `<div class="lvl two"><i class="from" style="width:${start}%;background:${color}"></i><i class="gain ${charging ? "anim" : ""}" style="width:${end - start}%;background-color:${color}"></i>${limit}</div>${mark}`;
     }
 
     /** Una carga en una línea: "Changote · 12 oct, 22:12 – 6:05 · 65 % → 100 % · +22,1 kWh · 2,52 €". */
@@ -4284,6 +4511,9 @@
         const lock = !c.locked;
         this._ask(this._t(lock ? "ch_lock_q" : "ch_unlock_q", { charger: c.name }), this._t(lock ? "ch_lock" : "ch_unlock"),
           () => this._ws("lock", { charger_id: c.id, locked: lock }));
+      } else if (target.dataset.action === "full" && c.can_control) {
+        // Parada por el límite: esta carga sigue hasta el 100 % (desbloquea).
+        this._ws("confirm", { charger_id: c.id, vehicle_id: "full" });
       } else if (target.dataset.action === "history") {
         const rows = c.history.map((item) => `<li>${escapeHtml(this._session(item))}</li>`).join("") || `<li>${this._t("ch_no_history")}</li>`;
         openDialog(`<div class="head"><button class="icon-btn" data-action="close" aria-label="${this._t("close")}"><ha-icon icon="mdi:close"></ha-icon></button>

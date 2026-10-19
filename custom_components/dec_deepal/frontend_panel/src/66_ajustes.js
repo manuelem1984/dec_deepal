@@ -7,7 +7,7 @@
   install(class {
     _view_settings() {
       const accounts = this._state.accounts;
-      return accounts.map((account) => this._settingsCard(account, accounts.length > 1)).join("") + this._chargersCard();
+      return accounts.map((account) => this._settingsCard(account, accounts.length > 1)).join("") + this._chargersCard() + this._limitCard();
     }
 
     /** Ajustes de una cuenta tal como se ven ahora: el borrador o lo guardado. */

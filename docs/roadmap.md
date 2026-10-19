@@ -1,5 +1,16 @@
 # Hoja de ruta
 
+## Beta 2.6.0b7 (19-10-2026) — pendiente de probar
+
+- [ ] **Límite de carga:** con el V2C Trydan y un límite del 80 %, la carga se
+      para (cargador bloqueado) al llegar, con y sin cobertura, y llega el
+      aviso con «Seguir hasta el 100 %» (que desbloquea).
+- [ ] «Solo esta: 100 %» en la tarjeta del coche: la siguiente carga no se
+      para y, al llegar al 100 %, se vuelve al límite.
+- [ ] Recordatorio del 100 % tras N cargas sin llegar; «La próxima al 100 %».
+- [ ] **PHEV** (falta uno real): el límite de la tarjeta también cambia el
+      «Límite de carga» del coche.
+
 ## Beta 2.6.0b6 (18-10-2026) — pendiente de probar
 
 - [ ] **S05 PHEV** (falta un PHEV real): «Nivel de gasolina», «Autonomía con
@@ -163,6 +174,13 @@ Pendiente de comprobar:
 - [ ] Manual del PHEV: cuando se añada ese modelo al catálogo, con su enlace.
 
 ## Pendiente de diseño
+
+- [ ] **Distinguir S05 EV y PHEV al dar de alta el coche:** preseleccionar el
+      modelo en «Configura tu vehículo» con, por orden, la lista de funciones
+      del coche (`#oilMileage` = PHEV), la primera lectura (datos de
+      combustible), los nombres del servidor y, el último, el VIN. Aviso en
+      Reparaciones si la telemetría contradice el modelo elegido. Hace falta
+      el diagnóstico de un PHEV para fijar los códigos.
 
 - [ ] **Panel generado:** que Home Assistant pueda crear solo un panel «DEC
       Deepal» con nuestras tarjetas (coche, vista planta y cargador), para

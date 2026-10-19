@@ -64,12 +64,14 @@
 
   const DOMAINS = ["binary_sensor", "sensor", "switch", "input_boolean"];
   const initial = () => ({
-    version: "2.6.0b6",
+    version: "2.6.0b7",
     admin: true,
     chargers_enabled: false,
     chargers: {
       enabled: false, control: "people", show_estimate: true, chargers: [], default_loss: 10, remind_choices: [5, 15, 60], relock_choices: [3, 5, 10],
       lock_full_choices: [15, 30, 45], read_choices: [0, 10, 15, 30],
+      limit: { enabled: false, notify: true, remind: false, every: 4, auto: false, choices: [70, 80, 90, 100], every_choices: [3, 4, 5, 6],
+        cars: [{ id: "car1", limit: 100 }, { id: "car2", limit: 100 }] },
       roles: { plugged: DOMAINS, charging: DOMAINS, power: ["sensor"], energy: ["sensor"], lock: ["switch", "lock", "input_boolean"] },
     },
     people: PEOPLE,
@@ -214,6 +216,16 @@
         state.chargers.control = message.control;
         if ("show_estimate" in message) state.chargers.show_estimate = message.show_estimate;
         state.chargers_enabled = message.enabled;
+        return null;
+      }
+      if (type === "set_limit") {
+        for (const [key, value] of Object.entries(message)) if (key !== "type") state.chargers.limit[key] = value;
+        return null;
+      }
+      if (type === "dec_deepal/chargers/car_limit") {
+        const car = state.chargers.limit.cars.find((item) => item.id === message.vehicle_id);
+        if (!car) throw fail("charger_vehicle");
+        car.limit = message.limit;
         return null;
       }
       if (type === "save_charger") {

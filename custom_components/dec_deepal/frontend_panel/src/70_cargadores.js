@@ -27,6 +27,50 @@
         </div>`;
     }
 
+    /**
+     * Límite de carga y recordatorio del 100 % (chargers.py). Solo con los
+     * cargadores activados: lo que para la carga es bloquear el cargador.
+     */
+    _limitCard() {
+      const config = this._state.chargers;
+      if (!config || !config.enabled || !config.limit) return "";
+      const limit = config.limit;
+      const tog = (field) => `<button class="tog ${limit[field] ? "on" : ""}" data-action="limit-set" data-field="${field}" data-value="${!limit[field]}" role="switch" aria-checked="${Boolean(limit[field])}"></button>`;
+      const row = (icon, title, help, right) => `<div class="row"><div class="ic"><ha-icon icon="${icon}"></ha-icon></div>
+        <div class="tx">${this._t(title)}${help ? `<small>${this._t(help)}</small>` : ""}</div>${right}</div>`;
+      const seg = (buttons) => `<div class="under"><span class="seg wide">${buttons.join("")}</span></div>`;
+      const cars = limit.cars.map((item) => {
+        const car = this._car(item.id) || { name: item.id };
+        return `<div class="row lim-car"><div class="ic grey"><ha-icon icon="mdi:car-electric"></ha-icon></div><div class="tx">${escapeHtml(car.name)}</div></div>
+          ${seg(limit.choices.map((value) => `<button class="${item.limit === value ? "on" : ""}" data-action="limit-car" data-id="${escapeHtml(item.id)}" data-value="${value}" aria-pressed="${item.limit === value}">${value} %</button>`))}`;
+      }).join("") || `<div class="row"><div class="tx"><small>${this._t("limit_cars_none")}</small></div></div>`;
+      return `<div class="card" data-limit>
+          <h2>${this._t("limit_title")}</h2><div class="sub">${this._t("limit_help")}</div>
+          ${row("mdi:battery-lock", "limit_enabled", "limit_enabled_help", tog("enabled"))}
+          ${limit.enabled ? `${row("mdi:car-multiple", "limit_cars", "", "")}${cars}
+          ${row("mdi:bell-ring-outline", "limit_notify", "limit_notify_help", tog("notify"))}` : ""}
+          ${row("mdi:battery-sync", "full_remind", "full_remind_help", tog("remind"))}
+          ${limit.remind ? `${seg(limit.every_choices.map((value) => `<button class="${limit.every === value ? "on" : ""}" data-action="limit-set" data-field="every" data-value="${value}" aria-pressed="${limit.every === value}">${this._t("full_every", { count: value })}</button>`))}
+          ${row("mdi:auto-fix", "full_auto", "full_auto_help", tog("auto"))}` : ""}
+        </div>`;
+    }
+
+    _do_limit_set(data) {
+      const value = data.value === "true" ? true : data.value === "false" ? false : Number(data.value);
+      this._run("set_limit", { [data.field]: value }, this._t("saved"));
+    }
+
+    async _do_limit_car(data) {
+      try {
+        await this._hass.callWS({ type: "dec_deepal/chargers/car_limit", vehicle_id: data.id, limit: Number(data.value) });
+      } catch (error) {
+        this._toast(this._errorText(error));
+        return;
+      }
+      this._toast(this._t("saved"));
+      this._load();
+    }
+
     _chargerRow(charger) {
       const chips = [];
       if (charger.plugged === true) chips.push(["mdi:power-plug", "st_plugged"]);

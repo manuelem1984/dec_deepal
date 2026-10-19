@@ -628,3 +628,28 @@ def test_chargers(panel: Page) -> None:
     # Con los cargadores activados, Avisos tiene el apartado «Cargador».
     tab(panel, "alerts")
     assert "Cargador" in panel.evaluate("banco.texto()")
+
+
+def test_charge_limit_settings(panel: Page) -> None:
+    """Ajustes → Límite de carga: solo con cargadores; límite por coche y recordatorio del 100 %."""
+    mount(panel)
+    tab(panel, "settings")
+    assert "Límite de carga" not in panel.evaluate("banco.texto()")  # cargadores desactivados
+    click(panel, "[data-action=chargers-enabled]")
+    panel.wait_for_function("banco.texto().includes('Usar el límite de carga')")
+    assert "Límite de cada coche" not in panel.evaluate("banco.texto()")
+    click(panel, "[data-action=limit-set][data-field=enabled]")
+    panel.wait_for_function("banco.texto().includes('Límite de cada coche')")
+    assert orders(panel)[-1] == {"type": "dec_deepal/panel/set_limit", "enabled": True}
+    # Cada coche, su límite (selector debajo, a todo lo ancho).
+    click(panel, "[data-action=limit-car][data-id=car2][data-value='80']")
+    panel.wait_for_function("banco.ordenes().some(m => m.type === 'dec_deepal/chargers/car_limit')")
+    assert orders(panel)[-1] == {"type": "dec_deepal/chargers/car_limit", "vehicle_id": "car2", "limit": 80}
+    panel.wait_for_function("document.querySelector('dec-deepal-panel').shadowRoot.querySelector('[data-action=limit-car][data-id=car2][data-value=\"80\"]').classList.contains('on')")
+    # Recordar cargar al 100 %: «Cada 3/4/5/6» y «sin preguntar» salen al activarlo.
+    assert "Cada 4" not in panel.evaluate("banco.texto()")
+    click(panel, "[data-action=limit-set][data-field=remind]")
+    panel.wait_for_function("banco.texto().includes('Cada 4')")
+    assert "Hacerla al 100 % sin preguntar" in panel.evaluate("banco.texto()")
+    click(panel, "[data-action=limit-set][data-field=every][data-value='6']")
+    panel.wait_for_function("banco.ordenes().some(m => m.every === 6)")

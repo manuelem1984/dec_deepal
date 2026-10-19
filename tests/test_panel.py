@@ -120,7 +120,7 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, hass_client_n
     assert first["alerts"]["notices"]["charge_started"] == []
     assert first["alerts"]["notices"]["maintenance_t1"] == [ME] and first["alerts"]["thresholds"] == {}
     assert [notice["id"] for notice in state["notices"]] == [notice.id for notice in NOTICES]
-    assert state["notices"][14] == {
+    assert state["notices"][16] == {
         "id": "maintenance_k1", "section": "maintenance", "unit": "km", "threshold": 5000, "limits": [100, 20000],
     }
     assert state["targets"] == [

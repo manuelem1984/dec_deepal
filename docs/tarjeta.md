@@ -39,6 +39,13 @@ tiene vista de planta, se enseña la imagen DEC.
 
 `custom:dec-deepal-charger-card`: ver `docs/cargadores.md`.
 
+## Límite de carga
+
+Con el límite de carga activado (panel → Ajustes) y el coche en algún
+cargador, debajo de la barra de batería sale **Límite 70 · 80 · 90 · 100 %**,
+una marca en la barra y qué va a pasar; «**Solo esta: 100 %**» hace la
+siguiente carga completa. Ver `docs/cargadores.md`.
+
 ## Ventana de carga
 
 Pulsar la franja de la batería (icono, autonomía, estado de carga y barra)

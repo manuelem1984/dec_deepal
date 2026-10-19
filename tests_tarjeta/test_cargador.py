@@ -159,3 +159,69 @@ def test_estimated_but_not_offline(page: Page) -> None:
     text = card_text(page)
     assert "Changote · último dato " in text and "sin cobertura" not in text.split("Changote")[1].split("Cargando")[0]
     assert "Energía (potencia)" in text
+
+
+
+def _with_limit(page: Page, car: dict, station: dict | None = None) -> str:
+    """Monta la tarjeta del coche con el límite de carga activado; devuelve su dispositivo."""
+    device = page.evaluate("() => { banco.montar({}); return Object.values(banco.hass.entities)[0].device_id; }")
+    chargers = [station | {"session": {**station["session"], "device_id": device}}] if station else []
+    data = {"enabled": True, "show_estimate": True, "chargers": chargers, "estimates": {},
+            "limit": {"enabled": True, "choices": [70, 80, 90, 100]},
+            "cars": {device: {"vehicle_id": "car1", "limit": 80, "once_full": False, "incomplete": 2, "target": 80, "can_control": True} | car}}
+    page.evaluate("options => banco.montar(options)", {"cargadores": data})
+    page.wait_for_function("!banco.card.shadowRoot.querySelector('.limits').hidden")
+    return device
+
+
+def test_car_card_charge_limit(page: Page) -> None:
+    """Debajo de la barra: 70 · 80 · 90 · 100 %, la marca y «Solo esta: 100 %»; tocar cambia el límite."""
+    station = _charger(charging=True, locked=False, power=3700, session={**SESSION, "target": 80, "minutes_to_target": 25})
+    device = _with_limit(page, {}, station)
+    root = "banco.card.shadowRoot"
+    buttons = page.evaluate(f"Array.from({root}.querySelectorAll('.lseg button')).map(b => b.textContent + (b.classList.contains('on') ? '*' : ''))")
+    assert buttons == ["70 %", "80 %*", "90 %", "100 %"]
+    assert page.evaluate(f"{root}.querySelector('.bar .tgt').hidden") is False
+    assert page.evaluate(f"{root}.querySelector('.bar .tgt').style.left") == "calc(80% - 1px)"
+    assert page.evaluate(f"{root}.querySelector('.lhint .tx').textContent") == "Se para al 80 % · en ≈ 25 min"
+    assert page.evaluate(f"{root}.querySelector('.lhint .once').textContent") == "Solo esta: 100 %"
+    page.evaluate(f"{root}.querySelector('.lseg button[data-v=\"90\"]').click()")
+    page.wait_for_function("banco.registro.some(line => line.includes('car_limit'))")
+    assert f'ws dec_deepal/chargers/car_limit {{"device_id":"{device}","limit":90}}' in page.evaluate("banco.registro")
+    page.evaluate(f"{root}.querySelector('.lhint .once').click()")
+    page.wait_for_function("banco.registro.some(line => line.includes('once_full'))")
+    assert f'ws dec_deepal/chargers/car_limit {{"device_id":"{device}","once_full":true}}' in page.evaluate("banco.registro")
+
+
+def test_car_card_limit_states(page: Page) -> None:
+    """Sin permiso, desactivado; «la próxima al 100 %»; al 100 % no hay marca; sin el ajuste, nada."""
+    root = "banco.card.shadowRoot"
+    _with_limit(page, {"can_control": False})
+    assert page.evaluate(f"{root}.querySelector('.lseg button').disabled") is True
+    assert page.evaluate(f"{root}.querySelector('.lhint .tx').textContent") == "Se para al 80 %: se bloquea el cargador."
+    _with_limit(page, {"once_full": True, "target": 100})
+    assert page.evaluate(f"{root}.querySelector('.lhint .tx').textContent") == "La próxima carga llegará al 100 %."
+    assert page.evaluate(f"{root}.querySelector('.lhint .once').classList.contains('on')") is True
+    _with_limit(page, {"limit": 100, "target": 100})
+    assert page.evaluate(f"{root}.querySelector('.bar .tgt').hidden") is True
+    assert page.evaluate(f"{root}.querySelector('.lhint').hidden") is True
+    page.evaluate("data => banco.cargadores(data)", {"enabled": True, "chargers": [], "estimates": {}, "limit": {"enabled": False}, "cars": {}})
+    assert page.evaluate(f"{root}.querySelector('.limits').hidden") is True
+
+
+def test_charger_card_with_limit(page: Page) -> None:
+    """Tarjeta del cargador: «se para al 80 %», marca en la barra y cuánto falta; parada, «Seguir al 100 %»."""
+    session = {**SESSION, "target": 80, "minutes_to_target": 25}
+    mount_charger(page, [_charger(charging=True, locked=False, power=3700, session=session)])
+    text = card_text(page)
+    assert "Cargando · se para al 80 %" in text and "lleno hacia" not in text
+    assert page.evaluate("banco.card.shadowRoot.querySelector('.lvl .tgt').style.left") == "calc(80% - 1px)"
+    buttons = page.evaluate("Array.from(banco.card.shadowRoot.querySelectorAll('.acts .b')).map(b => b.textContent.trim())")
+    assert buttons == ["Desbloqueado", "Para en ≈ 25 min", "Cargas"]
+    stopped = {**session, "finished_at": "2026-10-18T01:05:00+00:00", "level": 80.4, "minutes_to_target": None,
+               "limit_hit": True, "limit_locked": True}
+    mount_charger(page, [_charger(charging=False, locked=True, session=stopped)])
+    assert "Parada en el límite (80 %)" in card_text(page)
+    page.evaluate("banco.card.shadowRoot.querySelector('[data-action=full]').click()")
+    page.wait_for_function("banco.registro.some(line => line.includes('\"full\"'))")
+    assert 'ws dec_deepal/chargers/confirm {"charger_id":"g","vehicle_id":"full"}' in page.evaluate("banco.registro")

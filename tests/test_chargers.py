@@ -59,6 +59,7 @@ def _car(vehicle_id: str, name: str, level: float) -> SimpleNamespace:
         ),
         model=SimpleNamespace(trims={"max": trim}),
         trim="max",
+        has=lambda feature: False,
     )
 
 
@@ -388,3 +389,181 @@ async def test_energy_from_power(hass: HomeAssistant, manager: ChargerManager, f
     assert session["energy"] == 1.8 and session["energy_source"] == "power"
     # 56 % + 1,8 kWh × 0,9 en 68,8 kWh.
     assert session["level"] == 58.4
+
+
+async def _charge(hass: HomeAssistant, kwh: float) -> None:
+    """Una carga entera sin cobertura: enchufar, cargar ``kwh`` y desenchufar."""
+    hass.states.async_set(ENERGY, "0", {"unit_of_measurement": "kWh"})
+    hass.states.async_set(PLUG, "on")
+    hass.states.async_set(CHARGING, "on")
+    await hass.async_block_till_done()
+    hass.states.async_set(ENERGY, str(kwh), {"unit_of_measurement": "kWh"})
+    hass.states.async_set(CHARGING, "off")
+    await hass.async_block_till_done()
+    hass.states.async_set(PLUG, "off")
+    await hass.async_block_till_done()
+
+
+async def test_charge_limit_locks_and_continues(hass: HomeAssistant, manager: ChargerManager) -> None:
+    """Límite al 80 %: al llegar (estimado) se bloquea el cargador; «Seguir hasta el 100 %» desbloquea."""
+    sent = _notify(hass)
+    turn_on = async_mock_service(hass, "switch", "turn_on")
+    turn_off = async_mock_service(hass, "switch", "turn_off")
+    await manager.async_save_charger({**GARAJE, "vehicles": ["car1"], "unlock": "none", "relock": False})
+    await manager.async_set_settings(True, "people")
+    await manager.async_set_limit_settings({"enabled": True})
+    await manager.async_set_car_limit("car1", None, limit=80, check=False)
+    charger_id = next(iter(manager.chargers))
+    hass.states.async_set(LOCK, "off")
+    hass.states.async_set(PLUG, "on")
+    hass.states.async_set(POWER, "3700", {"unit_of_measurement": "W"})
+    hass.states.async_set(CHARGING, "on")
+    await hass.async_block_till_done()
+
+    # 56 % + 10 kWh × 0,9 en 68,8 kWh = 69 %: aún no; faltan ≈ 2 h 15 min para el 80 %.
+    hass.states.async_set(ENERGY, "10", {"unit_of_measurement": "kWh"})
+    await hass.async_block_till_done()
+    session = manager.status(charger_id)["session"]
+    assert (session["target"], session["minutes_to_target"], session["limit_hit"]) == (80, 135, False)
+    assert turn_on == []
+
+    # 19 kWh: ≈ 81 %. Se bloquea y avisa, con el botón para seguir.
+    hass.states.async_set(ENERGY, "19", {"unit_of_measurement": "kWh"})
+    await hass.async_block_till_done()
+    assert [call.data["entity_id"] for call in turn_on] == [LOCK]
+    notice = sent[-1].data
+    assert notice["title"] == "DEC Deepal Changote"
+    assert notice["message"] == "Ha llegado al ≈ 81 % (límite: 80 %): Garaje bloqueado para no pasar del límite."
+    assert [action["title"] for action in notice["data"]["actions"]] == ["Seguir hasta el 100 %"]
+    # Deja de cargar: no llega otro aviso de "carga terminada".
+    count = len(sent)
+    hass.states.async_set(LOCK, "on")
+    hass.states.async_set(CHARGING, "off")
+    await hass.async_block_till_done()
+    assert len(sent) == count
+    session = manager.status(charger_id)["session"]
+    assert session["limit_hit"] is True and session["limit_locked"] is True
+
+    # «Seguir hasta el 100 %»: desbloquea y esta carga ya no se para.
+    hass.bus.async_fire("mobile_app_notification_action", {"action": f"DEC_DEEPAL_CHARGER|{charger_id}|full"}, context=Context())
+    await hass.async_block_till_done()
+    assert [call.data["entity_id"] for call in turn_off] == [LOCK]
+    session = manager.status(charger_id)["session"]
+    assert session["target"] is None and session["limit_hit"] is False
+    # Al desenchufar, una carga que no llegó al 100 %.
+    hass.states.async_set(PLUG, "off")
+    await hass.async_block_till_done()
+    assert manager._cars["car1"]["incomplete"] == 1
+
+
+async def test_raising_the_limit_resumes(hass: HomeAssistant, manager: ChargerManager) -> None:
+    """Parada en el 70 %: si en la tarjeta suben el límite (o «Solo esta: 100 %»), se desbloquea."""
+    turn_on = async_mock_service(hass, "switch", "turn_on")
+    turn_off = async_mock_service(hass, "switch", "turn_off")
+    await manager.async_save_charger({**GARAJE, "vehicles": ["car1"], "unlock": "none"})
+    await manager.async_set_settings(True, "people")
+    await manager.async_set_limit_settings({"enabled": True, "notify": False})
+    await manager.async_set_car_limit("car1", None, limit=70, check=False)
+    hass.states.async_set(LOCK, "off")
+    hass.states.async_set(PLUG, "on")
+    hass.states.async_set(CHARGING, "on")
+    await hass.async_block_till_done()
+    hass.states.async_set(ENERGY, "11", {"unit_of_measurement": "kWh"})
+    await hass.async_block_till_done()
+    assert len(turn_on) == 1
+    hass.states.async_set(LOCK, "on")
+    hass.states.async_set(CHARGING, "off")
+    await hass.async_block_till_done()
+    await manager.async_set_car_limit("car1", None, limit=90, check=False)
+    assert [call.data["entity_id"] for call in turn_off] == [LOCK]
+    assert manager.target("car1") == 90
+
+
+async def test_full_reminder_every_n(hass: HomeAssistant, manager: ChargerManager) -> None:
+    """Cada 3 cargas sin llegar al 100 %: aviso con «La próxima al 100 %»; o, sin preguntar, la hace."""
+    sent = _notify(hass)
+    async_mock_service(hass, "switch", "turn_on")
+    async_mock_service(hass, "switch", "turn_off")
+    await manager.async_save_charger({**GARAJE, "vehicles": ["car1"], "unlock": "none", "relock": False})
+    await manager.async_set_settings(True, "people")
+    await manager.async_set_limit_settings({"enabled": True, "remind": True, "every": 3})
+    await manager.async_set_car_limit("car1", None, limit=80, check=False)
+    charger_id = next(iter(manager.chargers))
+    hass.states.async_set(LOCK, "off")
+
+    for _ in range(3):
+        await _charge(hass, 5)
+    reminder = sent[-1].data
+    assert reminder["message"].startswith("Lleva 3 cargas sin llegar al 100 %.")
+    assert [action["title"] for action in reminder["data"]["actions"]] == ["La próxima al 100 %", "Ahora no"]
+    assert reminder["data"]["actions"][0]["action"] == f"DEC_DEEPAL_CHARGER|{charger_id}|nextfull:car1"
+
+    # «La próxima al 100 %»: el límite no para la siguiente; al llegar al 100 %, se vuelve a contar desde 0.
+    hass.bus.async_fire("mobile_app_notification_action", {"action": reminder["data"]["actions"][0]["action"]}, context=Context())
+    await hass.async_block_till_done()
+    assert manager._cars["car1"]["once_full"] is True and manager.target("car1") == 100
+    await _charge(hass, 40)
+    assert manager._cars["car1"] == {"limit": 80, "once_full": False, "incomplete": 0}
+    assert manager.target("car1") == 80
+
+    # Sin preguntar: a las 3 incompletas, la siguiente al 100 % (y se avisa).
+    await manager.async_set_limit_settings({"auto": True})
+    for _ in range(3):
+        await _charge(hass, 5)
+    assert manager._cars["car1"]["once_full"] is True
+    assert sent[-1].data["message"].startswith("Lleva 3 cargas sin llegar al 100 %: la próxima llegará al 100 %")
+
+
+async def test_car_limit_from_the_card(hass: HomeAssistant, manager: ChargerManager, hass_ws_client, hass_admin_user) -> None:  # noqa: ANN001
+    """La tarjeta del coche (por dispositivo) cambia el límite; en el PHEV también se manda al coche."""
+    from homeassistant.components import websocket_api
+    from homeassistant.setup import async_setup_component
+
+    from custom_components.dec_deepal.panel import cargadores
+
+    assert await async_setup_component(hass, "websocket_api", {})
+    for command in cargadores.COMMANDS:
+        websocket_api.async_register_command(hass, command)
+    hass.data.setdefault(DOMAIN, {})["chargers"] = manager
+    manager._device_id = lambda vehicle_id: f"dev_{vehicle_id}" if vehicle_id else None
+    # car2 es un PHEV: su límite propio se cambia con la orden del coche.
+    sent: list[tuple[str, int]] = []
+    car2 = manager._vehicle("car2")[1]
+    car2.has = lambda feature: feature == "limite_carga"
+
+    async def run(name: str, send, optimistic=None) -> None:  # noqa: ANN001
+        await send()
+
+    async def charge_limit(vehicle_id: str, percent: int) -> str:
+        sent.append((vehicle_id, percent))
+        return "cmd"
+
+    car2.runner = SimpleNamespace(run=run)
+    manager._vehicle("car2")[0].runtime_data.commands = SimpleNamespace(charge_limit=charge_limit)
+    await manager.async_save_charger(GARAJE)
+    await manager.async_set_settings(True, "people")
+    client = await hass_ws_client(hass)
+
+    await client.send_json({"id": 1, "type": "dec_deepal/panel/set_limit", "enabled": True, "every": 5})
+    assert (await client.receive_json())["success"]
+    assert manager.limit["enabled"] is True and manager.limit["every"] == 5
+    await client.send_json({"id": 2, "type": "dec_deepal/chargers/car_limit", "device_id": "dev_car2", "limit": 90})
+    assert (await client.receive_json())["success"]
+    await hass.async_block_till_done()
+    assert sent == [("car2", 90)]
+    await client.send_json({"id": 3, "type": "dec_deepal/chargers/car_limit", "device_id": "dev_car2", "once_full": True})
+    assert (await client.receive_json())["success"]
+    await hass.async_block_till_done()
+    assert sent[-1] == ("car2", 100)
+    await client.send_json({"id": 4, "type": "dec_deepal/chargers/car_limit", "device_id": "dev_car2", "limit": 85})
+    assert not (await client.receive_json())["success"]
+
+    cars = manager.statuses(hass_admin_user)["cars"]
+    assert cars["dev_car2"] == {"vehicle_id": "car2", "limit": 90, "once_full": True, "incomplete": 0, "target": 100, "can_control": True}
+    assert cars["dev_car1"]["limit"] == 100
+    # Una persona que no es de ese coche no puede cambiarlo.
+    other = SimpleNamespace(id="otra", is_admin=False)
+    with pytest.raises(ChargerError, match="unauthorized"):
+        await manager.async_set_car_limit("car2", other, limit=70)
+    config = manager.panel_config()["limit"]
+    assert config["every_choices"] == [3, 4, 5, 6] and [car["id"] for car in config["cars"]] == ["car1", "car2"]

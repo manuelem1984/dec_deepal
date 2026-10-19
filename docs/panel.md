@@ -111,6 +111,8 @@ Son de la cuenta, no de un coche (con varias cuentas, una tarjeta por cuenta).
 - **Cargadores:** activarlos, quién puede desbloquear y cada cargador con
   sus entidades, coches, cobertura, desbloqueo, bloqueo al desenchufar,
   pérdidas y precio (ver `docs/cargadores.md`).
+- **Límite de carga:** usarlo, el límite de cada coche, avisar al llegar y
+  recordar cargar al 100 % cada 3-6 cargas (o hacerla sin preguntar).
 - **Lectura de datos:** intervalo, despertar el coche cuando haga falta,
   **sumar el equilibrado** (15 min más al tiempo de carga de la ventana de
   carga; activado de fábrica), el enlace del manual (BEV o PHEV, según el

@@ -43,8 +43,23 @@
     .range .charge.est { color: var(--success-color, #43a047); font-weight: 500; }
     .upd.est { color: var(--warning-color, #e65100); }
     .range .charge { font-size: 14px; color: var(--secondary-text-color); display: flex; align-items: center; gap: 4px; --mdc-icon-size: 18px; }
-    .bar { height: 8px; border-radius: 4px; background: ${TILE_BG}; margin: 6px 16px 14px; overflow: hidden; }
+    .bar { position: relative; height: 8px; border-radius: 4px; background: ${TILE_BG}; margin: 6px 16px 14px; overflow: hidden; }
     .bar i { display: block; height: 100%; border-radius: 4px; transition: width .4s; }
+    /* Límite de carga: la marca en la barra, el selector y qué va a pasar. */
+    .bar .tgt { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--primary-text-color); opacity: .7; }
+    .limits { display: flex; align-items: center; gap: 8px; padding: 0 16px; margin: -6px 0 10px; }
+    .limits[hidden], .lhint[hidden], .lhint .once[hidden] { display: none; }
+    .limits .lbl { font-size: 12.5px; color: var(--secondary-text-color); display: flex; gap: 4px; align-items: center; white-space: nowrap; --mdc-icon-size: 16px; }
+    .lseg { flex: 1; display: flex; border: 1px solid var(--divider-color, #ddd); border-radius: 16px; overflow: hidden; }
+    .lseg button { flex: 1; padding: 6px 2px; font-size: 12.5px; white-space: nowrap; color: var(--primary-text-color); border-right: 1px solid var(--divider-color, #ddd); }
+    .lseg button:last-child { border-right: 0; }
+    .lseg button.on { background: var(--primary-color); color: var(--text-primary-color, #fff); }
+    .limits button:disabled, .lhint .once:disabled { cursor: default; opacity: .55; }
+    .lhint { display: flex; align-items: center; gap: 6px; padding: 0 16px; margin: -4px 0 10px; font-size: 12px; color: var(--primary-color); --mdc-icon-size: 15px; }
+    .lhint.warn { color: var(--warning-color, #e65100); }
+    .lhint .tx { flex: 1; min-width: 0; }
+    .lhint .once { font-size: 12px; color: var(--primary-color); border: 1px solid rgba(var(--rgb-primary-color, 3, 169, 244), .4); border-radius: 14px; padding: 3px 10px; white-space: nowrap; }
+    .lhint .once.on { background: var(--primary-color); color: var(--text-primary-color, #fff); border-color: var(--primary-color); }
     .status { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 0 16px 10px; min-height: 22px; --mdc-icon-size: 22px; }
     .status .ok { color: var(--success-color, #43a047); }
     .status button { padding: 0; display: flex; }
