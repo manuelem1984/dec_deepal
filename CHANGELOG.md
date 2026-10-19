@@ -3,6 +3,16 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b8] — 2026-10-19
+
+### Añadido
+
+- **Dato principal en las tarjetas del coche y de vista planta:** en su editor
+  se elige qué se ve en grande junto a la batería: **Autonomía** (de fábrica,
+  como hasta ahora), **Batería** (el %) o **Las dos** («76 % · 312 km»). Cada
+  tarjeta guarda el suyo. La barra sigue siendo el % de batería y, sin
+  cobertura, manda el % estimado por el cargador.
+
 ## [2.6.0b7] — 2026-10-19
 
 ### Añadido

@@ -6,12 +6,14 @@
 //
 //   type: custom:dec-deepal-card
 //   device_id: <dispositivo del coche>     (opcional: si falta, el primero)
+//   main_value: range | battery | both     (opcional: range; 2.6.0b8)
 //
 // Y la misma tarjeta con el coche visto desde arriba (2.5.0b5):
 //
 //   type: custom:dec-deepal-top-card
 //   device_id: <dispositivo del coche>
 //   orientation: horizontal | vertical     (opcional: horizontal)
+//   main_value: range | battery | both     (opcional: range)
 //
 // Qué muestra (diseño cerrado con bocetos, 09-10-2026):
 //   - Cabecera: nombre del coche, "Actualizado: ..." y botón de actualizar.
@@ -168,6 +170,10 @@
       "orientation": "Orientación del coche",
       "orientation_horizontal": "Horizontal (tumbado)",
       "orientation_vertical": "Vertical (de pie)",
+      "main_value": "Dato principal",
+      "main_value_range": "Autonomía (km)",
+      "main_value_battery": "Batería (%)",
+      "main_value_both": "Las dos (% y km)",
       "car": "Coche",
       "not_found": "No encuentro el coche. Elige uno en la configuración de la tarjeta.",
       "refresh": "Actualizar datos del vehículo",
@@ -384,6 +390,10 @@
       "orientation": "Vehicle orientation",
       "orientation_horizontal": "Horizontal (lying down)",
       "orientation_vertical": "Vertical (upright)",
+      "main_value": "Main value",
+      "main_value_range": "Range (km)",
+      "main_value_battery": "Battery (%)",
+      "main_value_both": "Both (% and km)",
       "car": "Car",
       "not_found": "I cannot find the car. Choose one in the card settings.",
       "refresh": "Refresh vehicle data",
@@ -600,6 +610,10 @@
       "orientation": "Orientação do carro",
       "orientation_horizontal": "Horizontal (deitado)",
       "orientation_vertical": "Vertical (de pé)",
+      "main_value": "Dado principal",
+      "main_value_range": "Autonomia (km)",
+      "main_value_battery": "Bateria (%)",
+      "main_value_both": "Os dois (% e km)",
       "car": "Carro",
       "not_found": "Não encontro o carro. Escolha um na configuração do cartão.",
       "refresh": "Atualizar dados do veículo",
@@ -816,6 +830,10 @@
       "orientation": "Orientamento dell'auto",
       "orientation_horizontal": "Orizzontale (sdraiata)",
       "orientation_vertical": "Verticale (in piedi)",
+      "main_value": "Dato principale",
+      "main_value_range": "Autonomia (km)",
+      "main_value_battery": "Batteria (%)",
+      "main_value_both": "Entrambi (% e km)",
       "car": "Auto",
       "not_found": "Non trovo l'auto. Scegline una nella configurazione della scheda.",
       "refresh": "Aggiorna dati del veicolo",
@@ -1032,6 +1050,10 @@
       "orientation": "Orientacja samochodu",
       "orientation_horizontal": "Poziomo (na leżąco)",
       "orientation_vertical": "Pionowo (na stojąco)",
+      "main_value": "Główna wartość",
+      "main_value_range": "Zasięg (km)",
+      "main_value_battery": "Bateria (%)",
+      "main_value_both": "Oba (% i km)",
       "car": "Samochód",
       "not_found": "Nie znajduję samochodu. Wybierz go w konfiguracji karty.",
       "refresh": "Odśwież dane pojazdu",
@@ -1248,6 +1270,10 @@
       "orientation": "Ausrichtung des Autos",
       "orientation_horizontal": "Waagerecht (liegend)",
       "orientation_vertical": "Senkrecht (stehend)",
+      "main_value": "Hauptwert",
+      "main_value_range": "Reichweite (km)",
+      "main_value_battery": "Akku (%)",
+      "main_value_both": "Beides (% und km)",
       "car": "Auto",
       "not_found": "Ich finde das Auto nicht. Wähle eines in den Karteneinstellungen.",
       "refresh": "Fahrzeugdaten aktualisieren",
@@ -1464,6 +1490,10 @@
       "orientation": "Orientation de la voiture",
       "orientation_horizontal": "Horizontale (couchée)",
       "orientation_vertical": "Verticale (debout)",
+      "main_value": "Valeur principale",
+      "main_value_range": "Autonomie (km)",
+      "main_value_battery": "Batterie (%)",
+      "main_value_both": "Les deux (% et km)",
       "car": "Voiture",
       "not_found": "Je ne trouve pas la voiture. Choisissez-en une dans les réglages de la carte.",
       "refresh": "Actualiser les données du véhicule",
@@ -1680,6 +1710,10 @@
       "orientation": "Oriëntatie van de auto",
       "orientation_horizontal": "Horizontaal (liggend)",
       "orientation_vertical": "Verticaal (staand)",
+      "main_value": "Hoofdwaarde",
+      "main_value_range": "Actieradius (km)",
+      "main_value_battery": "Accu (%)",
+      "main_value_both": "Beide (% en km)",
       "car": "Auto",
       "not_found": "Ik kan de auto niet vinden. Kies er een in de kaartinstellingen.",
       "refresh": "Voertuiggegevens vernieuwen",
@@ -1896,6 +1930,10 @@
       "orientation": "Bilens retning",
       "orientation_horizontal": "Vannrett (liggende)",
       "orientation_vertical": "Loddrett (stående)",
+      "main_value": "Hovedverdi",
+      "main_value_range": "Rekkevidde (km)",
+      "main_value_battery": "Batteri (%)",
+      "main_value_both": "Begge (% og km)",
       "car": "Bil",
       "not_found": "Jeg finner ikke bilen. Velg en i kortinnstillingene.",
       "refresh": "Oppdater kjøretøydata",
@@ -2112,6 +2150,10 @@
       "orientation": "Bilens retning",
       "orientation_horizontal": "Vandret (liggende)",
       "orientation_vertical": "Lodret (stående)",
+      "main_value": "Hovedværdi",
+      "main_value_range": "Rækkevidde (km)",
+      "main_value_battery": "Batteri (%)",
+      "main_value_both": "Begge (% og km)",
       "car": "Bil",
       "not_found": "Jeg kan ikke finde bilen. Vælg en i kortets indstillinger.",
       "refresh": "Opdater køretøjsdata",
@@ -2328,6 +2370,10 @@
       "orientation": "Προσανατολισμός αυτοκινήτου",
       "orientation_horizontal": "Οριζόντια (ξαπλωτό)",
       "orientation_vertical": "Κάθετα (όρθιο)",
+      "main_value": "Κύρια τιμή",
+      "main_value_range": "Αυτονομία (km)",
+      "main_value_battery": "Μπαταρία (%)",
+      "main_value_both": "Και τα δύο (% και km)",
       "car": "Αυτοκίνητο",
       "not_found": "Δεν βρίσκω το αυτοκίνητο. Επιλέξτε ένα στις ρυθμίσεις της κάρτας.",
       "refresh": "Ανανέωση δεδομένων οχήματος",
@@ -2544,6 +2590,10 @@
       "orientation": "Usmerjenost avtomobila",
       "orientation_horizontal": "Vodoravno (leže)",
       "orientation_vertical": "Navpično (pokonci)",
+      "main_value": "Glavni podatek",
+      "main_value_range": "Doseg (km)",
+      "main_value_battery": "Baterija (%)",
+      "main_value_both": "Oboje (% in km)",
       "car": "Avto",
       "not_found": "Avta ne najdem. Izberite ga v nastavitvah kartice.",
       "refresh": "Osveži podatke vozila",
@@ -2819,6 +2869,8 @@
     .range { display: flex; align-items: center; gap: 8px; padding: 0 16px; }
     .range .batt { --mdc-icon-size: 26px; }
     .range .km { font-size: 24px; color: var(--primary-text-color); white-space: nowrap; }
+    .range .kms { font-size: 15px; color: var(--secondary-text-color); white-space: nowrap; margin-left: -2px; }
+    .range .kms[hidden] { display: none; }
     .range .estb { font-size: 11px; color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); border-radius: 8px; padding: 1px 7px; margin-left: 6px; white-space: nowrap; }
     .range .charge.est { color: var(--success-color, #43a047); font-weight: 500; }
     .upd.est { color: var(--warning-color, #e65100); }
@@ -2988,6 +3040,9 @@
   // ---------------------------------------------------------------------------
   // La tarjeta
   // ---------------------------------------------------------------------------
+  /** Qué se ve en grande junto a la batería (opción de la tarjeta). */
+  const MAIN_VALUES = ["range", "battery", "both"];
+
   class DecDeepalCard extends HTMLElement {
     constructor() {
       super();
@@ -3028,7 +3083,11 @@
         const options = ["horizontal", "vertical"].map((value) => ({ value, label: text(`orientation_${value}`) }));
         schema.push({ name: "orientation", selector: { select: { mode: "dropdown", options } } });
       }
-      return { schema, computeLabel: (field) => text(field.name === "orientation" ? "orientation" : "car") };
+      // Dato principal junto a la batería: autonomía (de fábrica), el % o los dos.
+      const main = MAIN_VALUES.map((value) => ({ value, label: text(`main_value_${value}`) }));
+      schema.push({ name: "main_value", selector: { select: { mode: "list", options: main } } });
+      const labels = { orientation: "orientation", main_value: "main_value" };
+      return { schema, computeLabel: (field) => text(labels[field.name] || "car") };
     }
 
     setConfig(config) {
@@ -3310,7 +3369,7 @@
           <div class="status"></div>
           <div class="energy" data-action="charge" role="button" tabindex="0" aria-label="${this._t("charge_open")}">
             <div class="range">
-              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="estb" hidden></span><span class="grow"></span>
+              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="kms" hidden></span><span class="estb" hidden></span><span class="grow"></span>
               <span class="charge"><ha-icon></ha-icon><span></span></span>
             </div>
             <div class="bar"><i></i><b class="tgt" hidden></b></div>
@@ -3357,7 +3416,22 @@
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       $(".batt").setAttribute("icon", this._batteryIcon(level, charging));
       $(".batt").style.color = color;
-      $(".km").textContent = estimate ? `≈ ${Math.round(level)} %` : this._format("sensor.range") || "—";
+      // Dato principal: autonomía (de fábrica), el % o el % con los km al lado.
+      // Sin cobertura, el % estimado por el cargador manda en las tres.
+      const mode = MAIN_VALUES.includes(this._config.main_value) ? this._config.main_value : "range";
+      const range = this._format("sensor.range");
+      const percent = level === undefined ? undefined : `${Math.round(level)} %`;
+      let main = range;
+      let second = "";
+      if (estimate) main = `≈ ${Math.round(level)} %`;
+      else if (mode === "battery") main = percent || range;
+      else if (mode === "both") {
+        main = percent || range;
+        if (percent && range) second = `· ${range}`;
+      }
+      $(".km").textContent = main || "—";
+      $(".kms").textContent = second;
+      $(".kms").hidden = !second;
       $(".estb").hidden = !estimate;
       $(".estb").textContent = estimate ? this._t("ch_estimated") : "";
       $(".bar i").style.width = `${level === undefined ? 0 : Math.max(0, Math.min(100, level))}%`;

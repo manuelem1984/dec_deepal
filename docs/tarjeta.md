@@ -26,6 +26,7 @@ ventanilla está abierta. Se añade igual, buscando **DEC Deepal**. En YAML:
 type: custom:dec-deepal-top-card
 device_id: <dispositivo del coche>   # opcional: si falta, el primero
 orientation: horizontal              # o "vertical"
+main_value: range                    # o "battery" / "both"
 ```
 
 - `horizontal` (por defecto): el coche tumbado, con el morro a la izquierda.
@@ -34,6 +35,19 @@ orientation: horizontal              # o "vertical"
 
 Las dos tarjetas pueden estar a la vez en el mismo panel. Si el modelo no
 tiene vista de planta, se enseña la imagen DEC.
+
+## Dato principal: autonomía, batería o las dos
+
+En el editor de las dos tarjetas (y de cada una por separado), **Dato
+principal** elige qué se ve en grande junto al icono de la batería:
+
+- **Autonomía (km)** (de fábrica, como hasta la 2.6.0b7): `main_value: range`.
+- **Batería (%)**: `main_value: battery`.
+- **Las dos (% y km)**: el % en grande y los km al lado, más pequeños
+  (`main_value: both`). Si falta uno, se ve el otro.
+
+La barra siempre es el % de batería. Sin cobertura y con un cargador, el %
+estimado («≈ 76 %») se ve en las tres.
 
 ## Tarjeta del cargador
 

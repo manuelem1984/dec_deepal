@@ -1,6 +1,9 @@
   // ---------------------------------------------------------------------------
   // La tarjeta
   // ---------------------------------------------------------------------------
+  /** Qué se ve en grande junto a la batería (opción de la tarjeta). */
+  const MAIN_VALUES = ["range", "battery", "both"];
+
   class DecDeepalCard extends HTMLElement {
     constructor() {
       super();
@@ -41,7 +44,11 @@
         const options = ["horizontal", "vertical"].map((value) => ({ value, label: text(`orientation_${value}`) }));
         schema.push({ name: "orientation", selector: { select: { mode: "dropdown", options } } });
       }
-      return { schema, computeLabel: (field) => text(field.name === "orientation" ? "orientation" : "car") };
+      // Dato principal junto a la batería: autonomía (de fábrica), el % o los dos.
+      const main = MAIN_VALUES.map((value) => ({ value, label: text(`main_value_${value}`) }));
+      schema.push({ name: "main_value", selector: { select: { mode: "list", options: main } } });
+      const labels = { orientation: "orientation", main_value: "main_value" };
+      return { schema, computeLabel: (field) => text(labels[field.name] || "car") };
     }
 
     setConfig(config) {
@@ -323,7 +330,7 @@
           <div class="status"></div>
           <div class="energy" data-action="charge" role="button" tabindex="0" aria-label="${this._t("charge_open")}">
             <div class="range">
-              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="estb" hidden></span><span class="grow"></span>
+              <ha-icon class="batt"></ha-icon><span class="km"></span><span class="kms" hidden></span><span class="estb" hidden></span><span class="grow"></span>
               <span class="charge"><ha-icon></ha-icon><span></span></span>
             </div>
             <div class="bar"><i></i><b class="tgt" hidden></b></div>
@@ -370,7 +377,22 @@
       const color = level === undefined ? "var(--secondary-text-color)" : level < 15 ? "var(--error-color, #db4437)" : level < 50 ? "var(--warning-color, #f9a825)" : "var(--success-color, #43a047)";
       $(".batt").setAttribute("icon", this._batteryIcon(level, charging));
       $(".batt").style.color = color;
-      $(".km").textContent = estimate ? `≈ ${Math.round(level)} %` : this._format("sensor.range") || "—";
+      // Dato principal: autonomía (de fábrica), el % o el % con los km al lado.
+      // Sin cobertura, el % estimado por el cargador manda en las tres.
+      const mode = MAIN_VALUES.includes(this._config.main_value) ? this._config.main_value : "range";
+      const range = this._format("sensor.range");
+      const percent = level === undefined ? undefined : `${Math.round(level)} %`;
+      let main = range;
+      let second = "";
+      if (estimate) main = `≈ ${Math.round(level)} %`;
+      else if (mode === "battery") main = percent || range;
+      else if (mode === "both") {
+        main = percent || range;
+        if (percent && range) second = `· ${range}`;
+      }
+      $(".km").textContent = main || "—";
+      $(".kms").textContent = second;
+      $(".kms").hidden = !second;
       $(".estb").hidden = !estimate;
       $(".estb").textContent = estimate ? this._t("ch_estimated") : "";
       $(".bar i").style.width = `${level === undefined ? 0 : Math.max(0, Math.min(100, level))}%`;

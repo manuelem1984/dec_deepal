@@ -4,12 +4,14 @@
 //
 //   type: custom:dec-deepal-card
 //   device_id: <dispositivo del coche>     (opcional: si falta, el primero)
+//   main_value: range | battery | both     (opcional: range; 2.6.0b8)
 //
 // Y la misma tarjeta con el coche visto desde arriba (2.5.0b5):
 //
 //   type: custom:dec-deepal-top-card
 //   device_id: <dispositivo del coche>
 //   orientation: horizontal | vertical     (opcional: horizontal)
+//   main_value: range | battery | both     (opcional: range)
 //
 // Qué muestra (diseño cerrado con bocetos, 09-10-2026):
 //   - Cabecera: nombre del coche, "Actualizado: ..." y botón de actualizar.

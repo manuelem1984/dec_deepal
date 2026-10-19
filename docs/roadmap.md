@@ -1,5 +1,11 @@
 # Hoja de ruta
 
+## Beta 2.6.0b8 (19-10-2026) — pendiente de probar
+
+- [ ] **Dato principal:** en el editor de la tarjeta del coche y de la de
+      planta, «Batería» enseña el % y «Las dos», «76 % · 312 km»; sin tocar
+      nada, sigue la autonomía.
+
 ## Beta 2.6.0b7 (19-10-2026) — pendiente de probar
 
 - [ ] **Límite de carga:** con el V2C Trydan y un límite del 80 %, la carga se

@@ -39,6 +39,8 @@
     .range { display: flex; align-items: center; gap: 8px; padding: 0 16px; }
     .range .batt { --mdc-icon-size: 26px; }
     .range .km { font-size: 24px; color: var(--primary-text-color); white-space: nowrap; }
+    .range .kms { font-size: 15px; color: var(--secondary-text-color); white-space: nowrap; margin-left: -2px; }
+    .range .kms[hidden] { display: none; }
     .range .estb { font-size: 11px; color: var(--warning-color, #e65100); background: rgba(255, 152, 0, .15); border-radius: 8px; padding: 1px 7px; margin-left: 6px; white-space: nowrap; }
     .range .charge.est { color: var(--success-color, #43a047); font-weight: 500; }
     .upd.est { color: var(--warning-color, #e65100); }

@@ -108,10 +108,14 @@ def test_top_view_card(page: Page) -> None:
         ["dec-deepal-charger-card", "DEC Deepal · Cargador"],
     ]
     form = "customElements.get('dec-deepal-top-card').getConfigForm()"
-    assert page.evaluate(f"{form}.schema.map(f => f.name)") == ["device_id", "orientation"]
+    assert page.evaluate(f"{form}.schema.map(f => f.name)") == ["device_id", "orientation", "main_value"]
     assert page.evaluate(f"{form}.schema[1].selector.select.options.map(o => o.label)") == ["Horizontal (tumbado)", "Vertical (de pie)"]
     assert page.evaluate(f"[{form}.computeLabel({{name: 'device_id'}}), {form}.computeLabel({{name: 'orientation'}})]") == ["Coche", "Orientación del coche"]
-    assert page.evaluate("customElements.get('dec-deepal-card').getConfigForm().schema.map(f => f.name)") == ["device_id"]
+    car_form = "customElements.get('dec-deepal-card').getConfigForm()"
+    assert page.evaluate(f"{car_form}.schema.map(f => f.name)") == ["device_id", "main_value"]
+    assert page.evaluate(f"{car_form}.schema[1].selector.select.mode") == "list"
+    assert page.evaluate(f"{car_form}.schema[1].selector.select.options.map(o => o.label)") == ["Autonomía (km)", "Batería (%)", "Las dos (% y km)"]
+    assert page.evaluate(f"{car_form}.computeLabel({{name: 'main_value'}})") == "Dato principal"
 
 
 def charge_stats(page: Page) -> list[list[str]]:
@@ -494,3 +498,21 @@ def test_a_car_without_optional_entities(page: Page) -> None:
     click_window(page, '[data-action="close"]')
     click_tile(page, "others")
     assert "Sin activar" in window_text(page)
+
+
+def test_main_value(page: Page) -> None:
+    """Dato principal: autonomía (de fábrica), el % o «76 % · 312 km», en las dos tarjetas."""
+    root = "banco.card.shadowRoot"
+    shown = lambda: page.evaluate(f"[{root}.querySelector('.km').textContent, {root}.querySelector('.kms').hidden ? '' : {root}.querySelector('.kms').textContent]")  # noqa: E731
+    mount(page)
+    range_text, extra = shown()
+    assert range_text.endswith("km") and extra == ""
+    level = page.evaluate("Math.round(Number(banco.hass.states[Object.keys(banco.hass.states).find(id => id.includes('battery_level'))].state))")
+    for card in ("dec-deepal-card", "dec-deepal-top-card"):
+        mount(page, tarjeta=card, config={"main_value": "battery"})
+        assert shown() == [f"{level} %", ""]
+        mount(page, tarjeta=card, config={"main_value": "both"})
+        assert shown() == [f"{level} %", f"· {range_text}"]
+    # Sin autonomía (coche dormido), «Las dos» enseña solo el %.
+    mount(page, config={"main_value": "both"}, sin=["sensor.range"])
+    assert shown() == [f"{level} %", ""]
