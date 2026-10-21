@@ -1,5 +1,13 @@
 # Hoja de ruta
 
+## Beta 2.6.0b9 (21-10-2026) — pendiente de probar
+
+- [ ] **Revisión de HACS:** tras actualizar, en Ajustes → Paneles → Recursos
+      sale `/dec_deepal/frontend/dec-icons-loader.js` y ya no el de
+      `/local/`; la carpeta `www/dec_deepal/` ha desaparecido; los iconos
+      `dec:` y las tarjetas se ven tras reiniciar.
+- [ ] Añadir una cuenta nueva (login con código) sigue funcionando.
+
 ## Beta 2.6.0b8 (19-10-2026) — pendiente de probar
 
 - [ ] **Dato principal:** en el editor de la tarjeta del coche y de la de

@@ -3,6 +3,20 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b9] — 2026-10-21
+
+### Cambiado
+
+- **Revisión de HACS:** el cargador temprano de iconos ya no se copia a la
+  carpeta `www` del usuario (que se sirve sin autenticación) ni se registra
+  como recurso `/local/`. Ahora se sirve desde la ruta propia de la
+  integración (`/dec_deepal/frontend/dec-icons-loader.js`) y es esa la que se
+  registra como recurso de los paneles. Al arrancar se borran la copia
+  antigua de `<config>/www/dec_deepal/` (solo nuestro archivo; la carpeta,
+  solo si queda vacía) y el recurso `/local/` antiguo.
+- **Revisión de HACS:** la clave RSA del inicio de sesión se genera en un hilo
+  aparte, sin frenar el bucle de eventos de Home Assistant.
+
 ## [2.6.0b8] — 2026-10-19
 
 ### Añadido

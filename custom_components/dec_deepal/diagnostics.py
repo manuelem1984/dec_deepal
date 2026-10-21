@@ -106,7 +106,7 @@ async def async_get_config_entry_diagnostics(
                 "modelos": sorted(runtime.registries.vehicles.models),
                 "iconos_svg": sorted(runtime.registries.icons.available),
                 "avisos_iconos": runtime.registries.icons.warnings,
-                # Cargador temprano de iconos (www + recurso de paneles).
+                # Cargador temprano de iconos (recurso de paneles, ruta propia).
                 "cargador_iconos": hass.data.get(DOMAIN, {}).get(LOADER_STATUS_KEY),
             },
             "vehiculos": vehicles,

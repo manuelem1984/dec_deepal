@@ -70,3 +70,34 @@ def test_sign_payload_verifies() -> None:
         padding.PKCS1v15(),
         hashes.SHA256(),
     )
+
+
+async def test_login_generates_the_key_outside_the_event_loop() -> None:
+    """Revisión de HACS: la clave RSA se genera en un hilo, no en el bucle de eventos."""
+    import threading
+
+    from custom_components.dec_deepal.api import auth as auth_module
+
+    threads: list[str] = []
+    real = auth_module.generate_keypair
+
+    def spy() -> tuple[str, str]:
+        threads.append(threading.current_thread().name)
+        return real()
+
+    class Transport:
+        country = type("Country", (), {"sales_country": "ES"})()
+        session = None
+
+        async def post(self, *_args, **_kwargs) -> dict:
+            return {}
+
+    auth_module.generate_keypair = spy
+    try:
+        try:
+            await auth_module.DeepalAuth(Transport()).login_email("a@b.es", "123456")
+        except Exception:  # noqa: BLE001 - la respuesta vacía no es un login válido; aquí da igual
+            pass
+    finally:
+        auth_module.generate_keypair = real
+    assert threads and threads[0] != threading.main_thread().name

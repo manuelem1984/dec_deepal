@@ -126,15 +126,17 @@ código de Home Assistant 2026.9.4 (frontend 20260826.7):
 
 Solución, sin que el usuario toque nada:
 
-- **Cargador temprano** (`icons/dec-icons-loader.js`). Al arrancar, la
-  integración lo copia a `<config>/www/dec_deepal/` y lo registra como
-  **recurso de los paneles** (`/local/dec_deepal/dec-icons-loader.js`):
-  esas dos cosas existen desde el primer instante. El cargador reintenta
+- **Cargador temprano** (`icons/dec-icons-loader.js`). La integración lo
+  sirve desde su propia ruta (`/dec_deepal/frontend/dec-icons-loader.js`)
+  y lo registra como **recurso de los paneles**. El cargador reintenta
   cargar `dec-icons.js` (unos 2 minutos) hasta que la integración lo
   publica. Su contenido no cambia entre versiones: se registra una vez.
+  Hasta la 2.6.0b8 se copiaba a `<config>/www/dec_deepal/` (`/local/`); la
+  revisión de HACS pidió no escribir en la carpeta `www` del usuario, que se
+  sirve sin autenticación. Al arrancar se borran esa copia y su recurso.
 - **Repintado.** Al llegar, `dec-icons.js` busca los `<ha-icon>` con icono
   `dec:` que quedaron marcados, les quita la marca y les hace recargar.
-- Al desinstalar la integración se quitan el recurso y la copia de `www`.
+- Al desinstalar la integración se quita el recurso.
 
 Límites conocidos:
 
@@ -144,9 +146,10 @@ Límites conocidos:
   recargar.
 - Si los recursos de los paneles están en **modo YAML**, no se pueden
   registrar desde una integración: queda como antes.
-- `/local/` solo existe si la carpeta `www` ya estaba al arrancar Home
-  Assistant. Si la crea la integración, funciona desde el siguiente
-  reinicio.
+- Si la página se carga antes de que la integración publique su ruta, el
+  recurso falla en esa carga y los iconos `dec:` no salen hasta recargar
+  (antes, con la copia en `www`, el cargador sí estaba desde el primer
+  instante).
 - El resultado se ve en los diagnósticos: `catalogos → cargador_iconos`.
 
 ## Iconos propios incluidos

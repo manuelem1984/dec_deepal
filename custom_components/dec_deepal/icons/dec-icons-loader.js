@@ -2,10 +2,10 @@
 // DEC Deepal — Cargador temprano de los iconos "dec:"
 // =============================================================================
 //
-// NO EDITAR ni borrar: la integración copia este archivo a
-// <config>/www/dec_deepal/ en cada arranque y lo registra como recurso de los
-// paneles (Ajustes → Paneles → Recursos). Si se desinstala DEC Deepal, ambos
-// se quitan solos.
+// NO EDITAR ni borrar: la integración lo sirve desde su propia ruta
+// (/dec_deepal/frontend/dec-icons-loader.js) y lo registra como recurso de los
+// paneles (Ajustes → Paneles → Recursos). Si se desinstala DEC Deepal, el
+// recurso se quita solo.
 //
 // Para qué sirve
 // --------------
@@ -14,9 +14,9 @@
 // sabe que existe el script de iconos (dec-icons.js), así que la página se
 // queda sin él y los iconos "dec:" no se ven hasta recargar.
 //
-// La carpeta www (/local/) y los recursos de los paneles sí están disponibles
-// desde el primer instante. Este cargador vive ahí y solo hace una cosa:
-// intentar cargar el script de verdad hasta que la integración lo publica.
+// Los recursos de los paneles se cargan con cada panel. Este cargador solo hace
+// una cosa: intentar cargar el script de verdad hasta que la integración lo
+// publica.
 //
 // Su contenido no cambia entre versiones (toda la lógica está en
 // dec-icons.js), así que el recurso se registra una sola vez.

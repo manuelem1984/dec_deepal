@@ -167,11 +167,14 @@ PANEL_URL_PATH: Final = "dec-deepal-panel"
 #: Fotos del catálogo (públicas, como los iconos): el panel enseña la del
 #: modelo, versión y color que se están eligiendo, antes de guardar.
 PHOTOS_URL: Final = "/dec_deepal/photos"
-#: Cargador temprano: se copia a <config>/www/dec_deepal/ y se registra como
-#: recurso de los paneles (ver frontend.py).
+#: Cargador temprano: se sirve desde la ruta propia de la integración y se
+#: registra como recurso de los paneles (ver frontend.py).
 ICONS_LOADER_FILE: Final = "dec-icons-loader.js"
-ICONS_LOADER_WWW_DIR: Final = "dec_deepal"
-ICONS_LOADER_URL: Final = "/local/dec_deepal/dec-icons-loader.js"
+ICONS_LOADER_URL: Final = f"{ICONS_JS_URL}/{ICONS_LOADER_FILE}"
+#: Hasta la 2.6.0b8 el cargador se copiaba a <config>/www/dec_deepal/ y el
+#: recurso apuntaba a /local/: al arrancar se quitan los dos.
+LEGACY_LOADER_WWW_DIR: Final = "dec_deepal"
+LEGACY_LOADER_URL: Final = "/local/dec_deepal/dec-icons-loader.js"
 #: API que devuelve la lista de iconos disponibles (para el selector de iconos).
 ICONS_LIST_API: Final = "/api/dec_deepal/icons"
 #: Todos los SVG en una sola respuesta JSON (lo usa dec-icons.js).

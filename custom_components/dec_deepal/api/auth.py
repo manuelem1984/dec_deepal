@@ -15,6 +15,7 @@ pública de la app (``crypto.encrypt_value``).
 
 from __future__ import annotations
 
+import asyncio
 from typing import Any
 
 from . import endpoints
@@ -52,8 +53,13 @@ class DeepalAuth:
     # ------------------------------------------------------------------
 
     async def login_email(self, email: str, code: str) -> DeepalSession:
-        """Completa el login con correo + código."""
-        private_pem, public_body = generate_keypair()
+        """Completa el login con correo + código.
+
+        Generar la clave RSA es trabajo de CPU: va en un hilo aparte para no
+        frenar el bucle de eventos de Home Assistant (y sin depender de él:
+        el paquete ``api`` no importa nada de Home Assistant).
+        """
+        private_pem, public_body = await asyncio.get_running_loop().run_in_executor(None, generate_keypair)
         data = await self._transport.post(
             endpoints.LOGIN_BY_EMAIL_CODE,
             {
