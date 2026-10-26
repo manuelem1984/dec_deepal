@@ -1,5 +1,15 @@
 # Hoja de ruta
 
+## Beta 2.6.0b10 (26-10-2026) — pendiente de probar
+
+- [ ] **Carga detenida:** con el V2C bloqueado y el cable puesto (límite de
+      carga, bloquear al terminar o a mano), el «Estado de carga» dice
+      «Carga detenida» y no «Desconectado». Mirar en el diagnóstico el
+      `ChrgSts` en bruto (¿5?) y el `acChargeGunConnectionState` con el cable
+      puesto y quitado (Deepal Alternative dice 1 = puesta; nosotros vimos 1
+      desenchufado).
+- [ ] En una carga DC, la corriente sale en positivo.
+
 ## Beta 2.6.0b9 (21-10-2026) — pendiente de probar
 
 - [ ] **Revisión de HACS:** tras actualizar, en Ajustes → Paneles → Recursos
@@ -132,6 +142,7 @@ Pendiente de comprobar:
       Changote del 12-10, «del 100 % al 100 % en 14 h 28 min», es de antes
       de la 2.5.0b8.)
 - [ ] **Carga terminada con la manguera puesta:** ¿qué `ChrgSts` manda?
+      (Con el cargador desactivado, 5 = «Carga detenida», 2.6.0b10.)
 - [ ] **Coche nuevo o retirado de la cuenta:** el aviso sale en menos de 30
       minutos sin reiniciar (corregido en la 2.5.0).
 - [ ] **Países nuevos:** que alguien de Portugal, Italia, Alemania o Francia

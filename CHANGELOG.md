@@ -3,6 +3,26 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b10] — 2026-10-26
+
+### Añadido
+
+- **«Carga detenida» (`ChrgSts` 5):** con la manguera puesta y el cargador
+  bloqueado o desactivado, el coche manda un estado nuevo. Antes se
+  descartaba y la tarjeta podía decir «Desconectado» con el cable puesto;
+  ahora el «Estado de carga» es «Carga detenida», «Cargando» está apagado y
+  la manguera cuenta como enchufada (AC, salvo que el coche diga DC). Lo
+  vio Deepal Alternative el 25-10-2026; es justo lo que pasa cuando DEC
+  Deepal bloquea el cargador al llegar al límite o al terminar.
+
+### Corregido
+
+- **Corriente de carga negativa:** el coche puede mandarla con el signo de la
+  batería (p. ej. −60,5 A cargando en DC). Antes salía «desconocida»; ahora se
+  enseña en positivo. Los valores falsos (2538 A y −2538 A) siguen fuera.
+- **El cuentakilómetros nunca baja:** una lectura menor que la anterior (un
+  fallo de una fuente) ya no se enseña; se conserva la anterior.
+
 ## [2.6.0b9] — 2026-10-21
 
 ### Cambiado

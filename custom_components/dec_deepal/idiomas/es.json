@@ -143,7 +143,8 @@
             "connected_ac": "Conectado AC",
             "connected_dc": "Conectado DC",
             "charging_ac": "Cargando AC",
-            "charging_dc": "Cargando DC"
+            "charging_dc": "Cargando DC",
+            "stopped": "Carga detenida"
           }
         },
         "charge_current": {

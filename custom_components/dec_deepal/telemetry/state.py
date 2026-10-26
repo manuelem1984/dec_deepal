@@ -19,6 +19,9 @@ coche real:
    conserva el último que llegó con el coche encendido.
 6. **Valores optimistas** (tras un comando) se aplican encima, en el
    coordinador (ver :func:`apply_holds`).
+7. **El cuentakilómetros nunca baja:** una lectura menor que la anterior es
+   un dato falso (un fallo de una fuente o un valor viejo del REST); se
+   conserva la anterior.
 
 Además se guarda de dónde salió cada valor (``sources``) para diagnóstico.
 """
@@ -190,6 +193,14 @@ def build_state(
             if signal not in values and previous.values.get(signal) is not None:
                 values[signal] = previous.values[signal]
                 sources[signal] = SOURCE_PREVIOUS
+
+    # Regla 7: el cuentakilómetros nunca baja.
+    if previous is not None:
+        before = previous.values.get(s.ODOMETER_KM)
+        now = values.get(s.ODOMETER_KM)
+        if isinstance(before, (int, float)) and isinstance(now, (int, float)) and now < before:
+            values[s.ODOMETER_KM] = before
+            sources[s.ODOMETER_KM] = SOURCE_PREVIOUS
 
     return VehicleState(
         values=values,

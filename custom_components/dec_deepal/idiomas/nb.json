@@ -143,7 +143,8 @@
             "connected_ac": "Tilkoblet AC",
             "connected_dc": "Tilkoblet DC",
             "charging_ac": "Lader AC",
-            "charging_dc": "Lader DC"
+            "charging_dc": "Lader DC",
+            "stopped": "Lading stoppet"
           }
         },
         "charge_current": {

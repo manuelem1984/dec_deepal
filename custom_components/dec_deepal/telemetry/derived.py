@@ -22,12 +22,15 @@ CHARGE_CONNECTED_AC: Final = "connected_ac"
 CHARGE_CONNECTED_DC: Final = "connected_dc"
 CHARGE_CHARGING_AC: Final = "charging_ac"
 CHARGE_CHARGING_DC: Final = "charging_dc"
+#: Manguera puesta y carga detenida (``ChrgSts`` 5), p. ej. con el cargador bloqueado.
+CHARGE_STOPPED: Final = "stopped"
 CHARGE_STATUS_OPTIONS: Final = (
     CHARGE_DISCONNECTED,
     CHARGE_CONNECTED_AC,
     CHARGE_CONNECTED_DC,
     CHARGE_CHARGING_AC,
     CHARGE_CHARGING_DC,
+    CHARGE_STOPPED,
 )
 
 
@@ -44,8 +47,15 @@ def _plugged(values: Mapping[str, Any], states: frozenset[int], raw: str) -> boo
     el S05 (cargando dice que no hay manguera, otros no mandan el de AC y un
     valor viejo puede quedarse encendido con el cable quitado), así que solo
     se miran si no hay estado de carga (p. ej. solo REST).
+
+    Con el estado 5 (carga detenida) la manguera está puesta, pero el estado
+    no dice de qué tipo: es DC si el campo de la DC lo dice; si no, AC (la de
+    casa, que es donde se bloquea un cargador).
     """
     state = values.get(s.CHARGE_STATE)
+    if state == c.CHARGE_STATE_STOPPED:
+        dc = values.get(s.DC_CONNECTOR) is True
+        return dc if raw == s.DC_CONNECTOR else not dc
     if state is not None:
         return state in states
     return values.get(raw)
@@ -76,14 +86,16 @@ _STATUS_BY_CHARGE_STATE: Final = {
     c.CHARGE_STATE_DC_CONNECTED: CHARGE_CONNECTED_DC,
     c.CHARGE_STATE_AC_CHARGING: CHARGE_CHARGING_AC,
     c.CHARGE_STATE_DC_CHARGING: CHARGE_CHARGING_DC,
+    c.CHARGE_STATE_STOPPED: CHARGE_STOPPED,
 }
 
 
 def charge_status(values: Mapping[str, Any]) -> str | None:
     """Estado de carga en una palabra.
 
-    Si el coche manda su estado de carga (``ChrgSts`` 1-4), se usa tal cual:
-    dice a la vez si hay manguera, de qué tipo y si carga.
+    Si el coche manda su estado de carga (``ChrgSts`` 1-5), se usa tal cual:
+    dice a la vez si hay manguera, de qué tipo y si carga (5 = manguera
+    puesta y carga detenida).
 
     Si no (estado 0 o sin estado, p. ej. solo REST), manda "cargando", que es
     el dato fiable, y los conectores de :func:`ac_plugged` / :func:`dc_plugged`

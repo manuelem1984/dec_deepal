@@ -143,7 +143,8 @@
             "connected_ac": "Συνδεδεμένο AC",
             "connected_dc": "Συνδεδεμένο DC",
             "charging_ac": "Φορτίζει AC",
-            "charging_dc": "Φορτίζει DC"
+            "charging_dc": "Φορτίζει DC",
+            "stopped": "Η φόρτιση σταμάτησε"
           }
         },
         "charge_current": {

@@ -142,7 +142,8 @@
           "connected_ac": "Tilsluttet AC",
           "connected_dc": "Tilsluttet DC",
           "charging_ac": "Oplader AC",
-          "charging_dc": "Oplader DC"
+          "charging_dc": "Oplader DC",
+          "stopped": "Opladning stoppet"
         }
       },
       "charge_current": {

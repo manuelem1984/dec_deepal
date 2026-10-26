@@ -142,7 +142,8 @@
           "connected_ac": "Branchée AC",
           "connected_dc": "Branchée DC",
           "charging_ac": "En recharge AC",
-          "charging_dc": "En recharge DC"
+          "charging_dc": "En recharge DC",
+          "stopped": "Charge arrêtée"
         }
       },
       "charge_current": {

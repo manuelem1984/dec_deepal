@@ -178,7 +178,7 @@ def _resolve_charge_currents(params: dict[str, Any], values: dict[str, Any]) -> 
 
     - Cargando en DC (4): la activa es la de DC; la de AC, 0.
     - Cargando en AC (3): la activa es la de AC; la de DC, 0.
-    - Sin cargar (0, 1, 2): todas a 0 (no un valor viejo ni el falso de
+    - Sin cargar (0, 1, 2, 5): todas a 0 (no un valor viejo ni el falso de
       después de una carga).
     - Estado desconocido: la que no sea 0, preferiblemente la de AC.
 

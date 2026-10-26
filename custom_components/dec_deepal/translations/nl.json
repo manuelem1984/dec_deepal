@@ -142,7 +142,8 @@
           "connected_ac": "Aangesloten AC",
           "connected_dc": "Aangesloten DC",
           "charging_ac": "Laadt AC",
-          "charging_dc": "Laadt DC"
+          "charging_dc": "Laadt DC",
+          "stopped": "Laden gestopt"
         }
       },
       "charge_current": {

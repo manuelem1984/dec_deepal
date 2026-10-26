@@ -193,14 +193,15 @@ def test_charge_status_does_not_trust_the_connectors() -> None:
 
 def test_charge_state_is_an_enum() -> None:
     """ChrgSts: 0 sin cargar, 1/2 manguera AC/DC puesta, 3/4 cargando AC/DC."""
-    assert [c.charge_state(value) for value in (0, "1", 2.0, 3, 4)] == [0, 1, 2, 3, 4]
+    assert [c.charge_state(value) for value in (0, "1", 2.0, 3, 4, 5)] == [0, 1, 2, 3, 4, 5]
     assert c.charge_state(9) is None and c.charge_state(None) is None
-    assert [c.charging_from_state(value) for value in (0, 1, 2, 3, 4)] == [
+    assert [c.charging_from_state(value) for value in (0, 1, 2, 3, 4, 5)] == [
         False,
         False,
         False,
         True,
         True,
+        False,
     ]
     assert c.charging_from_state(9) is None
 
@@ -288,9 +289,10 @@ def test_charge_currents_follow_the_charge_state() -> None:
 
 def test_impossible_charge_current_is_dropped() -> None:
     """2538 A: valor falso que mandó un S05 aparcado tras una carga DC."""
-    assert c.charge_current(2538) is None
-    assert c.charge_current(-1) is None
+    assert c.charge_current(2538) is None and c.charge_current(-2538) is None
     assert c.charge_current("480") == 480.0
+    # Con el signo de la batería: -60,5 A cargando en DC es una carga de 60,5 A.
+    assert c.charge_current(-60.5) == 60.5
     values = map_mqtt({"BattDCChrgInCurr": 2538})
     assert s.DC_CHARGE_CURRENT not in values and s.CHARGE_CURRENT not in values
     assert s.CHARGE_CURRENT not in map_rest({"charge": {"chargeCurrent": 2538}})
@@ -323,3 +325,32 @@ def test_extras_2_1_0() -> None:
     assert values[s.WINDOW_OPENING_REAR_RIGHT] == 0
     assert values[s.WARNING_12V_BATTERY] is True and values[s.WARNING_TPMS] is False
     assert len([key for key in values if key.startswith("warning_")]) == 2
+
+
+def test_charge_stopped_with_the_cable_in() -> None:
+    """ChrgSts 5 (2.6.0b10): manguera puesta y carga detenida (cargador bloqueado)."""
+    params = {"ChrgSts": 5, "acChargeGunConnectionState": 1, "BattACChrgInCurr": 7, "chargDeltMins": 8191}
+    state = build_state(mqtt_params=params, rest_raw=None, previous=None)
+    assert state.get(s.CHARGE_STATE) == 5 and state.get(s.CHARGING) is False
+    assert state.get(s.CHARGE_STATUS) == "stopped"
+    assert state.get(s.CHARGER_PLUGGED) is True
+    assert (state.get(s.AC_PLUGGED), state.get(s.DC_PLUGGED)) == (True, False)
+    assert state.get(s.CHARGE_CURRENT) == 0.0  # sin cargar, la corriente es 0
+    # Si el campo de la DC dice que es esa manguera, es DC.
+    dc = build_state(mqtt_params={"ChrgSts": 5, "dcChargeGunConnectionState": 2}, rest_raw=None, previous=None)
+    assert (dc.get(s.AC_PLUGGED), dc.get(s.DC_PLUGGED)) == (False, True)
+
+
+def test_negative_dc_current_is_a_real_charge() -> None:
+    """Cargando en DC el coche puede mandar la corriente en negativo."""
+    values = map_mqtt({"ChrgSts": 4, "BattDCChrgInCurr": -60.5, "BattACChrgInCurr": 0})
+    assert values[s.DC_CHARGE_CURRENT] == 60.5 and values[s.CHARGE_CURRENT] == 60.5
+
+
+def test_odometer_never_goes_down() -> None:
+    """Una lectura menor que la anterior es falsa: se conserva la anterior."""
+    first = build_state(mqtt_params={"totalOdometer": 3645}, rest_raw=None, previous=None)
+    lower = build_state(mqtt_params={"totalOdometer": 12}, rest_raw=None, previous=first)
+    assert lower.get(s.ODOMETER_KM) == 3645 and lower.sources[s.ODOMETER_KM] == "anterior"
+    higher = build_state(mqtt_params={"totalOdometer": 3650}, rest_raw=None, previous=lower)
+    assert higher.get(s.ODOMETER_KM) == 3650
