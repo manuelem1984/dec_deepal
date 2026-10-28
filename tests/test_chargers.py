@@ -560,3 +560,41 @@ async def test_car_limit_from_the_card(hass: HomeAssistant, manager: ChargerMana
         await manager.async_set_car_limit("car2", other, limit=70)
     config = manager.panel_config()["limit"]
     assert config["every_choices"] == [3, 4, 5, 6] and [car["id"] for car in config["cars"]] == ["car1", "car2"]
+
+
+
+async def test_one_card_update_per_change_and_status_reads_only(hass: HomeAssistant, manager: ChargerManager, freezer) -> None:  # noqa: ANN001
+    """Revisión de código (2.6.0b12): un aviso a las tarjetas por cambio y status() sin efectos."""
+    await manager.async_save_charger({**GARAJE, "vehicles": ["car1"], "unlock": "none", "coverage": "no",
+                                      "entities": {"plugged": PLUG, "charging": CHARGING, "power": POWER}})
+    await manager.async_set_settings(True, "people")
+    charger_id = next(iter(manager.chargers))
+    hass.states.async_set(PLUG, "on")
+    hass.states.async_set(POWER, "3600", {"unit_of_measurement": "W"})
+    hass.states.async_set(CHARGING, "on")
+    await hass.async_block_till_done()
+
+    calls: list[int] = []
+    manager.async_add_listener(lambda: calls.append(1))
+    hass.states.async_set(PLUG, "on", {"cambio": 1})  # la manguera: pasa por _sync
+    await hass.async_block_till_done()
+    hass.states.async_set(POWER, "3700", {"unit_of_measurement": "W"})  # la potencia: sin _sync
+    await hass.async_block_till_done()
+    assert len(calls) == 2
+
+    # Leer el estado (la tarjeta) no cambia la carga apuntada.
+    freezer.tick(timedelta(minutes=30))
+    before = dict(manager._sessions[charger_id])
+    status = manager.status(charger_id)
+    assert status["session"]["energy"] > 0
+    assert manager._sessions[charger_id] == before
+
+
+async def test_limits_of_cars_without_a_charger_are_forgotten(hass: HomeAssistant, manager: ChargerManager) -> None:
+    await manager.async_save_charger(GARAJE)
+    await manager.async_set_limit_settings({"enabled": True})
+    await manager.async_set_car_limit("car2", None, limit=80, check=False)
+    assert "car2" in manager._cars
+    charger_id = next(iter(manager.chargers))
+    await manager.async_save_charger({**GARAJE, "id": charger_id, "vehicles": ["car1"]})
+    assert "car2" not in manager._cars

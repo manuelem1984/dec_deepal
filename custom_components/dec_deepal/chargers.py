@@ -60,7 +60,13 @@ from datetime import datetime, timedelta
 from typing import Any, Final
 
 from homeassistant.components import persistent_notification
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.const import (
+    EVENT_HOMEASSISTANT_STARTED,
+    EVENT_HOMEASSISTANT_STOP,
+    STATE_ON,
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, State, callback
 from homeassistant.helpers.event import (
     async_call_later,
@@ -370,6 +376,14 @@ class ChargerManager:
         self.limit = clean_limit(data.get("limit") or {})
         self._cars = {str(key): _clean_car(value) for key, value in (data.get("cars") or {}).items() if isinstance(value, Mapping)}
         self._loaded = True
+
+        # Al apagar Home Assistant: fuera temporizadores y escuchas (lo pendiente
+        # de guardar lo escribe el almacén solo, en su último guardado).
+        @callback
+        def _stopping(_event: Event) -> None:
+            self.async_stop()
+
+        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _stopping)
         if self.hass.is_running:
             self._resubscribe()
         else:
@@ -443,6 +457,7 @@ class ChargerManager:
     # ------------------------------------------------------------------
 
     async def async_set_settings(self, enabled: bool, control: str, show_estimate: bool | None = None) -> None:
+        """Activa o desactiva los cargadores, quién los controla y el % estimado en la tarjeta del coche."""
         await self.async_load()
         self.enabled = bool(enabled)
         self.control = _choice(control, CONTROLS, CONTROL_PEOPLE)
@@ -453,21 +468,33 @@ class ChargerManager:
         self._changed()
 
     async def async_save_charger(self, raw: Mapping[str, Any]) -> dict[str, Any]:
+        """Añade o cambia un cargador (ver :func:`clean_charger`) y empieza a escucharlo.
+
+        Raises:
+            ChargerError: el cargador no es válido.
+        """
         await self.async_load()
         charger = clean_charger(raw, self._vehicle_ids())
         self.chargers[charger["id"]] = charger
+        self._prune_cars()
         self._save()
         self._resubscribe()
         self._changed()
         return charger
 
     async def async_delete_charger(self, charger_id: str) -> None:
+        """Quita un cargador con su carga en curso, su historial y sus pérdidas medidas.
+
+        Raises:
+            KeyError: no existe.
+        """
         await self.async_load()
         if self.chargers.pop(charger_id, None) is None:
             raise KeyError(charger_id)
         self._cancel(charger_id)
         for store in (self._sessions, self._history, self._losses):
             store.pop(charger_id, None)
+        self._prune_cars()
         self._save()
         self._resubscribe()
         self._changed()
@@ -521,6 +548,12 @@ class ChargerManager:
             else:
                 self._check_limit(charger)
         self._changed()
+
+    def _prune_cars(self) -> None:
+        """Olvida el límite de los coches que ya no están en ningún cargador."""
+        linked = {vehicle_id for charger in self.chargers.values() for vehicle_id in charger["vehicles"]}
+        for vehicle_id in [vehicle_id for vehicle_id in self._cars if vehicle_id not in linked]:
+            del self._cars[vehicle_id]
 
     def _car(self, vehicle_id: str) -> dict[str, Any]:
         return self._cars.setdefault(vehicle_id, _clean_car({}))
@@ -654,6 +687,7 @@ class ChargerManager:
         return _flag(self._state(charger, ROLE_CHARGING))
 
     def power_w(self, charger: Mapping[str, Any]) -> float | None:
+        """Potencia de carga en W (la entidad puede estar en W o en kW)."""
         state = self._state(charger, ROLE_POWER)
         value = _number(state)
         if value is None:
@@ -670,6 +704,7 @@ class ChargerManager:
         return value / 1000 if unit.lower() == "wh" else value
 
     def locked(self, charger: Mapping[str, Any]) -> bool | None:
+        """¿Bloqueado? Una cerradura dice ``locked``; un interruptor, según ``lock_on_locked``."""
         state = self._state(charger, ROLE_LOCK)
         if state is None or state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
             return None
@@ -711,8 +746,9 @@ class ChargerManager:
                 self._track_energy(charger)
                 self._check_limit(charger)
             if role in (ROLE_PLUGGED, ROLE_CHARGING, ROLE_LOCK):
-                self._sync(charger_id)
-            self._changed()
+                self._sync(charger_id)  # avisa él a las tarjetas
+            else:
+                self._changed()
 
     @callback
     def _sync(self, charger_id: str) -> None:
@@ -822,7 +858,7 @@ class ChargerManager:
             if (vehicle_id := self._car_confirming(current)) is not None:
                 self._assign(current, vehicle_id, BY_CAR)
                 if current["unlock"] == UNLOCK_CONFIRM and self.locked(current):
-                    self.hass.async_create_task(self._unlock_for(current, vehicle_id, by_car=True))
+                    self.hass.async_create_task(self._unlock_for(current, vehicle_id, by_car=True), "dec_deepal: desbloquear el cargador")
                 self._changed()
                 return
             if self._clock() >= until:
@@ -866,7 +902,7 @@ class ChargerManager:
         self._save()
         if session.get("limit_locked") and charger["unlock"] == UNLOCK_NONE and not charger["relock"]:
             # Bloqueado solo por el límite: se deja como estaba (desbloqueado).
-            self.hass.async_create_task(self._set_locked(charger, False))
+            self.hass.async_create_task(self._set_locked(charger, False), "dec_deepal: desbloquear tras el límite")
         else:
             self._maybe_relock(charger)
 
@@ -913,7 +949,7 @@ class ChargerManager:
             return
         session["limit_hit"] = _iso(self._clock())
         self._save()
-        self.hass.async_create_task(self._stop_at_limit(charger, vehicle_id, target, level))
+        self.hass.async_create_task(self._stop_at_limit(charger, vehicle_id, target, level), "dec_deepal: parar en el límite")
 
     async def _stop_at_limit(self, charger: Mapping[str, Any], vehicle_id: str, target: int, level: float) -> None:
         """Bloquea el cargador (lo único que para la carga) y avisa. Sin bloqueo, solo avisa."""
@@ -964,7 +1000,7 @@ class ChargerManager:
             if current is None or session is None or self.charging(current) or self.locked(current) is not False:
                 return
             session.pop("lock_at", None)
-            self.hass.async_create_task(self._lock_full(current, session.get("vehicle_id"), minutes))
+            self.hass.async_create_task(self._lock_full(current, session.get("vehicle_id"), minutes), "dec_deepal: bloquear al terminar")
 
         self._timer(charger_id, "lock_full", minutes * 60, _lock)
 
@@ -992,7 +1028,7 @@ class ChargerManager:
             current = self.chargers.get(charger_id)
             if current is None or self.plugged(current) or self.locked(current) is not False:
                 return
-            self.hass.async_create_task(self._relock(current))
+            self.hass.async_create_task(self._relock(current), "dec_deepal: bloquear al desenchufar")
 
         self._timer(charger_id, "relock", charger["relock_minutes"] * 60, _relock)
 
@@ -1047,7 +1083,7 @@ class ChargerManager:
             coordinator = getattr(found[1], "coordinator", None) if found else None
             if coordinator is None or not getattr(coordinator, "wake_enabled", False):
                 return
-            self.hass.async_create_task(self._read_car(current, coordinator))
+            self.hass.async_create_task(self._read_car(current, coordinator), "dec_deepal: leer el coche mientras carga")
 
         self._timer(charger_id, "read", minutes * 60, _read)
 
@@ -1080,8 +1116,11 @@ class ChargerManager:
         session["pw_at"] = _iso(now)
         session["pw_w"] = power or 0.0
 
-    def _track_energy(self, charger: Mapping[str, Any], session: dict[str, Any] | None = None) -> None:
-        """kWh de esta carga: los del contador del cargador o, si no avanza, por la potencia."""
+    def _track_energy(self, charger: Mapping[str, Any], session: dict[str, Any] | None = None, *, save: bool = True) -> None:
+        """kWh de esta carga: los del contador del cargador o, si no avanza, por la potencia.
+
+        ``save=False`` para calcular sobre una copia sin guardar nada (la tarjeta).
+        """
         session = session if session is not None else self._sessions.get(charger["id"])
         if session is None:
             return
@@ -1098,7 +1137,8 @@ class ChargerManager:
         session["energy"] = max(float(session.get("energy") or 0.0), energy)
         if source:
             session["energy_source"] = source
-        self._save()
+        if save:
+            self._save()
 
     def _track_meter(self, charger: Mapping[str, Any], session: dict[str, Any]) -> None:
         """kWh de esta carga: lo que ha subido el contador desde que se enchufó."""
@@ -1243,7 +1283,7 @@ class ChargerManager:
         self._changed()
 
     def _notify_finished(self, charger: Mapping[str, Any], session: Mapping[str, Any]) -> None:
-        self._track_energy(charger, dict(session))
+        self._track_energy(charger, dict(session), save=False)
         energy = float(session.get("energy") or 0.0)
         price = self.price(charger)
         parts = []
@@ -1305,7 +1345,8 @@ class ChargerManager:
             if service.startswith("mobile_app_"):
                 payload["data"] = data
             self.hass.async_create_task(
-                self.hass.services.async_call("notify", service, payload, blocking=False)
+                self.hass.services.async_call("notify", service, payload, blocking=False),
+                "dec_deepal: aviso del cargador",
             )
         _LOGGER.debug("Aviso del cargador %s (%s): %s", charger["name"], notice, message)
 
@@ -1331,7 +1372,7 @@ class ChargerManager:
             except (ChargerError, KeyError) as err:
                 _LOGGER.warning("Botón del cargador no atendido (%s): %s", charger_id, err)
 
-        self.hass.async_create_task(_run())
+        self.hass.async_create_task(_run(), "dec_deepal: botón de la notificación")
 
     # ------------------------------------------------------------------
     # Estimación y medida de pérdidas
@@ -1420,7 +1461,11 @@ class ChargerManager:
         charger = self.chargers[charger_id]
         session = self._sessions.get(charger_id)
         if session is not None:
-            self._track_energy(charger, session)
+            # Los kWh hasta este momento, sobre una copia: leer el estado no
+            # cambia la carga apuntada ni la guarda (lo hacen los cambios del
+            # cargador, en _on_state).
+            session = dict(session)
+            self._track_energy(charger, session, save=False)
         price = self.price(charger)
         power = self.power_w(charger)
         locked = self.locked(charger)

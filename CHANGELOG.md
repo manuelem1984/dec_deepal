@@ -3,6 +3,27 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b12] — 2026-10-28
+
+Revisión de código (sin cambios que se vean).
+
+### Cambiado
+
+- **Cargadores, menos trabajo:** cada cambio del cargador (potencia,
+  manguera…) llega una sola vez a las tarjetas (antes, dos), y pedir el
+  estado ya no cambia ni guarda la carga apuntada.
+- **Al apagar Home Assistant** se paran los temporizadores y escuchas de los
+  cargadores; las tareas de la integración llevan nombre (se ven en los
+  registros si algo falla).
+- El límite de carga de un coche que ya no está en ningún cargador se olvida.
+- Pruebas: la CI prueba también la versión mínima de Home Assistant
+  (2026.3) y las versiones de las pruebas quedan fijadas.
+
+### Quitado
+
+- La ruta alternativa del token MQTT (`app-apigw/vot-auth`): no se usaba y
+  es de otra pasarela (SDA).
+
 ## [2.6.0b11] — 2026-10-28
 
 ### Añadido

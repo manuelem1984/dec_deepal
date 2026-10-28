@@ -47,11 +47,10 @@ FUNCTION_CONFIG: Final = "/intl-app-gw/intl-app-user/api/vehicle/function-config
 #: Configuración de conexión (broker, topics). Cabecera X-Tsp-User-Token.
 MQTT_CONN_CONF: Final = "/user-apigw/vot-connect-conf-center/api/device/getConnConf"
 #: Alternativa que usa la app si la anterior falla. ⚠️ Sin probar en España.
+#: Aún no se usa: pendiente en docs/roadmap.md (Deepal Alternative la usa).
 MQTT_CONN_CONF_FALLBACK: Final = "/user-apigw/vot-connect-conf-center/api/device/appGetCarConfFunc"
 #: Token para conectarse al broker.
 MQTT_AUTH_TOKEN: Final = "/user-apigw/vot-connect-auth-center/api/auth/getAuthTokenByUserId"
-#: Alternativa que usa la app si la anterior falla. ⚠️ Sin probar en España.
-MQTT_AUTH_TOKEN_FALLBACK: Final = "/app-apigw/vot-auth/api/token/getAuthTokenByUserId"
 
 # ---------------------------------------------------------------------------
 # Control remoto (pasarela intl). Todos firmados salvo control-result.

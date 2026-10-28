@@ -681,7 +681,8 @@ class AlertManager:
             self.hass.async_create_task(
                 self.hass.services.async_call(
                     "notify", service, {"title": title, "message": message}, blocking=False
-                )
+                ),
+                "dec_deepal: aviso",
             )
             sent += 1
         if self._recorder is not None:

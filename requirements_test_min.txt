@@ -1,0 +1,6 @@
+# Las mismas pruebas con la versión MÍNIMA de Home Assistant que admite la
+# integración ("homeassistant" en hacs.json). Si se sube la mínima, se cambian
+# las dos cosas a la vez (y el venv de WSL ~/venv-dec-min).
+# 0.13.320 = Home Assistant 2026.3.4.
+pytest-homeassistant-custom-component==0.13.320
+voluptuous-serialize==2.7.0

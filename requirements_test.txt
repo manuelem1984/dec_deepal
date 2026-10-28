@@ -1,8 +1,13 @@
-# Dependencias para ejecutar las pruebas (pytest) en local o en GitHub Actions.
+# Dependencias para ejecutar las pruebas (pytest) en local o en GitHub Actions,
+# con la última versión de Home Assistant probada. Versiones FIJADAS: así una
+# versión nueva de Home Assistant no rompe la CI sin que toquemos nada; se
+# suben a mano tras probarlas (y a la vez en el venv de WSL ~/venv-dec).
+#
 # pytest-homeassistant-custom-component instala Home Assistant y sus
 # dependencias (aiohttp, cryptography, PyYAML...), necesarias porque importar
 # custom_components.dec_deepal carga también su __init__.py.
-pytest-homeassistant-custom-component
+# 0.13.372 = Home Assistant 2026.10.1.
+pytest-homeassistant-custom-component==0.13.372
 # Para comprobar que los formularios se pueden mandar a la interfaz (lo hacía
 # Home Assistant hasta la 2026.9; desde la 2026.10 ya no lo trae).
-voluptuous-serialize
+voluptuous-serialize==2.7.0
