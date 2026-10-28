@@ -3,7 +3,8 @@
 Desde la 2.6.0b1, DEC Deepal puede unir la carga de los coches con los
 cargadores de casa o del trabajo. Sirve para **cualquier cargador** que tenga
 sus entidades en Home Assistant (V2C Trydan, Wallbox, Easee, Zaptec, OCPP...).
-El código está en `custom_components/dec_deepal/chargers.py`.
+El código está en el paquete `custom_components/dec_deepal/chargers/` (un
+módulo por tema; la tabla, en su `__init__.py`).
 
 **DEC Deepal solo bloquea y desbloquea el cargador.** Nunca inicia, pausa ni
 cambia la intensidad de la carga. Con OCPP, la compañía empieza a cargar en

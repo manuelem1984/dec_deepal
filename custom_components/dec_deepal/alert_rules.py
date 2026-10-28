@@ -86,7 +86,7 @@ TARGET_PANEL: Final = "persistent_notification"
 #: Apartados del panel, en su orden.
 SECTION_CHARGE: Final = "charge"
 SECTION_WARNINGS: Final = "warnings"
-#: Avisos de los cargadores (``chargers.py``). Si un coche no tiene destinos
+#: Avisos de los cargadores (paquete ``chargers``). Si un coche no tiene destinos
 #: aquí, el cargador usa los de sus avisos de carga.
 SECTION_CHARGER: Final = "charger"
 SECTIONS: Final = (

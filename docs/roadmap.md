@@ -211,8 +211,8 @@ Pendiente de comprobar:
       `appGetCarConfFunc` (lo hace la app y Deepal Alternative; constante
       `MQTT_CONN_CONF_FALLBACK`, sin usar todavía).
 - [ ] **Revisión de código (21 y 28-10-2026), lo que queda:** partir
-      `chargers.py` en un paquete con sesiones tipadas (`TypedDict`), una
-      sesión MQTT común para leer y despertar, separar `AlertManager`
+      ~~`chargers.py` en un paquete con sesiones tipadas~~ (hecho en la
+      2.6.0b13), una sesión MQTT común para leer y despertar, separar `AlertManager`
       (coche / documentos), `HassKey` para `hass.data`, más reglas de ruff,
       cobertura, ESLint y cargar solo el idioma del usuario en la tarjeta y el
       panel. Hecho en la 2.6.0b12: CI con la versión mínima, versiones

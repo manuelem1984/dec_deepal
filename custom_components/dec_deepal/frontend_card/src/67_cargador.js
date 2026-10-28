@@ -4,7 +4,7 @@
   //   type: custom:dec-deepal-charger-card
   //   charger: <id del cargador>      (opcional: si falta, el primero)
   //
-  // Un cargador de Panel → Ajustes → Cargadores (chargers.py). Recibe su estado
+  // Un cargador de Panel → Ajustes → Cargadores (chargers/). Recibe su estado
   // por la suscripción dec_deepal/chargers/subscribe, así que se pinta al
   // momento aunque lo que cambie no sea una entidad (el coche elegido, la
   // carga apuntada). Estados: libre, esperando confirmación (los coches son

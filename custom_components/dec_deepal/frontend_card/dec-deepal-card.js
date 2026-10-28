@@ -3129,7 +3129,7 @@
       if (this._hass && !this._chargers) this._subscribeChargers(this._hass);
     }
 
-    /** Cargadores (chargers.py): la ventana de carga enseña el que carga este coche. */
+    /** Cargadores (paquete chargers): la ventana de carga enseña el que carga este coche. */
     _subscribeChargers(hass) {
       if (!hass || !hass.connection || !hass.connection.subscribeMessage || this._chargers) return;
       this._chargers = hass.connection.subscribeMessage((data) => {
@@ -3390,7 +3390,7 @@
       $(".msg").hidden = found;
       $(".msg").textContent = found ? "" : this._t("not_found");
       $(".name").textContent = this._name();
-      // Sin cobertura, con un cargador vinculado: % estimado por el cargador (chargers.py).
+      // Sin cobertura, con un cargador vinculado: % estimado por el cargador (chargers/).
       const estimate = this._estimate();
       $(".upd").textContent = this._t("updated", { when: this._updatedText() }) + (estimate ? ` · ${this._t("est_by", { charger: estimate.charger })}` : "");
       $(".upd").classList.toggle("est", Boolean(estimate));
@@ -4255,7 +4255,7 @@
   //   type: custom:dec-deepal-charger-card
   //   charger: <id del cargador>      (opcional: si falta, el primero)
   //
-  // Un cargador de Panel → Ajustes → Cargadores (chargers.py). Recibe su estado
+  // Un cargador de Panel → Ajustes → Cargadores (chargers/). Recibe su estado
   // por la suscripción dec_deepal/chargers/subscribe, así que se pinta al
   // momento aunque lo que cambie no sea una entidad (el coche elegido, la
   // carga apuntada). Estados: libre, esperando confirmación (los coches son

@@ -6989,7 +6989,7 @@
   // ---------------------------------------------------------------------------
   // Los cargadores son de la casa, no de una cuenta: una sola tarjeta debajo
   // de las cuentas. Activar, desactivar y "quién controla" se guardan al
-  // pulsar; cada cargador se edita en su ventana (chargers.py hace el resto).
+  // pulsar; cada cargador se edita en su ventana (el paquete chargers hace el resto).
   // DEC Deepal solo bloquea y desbloquea: nunca inicia ni pausa la carga.
   install(class {
     _chargersCard() {
@@ -7014,7 +7014,7 @@
     }
 
     /**
-     * Límite de carga y recordatorio del 100 % (chargers.py). Solo con los
+     * Límite de carga y recordatorio del 100 % (chargers/limit.py). Solo con los
      * cargadores activados: lo que para la carga es bloquear el cargador.
      */
     _limitCard() {

@@ -3,6 +3,21 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b13] — 2026-10-28
+
+Revisión de código, bloque 2 (sin cambios que se vean).
+
+### Cambiado
+
+- **Cargadores en un paquete:** el antiguo `chargers.py` (casi 1700 líneas)
+  pasa a `chargers/`, un módulo por tema: constantes, validación, cuentas,
+  el gestor y sus partes (cada carga, energía, límite, avisos, lo que ven
+  las tarjetas, coches y entidades). Cada función se ha copiado tal cual:
+  un script comprobó que las 102 funciones y las 55 constantes son idénticas.
+- **Tipos de lo guardado** (`chargers/models.py`): cargador, carga en curso,
+  historial, límite de un coche y opciones del límite, con cada clave
+  documentada. Lo que se guarda en disco no cambia.
+
 ## [2.6.0b12] — 2026-10-28
 
 Revisión de código (sin cambios que se vean).

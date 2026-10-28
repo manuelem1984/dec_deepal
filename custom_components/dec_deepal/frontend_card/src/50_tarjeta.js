@@ -90,7 +90,7 @@
       if (this._hass && !this._chargers) this._subscribeChargers(this._hass);
     }
 
-    /** Cargadores (chargers.py): la ventana de carga enseña el que carga este coche. */
+    /** Cargadores (paquete chargers): la ventana de carga enseña el que carga este coche. */
     _subscribeChargers(hass) {
       if (!hass || !hass.connection || !hass.connection.subscribeMessage || this._chargers) return;
       this._chargers = hass.connection.subscribeMessage((data) => {
@@ -351,7 +351,7 @@
       $(".msg").hidden = found;
       $(".msg").textContent = found ? "" : this._t("not_found");
       $(".name").textContent = this._name();
-      // Sin cobertura, con un cargador vinculado: % estimado por el cargador (chargers.py).
+      // Sin cobertura, con un cargador vinculado: % estimado por el cargador (chargers/).
       const estimate = this._estimate();
       $(".upd").textContent = this._t("updated", { when: this._updatedText() }) + (estimate ? ` · ${this._t("est_by", { charger: estimate.charger })}` : "");
       $(".upd").classList.toggle("est", Boolean(estimate));
