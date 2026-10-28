@@ -17,19 +17,21 @@ from homeassistant.core import HomeAssistant
 from .. import documents as doc
 from .. import vehicle_data as vd
 from ..alert_rules import NOTICES
+from ..chargers import async_get_manager
 from ..const import (
     ARM_SECONDS_CHOICES,
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
+    DEFAULT_CHARGE_BALANCE,
     DEFAULT_PIN_MODE,
     DEFAULT_SCAN_MINUTES,
     DEFAULT_WAKE,
-    DEFAULT_CHARGE_BALANCE,
     INTEGRATION_DIR,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,
     OPT_ARM_NOTIFY,
     OPT_ARM_SECONDS,
+    OPT_CHARGE_BALANCE,
     OPT_DEBUG,
     OPT_MANUAL_URLS,
     OPT_PIN,
@@ -37,11 +39,9 @@ from ..const import (
     OPT_PIN_MODE,
     OPT_SCAN_MINUTES,
     OPT_WAKE,
-    OPT_CHARGE_BALANCE,
     PHOTOS_URL,
     VERSION,
 )
-from ..chargers import async_get_manager
 from ..manual import manual_url
 from ..plates import plate
 from ..registries.vehicles import FEATURE_FUEL, GENERIC_MODEL_ID

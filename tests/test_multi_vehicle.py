@@ -20,7 +20,7 @@ from custom_components.dec_deepal.api.mqtt import client as mqtt_client
 
 
 async def test_broker_disconnect_becomes_connection_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    async def _dropped(*_args):  # noqa: ANN202
+    async def _dropped(*_args: object):  # noqa: ANN202
         raise asyncio.IncompleteReadError(b"", 1)
 
     monkeypatch.setattr(mqtt_client, "_read_telemetry", _dropped)

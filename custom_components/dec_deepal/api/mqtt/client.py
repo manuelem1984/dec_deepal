@@ -8,6 +8,7 @@ reconexión. Duración típica: 2-6 segundos.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import gzip
 import json
 import logging
@@ -267,10 +268,8 @@ async def _read_telemetry(
         except (ConnectionError, OSError, ssl.SSLError):
             pass
         writer.close()
-        try:
+        with contextlib.suppress(ConnectionError, TimeoutError, OSError, ssl.SSLError):
             await writer.wait_closed()
-        except (ConnectionError, TimeoutError, OSError, ssl.SSLError):
-            pass
 
 
 async def _connect(
@@ -475,10 +474,8 @@ async def _wake_vehicle(
         except (ConnectionError, OSError, ssl.SSLError):
             pass
         writer.close()
-        try:
+        with contextlib.suppress(ConnectionError, TimeoutError, OSError, ssl.SSLError):
             await writer.wait_closed()
-        except (ConnectionError, TimeoutError, OSError, ssl.SSLError):
-            pass
 
 
 # ---------------------------------------------------------------------------

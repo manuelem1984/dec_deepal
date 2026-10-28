@@ -28,9 +28,9 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.event import async_track_time_interval
 
 from .api.client import DeepalClient
-from .appearance import issue_id as setup_issue_id
 from .api.errors import DeepalError
 from .api.models import VehicleInfo
+from .appearance import issue_id as setup_issue_id
 from .const import CONF_VEHICLES, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)

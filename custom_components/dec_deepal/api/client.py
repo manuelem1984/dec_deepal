@@ -75,12 +75,11 @@ class DeepalClient:
         """Vehículos asociados a la cuenta (propios o compartidos). ✅"""
         data = await self.account.call(lambda: self._transport.post(endpoints.VEHICLES))
         items = data if isinstance(data, list) else (data or {}).get("list", [])
-        vehicles = [
+        return [
             vehicle
             for item in items
             if isinstance(item, dict) and (vehicle := VehicleInfo.from_api(item))
         ]
-        return vehicles
 
     async def get_capabilities(self, vehicle: VehicleInfo) -> Capabilities | None:
         """Funciones que el servidor asocia al coche.
@@ -132,7 +131,7 @@ class DeepalClient:
         ``docs/correlacion_endpoints_entidades.csv``.
         """
         payload = {
-            "vechileCriteria": {category: "1" for category in CONDITION_CATEGORIES},
+            "vechileCriteria": dict.fromkeys(CONDITION_CATEGORIES, "1"),
             "vehicleId": vehicle_id,
         }
         data = await self.account.call(

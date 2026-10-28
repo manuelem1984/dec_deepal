@@ -34,6 +34,7 @@ from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import async_call_later
 
+from .alert_rules import pin_armed_text
 from .api.commands import DeepalCommands
 from .api.errors import (
     COMMAND_ASLEEP_CODE,
@@ -45,7 +46,6 @@ from .api.errors import (
     DeepalRateLimitError,
     DeepalSigningError,
 )
-from .alert_rules import pin_armed_text
 from .api.models import CommandResult, CommandStatus
 from .const import DOMAIN, NAME, PIN_MODE_ARMED
 from .coordinator import WAKE_BEFORE_COMMAND_TIMEOUT, VehicleCoordinator, WakeResult

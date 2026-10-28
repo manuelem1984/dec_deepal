@@ -261,7 +261,7 @@ class DeepalTransport:
                     "duration_ms": duration_ms,
                 }
             )
-        except Exception:  # noqa: BLE001 - la depuración nunca debe romper nada
+        except Exception:  # la depuración nunca debe romper nada
             _LOGGER.exception("El registro de depuración falló")
 
 

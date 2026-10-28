@@ -275,7 +275,7 @@ async def test_panel_commands(hass: HomeAssistant, hass_ws_client, hass_client_n
     assert (await call("send_backup", target="mobile_app_no_existe"))["success"] is False
 
     state = (await call("state"))["result"]
-    assert [(item["label"], item["in_account"]) for item in state["stored"]][0] == ("Changote", True)
+    assert (state["stored"][0]["label"], state["stored"][0]["in_account"]) == ("Changote", True)
     assert "maintenance" in state["stored"][0]["has"] and "appearance" in state["stored"][0]["has"]
     with patch.object(hass.config_entries, "async_schedule_reload"):
         assert (await call("import_backup", backup={"otra": "cosa"}))["error"]["code"] == "invalid_file"
@@ -317,8 +317,8 @@ async def test_panel_is_registered_once_and_removed(hass: HomeAssistant) -> None
 
 @pytest.mark.usefixtures("enable_custom_integrations", "hass_storage")
 async def test_read_only_panel(
-    hass: HomeAssistant, hass_ws_client, hass_read_only_access_token: str, hass_read_only_user
-) -> None:  # noqa: ANN001
+    hass: HomeAssistant, hass_ws_client, hass_read_only_access_token: str, hass_read_only_user  # noqa: ANN001
+) -> None:
     """Quien no es administrador ve Coches y Avisos, y no puede cambiar nada."""
     assert await async_setup_component(hass, "websocket_api", {})
     for command in panel.COMMANDS:

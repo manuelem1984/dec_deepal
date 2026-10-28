@@ -8,6 +8,7 @@ from typing import Any
 from homeassistant.util import dt as dt_util
 
 from ..telemetry import signals as s
+from .config import _clean_car
 from .const import (
     DEFAULT_LOSS,
     FULL_EVERY_CHOICES,
@@ -20,7 +21,6 @@ from .const import (
     ROLE_LOCK,
     UNLOCK_CONFIRM,
 )
-from .config import _clean_car
 from .estimate import estimate_minutes
 from .util import _iso, _when
 

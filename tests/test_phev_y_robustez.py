@@ -28,7 +28,6 @@ from custom_components.dec_deepal.vehicle_sync import async_sync_vehicles
 
 from .test_registries import INTEGRATION
 
-
 # --- 1. Combustible del PHEV ------------------------------------------------------------------
 
 
@@ -67,7 +66,7 @@ async def test_charge_limit_command(monkeypatch: pytest.MonkeyPatch) -> None:
     """Firma con un número de serie de tipo 2 y manda chargePercentageMax."""
     posts: list[tuple[str, dict]] = []
 
-    async def post(path, payload=None, **_kwargs):  # noqa: ANN001, ANN202
+    async def post(path, payload=None, **_kwargs: object):  # noqa: ANN001, ANN202
         posts.append((path, payload))
         return "cifrado" if path == endpoints.SERIAL_NO else {"commandId": "c1"}
 
@@ -176,7 +175,7 @@ async def test_read_skips_a_broken_message(monkeypatch: pytest.MonkeyPatch) -> N
         def close(self) -> None: ...
         async def wait_closed(self) -> None: ...
 
-    async def open_connection(*_args, **_kwargs):  # noqa: ANN202
+    async def open_connection(*_args: object, **_kwargs: object):  # noqa: ANN202
         return object(), Writer()
 
     async def read_packet(_reader):  # noqa: ANN001, ANN202

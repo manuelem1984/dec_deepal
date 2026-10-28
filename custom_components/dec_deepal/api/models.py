@@ -13,7 +13,6 @@ from dataclasses import asdict, dataclass, field
 from enum import StrEnum
 from typing import Any, Final
 
-
 # ---------------------------------------------------------------------------
 # Vehículo
 # ---------------------------------------------------------------------------

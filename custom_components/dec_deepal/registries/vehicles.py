@@ -23,13 +23,13 @@ from pathlib import Path
 from typing import Final
 
 from ..api.models import VehicleInfo
-from ..textos_generados import CATALOGUE_TEXTS
 from ..maintenance import (
     DEFAULT_INTERVAL_KM,
     DEFAULT_INTERVAL_MONTHS,
     MaintenancePlan,
     Operation,
 )
+from ..textos_generados import CATALOGUE_TEXTS
 from .errors import RegistryError, as_dict, as_str_list, read_yaml, require
 from .views import ViewLayers, load_view
 

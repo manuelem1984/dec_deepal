@@ -76,8 +76,8 @@ from .const import (
     CARD_JS_DIR,
     CARD_JS_FILE,
     DOMAIN,
-    ICONS_JS_FILE,
     ICONS_BUNDLE_API,
+    ICONS_JS_FILE,
     ICONS_JS_URL,
     ICONS_LIST_API,
     ICONS_LOADER_FILE,
@@ -197,7 +197,7 @@ def _remove_legacy_copy(www_dir: Path) -> bool:
 def _resource_collection(hass: HomeAssistant):  # noqa: ANN202 - tipo interno de HA
     """Colección de recursos de los paneles, o ``None`` si no se puede escribir."""
     try:
-        from homeassistant.components.lovelace.const import LOVELACE_DATA  # noqa: PLC0415
+        from homeassistant.components.lovelace.const import LOVELACE_DATA
     except ImportError:
         return None
     data = hass.data.get(LOVELACE_DATA)

@@ -21,6 +21,7 @@ servidor puede interpretarlo como abuso o invalidar la sesión.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
 from collections.abc import Awaitable, Callable
@@ -164,10 +165,8 @@ class DeepalAccount:
         """
         if not self.session.refresh_token or not self.session.expires_soon():
             return
-        try:
+        with contextlib.suppress(DeepalError):
             await self.refresh()
-        except DeepalError:
-            pass
 
     # ------------------------------------------------------------------
     # Ejecutar algo con reintento tras renovar

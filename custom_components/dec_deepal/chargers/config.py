@@ -6,10 +6,9 @@ import uuid
 from collections.abc import Iterable, Mapping
 from typing import Any
 
-from .models import CarLimit, ChargerConfig, LimitSettings
 from .const import (
-    COVERAGES,
     COVERAGE_UNKNOWN,
+    COVERAGES,
     DEFAULT_LIMIT,
     DEFAULT_LOSS,
     FULL_EVERY_CHOICES,
@@ -19,12 +18,13 @@ from .const import (
     READ_CHOICES,
     RELOCK_CHOICES,
     REMIND_CHOICES,
-    ROLES,
     ROLE_DOMAINS,
     ROLE_PLUGGED,
+    ROLES,
     UNLOCK_MODES,
     UNLOCK_NONE,
 )
+from .models import CarLimit, ChargerConfig, LimitSettings
 
 
 class ChargerError(ValueError):

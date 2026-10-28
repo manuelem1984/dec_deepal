@@ -7,6 +7,7 @@ segundos que faltan.
 
 from __future__ import annotations
 
+import contextlib
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 
@@ -108,8 +109,6 @@ class DecButton(DecDeepalEntity, ButtonEntity):
             return
         if result is WakeResult.NO_REPORT:
             raise HomeAssistantError(translation_domain=DOMAIN, translation_key="wake_no_report")
-        try:
+        with contextlib.suppress(DeepalError):
             await self.runtime.commands.condition_inquiry(self.vehicle.info.vehicle_id)
-        except DeepalError:
-            pass
         await self.coordinator.async_request_refresh()

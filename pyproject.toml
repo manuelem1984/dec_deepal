@@ -6,15 +6,39 @@ pythonpath = ["."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
 
+[tool.coverage.run]
+# Solo el código de la integración (sin las pruebas ni las herramientas).
+source = ["custom_components/dec_deepal"]
+
 [tool.ruff]
 target-version = "py314"
 line-length = 100
 extend-exclude = ["_ref"]
 
 [tool.ruff.lint]
-# Errores reales (E, F, W) y fallos típicos (B). Se pueden endurecer más
-# adelante (I, UP, SIM...) cuando el código esté estabilizado.
-select = ["E", "F", "W", "B"]
-ignore = [
-    "E501", # líneas largas: se prioriza la legibilidad de textos y tablas
+# Reglas (ampliadas en la 2.6.0b14, revisión de código).
+select = [
+    "E", "F", "W",  # errores y estilo (pycodestyle, pyflakes)
+    "B",            # fallos típicos (bugbear)
+    "I",            # orden de los imports
+    "UP",           # sintaxis moderna de Python
+    "SIM", "C4", "PIE", "RET",  # simplificaciones
+    "ASYNC",        # errores típicos con asyncio
+    "RUF",          # reglas de ruff (p. ej. noqa que ya no hacen falta)
+    "LOG", "G",     # logging
+    "DTZ",          # fechas sin zona horaria
+    "T20",          # print olvidados
+    "ANN",          # tipos en todas las funciones
+    "BLE",          # «except Exception» sin justificar
+    "S324",         # hashes inseguros (el MD5 del protocolo va justificado)
 ]
+ignore = [
+    "E501",     # líneas largas: se prioriza la legibilidad de textos y tablas
+    "ANN401",   # Any: los datos del servidor de Deepal no tienen forma fija
+    "RUF001",   # caracteres tipográficos (×, –, ’, «») a propósito en los textos
+    "RUF003",   # ...y en los comentarios
+    "RUF012",   # «_attr_... = [...]» en las entidades es lo habitual en Home Assistant
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tools/*" = ["T201"]  # los scripts de tools/ informan con print

@@ -7,8 +7,6 @@ from typing import Final
 
 from ..const import DOMAIN
 
-
-
 STORAGE_KEY: Final = f"{DOMAIN}.chargers"
 STORAGE_VERSION: Final = 1
 _MANAGER_KEY: Final = "chargers"

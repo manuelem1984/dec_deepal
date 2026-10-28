@@ -36,6 +36,7 @@ from homeassistant.util import dt as dt_util
 from . import charging
 from . import documents as doc
 from . import maintenance as mt
+from . import vehicle_data as vd
 from .alert_rules import (
     ALERT_CHARGE_FINISHED,
     ALERT_CHARGE_INTERRUPTED,
@@ -69,7 +70,6 @@ from .const import (
     OPT_TRIM,
     OPT_WHEELS,
 )
-from . import vehicle_data as vd
 from .runtime import VehicleContext, vehicle_device
 from .telemetry import signals as s
 from .vehicle_store import VehicleStore, async_get_store
@@ -621,11 +621,8 @@ class AlertManager:
         language = self.hass.config.language
 
         event = charge_event(previous, current)
-        if event in (ALERT_CHARGE_STARTED, ALERT_CHARGE_INTERRUPTED, ALERT_CHARGE_FINISHED):
-            if self._wants(vehicle_id, event):
-                self._send(
-                    vehicle_id, event, charge_text(event, current.get(s.BATTERY_LEVEL), language)
-                )
+        if event in (ALERT_CHARGE_STARTED, ALERT_CHARGE_INTERRUPTED, ALERT_CHARGE_FINISHED) and self._wants(vehicle_id, event):
+            self._send(vehicle_id, event, charge_text(event, current.get(s.BATTERY_LEVEL), language))
 
         active = self._active.setdefault(vehicle_id, set())
         before = set(active)

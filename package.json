@@ -1,0 +1,14 @@
+{
+  "name": "dec-deepal-dev",
+  "private": true,
+  "description": "Herramientas de desarrollo de DEC Deepal (solo ESLint; no se publica con la integración).",
+  "type": "module",
+  "scripts": {
+    "lint:js": "eslint custom_components/dec_deepal/frontend_card/dec-deepal-card.js custom_components/dec_deepal/frontend_panel/dec-deepal-panel.js custom_components/dec_deepal/icons/"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.12.0",
+    "globals": "17.13.0"
+  }
+}

@@ -14,8 +14,6 @@ from homeassistant.core import State
 from homeassistant.util import dt as dt_util
 
 
-
-
 def _number(state: State | None) -> float | None:
     if state is None or state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN, ""):
         return None

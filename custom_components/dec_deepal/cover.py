@@ -125,7 +125,7 @@ class DecWindowsCover(_DecCover):
             "windows",
             lambda: self.runtime.commands.windows(vehicle_id, open_windows=vent),
             # Las señales siguen siendo las reales (True = ventanilla abierta).
-            optimistic={signal: vent for signal in _WINDOW_SIGNALS},
+            optimistic=dict.fromkeys(_WINDOW_SIGNALS, vent),
             needs_arming=True,
         )
 

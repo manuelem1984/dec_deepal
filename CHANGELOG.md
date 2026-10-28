@@ -3,6 +3,21 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b14] — 2026-10-28
+
+Revisión de código, bloque 3: herramientas (sin cambios que se vean).
+
+### Cambiado
+
+- **Más reglas de ruff:** imports ordenados, sintaxis moderna,
+  simplificaciones, asyncio, logging, fechas con zona horaria, tipos en todas
+  las funciones y «except» justificados. Se han quitado los `noqa` que ya no
+  hacían falta y corregido lo que señalaban (p. ej. `contextlib.suppress`,
+  `itertools.pairwise`).
+- **Cobertura de las pruebas** en la CI (hoy, 75 %): falla si baja del 74 %.
+- **ESLint** en la CI para el JavaScript que se publica (tarjeta, panel e
+  iconos): sin errores con las reglas recomendadas.
+
 ## [2.6.0b13] — 2026-10-28
 
 Revisión de código, bloque 2 (sin cambios que se vean).

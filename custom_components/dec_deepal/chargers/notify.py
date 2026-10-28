@@ -11,6 +11,7 @@ from homeassistant.core import Event, callback
 
 from ..alert_rules import SECTION_CHARGE, TARGET_PANEL, texts
 from ..const import DOMAIN, NAME, PANEL_URL_PATH
+from .config import ChargerError
 from .const import (
     ACTION_AGAIN,
     ACTION_FULL,
@@ -18,15 +19,14 @@ from .const import (
     ACTION_NO,
     ACTION_PREFIX,
     BY_USER,
+    NOT_CHARGING_AFTER,
     NOTICE_CONFIRM,
     NOTICE_FINISHED,
     NOTICE_NOT_CHARGING,
     NOTICE_UNLOCKED,
-    NOT_CHARGING_AFTER,
     ROLE_CHARGING,
     ROLE_LOCK,
 )
-from .config import ChargerError
 from .util import _iso
 
 _LOGGER = logging.getLogger(__package__)
@@ -42,7 +42,7 @@ class NotifyMixin:
     def _ask(self, charger: Mapping[str, Any], *, reminder: bool = False) -> None:
         charger_id = charger["id"]
         session = self._sessions.get(charger_id)
-        if session is None or session.get("vehicle_id") and not reminder:
+        if session is None or (session.get("vehicle_id") and not reminder):
             return
         session["asked"] = True
         self._save()

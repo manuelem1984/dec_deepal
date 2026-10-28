@@ -35,8 +35,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import issue_registry as ir
 
-from .appearance import details_schema, model_schema, needs_details, updated_options
 from .api.models import VehicleInfo
+from .appearance import details_schema, model_schema, needs_details, updated_options
 from .const import CONF_VEHICLES, DOMAIN, OPT_APPEARANCE, OPT_MODEL
 from .registries.vehicles import VehicleModel
 from .runtime import DecDeepalConfigEntry, async_get_registries

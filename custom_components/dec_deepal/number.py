@@ -113,7 +113,7 @@ class DecChargeLimit(DecDeepalEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float) -> None:
         """Cambia el límite (60-100 %)."""
-        percent = max(CHARGE_LIMIT_MIN, min(CHARGE_LIMIT_MAX, int(round(value))))
+        percent = max(CHARGE_LIMIT_MIN, min(CHARGE_LIMIT_MAX, round(value)))
         vehicle_id = self.vehicle.info.vehicle_id
         await self.vehicle.runner.run(
             "charge_limit",

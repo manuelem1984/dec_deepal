@@ -49,8 +49,8 @@ def measure_hubcap(photo: Image.Image, guess: tuple[int, int]) -> tuple[float, f
         angle = math.radians(degree)
         last = None
         for radius in range(60, 140):
-            x = int(round(guess[0] + radius * math.cos(angle)))
-            y = int(round(guess[1] + radius * math.sin(angle)))
+            x = round(guess[0] + radius * math.cos(angle))
+            y = round(guess[1] + radius * math.sin(angle))
             if 0 <= y < lum.shape[0] and 0 <= x < lum.shape[1] and alpha[y, x] > 0 and lum[y, x] > 150:
                 last = (x, y)
         if last:
@@ -70,7 +70,7 @@ def measure_hubcap(photo: Image.Image, guess: tuple[int, int]) -> tuple[float, f
 
 def black_rim(source: Image.Image, radius: float) -> Image.Image:
     """La llanta enderezada a círculo y en negro brillante (a ``SS`` aumentos)."""
-    size = int(round(radius * 2 * SS))
+    size = round(radius * 2 * SS)
     rim = source.resize((size, size), Image.LANCZOS)
     lum = np.asarray(rim.convert("L"), float) / 255
     tone = (np.clip(lum, 0, 1) ** 2.2 * 0.92 * 255).astype(np.uint8)
@@ -101,7 +101,7 @@ def open_wheels(photo: Image.Image, source: Image.Image) -> tuple[Image.Image, l
         cx, cy, radius = measure_hubcap(photo, guess)
         radius += 0.6  # un pelo más: tapa el borde claro del tapacubos
         wheels.append((cx, cy, radius))
-        layer.alpha_composite(black_rim(source, radius), (int(round((cx - radius) * SS)), int(round((cy - radius) * SS))))
+        layer.alpha_composite(black_rim(source, radius), (round((cx - radius) * SS), round((cy - radius) * SS)))
     result = photo.convert("RGBA")
     result.alpha_composite(layer.resize(photo.size, Image.BOX))
     return result, wheels

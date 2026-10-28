@@ -90,7 +90,7 @@ def test_backup_round_trip() -> None:
         # Solo con apariencia también merece copia (pero no tiene fichas).
         "id:99": {"vehicle_id": "99", "appearance": {"model": "s05_2024", "trim": None, "color": None}},
     }
-    payload = vd.export_payload(cars, datetime(2026, 10, 11, 12, 0))
+    payload = vd.export_payload(cars, datetime(2026, 10, 11, 12, 0))  # noqa: DTZ001 - una hora local de ejemplo
     assert payload["formato"] == vd.EXPORT_FORMAT and payload["version"] == vd.DATA_VERSION
     # Solo viajan los coches con fichas, y sin el estado interno (testigos avisados).
     assert list(payload["coches"]) == [VIN, "id:99"] and "active" not in payload["coches"][VIN]

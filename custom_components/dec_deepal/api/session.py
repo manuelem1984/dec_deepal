@@ -55,7 +55,7 @@ class DeepalSession:
         Ignora claves desconocidas, para que una versión antigua no falle si
         una versión nueva guardó campos adicionales.
         """
-        known = {field for field in cls.__dataclass_fields__}  # type: ignore[attr-defined]
+        known = set(cls.__dataclass_fields__)  # type: ignore[attr-defined]
         return cls(**{key: value for key, value in data.items() if key in known})
 
     # -- Cabecera de autorización ---------------------------------------------

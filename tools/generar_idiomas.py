@@ -46,7 +46,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import construir_tarjeta  # noqa: E402 - el otro programa de esta carpeta
+import construir_tarjeta  # el otro programa de esta carpeta
 
 ROOT = Path(__file__).resolve().parents[1]
 INTEGRATION = ROOT / "custom_components" / "dec_deepal"

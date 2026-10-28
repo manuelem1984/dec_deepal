@@ -29,6 +29,7 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import date
+from itertools import pairwise
 from typing import Any, Final
 
 from .const import (
@@ -204,7 +205,7 @@ def clean_thresholds(raw: Mapping[str, Any] | None) -> dict[str, int]:
             raise ThresholdError(ERROR_THRESHOLD_RANGE, notice.id)
         values[notice.id] = int(value)
     for chain in THRESHOLD_CHAINS:
-        for earlier, later in zip(chain, chain[1:], strict=False):
+        for earlier, later in pairwise(chain):
             if values[earlier] <= values[later]:
                 raise ThresholdError(ERROR_THRESHOLD_ORDER, later)
     return {

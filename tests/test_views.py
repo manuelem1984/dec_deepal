@@ -224,7 +224,7 @@ def test_validation(tmp_path: Path) -> None:
     (tmp_path / "capas.yaml").write_text(
         "capas:\n  - senal: hood_open\n    si_activo: falta.png\n", encoding="utf-8"
     )
-    with pytest.raises(RegistryError, match="falta.png"):
+    with pytest.raises(RegistryError, match=r"falta\.png"):
         load_view(tmp_path)
     (tmp_path / "capas.yaml").write_text("capas:\n  - senal: hood_open\n", encoding="utf-8")
     with pytest.raises(RegistryError, match="si_activo"):

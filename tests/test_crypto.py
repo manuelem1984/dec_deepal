@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import contextlib
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -89,15 +90,14 @@ async def test_login_generates_the_key_outside_the_event_loop() -> None:
         country = type("Country", (), {"sales_country": "ES"})()
         session = None
 
-        async def post(self, *_args, **_kwargs) -> dict:
+        async def post(self, *_args: object, **_kwargs: object) -> dict:
             return {}
 
     auth_module.generate_keypair = spy
     try:
-        try:
+        # La respuesta vacía no es un login válido; aquí da igual.
+        with contextlib.suppress(Exception):
             await auth_module.DeepalAuth(Transport()).login_email("a@b.es", "123456")
-        except Exception:  # noqa: BLE001 - la respuesta vacía no es un login válido; aquí da igual
-            pass
     finally:
         auth_module.generate_keypair = real
     assert threads and threads[0] != threading.main_thread().name

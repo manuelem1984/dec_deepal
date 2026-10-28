@@ -12,8 +12,8 @@ from ..api.errors import DeepalConnectionError, DeepalError, DeepalPinError, Dee
 from ..const import (
     ARM_SECONDS_CHOICES,
     DEFAULT_ARM_NOTIFY,
-    DEFAULT_CHARGE_BALANCE,
     DEFAULT_ARM_SECONDS,
+    DEFAULT_CHARGE_BALANCE,
     DEFAULT_PIN_MODE,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,

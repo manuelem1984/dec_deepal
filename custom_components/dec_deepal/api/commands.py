@@ -230,7 +230,7 @@ class DeepalCommands:
                 "command": "air",
                 "enabled": enabled,
                 "runTime": run_minutes,
-                "targetTemp": int(round(target_c * 10)),
+                "targetTemp": round(target_c * 10),
                 "windMode": wind_mode,
             },
         )

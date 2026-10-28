@@ -253,7 +253,7 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         return (datetime.now(UTC) - report).total_seconds()
 
     async def async_wake_and_wait(
-        self, *, timeout: float = WAKE_REPORT_TIMEOUT
+        self, *, timeout: float = WAKE_REPORT_TIMEOUT  # noqa: ASYNC109 - cuánto esperar el informe, no el límite de la llamada
     ) -> WakeResult:
         """Despierta el coche si sus datos están viejos y espera un informe nuevo.
 

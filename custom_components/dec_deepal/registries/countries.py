@@ -5,7 +5,7 @@ Formato del fichero: ver los comentarios de la cabecera del propio YAML.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
@@ -38,7 +38,7 @@ class Country:
     verified: bool
     notes: str
     #: Normas del país (ITV, preaviso del seguro). Por defecto, las de España.
-    rules: CountryRules = CountryRules()
+    rules: CountryRules = field(default_factory=CountryRules)
     #: ¿Se ofrece el módulo de ITV en este país? (hoy, solo España).
     itv: bool = False
 

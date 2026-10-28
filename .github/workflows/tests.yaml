@@ -19,10 +19,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Con la última, además, la cobertura: falla si baja del mínimo.
           - ha: "2026.10"
             requirements: requirements_test.txt
+            args: --cov=custom_components/dec_deepal --cov-report=term-missing:skip-covered --cov-fail-under=74
           - ha: "2026.3 (mínima)"
             requirements: requirements_test_min.txt
+            args: ""
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -33,7 +36,7 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r ${{ matrix.requirements }}
       - name: Pruebas
-        run: pytest -v
+        run: pytest -v ${{ matrix.args }}
 
   # La tarjeta, en un navegador (no necesita Home Assistant). Ver docs/tarjeta.md
   tarjeta:
@@ -53,6 +56,19 @@ jobs:
         run: python tools/construir_tarjeta.py --check
       - name: Pruebas de la tarjeta
         run: pytest -v -c tests_tarjeta/pytest.ini tests_tarjeta
+
+  # ESLint del JavaScript que se publica (tarjeta, panel e iconos). Ver eslint.config.mjs.
+  eslint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Instalar ESLint (versiones fijadas en package.json)
+        run: npm install --no-audit --no-fund --no-package-lock
+      - name: ESLint
+        run: npm run lint:js
 
   ruff:
     runs-on: ubuntu-24.04

@@ -11,3 +11,5 @@ pytest-homeassistant-custom-component==0.13.372
 # Para comprobar que los formularios se pueden mandar a la interfaz (lo hacía
 # Home Assistant hasta la 2026.9; desde la 2026.10 ya no lo trae).
 voluptuous-serialize==2.7.0
+# Cobertura de las pruebas (la CI falla si baja del mínimo; ver tests.yaml).
+pytest-cov==7.1.0

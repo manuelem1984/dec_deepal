@@ -28,3 +28,6 @@ Thumbs.db
 # Capturas de depuración generadas en local (ver docs/depuracion.md). Pueden
 # contener datos del coche: nunca se suben al repositorio.
 dec_deepal_capturas/
+
+# Node (ESLint, ver package.json)
+node_modules/

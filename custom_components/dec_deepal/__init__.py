@@ -27,43 +27,44 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
+from . import vehicle_data as vd
+from .alerts import AlertManager
 from .api.account import DeepalAccount
 from .api.client import DeepalClient
 from .api.commands import DeepalCommands
 from .api.errors import DeepalError
 from .api.models import Capabilities, VehicleInfo
 from .api.session import DeepalSession
-from .appearance import issue_id
 from .api.transport import DeepalTransport
-from . import vehicle_data as vd
-from .alerts import AlertManager
+from .appearance import issue_id
+from .chargers import async_get_manager
 from .command_runner import CommandRunner
 from .const import (
+    CHARGE_BALANCE_MINUTES,
     CONF_COUNTRY,
     CONF_SESSION,
     CONF_VEHICLES,
     DEBUG_BUFFER_SIZE,
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
+    DEFAULT_CHARGE_BALANCE,
     DEFAULT_PIN_MODE,
     DEFAULT_SCAN_MINUTES,
+    DEFAULT_WAKE,
     DOMAIN,
     OPT_APPEARANCE,
-    OPT_CHARGE_BALANCE,
-    CHARGE_BALANCE_MINUTES,
-    DEFAULT_CHARGE_BALANCE,
     OPT_ARM_NOTIFY,
     OPT_ARM_SECONDS,
+    OPT_CHARGE_BALANCE,
     OPT_COLOR,
     OPT_DEBUG,
-    OPT_WAKE,
-    DEFAULT_WAKE,
     OPT_MODEL,
     OPT_PIN,
     OPT_PIN_ENABLED,
     OPT_PIN_MODE,
     OPT_SCAN_MINUTES,
     OPT_TRIM,
+    OPT_WAKE,
     OPT_WHEELS,
     PLATFORMS,
 )
@@ -72,7 +73,6 @@ from .debug.history import changes as signal_changes
 from .debug.recorder import DebugRecorder, VehicleRecorder
 from .frontend import async_register_frontend, async_remove_early_loader
 from .manual import async_register_manual
-from .chargers import async_get_manager
 from .panel import async_register_panel, async_unregister_panel
 from .registries import RegistryError
 from .registries.vehicles import FEATURE_FUEL, FEATURE_MQTT, POWERTRAIN_PHEV, powertrain
