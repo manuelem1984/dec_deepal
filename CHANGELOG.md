@@ -3,6 +3,25 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b15] — 2026-10-29
+
+Revisión de código, bloque 4 (sin cambios que se vean).
+
+### Cambiado
+
+- **Prueba de la integración entera:** se monta una cuenta con un S05 falso
+  (sin salir a internet), se comprueban las entidades de todas las
+  plataformas y se mandan órdenes desde ellas. La cobertura pasa del 75 % al
+  85 % (sensor, number, lock, switch, cover, button, image... estaban al 0 %)
+  y la CI exige ya un 84 %.
+- **Una sola sesión MQTT** para leer y para despertar el coche: abrir la
+  conexión, el login, leer los mensajes (confirmando los QoS 1) y cerrar
+  están ahora en un único sitio.
+- **Avisos en un paquete** (`alerts/`): el gestor y una parte por tema
+  (coche, mantenimiento, ITV y seguro). Movido tal cual: un script comprobó
+  que las 47 funciones son idénticas.
+- `hass.data` de la integración con clave con tipo (`HassKey`).
+
 ## [2.6.0b14] — 2026-10-28
 
 Revisión de código, bloque 3: herramientas (sin cambios que se vean).

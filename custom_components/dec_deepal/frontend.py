@@ -75,7 +75,7 @@ from homeassistant.core import HomeAssistant
 from .const import (
     CARD_JS_DIR,
     CARD_JS_FILE,
-    DOMAIN,
+    DATA,
     ICONS_BUNDLE_API,
     ICONS_JS_FILE,
     ICONS_JS_URL,
@@ -133,7 +133,7 @@ class IconBundleView(HomeAssistantView):
 
 async def async_register_frontend(hass: HomeAssistant, icons: IconRegistry) -> None:
     """Publica los SVG, el script y la lista de iconos (una sola vez)."""
-    domain_data = hass.data.setdefault(DOMAIN, {})
+    domain_data = hass.data.setdefault(DATA, {})
     if domain_data.get(_REGISTERED_KEY):
         return
     try:

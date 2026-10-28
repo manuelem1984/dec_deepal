@@ -14,6 +14,7 @@ import json
 import logging
 import ssl
 import time
+from collections.abc import AsyncIterator
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any, Final
@@ -176,6 +177,72 @@ async def _read_telemetry(
         TimeoutError: no llegó ningún dato a tiempo.
     """
     started = time.monotonic()
+    reading = MqttReading()
+    try:
+        async with _session(connection, auth_token, ssl_context) as (reader, writer):
+            secret_key: str | None = None
+            requested = False
+            deadline = time.monotonic() + TELEMETRY_TIMEOUT
+            async with contextlib.aclosing(_publishes(reader, writer, deadline)) as messages:
+                async for topic, payload in messages:
+                    if secret_key is None:
+                        secret_key = _secret_key(payload)
+                        if secret_key:
+                            request_id = _request_id(connection.vehicle_device_id)
+                            writer.write(
+                                protocol.build_publish(
+                                    connection.properties_topic,
+                                    _condition_payload(
+                                        connection.vehicle_device_id,
+                                        connection.login_device_id,
+                                        secret_key,
+                                        request_id,
+                                    ),
+                                )
+                            )
+                            await writer.drain()
+                            requested = True
+                        continue
+
+                    if reading.model_code is None:
+                        reading.model_code = model_code(payload)
+                    if not _extract(payload, secret_key, reading):
+                        continue
+                    # Criterios de "ya está completo" (verificados en la práctica):
+                    # la respuesta directa trae >10 claves; si llegan por trozos, se
+                    # acepta en cuanto se juntan >30.
+                    if topic.endswith("/properties/get/res") and len(reading.params) > 10:
+                        break
+                    if requested and len(reading.params) > 30:
+                        break
+
+            if not reading.params:
+                raise TimeoutError("No llegó la telemetría por MQTT a tiempo")
+            return reading
+    finally:
+        reading.duration_ms = int((time.monotonic() - started) * 1000)
+
+
+# ---------------------------------------------------------------------------
+# La sesión MQTT que comparten la lectura y el despertar
+# ---------------------------------------------------------------------------
+
+
+@contextlib.asynccontextmanager
+async def _session(
+    connection: MqttConnection,
+    auth_token: str,
+    ssl_context: ssl.SSLContext,
+) -> AsyncIterator[tuple[asyncio.StreamReader, asyncio.StreamWriter]]:
+    """Una conexión lista para usar, que se cierra sola al terminar.
+
+    TLS al broker, CONNECT, SUBSCRIBE y el ``loginout`` ya enviado (su
+    respuesta, con la ``secretKey``, llega como el primer mensaje).
+
+    Raises:
+        ConnectionError: el broker rechazó la conexión o la suscripción.
+        TimeoutError: el broker no contestó a tiempo.
+    """
     reader, writer = await asyncio.wait_for(
         asyncio.open_connection(
             connection.host,
@@ -185,83 +252,18 @@ async def _read_telemetry(
         ),
         timeout=CONNECT_TIMEOUT,
     )
-    reading = MqttReading()
     try:
         await _connect(reader, writer, connection, auth_token)
         await _subscribe(reader, writer, connection)
-
         writer.write(
             protocol.build_publish(
                 connection.login_topic,
-                _login_payload(
-                    connection.login_device_id, _request_id(connection.login_device_id)
-                ),
+                _login_payload(connection.login_device_id, _request_id(connection.login_device_id)),
             )
         )
         await writer.drain()
-
-        secret_key: str | None = None
-        requested = False
-        deadline = time.monotonic() + TELEMETRY_TIMEOUT
-
-        while time.monotonic() < deadline:
-            try:
-                first_byte, body = await asyncio.wait_for(
-                    protocol.read_packet(reader),
-                    timeout=max(1.0, deadline - time.monotonic()),
-                )
-            except TimeoutError:
-                # Se acabó el tiempo esperando más mensajes: nos quedamos con
-                # lo recibido hasta ahora (si hay algo).
-                break
-            if protocol.packet_type(first_byte) != protocol.PACKET_PUBLISH:
-                continue
-            try:
-                topic, payload, packet_id = protocol.parse_publish(first_byte, body)
-            except ValueError as err:
-                # Un mensaje roto no tira la lectura entera: se salta.
-                _LOGGER.debug("Mensaje MQTT mal formado, se ignora: %s", err)
-                continue
-            if packet_id is not None:
-                writer.write(protocol.build_puback(packet_id))
-                await writer.drain()
-
-            if secret_key is None:
-                secret_key = _secret_key(payload)
-                if secret_key:
-                    request_id = _request_id(connection.vehicle_device_id)
-                    writer.write(
-                        protocol.build_publish(
-                            connection.properties_topic,
-                            _condition_payload(
-                                connection.vehicle_device_id,
-                                connection.login_device_id,
-                                secret_key,
-                                request_id,
-                            ),
-                        )
-                    )
-                    await writer.drain()
-                    requested = True
-                continue
-
-            if reading.model_code is None:
-                reading.model_code = model_code(payload)
-            if not _extract(payload, secret_key, reading):
-                continue
-            # Criterios de "ya está completo" (verificados en la práctica):
-            # la respuesta directa trae >10 claves; si llegan por trozos, se
-            # acepta en cuanto se juntan >30.
-            if topic.endswith("/properties/get/res") and len(reading.params) > 10:
-                break
-            if requested and len(reading.params) > 30:
-                break
-
-        if not reading.params:
-            raise TimeoutError("No llegó la telemetría por MQTT a tiempo")
-        return reading
+        yield reader, writer
     finally:
-        reading.duration_ms = int((time.monotonic() - started) * 1000)
         try:
             writer.write(protocol.build_disconnect())
             await writer.drain()
@@ -270,6 +272,38 @@ async def _read_telemetry(
         writer.close()
         with contextlib.suppress(ConnectionError, TimeoutError, OSError, ssl.SSLError):
             await writer.wait_closed()
+
+
+async def _publishes(
+    reader: asyncio.StreamReader,
+    writer: asyncio.StreamWriter,
+    deadline: float,
+) -> AsyncIterator[tuple[str, dict[str, Any]]]:
+    """Los mensajes (PUBLISH) que llegan hasta ``deadline``: ``(topic, payload)``.
+
+    Confirma los de QoS 1 (PUBACK) y se salta los paquetes de otro tipo y los
+    mensajes rotos (un mensaje roto no tira la lectura entera). Al acabarse el
+    tiempo, termina sin error: quien lo usa decide con lo recibido.
+    """
+    while time.monotonic() < deadline:
+        try:
+            first_byte, body = await asyncio.wait_for(
+                protocol.read_packet(reader),
+                timeout=max(1.0, deadline - time.monotonic()),
+            )
+        except TimeoutError:
+            return
+        if protocol.packet_type(first_byte) != protocol.PACKET_PUBLISH:
+            continue
+        try:
+            topic, payload, packet_id = protocol.parse_publish(first_byte, body)
+        except ValueError as err:
+            _LOGGER.debug("Mensaje MQTT mal formado, se ignora: %s", err)
+            continue
+        if packet_id is not None:
+            writer.write(protocol.build_puback(packet_id))
+            await writer.drain()
+        yield topic, payload
 
 
 async def _connect(
@@ -394,88 +428,43 @@ async def _wake_vehicle(
     """
     if not connection.properties_set_topic:
         raise ConnectionError("La configuración MQTT no trae el topic de órdenes (set)")
-    reader, writer = await asyncio.wait_for(
-        asyncio.open_connection(
-            connection.host,
-            connection.port,
-            ssl=ssl_context,
-            server_hostname=connection.host,
-        ),
-        timeout=CONNECT_TIMEOUT,
-    )
-    try:
-        await _connect(reader, writer, connection, auth_token)
-        await _subscribe(reader, writer, connection)
-        writer.write(
-            protocol.build_publish(
-                connection.login_topic,
-                _login_payload(connection.login_device_id, _request_id(connection.login_device_id)),
-            )
-        )
-        await writer.drain()
-
+    async with _session(connection, auth_token, ssl_context) as (reader, writer):
         secret_key: str | None = None
         wake_request_id: str | None = None
         deadline = time.monotonic() + WAKE_ACK_TIMEOUT
-        while time.monotonic() < deadline:
-            try:
-                first_byte, body = await asyncio.wait_for(
-                    protocol.read_packet(reader),
-                    timeout=max(1.0, deadline - time.monotonic()),
-                )
-            except TimeoutError:
-                break
-            if protocol.packet_type(first_byte) != protocol.PACKET_PUBLISH:
-                continue
-            try:
-                _topic, payload, packet_id = protocol.parse_publish(first_byte, body)
-            except ValueError as err:
-                _LOGGER.debug("Mensaje MQTT mal formado, se ignora: %s", err)
-                continue
-            if packet_id is not None:
-                writer.write(protocol.build_puback(packet_id))
-                await writer.drain()
-
-            if secret_key is None:
-                secret_key = _secret_key(payload)
-                if secret_key:
-                    wake_request_id = _request_id(connection.vehicle_device_id)
-                    writer.write(
-                        protocol.build_publish(
-                            connection.properties_set_topic,
-                            _wake_payload(
-                                connection.vehicle_device_id,
-                                connection.login_device_id,
-                                secret_key,
-                                wake_request_id,
-                            ),
-                            qos=WAKE_QOS,
-                            packet_id=WAKE_PACKET_ID,
+        async with contextlib.aclosing(_publishes(reader, writer, deadline)) as messages:
+            async for _topic, payload in messages:
+                if secret_key is None:
+                    secret_key = _secret_key(payload)
+                    if secret_key:
+                        wake_request_id = _request_id(connection.vehicle_device_id)
+                        writer.write(
+                            protocol.build_publish(
+                                connection.properties_set_topic,
+                                _wake_payload(
+                                    connection.vehicle_device_id,
+                                    connection.login_device_id,
+                                    secret_key,
+                                    wake_request_id,
+                                ),
+                                qos=WAKE_QOS,
+                                packet_id=WAKE_PACKET_ID,
+                            )
                         )
-                    )
-                    await writer.drain()
-                continue
+                        await writer.drain()
+                    continue
 
-            if payload.get("r") != wake_request_id:
-                continue
-            result = _service_result(payload, secret_key)
-            if result is None:
-                continue
-            code, success = result
-            if success or code in WAKE_OK_CODES:
-                return code
-            raise ValueError(f"La pasarela rechazó el despertar (código {code})")
+                if payload.get("r") != wake_request_id:
+                    continue
+                result = _service_result(payload, secret_key)
+                if result is None:
+                    continue
+                code, success = result
+                if success or code in WAKE_OK_CODES:
+                    return code
+                raise ValueError(f"La pasarela rechazó el despertar (código {code})")
 
         raise TimeoutError("No llegó la confirmación del despertar")
-    finally:
-        try:
-            writer.write(protocol.build_disconnect())
-            await writer.drain()
-        except (ConnectionError, OSError, ssl.SSLError):
-            pass
-        writer.close()
-        with contextlib.suppress(ConnectionError, TimeoutError, OSError, ssl.SSLError):
-            await writer.wait_closed()
 
 
 # ---------------------------------------------------------------------------

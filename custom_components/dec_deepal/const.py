@@ -15,7 +15,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
+
+from homeassistant.util.hass_dict import HassKey
 
 # ---------------------------------------------------------------------------
 # Identidad de la integración
@@ -24,6 +26,11 @@ from typing import Final
 #: Dominio de Home Assistant. Debe coincidir con ``manifest.json`` y con el
 #: nombre de la carpeta ``custom_components/dec_deepal``.
 DOMAIN: Final = "dec_deepal"
+#: Datos de la integración en ``hass.data`` (compartidos por todas las cuentas):
+#: catálogos, almacén de coches, gestor de cargadores, registros de depuración,
+#: estado del panel y del cargador de iconos. Es la misma clave que ``DOMAIN``
+#: (``HassKey`` es un texto), pero con tipo.
+DATA: HassKey[dict[str, Any]] = HassKey(DOMAIN)
 
 #: Nombre visible de la integración.
 NAME: Final = "DEC Deepal"

@@ -26,7 +26,7 @@
    - Todo lo que salga hacia el usuario pasa por `debug/redact.py`.
 3. Pruebas: `pip install -r requirements_test.txt` y `pytest` (con la versión
    mínima de Home Assistant, `requirements_test_min.txt`). Cobertura:
-   `pytest --cov` (la CI falla si baja del 74 %).
+   `pytest --cov` (la CI falla si baja del 84 %).
 4. Estilo: `ruff check .` (reglas en `pyproject.toml`: errores, imports
    ordenados, tipos, asyncio, logging...). Un `noqa` siempre con su motivo.
 5. JavaScript: `npm install` y `npm run lint:js` (ESLint sobre la tarjeta, el

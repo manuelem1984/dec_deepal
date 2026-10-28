@@ -27,7 +27,7 @@ from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from . import vehicle_data as vd
-from .const import DOMAIN, EXPORT_API
+from .const import DATA, DOMAIN, EXPORT_API
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -147,7 +147,7 @@ class VehicleStore:
 @callback
 def async_get_store(hass: HomeAssistant) -> VehicleStore:
     """El almacén de la integración (se crea la primera vez)."""
-    domain_data = hass.data.setdefault(DOMAIN, {})
+    domain_data = hass.data.setdefault(DATA, {})
     if _STORE_KEY not in domain_data:
         domain_data[_STORE_KEY] = VehicleStore(hass)
     return domain_data[_STORE_KEY]

@@ -1,7 +1,7 @@
 """Avisos al móvil: qué cambios del coche merecen un aviso y con qué texto.
 
 Lógica pura (sin Home Assistant), para poder probarla sola. El envío y la
-configuración están en ``alerts.py``.
+configuración están en el paquete ``alerts``.
 
 Tipos de aviso (el usuario activa los que quiera en el panel DEC Deepal → Avisos):
 
@@ -446,7 +446,7 @@ def new_problems(
 # ---------------------------------------------------------------------------
 # Textos
 # ---------------------------------------------------------------------------
-# El título es siempre "DEC Deepal <nombre del coche>" (lo pone alerts.py).
+# El título es siempre "DEC Deepal <nombre del coche>" (lo pone el paquete alerts).
 # Los mensajes están en idiomas/<idioma>.json → "avisos" (ver docs/idiomas.md).
 
 #: ``{idioma: {clave: texto}}``. Sale de ``idiomas/<idioma>.json`` → ``avisos``.

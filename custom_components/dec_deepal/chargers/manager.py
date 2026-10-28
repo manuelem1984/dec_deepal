@@ -19,7 +19,7 @@ from homeassistant.helpers.event import (
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
-from ..const import DOMAIN
+from ..const import DATA
 from .cars import CarsMixin
 from .config import ChargerError, _choice, _clean_car, clean_charger, clean_limit
 from .const import (
@@ -249,7 +249,7 @@ class ChargerManager(SessionMixin, LimitMixin, EnergyMixin, NotifyMixin, StatusM
 
 def async_get_manager(hass: HomeAssistant) -> ChargerManager:
     """El gestor de cargadores de esta instalación (se crea la primera vez)."""
-    domain_data = hass.data.setdefault(DOMAIN, {})
+    domain_data = hass.data.setdefault(DATA, {})
     manager = domain_data.get(_MANAGER_KEY)
     if manager is None:
         manager = domain_data[_MANAGER_KEY] = ChargerManager(hass)

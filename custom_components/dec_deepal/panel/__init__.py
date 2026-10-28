@@ -46,6 +46,7 @@ from homeassistant.components.http import StaticPathConfig
 from homeassistant.core import HomeAssistant, callback
 
 from ..const import (
+    DATA,
     DOMAIN,
     ICONS_JS_URL,
     INTEGRATION_DIR,
@@ -80,7 +81,7 @@ COMMANDS: Final = (
 
 async def async_register_panel(hass: HomeAssistant) -> None:
     """Añade el panel a la barra lateral (una vez; al cargar la primera cuenta)."""
-    domain_data = hass.data.setdefault(DOMAIN, {})
+    domain_data = hass.data.setdefault(DATA, {})
     if domain_data.get(_REGISTERED_KEY):
         return
     domain_data[_REGISTERED_KEY] = True
@@ -117,5 +118,5 @@ async def async_register_panel(hass: HomeAssistant) -> None:
 @callback
 def async_unregister_panel(hass: HomeAssistant) -> None:
     """Quita el panel de la barra lateral (al borrar la última cuenta)."""
-    if hass.data.get(DOMAIN, {}).pop(_REGISTERED_KEY, None):
+    if hass.data.get(DATA, {}).pop(_REGISTERED_KEY, None):
         frontend.async_remove_panel(hass, PANEL_URL_PATH)

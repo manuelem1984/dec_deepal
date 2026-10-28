@@ -213,11 +213,12 @@ Pendiente de comprobar:
 - [ ] **Revisión de código (21 y 28-10-2026), lo que queda:** partir
       ~~`chargers.py` en un paquete con sesiones tipadas~~ (hecho en la
       2.6.0b13), una sesión MQTT común para leer y despertar, separar `AlertManager`
-      (coche / documentos), `HassKey` para `hass.data`, ~~más reglas de
-      ruff, cobertura y ESLint~~ (2.6.0b14), **pruebas de las plataformas**
-      (sensor, number, lock, switch, cover, button, image y device_tracker
-      están al 0 %: falta una prueba que monte la integración completa con
-      un coche falso) y cargar solo el idioma del usuario en la tarjeta y el
+      (coche / documentos), `HassKey`, ~~más reglas de ruff, cobertura y
+      ESLint~~ (2.6.0b14), ~~sesión MQTT común, `AlertManager` partido,
+      `HassKey` y pruebas de las plataformas~~ (2.6.0b15). Queda: **cargar
+      solo el idioma del usuario** en la tarjeta y el panel (hoy llevan los 12:
+      237 KB y 428 KB). Hay que pedir los textos antes de pintar y probarlo
+      en los dos bancos; ahorra peso, pero cambia cómo arrancan en la tarjeta y el
       panel. Hecho en la 2.6.0b12: CI con la versión mínima, versiones
       fijadas, aviso único a las tarjetas, `status()` sin efectos, tareas con
       nombre y docstrings que faltaban.

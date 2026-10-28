@@ -13,7 +13,7 @@ destruye al descargar la integración:
     ├── commands      comandos firmados (api/commands.py)
     ├── recorder      registro de depuración (debug/recorder.py)
     ├── registries    catálogos: países, vehículos, iconos
-    ├── alerts        avisos al móvil y fichas de mantenimiento (alerts.py)
+    ├── alerts        avisos al móvil y fichas de mantenimiento (paquete alerts)
     └── vehicles      {vehicle_id: VehicleContext}
         └── VehicleContext  (un coche)
             ├── info         datos del servidor (VIN, modelo...)
@@ -40,7 +40,7 @@ from .api.account import DeepalAccount
 from .api.client import DeepalClient
 from .api.commands import DeepalCommands
 from .api.models import Capabilities, VehicleInfo
-from .const import DOMAIN, INTEGRATION_DIR
+from .const import DATA, DOMAIN, INTEGRATION_DIR
 from .debug.recorder import DebugRecorder
 from .registries import Registries, load_all
 from .registries.countries import Country
@@ -122,7 +122,7 @@ async def async_get_registries(hass: HomeAssistant) -> Registries:
     Raises:
         RegistryError: algún catálogo tiene errores (el mensaje dice cuál).
     """
-    domain_data = hass.data.setdefault(DOMAIN, {})
+    domain_data = hass.data.setdefault(DATA, {})
     if _REGISTRIES_KEY not in domain_data:
         registries = await hass.async_add_executor_job(load_all, INTEGRATION_DIR)
         for warning in registries.icons.warnings:

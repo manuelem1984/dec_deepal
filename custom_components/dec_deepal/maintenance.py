@@ -2,7 +2,7 @@
 
 Lógica pura (sin Home Assistant), para poder probarla sola. Quien la usa:
 
-- ``alerts.py`` guarda la ficha de cada coche y envía los avisos.
+- El paquete ``alerts`` guarda la ficha de cada coche y envía los avisos.
 - ``binary_sensor.py`` / ``sensor.py`` muestran el testigo, los días y los km.
 - El panel (Coches → Mantenimiento) y el servicio
   ``dec_deepal.register_maintenance`` la modifican.

@@ -205,7 +205,7 @@ cuenta>`): se pasa al nuevo solo, la primera vez que arranca la 2.4.0.
 | `maintenance.py` | Cálculo de días y kilómetros, escalones de aviso, registro (sin Home Assistant) |
 | `documents.py` | ITV y seguro: fechas, niveles y avisos (sin Home Assistant) |
 | `alert_rules.py` | Qué cambios del coche avisan y los textos (sin Home Assistant) |
-| `alerts.py` | `AlertManager`: vigilancia de cada lectura y envío |
+| `alerts/` | `AlertManager` (`manager.py`): vigilancia de cada lectura y envío; avisos del coche (`coche.py`), de mantenimiento (`mantenimiento.py`) y de ITV y seguro (`documentos.py`) |
 | `vehicle_data.py` | Formato de los datos por coche, migración y copias (sin Home Assistant) |
 | `vehicle_store.py` | Almacén por bastidor, adopción del antiguo y descarga de la copia |
 | `panel/` | Órdenes del panel: avisos, fichas y datos |

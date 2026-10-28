@@ -10,7 +10,7 @@ Punto de entrada. Home Assistant llama a estas funciones:
 - :func:`async_unload_entry` — al quitar o recargar una cuenta.
 
 Al final del arranque de cada cuenta se pone en marcha el gestor de avisos y
-mantenimiento (``alerts.py``).
+mantenimiento (paquete ``alerts``).
 
 Mapa de la integración: ``docs/arquitectura.md``.
 """
@@ -44,6 +44,7 @@ from .const import (
     CONF_COUNTRY,
     CONF_SESSION,
     CONF_VEHICLES,
+    DATA,
     DEBUG_BUFFER_SIZE,
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
@@ -88,7 +89,7 @@ from .vehicle_sync import async_schedule_sync, async_sync_vehicles, delete_issue
 
 _LOGGER = logging.getLogger(__name__)
 
-#: Registros de depuración de cada cuenta, en ``hass.data[DOMAIN]``.
+#: Registros de depuración de cada cuenta, en ``hass.data[DATA]``.
 _RECORDERS_KEY = "recorders"
 
 # Solo se configura desde la interfaz: una línea "dec_deepal:" en
@@ -155,7 +156,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     # --- Cliente de la API ---------------------------------------------------
     # El registro sobrevive a las recargas de la cuenta (cambiar una opción la
     # recarga): si no, el historial se perdería justo antes de mirarlo.
-    recorders = hass.data.setdefault(DOMAIN, {}).setdefault(_RECORDERS_KEY, {})
+    recorders = hass.data.setdefault(DATA, {}).setdefault(_RECORDERS_KEY, {})
     recorder = recorders.setdefault(entry.entry_id, DebugRecorder(DEBUG_BUFFER_SIZE))
     recorder.verbose = debug
     session = DeepalSession.from_dict(entry.data[CONF_SESSION])
@@ -322,7 +323,7 @@ async def async_remove_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) -
     delete_issues(hass, entry)
     # Si la cuenta aún tenía el almacén antiguo (de la 2.3.0), se pasa al de
     # coches antes de perder la relación entre cada coche y su bastidor.
-    hass.data.get(DOMAIN, {}).get(_RECORDERS_KEY, {}).pop(entry.entry_id, None)
+    hass.data.get(DATA, {}).get(_RECORDERS_KEY, {}).pop(entry.entry_id, None)
     store = async_get_store(hass)
     await store.async_load()
     await store.async_adopt_legacy(
@@ -485,7 +486,7 @@ def _set_debug_logging(hass: HomeAssistant, entry_id: str, enabled: bool) -> Non
     activado. Al desactivarlo en todas, se vuelve al nivel heredado de la
     configuración de Home Assistant (``NOTSET``).
     """
-    debug_entries: set[str] = hass.data.setdefault(DOMAIN, {}).setdefault(
+    debug_entries: set[str] = hass.data.setdefault(DATA, {}).setdefault(
         _DEBUG_ENTRIES_KEY, set()
     )
     if enabled:

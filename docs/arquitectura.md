@@ -46,7 +46,9 @@ custom_components/dec_deepal/
 │   ├── estado.py          Lo que pinta el panel, según quién mira
 │   └── coches.py, avisos.py, datos.py, ajustes.py   Órdenes de cada pestaña
 ├── services.py/.yaml      Servicios: captura de depuración y registrar mantenimiento
-├── alerts.py              Avisos al móvil y fichas de mantenimiento, ITV y seguro
+├── alerts/                Avisos al móvil y fichas de mantenimiento, ITV y seguro
+│   │                      (gestor + una parte por tema: coche, mantenimiento, documentos)
+├── chargers/              Cargadores: gestor + una parte por tema (ver su __init__.py)
 ├── debug/history.py       Qué señales cambian entre lecturas (historial del diagnóstico; sin HA)
 ├── vehicle_data.py        Datos por coche: formato, migración y copias (sin HA)
 ├── vehicle_store.py       Almacén por bastidor (.storage/dec_deepal.vehicles)

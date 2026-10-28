@@ -36,7 +36,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
-from .const import DOMAIN, OPT_ALERTS, OPT_APPEARANCE, OPT_PIN, VERSION
+from .const import DATA, DOMAIN, OPT_ALERTS, OPT_APPEARANCE, OPT_PIN, VERSION
 from .debug.capture import build_snapshot
 from .debug.redact import redact
 from .frontend import LOADER_STATUS_KEY
@@ -109,7 +109,7 @@ async def async_get_config_entry_diagnostics(
                 "iconos_svg": sorted(runtime.registries.icons.available),
                 "avisos_iconos": runtime.registries.icons.warnings,
                 # Cargador temprano de iconos (recurso de paneles, ruta propia).
-                "cargador_iconos": hass.data.get(DOMAIN, {}).get(LOADER_STATUS_KEY),
+                "cargador_iconos": hass.data.get(DATA, {}).get(LOADER_STATUS_KEY),
             },
             "vehiculos": vehicles,
             "historial": runtime.recorder.history(),

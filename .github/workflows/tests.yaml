@@ -22,7 +22,7 @@ jobs:
           # Con la última, además, la cobertura: falla si baja del mínimo.
           - ha: "2026.10"
             requirements: requirements_test.txt
-            args: --cov=custom_components/dec_deepal --cov-report=term-missing:skip-covered --cov-fail-under=74
+            args: --cov=custom_components/dec_deepal --cov-report=term-missing:skip-covered --cov-fail-under=84
           - ha: "2026.3 (mínima)"
             requirements: requirements_test_min.txt
             args: ""

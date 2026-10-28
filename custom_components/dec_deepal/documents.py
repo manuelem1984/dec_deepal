@@ -1,7 +1,7 @@
 """ITV y seguro del coche: fechas, cuánto falta y qué aviso toca.
 
 Lógica pura (sin Home Assistant), como ``maintenance.py``. La usan
-``alerts.py`` (guarda las fichas y envía los avisos), las entidades y
+el paquete ``alerts`` (guarda las fichas y envía los avisos), las entidades y
 el panel DEC Deepal → Coches → ITV / Seguro.
 
 ITV
