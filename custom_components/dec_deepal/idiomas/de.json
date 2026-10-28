@@ -91,6 +91,35 @@
           }
         }
       },
+      "vehicle_model_mismatch": {
+        "title": "Prüfe das Modell von {vehicle}: das Auto meldet sich als {detected}",
+        "fix_flow": {
+          "step": {
+            "model": {
+              "title": "Modell von {vehicle}",
+              "description": "{vehicle} ist als anderes Modell eingerichtet, aber das Auto meldet sich als {suggestion}. Wähle das richtige Modell: davon hängen die angelegten Entitäten ab (z. B. Kraftstoff beim PHEV).",
+              "data": {
+                "model": "Modell"
+              }
+            },
+            "details": {
+              "title": "Version und Farbe",
+              "description": "Version und Farbe deines {model}. Die Version bestimmt, welche Entitäten angelegt werden (die Sitzbelüftung gibt es z. B. nur beim Max) und zusammen mit der Farbe die „Seitenansicht“.",
+              "data": {
+                "trim": "Version",
+                "color": "Farbe",
+                "wheels": "Felgen (nur Max)"
+              },
+              "data_description": {
+                "wheels": "Der Pro hat immer seine 18\"-Felge."
+              }
+            }
+          },
+          "abort": {
+            "entry_not_found": "Das Konto existiert nicht mehr."
+          }
+        }
+      },
       "vehicle_added": {
         "title": "Neues Auto in deinem Konto: {vehicle}",
         "fix_flow": {
@@ -935,7 +964,7 @@
     "charger_name_help": "Nenne sie, wie du willst: Garage, Arbeit, Ferienhaus…",
     "charger_deleted": "Ladestation entfernt.",
     "limit_title": "Ladelimit",
-    "limit_help": "Beendet das Laden beim gewählten %, indem die verknüpfte Ladestation gesperrt wird (ohne Empfang mit dem geschätzten %). Beim PHEV wird das Limit auch an das Auto gesendet.",
+    "limit_help": "Beendet das Laden beim gewählten %, indem die verknüpfte Ladestation gesperrt wird (ohne Empfang mit dem geschätzten %).",
     "limit_enabled": "Ladelimit verwenden",
     "limit_enabled_help": "Wird auf der Karte jedes Autos gewählt oder hier.",
     "limit_cars": "Limit jedes Autos",

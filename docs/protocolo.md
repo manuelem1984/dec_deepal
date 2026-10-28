@@ -99,7 +99,11 @@ Se usan solo para **proponer** la versión (ventilación → Max).
 4. PUBLISH `loginout` → respuesta con `secretKey`.
 5. PUBLISH `properties/get/req` con `car_condition` cifrado
    (AES-CBC, IV = MD5(requestId), base64(gzip(JSON))).
-6. Respuesta cifrada con un diccionario plano de ~110 claves.
+6. Respuesta cifrada con un diccionario plano de ~110 claves. El sobre de la
+   respuesta trae en `b.mc` el **código de modelo**: `...BEV` en el S05 EV
+   (`SC6464AAKBEV`) y `...HEV` en el PHEV (`SC6460AAAA7HEV`). Se guarda en el
+   diagnóstico (`codigo_modelo`) y avisa en Reparaciones si no cuadra con el
+   modelo elegido (2.6.0b11).
 
 Servicios aceptados: `car_condition`, `BDC_Service`, `BMS_Service`,
 `OBC_Service`, `THU_Service`. Otros se guardan como "desconocidos".

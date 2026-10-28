@@ -90,6 +90,35 @@
         }
       }
     },
+    "vehicle_model_mismatch": {
+      "title": "Sprawdź model {vehicle}: samochód podaje, że to {detected}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Model: {vehicle}",
+            "description": "{vehicle} skonfigurowano jako inny model, ale samochód podaje, że to {suggestion}. Wybierz właściwy model: od niego zależą tworzone encje (np. paliwo w PHEV).",
+            "data": {
+              "model": "Model"
+            }
+          },
+          "details": {
+            "title": "Wersja i kolor",
+            "description": "Wersja i kolor Twojego {model}. Wersja decyduje o tym, jakie encje powstają (np. wentylacja foteli jest tylko w Max) i, razem z kolorem, o „Widoku z boku”.",
+            "data": {
+              "trim": "Wersja",
+              "color": "Kolor",
+              "wheels": "Felgi (tylko Max)"
+            },
+            "data_description": {
+              "wheels": "Pro ma zawsze swoją felgę 18\"."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "Konto już nie istnieje."
+        }
+      }
+    },
     "vehicle_added": {
       "title": "Nowy samochód na koncie: {vehicle}",
       "fix_flow": {

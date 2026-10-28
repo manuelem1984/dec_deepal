@@ -84,9 +84,10 @@ Panel → Ajustes → **Límite de carga** (sale con los cargadores activados):
   pasar («Se para al 80 % · en ≈ 25 min»). Pueden cambiarlo los
   administradores y, con «Quién controla: personas», las de ese coche.
 - Al llegar al límite (el % real o, sin cobertura, el estimado), **se bloquea
-  el cargador**. El EV no aplica el límite que se le manda; el **PHEV** sí:
-  además del bloqueo, se le manda su límite propio (60-100 %). Si el cargador
-  no tiene entidad de bloqueo, solo se avisa. Si estaba en «No desbloquear» y
+  el cargador**: es lo único que para la carga. El EV no aplica el límite que
+  se le manda y el **PHEV** no deja leerlo (nunca devuelve su límite), así
+  que desde la 2.6.0b11 no se le manda nada al coche. Si el cargador no tiene
+  entidad de bloqueo, solo se avisa. Si estaba en «No desbloquear» y
   sin «Bloquear al desenchufar», al desenchufar vuelve a desbloquearse.
 - Cerca del límite (a menos de 5 puntos), si «Leer el coche mientras carga»
   está activado, el coche se lee cada 5 min.

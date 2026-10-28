@@ -35,9 +35,8 @@ Qué hace
   la pérdida real de esa carga (``learn``) y el panel la ofrece.
 - **Límite de carga** (70, 80, 90 o 100 %, por coche; se elige en la tarjeta
   del coche): al llegarle (real o estimado), se **bloquea el cargador**. Es lo
-  único que puede parar la carga del EV, que no aplica el límite del servidor;
-  en el PHEV, además, se le manda su límite propio. Sin bloqueo, solo se
-  avisa. «Solo esta: 100 %» hace la siguiente carga completa.
+  único que puede parar la carga: el EV no aplica el límite del servidor y el
+  PHEV no deja leerlo (2.6.0b11). Sin bloqueo, solo se avisa. «Solo esta: 100 %» hace la siguiente carga completa.
 - **Recordar cargar al 100 %** cada 3-6 cargas seguidas sin llegar (para que
   la batería se equilibre y el % sea exacto), o hacerla al 100 % sin preguntar.
 
@@ -63,7 +62,6 @@ from typing import Any, Final
 from homeassistant.components import persistent_notification
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, State, callback
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import (
     async_call_later,
     async_track_state_change_event,
@@ -74,7 +72,6 @@ from homeassistant.util import dt as dt_util
 
 from .alert_rules import SECTION_CHARGE, TARGET_PANEL, texts
 from .const import DOMAIN, NAME, PANEL_URL_PATH
-from .registries.vehicles import FEATURE_CHARGE_LIMIT
 from .runtime import vehicle_device
 from .telemetry import signals as s
 
@@ -480,9 +477,6 @@ class ChargerManager:
         await self.async_load()
         self.limit = clean_limit({**self.limit, **raw})
         self._save()
-        for vehicle_id, car in self._cars.items():
-            if car["limit"] < 100:
-                self._native_limit(vehicle_id)
         for charger_id in list(self._sessions):
             self._check_limit(self.chargers[charger_id])
         self._changed()
@@ -513,7 +507,6 @@ class ChargerManager:
         if once_full is not None:
             car["once_full"] = bool(once_full)
         self._save()
-        self._native_limit(vehicle_id)
         for charger_id, session in list(self._sessions.items()):
             if session.get("vehicle_id") != vehicle_id:
                 continue
@@ -548,33 +541,6 @@ class ChargerManager:
     def _linked(self) -> list[str]:
         """Coches que tienen algún cargador (los únicos a los que se puede parar la carga)."""
         return [vehicle_id for vehicle_id in dict.fromkeys(v for c in self.chargers.values() for v in c["vehicles"]) if self._vehicle(vehicle_id)]
-
-    @callback
-    def _native_limit(self, vehicle_id: str) -> None:
-        """S05 PHEV: también se le manda su límite propio (el EV lo acepta pero no lo aplica)."""
-        found = self._vehicle(vehicle_id)
-        if found is None:
-            return
-        entry, vehicle = found
-        if not vehicle.has(FEATURE_CHARGE_LIMIT):
-            return
-        target = self.target(vehicle_id)
-        current = (vehicle.coordinator.data or {}).get(s.CHARGE_LIMIT)
-        if current is not None and round(float(current)) == target:
-            return
-        commands = entry.runtime_data.commands
-
-        async def _send() -> None:
-            try:
-                await vehicle.runner.run(
-                    "charge_limit",
-                    lambda: commands.charge_limit(vehicle_id, target),
-                    optimistic={s.CHARGE_LIMIT: target},
-                )
-            except HomeAssistantError as err:
-                _LOGGER.warning("No se pudo mandar el límite de carga al coche: %s", err)
-
-        self.hass.async_create_task(_send())
 
     def measured(self, charger_id: str) -> dict[str, Any] | None:
         """Pérdida medida con las últimas cargas: ``{"value": 11.8, "count": 4}``."""
@@ -911,9 +877,7 @@ class ChargerManager:
         car = self._car(vehicle_id)
         if level >= FULL_LEVEL:
             car["incomplete"] = 0
-            if car["once_full"]:
-                car["once_full"] = False
-                self._native_limit(vehicle_id)
+            car["once_full"] = False
             return
         car["incomplete"] += 1
         if not self.limit["remind"] or car["once_full"] or car["incomplete"] % self.limit["every"]:
@@ -921,7 +885,6 @@ class ChargerManager:
         count = car["incomplete"]
         if self.limit["auto"]:
             car["once_full"] = True
-            self._native_limit(vehicle_id)
             self._send(charger, NOTICE_FULL, [vehicle_id], self._text("charger_full_auto", count=count))
             return
         self._send(

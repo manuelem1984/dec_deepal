@@ -91,6 +91,35 @@
           }
         }
       },
+      "vehicle_model_mismatch": {
+        "title": "Check the model of {vehicle}: the car says it is a {detected}",
+        "fix_flow": {
+          "step": {
+            "model": {
+              "title": "Model of {vehicle}",
+              "description": "{vehicle} is set up as a different model, but the car says it is a {suggestion}. Choose the right model: it decides which entities are created (e.g. the PHEV fuel ones).",
+              "data": {
+                "model": "Model"
+              }
+            },
+            "details": {
+              "title": "Version and colour",
+              "description": "Version and colour of your {model}. The version decides which entities are created (for example, seat ventilation only exists on the Max) and, together with the colour, the \"Side view\".",
+              "data": {
+                "trim": "Version",
+                "color": "Colour",
+                "wheels": "Wheels (Max only)"
+              },
+              "data_description": {
+                "wheels": "The Pro always has its 18\" wheel."
+              }
+            }
+          },
+          "abort": {
+            "entry_not_found": "The account no longer exists."
+          }
+        }
+      },
       "vehicle_added": {
         "title": "New car in your account: {vehicle}",
         "fix_flow": {
@@ -935,7 +964,7 @@
     "charger_name_help": "Name it however you like: Garage, Work, Beach house…",
     "charger_deleted": "Charger removed.",
     "limit_title": "Charge limit",
-    "limit_help": "Stops charging at the chosen % by locking the linked charger (without coverage, using the estimated %). On the PHEV, the limit is also sent to the car.",
+    "limit_help": "Stops charging at the chosen % by locking the linked charger (without coverage, using the estimated %).",
     "limit_enabled": "Use the charge limit",
     "limit_enabled_help": "Chosen on each car's card, or here.",
     "limit_cars": "Each car's limit",

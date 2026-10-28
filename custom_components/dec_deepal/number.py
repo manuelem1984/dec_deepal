@@ -77,6 +77,10 @@ async def async_setup_entry(
         for description in SEATS
         if vehicle.has(description.feature)
     )
+    for vehicle in runtime.vehicles.values():
+        if not vehicle.has(FEATURE_CHARGE_LIMIT):
+            # El PHEV lo tuvo en las 2.6.0b6-b10: no se puede leer (2.6.0b11).
+            remove_entities(hass, "number", vehicle.info.vehicle_id, ("charge_limit",))
     async_add_entities(
         DecChargeLimit(runtime, vehicle)
         for vehicle in runtime.vehicles.values()

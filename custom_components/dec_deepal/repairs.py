@@ -1,6 +1,9 @@
 """Reparaciones: asistentes de los avisos de la integración.
 
 - "Configura tu vehículo" (:class:`VehicleSetupFlow`), explicado abajo.
+- "Revisa el modelo": el coche dice (por MQTT, ``b.mc``) ser EV o PHEV y está
+  configurado como el otro. Abre el mismo asistente, con el modelo detectado
+  como sugerencia (lo crea ``__init__.py``).
 - "Coche nuevo en tu cuenta" y "Este coche ya no está en tu cuenta"
   (:class:`VehicleAddedFlow`, :class:`VehicleRemovedFlow`): los crea
   ``vehicle_sync.py``. Un solo paso de confirmación.
@@ -30,10 +33,11 @@ import voluptuous as vol
 from homeassistant.components.repairs import RepairsFlow
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers import issue_registry as ir
 
 from .appearance import details_schema, model_schema, needs_details, updated_options
 from .api.models import VehicleInfo
-from .const import CONF_VEHICLES, OPT_APPEARANCE, OPT_MODEL
+from .const import CONF_VEHICLES, DOMAIN, OPT_APPEARANCE, OPT_MODEL
 from .registries.vehicles import VehicleModel
 from .runtime import DecDeepalConfigEntry, async_get_registries
 from .vehicle_sync import KIND_ADDED, KIND_REMOVED, add_vehicle, remove_vehicle
@@ -42,9 +46,11 @@ from .vehicle_sync import KIND_ADDED, KIND_REMOVED, add_vehicle, remove_vehicle
 class VehicleSetupFlow(RepairsFlow):
     """Asistente para elegir modelo, versión y color de un coche."""
 
-    def __init__(self, entry_id: str, vehicle_id: str) -> None:
+    def __init__(self, entry_id: str, vehicle_id: str, suggested: str | None = None) -> None:
         self._entry_id = entry_id
         self._vehicle_id = vehicle_id
+        #: Modelo que dice ser el coche (aviso "el coche dice ser otro modelo").
+        self._suggested = suggested
         self._model: VehicleModel | None = None
 
     def _entry(self) -> DecDeepalConfigEntry | None:
@@ -78,6 +84,10 @@ class VehicleSetupFlow(RepairsFlow):
         runtime = getattr(entry, "runtime_data", None)
         context = runtime.vehicles.get(self._vehicle_id) if runtime else None
         suggested = context.suggested_model.id if context and context.suggested_model else None
+        suggested_name = context.suggested_model.name if context and context.suggested_model else "—"
+        if self._suggested and self._suggested in registries.vehicles.models:
+            suggested = self._suggested
+            suggested_name = registries.vehicles.get(suggested).name
         models = (
             registries.vehicles.for_country(runtime.country.id)
             if runtime
@@ -88,11 +98,7 @@ class VehicleSetupFlow(RepairsFlow):
             data_schema=model_schema(models, suggested or models[0].id),
             description_placeholders={
                 "vehicle": context.info.display_name if context else self._vehicle_id,
-                "suggestion": (
-                    context.suggested_model.name
-                    if context and context.suggested_model
-                    else "—"
-                ),
+                "suggestion": suggested_name,
             },
         )
 
@@ -119,6 +125,7 @@ class VehicleSetupFlow(RepairsFlow):
         self.hass.config_entries.async_update_entry(
             entry, options=updated_options(entry.options, self._vehicle_id, self._model, details)
         )
+        ir.async_delete_issue(self.hass, DOMAIN, f"model_mismatch_{self._vehicle_id}")
         return self.async_create_entry(data={})
 
 
@@ -185,4 +192,4 @@ async def async_create_fix_flow(
         return VehicleAddedFlow(data)
     if data.get("kind") == KIND_REMOVED:
         return VehicleRemovedFlow(data)
-    return VehicleSetupFlow(str(data.get("entry_id")), str(data.get("vehicle_id")))
+    return VehicleSetupFlow(str(data.get("entry_id")), str(data.get("vehicle_id")), data.get("suggested"))

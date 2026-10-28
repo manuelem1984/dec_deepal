@@ -90,6 +90,35 @@
         }
       }
     },
+    "vehicle_model_mismatch": {
+      "title": "Controlla il modello di {vehicle}: l'auto dice di essere una {detected}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Modello di {vehicle}",
+            "description": "Hai configurato {vehicle} come un altro modello, ma l'auto dice di essere una {suggestion}. Scegli il modello giusto: da esso dipendono le entità create (ad es. quelle del carburante della PHEV).",
+            "data": {
+              "model": "Modello"
+            }
+          },
+          "details": {
+            "title": "Versione e colore",
+            "description": "Versione e colore della tua {model}. La versione decide quali entità vengono create (ad esempio, la ventilazione dei sedili esiste solo sulla Max) e, insieme al colore, la \"Vista laterale\".",
+            "data": {
+              "trim": "Versione",
+              "color": "Colore",
+              "wheels": "Cerchi (solo Max)"
+            },
+            "data_description": {
+              "wheels": "La Pro monta sempre il suo cerchio da 18\"."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "L'account non esiste più."
+        }
+      }
+    },
     "vehicle_added": {
       "title": "Nuova auto nel tuo account: {vehicle}",
       "fix_flow": {

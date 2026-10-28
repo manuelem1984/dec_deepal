@@ -56,7 +56,7 @@ def test_percent_and_positive() -> None:
 def test_catalogue_fuel_and_charge_limit() -> None:
     vehicles = load_all(INTEGRATION).vehicles
     ev, phev = vehicles.get("s05_2024"), vehicles.get("s05_phev")
-    assert phev.has("combustible") and phev.has("limite_carga")
+    assert phev.has("combustible") and not phev.has("limite_carga")  # no se puede leer (2.6.0b11)
     assert not ev.has("combustible") and not ev.has("limite_carga")
 
 
@@ -206,3 +206,64 @@ async def test_read_skips_a_broken_message(monkeypatch: pytest.MonkeyPatch) -> N
     reading = await mqtt_client._read_telemetry(connection, "token", None)
     assert len(reading.params) == 11
     assert asyncio
+
+
+
+# --- 2.6.0b11: código de modelo (b.mc) y aviso si no cuadra -----------------------------
+
+
+def test_powertrain_from_the_model_code() -> None:
+    from custom_components.dec_deepal.registries.vehicles import powertrain
+
+    assert powertrain("SC6464AAKBEV") == "ev" and powertrain("SC6460AAAA7HEV") == "phev"
+    assert powertrain("sc6460-aaaa7-hev") == "phev" and powertrain(None) is None and powertrain("X") is None
+
+
+def test_model_code_from_the_mqtt_envelope() -> None:
+    from custom_components.dec_deepal.api.mqtt.client import model_code
+
+    assert model_code({"b": {"mc": "SC6460AAAA7HEV", "ruid": "x"}}) == "SC6460AAAA7HEV"
+    assert model_code({"b": {"modelCode": "SC6464AAKBEV"}}) == "SC6464AAKBEV"
+    assert model_code({"b": "x"}) is None and model_code({}) is None
+
+
+async def test_model_mismatch_issue(hass) -> None:  # noqa: ANN001
+    """Configurado como EV y el coche dice PHEV: aviso en Reparaciones; si cuadra, se quita."""
+    from types import SimpleNamespace
+
+    from homeassistant.helpers import issue_registry as ir
+
+    from custom_components.dec_deepal import update_model_issue
+    from custom_components.dec_deepal.api.models import VehicleInfo
+    from custom_components.dec_deepal.const import DOMAIN
+
+    registries = SimpleNamespace(vehicles=load_all(INTEGRATION).vehicles)
+    ev_model = registries.vehicles.get("s05_2024")
+    vehicle = SimpleNamespace(
+        info=VehicleInfo(vehicle_id="car1", nickname="Changote", vin="VIN1"),
+        coordinator=SimpleNamespace(model_code="SC6460AAAA7HEV"),
+        configured=True,
+        model=ev_model,
+        has=lambda feature: ev_model.has(feature, "max"),
+    )
+    entry = SimpleNamespace(entry_id="e1")
+    update_model_issue(hass, entry, vehicle, registries)
+    issue = ir.async_get(hass).async_get_issue(DOMAIN, "model_mismatch_car1")
+    assert issue is not None and issue.translation_key == "vehicle_model_mismatch"
+    assert issue.translation_placeholders["detected"] == registries.vehicles.get("s05_phev").name
+    assert issue.data["suggested"] == "s05_phev"
+    # El coche dice EV: cuadra, se quita.
+    vehicle.coordinator.model_code = "SC6464AAKBEV"
+    update_model_issue(hass, entry, vehicle, registries)
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "model_mismatch_car1") is None
+    # Sin modelo elegido (genérico) no se avisa: ya está "Configura tu vehículo".
+    vehicle.coordinator.model_code, vehicle.configured = "SC6460AAAA7HEV", False
+    update_model_issue(hass, entry, vehicle, registries)
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "model_mismatch_car1") is None
+
+
+def test_no_coolant_warning_on_the_phev() -> None:
+    from custom_components.dec_deepal.binary_sensor import BINARY_SENSORS, NOT_ON_FUEL_CARS
+
+    assert "warning_coolant_temperature" in NOT_ON_FUEL_CARS
+    assert "warning_coolant_temperature" in {description.key for description in BINARY_SENSORS}

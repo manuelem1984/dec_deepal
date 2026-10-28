@@ -45,6 +45,18 @@ class MqttReading:
     unknown_services: dict[str, Any] = field(default_factory=dict)
     #: Milisegundos que tardó la lectura.
     duration_ms: int = 0
+    #: Código de modelo que da el sobre de la respuesta (``b.mc``), p. ej.
+    #: ``SC6464AAKBEV`` (S05 EV) o ``SC6460AAAA7HEV`` (S05 PHEV). ``None`` si no viene.
+    model_code: str | None = None
+
+
+def model_code(payload: dict[str, Any]) -> str | None:
+    """Código de modelo de un mensaje (``b.mc``; ``b.modelCode`` por si acaso)."""
+    basic = payload.get("b")
+    if not isinstance(basic, dict):
+        return None
+    code = basic.get("mc") or basic.get("modelCode")
+    return str(code) if code else None
 
 
 def _iso_now() -> str:
@@ -232,6 +244,8 @@ async def _read_telemetry(
                     requested = True
                 continue
 
+            if reading.model_code is None:
+                reading.model_code = model_code(payload)
             if not _extract(payload, secret_key, reading):
                 continue
             # Criterios de "ya está completo" (verificados en la práctica):

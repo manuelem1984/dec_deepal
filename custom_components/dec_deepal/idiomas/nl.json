@@ -91,6 +91,35 @@
           }
         }
       },
+      "vehicle_model_mismatch": {
+        "title": "Controleer het model van {vehicle}: de auto meldt zich als {detected}",
+        "fix_flow": {
+          "step": {
+            "model": {
+              "title": "Model van {vehicle}",
+              "description": "{vehicle} is ingesteld als een ander model, maar de auto meldt zich als {suggestion}. Kies het juiste model: daarvan hangen de entiteiten af (bijv. de brandstof van de PHEV).",
+              "data": {
+                "model": "Model"
+              }
+            },
+            "details": {
+              "title": "Uitvoering en kleur",
+              "description": "Uitvoering en kleur van je {model}. De uitvoering bepaalt welke entiteiten worden aangemaakt (stoelventilatie bestaat bijvoorbeeld alleen op de Max) en, samen met de kleur, het ‘zijaanzicht’.",
+              "data": {
+                "trim": "Uitvoering",
+                "color": "Kleur",
+                "wheels": "Velgen (alleen Max)"
+              },
+              "data_description": {
+                "wheels": "De Pro heeft altijd zijn 18\"-velg."
+              }
+            }
+          },
+          "abort": {
+            "entry_not_found": "Het account bestaat niet meer."
+          }
+        }
+      },
       "vehicle_added": {
         "title": "Nieuwe auto in je account: {vehicle}",
         "fix_flow": {
@@ -935,7 +964,7 @@
     "charger_name_help": "Geef hem een naam: Garage, Werk, Strandhuis…",
     "charger_deleted": "Lader verwijderd.",
     "limit_title": "Laadlimiet",
-    "limit_help": "Stopt het laden bij het gekozen % door de gekoppelde lader te vergrendelen (zonder bereik met het geschatte %). Bij de PHEV wordt de limiet ook naar de auto gestuurd.",
+    "limit_help": "Stopt het laden bij het gekozen % door de gekoppelde lader te vergrendelen (zonder bereik met het geschatte %).",
     "limit_enabled": "Laadlimiet gebruiken",
     "limit_enabled_help": "Kies je op de kaart van elke auto, of hier.",
     "limit_cars": "Limiet per auto",

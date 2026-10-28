@@ -90,6 +90,35 @@
         }
       }
     },
+    "vehicle_model_mismatch": {
+      "title": "Vérifiez le modèle de {vehicle} : la voiture indique être une {detected}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Modèle de {vehicle}",
+            "description": "{vehicle} est configurée comme un autre modèle, mais la voiture indique être une {suggestion}. Choisissez le bon modèle : il détermine les entités créées (p. ex. le carburant de la PHEV).",
+            "data": {
+              "model": "Modèle"
+            }
+          },
+          "details": {
+            "title": "Version et couleur",
+            "description": "Version et couleur de votre {model}. La version décide des entités créées (par exemple, la ventilation des sièges n'existe que sur la Max) et, avec la couleur, de la « vue latérale ».",
+            "data": {
+              "trim": "Version",
+              "color": "Couleur",
+              "wheels": "Jantes (Max uniquement)"
+            },
+            "data_description": {
+              "wheels": "La Pro a toujours sa jante de 18\"."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "Le compte n'existe plus."
+        }
+      }
+    },
     "vehicle_added": {
       "title": "Nouvelle voiture dans votre compte : {vehicle}",
       "fix_flow": {

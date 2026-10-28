@@ -125,6 +125,8 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         # vez en un hilo aparte y se reutiliza en cada lectura MQTT.
         self._ssl_context: ssl.SSLContext | None = None
         self._holds: dict[str, OptimisticHold] = {}
+        #: Código de modelo que da el coche por MQTT (``b.mc``); el último visto.
+        self.model_code: str | None = None
         self.wake_enabled = wake_enabled
         self._last_wake: float | None = None
         self._wake_lock = asyncio.Lock()
@@ -188,8 +190,11 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
                     err,
                 )
             else:
+                if reading.model_code:
+                    self.model_code = reading.model_code
                 self.recorder.record(
                     "mqtt",
+                    model_code=reading.model_code,
                     params=len(reading.params),
                     duration_ms=reading.duration_ms,
                     unknown_services=reading.unknown_services

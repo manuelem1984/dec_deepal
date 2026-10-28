@@ -3,6 +3,26 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b11] — 2026-10-28
+
+### Añadido
+
+- **Código de modelo del coche:** el MQTT trae en la respuesta el código de
+  modelo (`b.mc`): `...BEV` en el S05 EV y `...HEV` en el PHEV. Se guarda en
+  el diagnóstico y, si el coche dice ser EV y está configurado como PHEV (o
+  al revés), sale en Reparaciones **«Revisa el modelo»**, con el mismo
+  asistente de «Configura tu vehículo» y el modelo detectado ya sugerido.
+
+### Cambiado (S05 PHEV, por el diagnóstico de un PHEV real del 26-10-2026)
+
+- **Sin «Límite de carga» propio:** el PHEV dice tenerlo, pero nunca devuelve
+  su límite, así que el control salía siempre «desconocido». Se quita (y se
+  borra del registro) y el límite de la tarjeta ya no le manda nada al coche:
+  sigue parando la carga con el bloqueo del cargador.
+- **Sin testigo del refrigerante:** el PHEV lo manda encendido en todos sus
+  informes, también con el coche sano. Se quita (el dato en bruto sigue en
+  el diagnóstico).
+
 ## [2.6.0b10] — 2026-10-26
 
 ### Añadido

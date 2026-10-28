@@ -73,6 +73,8 @@ async def async_get_config_entry_diagnostics(
             # Qué ficha del catálogo se le aplica y si está verificada.
             "ficha": vehicle.model.sheet(vehicle.trim),
             "modelo_sugerido": vehicle.suggested_model.id if vehicle.suggested_model else None,
+            # Código de modelo que da el coche por MQTT (b.mc): EV ("...BEV") o PHEV ("...HEV").
+            "codigo_modelo": getattr(vehicle.coordinator, "model_code", None),
             # Para validar si el servidor distingue Pro/Max: lista de funciones
             # que dice tener el coche y la versión que se deduciría de ella.
             "capacidades": (

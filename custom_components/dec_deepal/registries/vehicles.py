@@ -48,6 +48,24 @@ FEATURE_POWER_TAILGATE: Final = "porton_electrico"
 FEATURE_FUEL: Final = "combustible"
 FEATURE_CHARGE_LIMIT: Final = "limite_carga"
 
+#: Tipo de motor según el código de modelo del coche (``b.mc`` del MQTT).
+POWERTRAIN_EV: Final = "ev"
+POWERTRAIN_PHEV: Final = "phev"
+
+
+def powertrain(model_code: str | None) -> str | None:
+    """``"ev"``, ``"phev"`` o ``None`` según el código de modelo.
+
+    El S05 EV lleva ``BEV`` en el código (``SC6464AAKBEV``) y el PHEV, ``HEV``
+    (``SC6460AAAA7HEV``). Un código con ``BEV`` nunca es PHEV.
+    """
+    text = "".join(char for char in str(model_code or "").upper() if char.isalnum())
+    if "BEV" in text:
+        return POWERTRAIN_EV
+    if "HEV" in text:
+        return POWERTRAIN_PHEV
+    return None
+
 KNOWN_FEATURES: Final = frozenset(
     {
         FEATURE_MQTT,

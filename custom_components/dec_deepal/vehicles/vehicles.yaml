@@ -270,7 +270,9 @@ modelos:
       codigo_serie: []
     funciones:
       combustible: true              # depósito, litros y autonomía de gasolina (2.6.0b6)
-      limite_carga: true             # % máximo de carga en AC (2.6.0b6, sin verificar)
+      # El PHEV dice tenerlo, pero el coche nunca devuelve su límite
+      # (``maxSocPercent``): diagnóstico real del 26-10-2026 (Deepal Alternative).
+      limite_carga: false            # quitado en la 2.6.0b11
     # Manual del S05 híbrido enchufable (PHEV) para España, en la web de Changan Europe.
     manual: "https://www.changaneurope.com/Portals/8/adam/ContentBlocks/lrfUbgl1KEGWVm6dnA8VPQ/Path/202607_S05_PHEV_Manual_de_Usuario_ES-compressed.pdf"
     # Manual de usuario del S05 PHEV (España, julio de 2026), "Tabla de

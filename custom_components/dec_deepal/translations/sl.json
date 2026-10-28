@@ -90,6 +90,35 @@
         }
       }
     },
+    "vehicle_model_mismatch": {
+      "title": "Preveri model vozila {vehicle}: avto pravi, da je {detected}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Model vozila {vehicle}",
+            "description": "{vehicle} je nastavljen kot drug model, avto pa pravi, da je {suggestion}. Izberi pravi model: od njega so odvisne entitete (npr. gorivo pri PHEV).",
+            "data": {
+              "model": "Model"
+            }
+          },
+          "details": {
+            "title": "Različica in barva",
+            "description": "Različica in barva vašega {model}. Različica določa, katere entitete se ustvarijo (prezračevanje sedežev obstaja na primer samo pri Max) in skupaj z barvo tudi »pogled od strani«.",
+            "data": {
+              "trim": "Različica",
+              "color": "Barva",
+              "wheels": "Platišča (samo Max)"
+            },
+            "data_description": {
+              "wheels": "Pro ima vedno svoje 18\" platišče."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "Račun ne obstaja več."
+        }
+      }
+    },
     "vehicle_added": {
       "title": "Novo vozilo v tvojem računu: {vehicle}",
       "fix_flow": {

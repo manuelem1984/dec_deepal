@@ -90,6 +90,35 @@
         }
       }
     },
+    "vehicle_model_mismatch": {
+      "title": "Tjek modellen af {vehicle}: bilen siger, den er en {detected}",
+      "fix_flow": {
+        "step": {
+          "model": {
+            "title": "Model for {vehicle}",
+            "description": "{vehicle} er sat op som en anden model, men bilen siger, den er en {suggestion}. Vælg den rigtige model: den bestemmer, hvilke enheder der oprettes (f.eks. brændstof på PHEV).",
+            "data": {
+              "model": "Model"
+            }
+          },
+          "details": {
+            "title": "Version og farve",
+            "description": "Version og farve på din {model}. Versionen afgør, hvilke entiteter der oprettes (sædeventilation findes for eksempel kun på Max) og, sammen med farven, »Set fra siden«.",
+            "data": {
+              "trim": "Version",
+              "color": "Farve",
+              "wheels": "Fælge (kun Max)"
+            },
+            "data_description": {
+              "wheels": "Pro har altid sin 18\"-fælg."
+            }
+          }
+        },
+        "abort": {
+          "entry_not_found": "Kontoen findes ikke længere."
+        }
+      }
+    },
     "vehicle_added": {
       "title": "Ny bil på din konto: {vehicle}",
       "fix_flow": {

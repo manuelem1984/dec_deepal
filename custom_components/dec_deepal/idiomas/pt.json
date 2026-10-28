@@ -91,6 +91,35 @@
           }
         }
       },
+      "vehicle_model_mismatch": {
+        "title": "Verifica o modelo de {vehicle}: o carro diz ser um {detected}",
+        "fix_flow": {
+          "step": {
+            "model": {
+              "title": "Modelo de {vehicle}",
+              "description": "Configuraste {vehicle} como outro modelo, mas o carro diz ser um {suggestion}. Escolhe o modelo correto: dele dependem as entidades criadas (p. ex. as do combustível do PHEV).",
+              "data": {
+                "model": "Modelo"
+              }
+            },
+            "details": {
+              "title": "Versão e cor",
+              "description": "Versão e cor do seu {model}. A versão decide que entidades são criadas (por exemplo, a ventilação dos bancos só existe no Max) e, juntamente com a cor, a \"Vista lateral\".",
+              "data": {
+                "trim": "Versão",
+                "color": "Cor",
+                "wheels": "Jantes (só Max)"
+              },
+              "data_description": {
+                "wheels": "O Pro tem sempre a sua jante de 18\"."
+              }
+            }
+          },
+          "abort": {
+            "entry_not_found": "A conta já não existe."
+          }
+        }
+      },
       "vehicle_added": {
         "title": "Carro novo na tua conta: {vehicle}",
         "fix_flow": {
@@ -935,7 +964,7 @@
     "charger_name_help": "Dá-lhe o nome que quiseres: Garagem, Trabalho, Casa de praia…",
     "charger_deleted": "Carregador removido.",
     "limit_title": "Limite de carga",
-    "limit_help": "Para o carregamento na % escolhida bloqueando o carregador associado (sem cobertura, com a % estimada). No PHEV, o limite também é enviado ao carro.",
+    "limit_help": "Para o carregamento na % escolhida bloqueando o carregador associado (sem cobertura, com a % estimada).",
     "limit_enabled": "Usar o limite de carga",
     "limit_enabled_help": "Escolhe-se no cartão de cada carro, ou aqui.",
     "limit_cars": "Limite de cada carro",

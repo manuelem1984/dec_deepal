@@ -27,7 +27,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .entity import DecDeepalEntity, DecMaintenanceEntity, remove_entities
 from .maintenance import LEVEL_OK
-from .registries.vehicles import FEATURE_CLIMATE
+from .registries.vehicles import FEATURE_CLIMATE, FEATURE_FUEL
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
 from .telemetry import signals as s
 
@@ -179,6 +179,13 @@ BINARY_SENSORS: tuple[DecBinaryDescription, ...] = (
 )
 
 
+#: Testigos que no se crean en los coches con depósito (el S05 PHEV): el
+#: refrigerante llega encendido en todos sus informes, también con el coche sano
+#: (diagnóstico real del 26-10-2026, Deepal Alternative). El dato en bruto sigue
+#: en el diagnóstico.
+NOT_ON_FUEL_CARS: Final = ("warning_coolant_temperature",)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: DecDeepalConfigEntry,
@@ -190,6 +197,8 @@ async def async_setup_entry(
     for vehicle in runtime.vehicles.values():
         vehicle_id = vehicle.info.vehicle_id
         remove_entities(hass, "binary_sensor", vehicle_id, REMOVED_KEYS)
+        if vehicle.has(FEATURE_FUEL):
+            remove_entities(hass, "binary_sensor", vehicle_id, NOT_ON_FUEL_CARS)
         # Testigo de mantenimiento: solo en los coches que lo tienen activado
         # (el panel DEC Deepal → Coches → Mantenimiento).
         if runtime.alerts.record(vehicle_id) is None:
@@ -209,7 +218,8 @@ async def async_setup_entry(
         DecBinarySensor(runtime, vehicle, description)
         for vehicle in runtime.vehicles.values()
         for description in BINARY_SENSORS
-        if description.feature is None or vehicle.has(description.feature)
+        if (description.feature is None or vehicle.has(description.feature))
+        and not (description.key in NOT_ON_FUEL_CARS and vehicle.has(FEATURE_FUEL))
     )
     async_add_entities(entities)
 

@@ -75,7 +75,7 @@ from .manual import async_register_manual
 from .chargers import async_get_manager
 from .panel import async_register_panel, async_unregister_panel
 from .registries import RegistryError
-from .registries.vehicles import FEATURE_MQTT
+from .registries.vehicles import FEATURE_FUEL, FEATURE_MQTT, POWERTRAIN_PHEV, powertrain
 from .runtime import (
     DecDeepalConfigEntry,
     DecDeepalRuntime,
@@ -243,6 +243,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             capabilities=await _fetch_capabilities(client, info),
         )
         entry.async_on_unload(_track_changes(coordinator, vehicle_recorder))
+        entry.async_on_unload(_watch_model_code(hass, entry, runtime.vehicles[info.vehicle_id], registries))
         _LOGGER.debug(
             "%s: modelo=%s versión=%s mqtt=%s",
             info.display_name,
@@ -421,6 +422,60 @@ def _update_setup_issue(
         translation_placeholders={"vehicle": info.display_name, "suggestion": suggestion},
         data={"entry_id": entry.entry_id, "vehicle_id": info.vehicle_id},
     )
+
+
+#: Aviso de Reparaciones "el coche dice ser otro modelo" (uno por coche).
+MODEL_MISMATCH_PREFIX = "model_mismatch_"
+#: Modelo del catálogo que corresponde a cada tipo de motor.
+_MODEL_BY_POWERTRAIN = {"ev": "s05_2024", "phev": "s05_phev"}
+
+
+def update_model_issue(hass: HomeAssistant, entry: DecDeepalConfigEntry, vehicle: VehicleContext, registries) -> None:  # noqa: ANN001
+    """Avisa en Reparaciones si el coche dice ser EV o PHEV y está configurado como el otro.
+
+    Solo con el modelo ya elegido (el genérico ya tiene su aviso "Configura tu
+    vehículo") y con el código de modelo que da el coche por MQTT (``b.mc``).
+    """
+    issue = f"{MODEL_MISMATCH_PREFIX}{vehicle.info.vehicle_id}"
+    detected = powertrain(vehicle.coordinator.model_code)
+    if detected is None or not vehicle.configured or not vehicle.model.id.startswith("s05"):
+        ir.async_delete_issue(hass, DOMAIN, issue)
+        return
+    chosen = POWERTRAIN_PHEV if vehicle.has(FEATURE_FUEL) else "ev"
+    if detected == chosen:
+        ir.async_delete_issue(hass, DOMAIN, issue)
+        return
+    model = registries.vehicles.get(_MODEL_BY_POWERTRAIN[detected])
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        issue,
+        is_fixable=True,
+        is_persistent=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="vehicle_model_mismatch",
+        translation_placeholders={
+            "vehicle": vehicle.info.display_name,
+            "detected": model.name,
+            "chosen": vehicle.model.name,
+            "code": str(vehicle.coordinator.model_code),
+        },
+        data={"entry_id": entry.entry_id, "vehicle_id": vehicle.info.vehicle_id, "suggested": model.id},
+    )
+
+
+def _watch_model_code(hass: HomeAssistant, entry: DecDeepalConfigEntry, vehicle: VehicleContext, registries):  # noqa: ANN001, ANN202
+    """Comprueba el modelo cada vez que cambia el código que da el coche."""
+    seen: str | None = None
+
+    def on_update() -> None:
+        nonlocal seen
+        code = vehicle.coordinator.model_code
+        if code and code != seen:
+            seen = code
+            update_model_issue(hass, entry, vehicle, registries)
+
+    return vehicle.coordinator.async_add_listener(on_update)
 
 
 def _set_debug_logging(hass: HomeAssistant, entry_id: str, enabled: bool) -> None:

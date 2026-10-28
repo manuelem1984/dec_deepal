@@ -515,7 +515,7 @@ async def test_full_reminder_every_n(hass: HomeAssistant, manager: ChargerManage
 
 
 async def test_car_limit_from_the_card(hass: HomeAssistant, manager: ChargerManager, hass_ws_client, hass_admin_user) -> None:  # noqa: ANN001
-    """La tarjeta del coche (por dispositivo) cambia el límite; en el PHEV también se manda al coche."""
+    """La tarjeta del coche (por dispositivo) cambia el límite. Al coche no se le manda nada (2.6.0b11)."""
     from homeassistant.components import websocket_api
     from homeassistant.setup import async_setup_component
 
@@ -526,19 +526,13 @@ async def test_car_limit_from_the_card(hass: HomeAssistant, manager: ChargerMana
         websocket_api.async_register_command(hass, command)
     hass.data.setdefault(DOMAIN, {})["chargers"] = manager
     manager._device_id = lambda vehicle_id: f"dev_{vehicle_id}" if vehicle_id else None
-    # car2 es un PHEV: su límite propio se cambia con la orden del coche.
+    # Ninguna orden al coche: el PHEV no deja leer su límite (2.6.0b11).
     sent: list[tuple[str, int]] = []
-    car2 = manager._vehicle("car2")[1]
-    car2.has = lambda feature: feature == "limite_carga"
-
-    async def run(name: str, send, optimistic=None) -> None:  # noqa: ANN001
-        await send()
 
     async def charge_limit(vehicle_id: str, percent: int) -> str:
         sent.append((vehicle_id, percent))
         return "cmd"
 
-    car2.runner = SimpleNamespace(run=run)
     manager._vehicle("car2")[0].runtime_data.commands = SimpleNamespace(charge_limit=charge_limit)
     await manager.async_save_charger(GARAJE)
     await manager.async_set_settings(True, "people")
@@ -550,11 +544,10 @@ async def test_car_limit_from_the_card(hass: HomeAssistant, manager: ChargerMana
     await client.send_json({"id": 2, "type": "dec_deepal/chargers/car_limit", "device_id": "dev_car2", "limit": 90})
     assert (await client.receive_json())["success"]
     await hass.async_block_till_done()
-    assert sent == [("car2", 90)]
     await client.send_json({"id": 3, "type": "dec_deepal/chargers/car_limit", "device_id": "dev_car2", "once_full": True})
     assert (await client.receive_json())["success"]
     await hass.async_block_till_done()
-    assert sent[-1] == ("car2", 100)
+    assert sent == []
     await client.send_json({"id": 4, "type": "dec_deepal/chargers/car_limit", "device_id": "dev_car2", "limit": 85})
     assert not (await client.receive_json())["success"]
 

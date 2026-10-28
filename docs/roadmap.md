@@ -1,5 +1,12 @@
 # Hoja de ruta
 
+## Beta 2.6.0b11 (28-10-2026) — pendiente de probar
+
+- [ ] **Código de modelo:** en el diagnóstico de Changote y Changuito,
+      `codigo_modelo` con `...BEV` y sin aviso en Reparaciones.
+- [ ] **PHEV** (falta uno real): sin «Límite de carga» ni testigo del
+      refrigerante; si se configuró como EV, sale el aviso «Revisa el modelo».
+
 ## Beta 2.6.0b10 (26-10-2026) — pendiente de probar
 
 - [ ] **Carga detenida:** con el V2C bloqueado y el cable puesto (límite de
@@ -200,12 +207,11 @@ Pendiente de comprobar:
 
 ## Pendiente de diseño
 
-- [ ] **Distinguir S05 EV y PHEV al dar de alta el coche:** preseleccionar el
-      modelo en «Configura tu vehículo» con, por orden, la lista de funciones
-      del coche (`#oilMileage` = PHEV), la primera lectura (datos de
-      combustible), los nombres del servidor y, el último, el VIN. Aviso en
-      Reparaciones si la telemetría contradice el modelo elegido. Hace falta
-      el diagnóstico de un PHEV para fijar los códigos.
+- [ ] **Distinguir S05 EV y PHEV al dar de alta el coche:** la pista buena es
+      el código de modelo del MQTT (`b.mc`: `...BEV` / `...HEV`). Desde la
+      2.6.0b11 se guarda y avisa en Reparaciones si no cuadra con el modelo
+      elegido. Falta usarlo para **preseleccionar** el modelo en «Configura tu
+      vehículo» (el código llega con la primera lectura, después del alta).
 
 - [ ] **Panel generado:** que Home Assistant pueda crear solo un panel «DEC
       Deepal» con nuestras tarjetas (coche, vista planta y cargador), para
