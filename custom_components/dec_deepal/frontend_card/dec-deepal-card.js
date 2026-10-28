@@ -3862,7 +3862,7 @@
       if (!state || state.attributes.renovacion == null) return this._message(this._t("insurance"), this._t("no_insurance"));
       const data = state.attributes;
       // Póliza y teléfonos: no están en la entidad, se piden a la integración.
-      let extra = {};
+      let extra;
       try {
         extra = (await this._hass.callApi("GET", `dec_deepal/insurance_info/${this._deviceId()}`)) || {};
       } catch (_error) {
