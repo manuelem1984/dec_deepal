@@ -30,7 +30,12 @@ luces, claxon, asientos, volante, y —con PIN— puertas, ventanillas y maleter
 
 ## 📥 Instalación
 
-**HACS:** ⋮ → Repositorios personalizados → `https://github.com/manuelem1984/dec_deepal`
+[![Abrir en HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=manuelem1984&repository=dec_deepal&category=integration)
+
+**HACS con un clic:** pulsa el botón de arriba: abre HACS en tu Home Assistant
+y ofrece añadir el repositorio. Después, instala **DEC Deepal** y reinicia.
+
+**HACS a mano:** ⋮ → Repositorios personalizados → `https://github.com/manuelem1984/dec_deepal`
 (tipo *Integración*) → instalar **DEC Deepal** → reiniciar.
 
 **Manual:** copia `custom_components/dec_deepal` en `config/custom_components/`
