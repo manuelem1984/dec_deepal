@@ -10,6 +10,7 @@
 
   customElements.define(TAG, DecDeepalCard);
   customElements.define(TOP_TAG, DecDeepalTopCard);
+  customElements.define(FLEX_TAG, DecDeepalFlexCard);
   customElements.define(CHARGER_TAG, DecDeepalChargerCard);
   customElements.define(CHARGER_EDITOR_TAG, DecDeepalChargerCardEditor);
   const cardText = (key) => translate(document.documentElement.lang || navigator.language, key);
@@ -18,5 +19,6 @@
   window.customCards.push(
     { type: TAG, name: "DEC Deepal", description: cardText("card_description"), preview: true, documentationURL },
     { type: TOP_TAG, name: `DEC Deepal · ${cardText("top_view")}`, description: cardText("top_card_description"), preview: true, documentationURL },
+    { type: FLEX_TAG, name: `DEC Deepal · ${cardText("flex_card_name")}`, description: cardText("flex_card_description"), preview: true, documentationURL },
     { type: CHARGER_TAG, name: `DEC Deepal · ${cardText("charger_card_name")}`, description: cardText("charger_card_description"), preview: false, documentationURL }
   );

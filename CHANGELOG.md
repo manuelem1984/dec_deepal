@@ -3,6 +3,23 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b16] — 2026-11-10
+
+### Añadido
+
+- **Tarjeta «DEC Deepal · A medida»** (`custom:dec-deepal-flex-card`): la
+  tarjeta del coche, configurable entera desde su editor visual (apartados
+  plegables, sin YAML). Las dos tarjetas de siempre no cambian.
+  - **Estilos:** Completa, Compacta, Mini (una fila) y Solo datos.
+  - **Imagen:** isométrica, lateral, planta, foto oficial o sin imagen; con la
+    manguera puesta, pasa sola a la **vista de carga**.
+  - **Datos:** dato principal, testigos, límite de carga, hora de la última
+    lectura y datos extra (temperatura interior, km totales, neumáticos).
+  - **Botones:** doce para elegir y ordenar arrastrando, seis de ellos
+    **directos** (clima rápido, asiento, volante, luces, actualizar y
+    cargador); 2, 3 o 4 columnas.
+  - **Aspecto:** color de acento, nombre e idioma de la tarjeta.
+
 ## [2.6.0b15] — 2026-10-29
 
 Revisión de código, bloque 4 (sin cambios que se vean).

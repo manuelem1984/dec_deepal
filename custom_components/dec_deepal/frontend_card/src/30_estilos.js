@@ -177,3 +177,55 @@
     .mt h3 { font-size: 13px; font-weight: 500; margin: 16px 0 6px; }
     .mt ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.5; color: var(--secondary-text-color); }
   `;
+
+  // Tarjeta «A medida» (68_tarjeta_flex.js): se añade a CARD_CSS.
+  const FLEX_CSS = `
+    .tiles.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tiles.c4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .tiles:empty { display: none; }
+    /* Botones directos (una pulsación): con un fondo suave, para que se note que mandan una orden. */
+    .tile.dir { background: rgba(var(--rgb-primary-color, 3, 169, 244), .1); }
+    .tile.dir ha-icon { color: var(--primary-color); }
+    .accent .tile.pri, .accent .tile.dir { background: color-mix(in srgb, var(--dec-accent) 14%, transparent); }
+    .accent .tile.pri, .accent .tile.dir ha-icon { color: var(--dec-accent); }
+    .extra { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 12px 12px; }
+    .extra[hidden], .upd[hidden], .status[hidden] { display: none; }
+    .extra div { background: ${TILE_BG}; border-radius: 10px; padding: 7px 9px; font-size: 11.5px; color: var(--secondary-text-color); min-width: 0; }
+    .extra b { display: block; font-size: 16px; font-weight: 400; color: var(--primary-text-color); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Vista de carga (con la manguera puesta): en tema claro se oscurece, como en la ventana de carga. */
+    .carbox.charging { aspect-ratio: ${CHARGING.crop.w} / ${CHARGING.crop.h}; }
+    .carbox.charging .car { width: ${(CHARGING.width / CHARGING.crop.w) * 100}%;
+      left: ${(-CHARGING.crop.x / CHARGING.crop.w) * 100}%; top: ${(-CHARGING.crop.y / CHARGING.crop.h) * 100}%;
+      filter: brightness(.62) contrast(1.25); }
+    :host([dark]) .carbox.charging .car { filter: none; }
+    :host([dark]) .carbox.nostudio { background: none; }
+    /* Compacta: la imagen pequeña al lado de la batería. */
+    .st-compact > .fx { display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); align-items: center; }
+    .st-compact > .fx > * { grid-column: 1 / -1; }
+    .st-compact .hdr { grid-row: 1; } .st-compact .msg { grid-row: 2; }
+    .st-compact .carbox { grid-row: 3; grid-column: 1; margin-left: 8px; }
+    .st-compact .energy { grid-row: 3; grid-column: 2; }
+    .st-compact .carbox[hidden] + .msg + .status + .energy { grid-column: 1 / -1; }
+    .st-compact .status { grid-row: 4; } .st-compact .limits { grid-row: 5; } .st-compact .lhint { grid-row: 6; }
+    .st-compact .extra { grid-row: 7; } .st-compact .tiles { grid-row: 8; }
+    .st-compact .range { flex-wrap: wrap; padding: 0 12px 0 6px; row-gap: 2px; }
+    .st-compact .range .grow { display: none; }
+    .st-compact .range .charge { flex-basis: 100%; font-size: 12.5px; }
+    .st-compact .bar { margin: 6px 12px 10px 6px; }
+    /* Mini: una sola fila (imagen, nombre y batería, y los botones sin texto). */
+    .st-mini > .fx { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; column-gap: 10px; align-items: center; padding: 8px 10px; }
+    .st-mini .carbox { grid-column: 1; grid-row: 1 / span 2; }
+    .st-mini .hdr { grid-column: 2; grid-row: 1; padding: 0; }
+    .st-mini .hdr .icon-btn { display: none; }
+    .st-mini .name { font-size: 15px; }
+    .st-mini .energy { grid-column: 2; grid-row: 2; }
+    .st-mini .range { padding: 0; gap: 4px; }
+    .st-mini .range .batt { --mdc-icon-size: 18px; }
+    .st-mini .range .km { font-size: 14px; } .st-mini .range .kms { font-size: 12.5px; }
+    .st-mini .range .charge, .st-mini .range .grow { display: none; }
+    .st-mini .bar { margin: 4px 0 0; height: 6px; }
+    .st-mini .tiles { grid-column: 3; grid-row: 1 / span 2; display: flex; gap: 6px; padding: 0; }
+    .st-mini .tile { min-height: 0; width: 38px; height: 38px; padding: 0; justify-content: center; border-radius: 10px; }
+    .st-mini .tile b, .st-mini .tile small { display: none; }
+    .st-mini .status, .st-mini .limits, .st-mini .lhint, .st-mini .extra, .st-mini .msg:not(:empty) { grid-column: 1 / -1; }
+  `;

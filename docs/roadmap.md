@@ -1,5 +1,17 @@
 # Hoja de ruta
 
+## Beta 2.6.0b16 (10-11-2026) — pendiente de probar
+
+- [ ] **Tarjeta «A medida»:** añadirla desde el selector, probar los cuatro
+      estilos, ordenar botones en el editor (que se arrastren), los botones
+      directos (clima, asiento, volante, luces) y la vista de carga al
+      enchufar. En el móvil y en tema oscuro.
+
+## Betas 2.6.0b12 a b15 (28/29-10-2026) — revisión de código
+
+- [ ] Sin cambios que se vean: comprobar que todo sigue igual tras
+      actualizar (cargadores, avisos, lectura y despertar del coche).
+
 ## Beta 2.6.0b11 (28-10-2026) — pendiente de probar
 
 - [ ] **Código de modelo:** en el diagnóstico de Changote y Changuito,

@@ -92,7 +92,10 @@ Detalles en [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md).
 La integración trae su propia tarjeta, **DEC Deepal**: vista del coche,
 batería y autonomía, y botones de confort, bloqueo, maletero, ventilar,
 luces y claxon. Se instala sola: Panel → Editar → Añadir tarjeta → *DEC
-Deepal*. Detalles en [docs/tarjeta.md](docs/tarjeta.md).
+Deepal*. Y **DEC Deepal · A medida**, la misma tarjeta configurable desde su
+editor: estilo (completa, compacta, mini o solo datos), imagen, datos, qué
+botones y en qué orden, columnas, color, nombre e idioma. Detalles en
+[docs/tarjeta.md](docs/tarjeta.md).
 
 ## 🎨 Personalizar sin programar
 

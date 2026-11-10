@@ -36,6 +36,46 @@ main_value: range                    # o "battery" / "both"
 Las dos tarjetas pueden estar a la vez en el mismo panel. Si el modelo no
 tiene vista de planta, se enseña la imagen DEC.
 
+### La tarjeta «A medida» (2.6.0b16)
+
+**DEC Deepal · A medida** (`custom:dec-deepal-flex-card`) es la misma tarjeta
+(las mismas ventanas de confort, carga, localizar, otros...), pero se
+configura entera desde su editor, por apartados plegables y sin YAML. Las
+otras dos no cambian.
+
+- **Estilo:** *Completa* (como la de siempre), *Compacta* (imagen pequeña al
+  lado de la batería y 3 botones), *Mini* (una sola fila con botones sin
+  texto: para una tablet o un panel con varios coches) o *Solo datos* (sin
+  imagen y con datos extra). El estilo pone lo de fábrica; lo que se elija en
+  los demás apartados manda.
+- **Imagen:** isométrica, lateral, planta (horizontal o vertical), foto
+  oficial o sin imagen. **Vista de carga al enchufar:** con la manguera
+  puesta, la imagen pasa sola a la vista de carga. Fondo de estudio en tema
+  oscuro (se puede quitar).
+- **Datos:** el dato principal, la línea de testigos, el límite de carga, la
+  hora de la última lectura y **datos extra** (temperatura interior, km
+  totales y la presión de neumáticos más baja).
+- **Botones:** se eligen y se ordenan arrastrando, de doce: los seis de
+  siempre y seis **directos** (una pulsación, sin ventana, con un aviso de
+  que se mandó): clima rápido, asiento del conductor (sube un nivel), volante,
+  luces, actualizar y el cargador (abre la ventana de carga). Los directos
+  llevan un fondo suave. 2, 3 o 4 columnas. Un botón que el coche no tiene
+  (p. ej. el asiento en el Pro) no sale.
+- **Aspecto:** color de acento (botones activos y barra de batería, salvo la
+  batería baja), nombre en la tarjeta e idioma (o el de Home Assistant).
+
+```yaml
+type: custom:dec-deepal-flex-card
+device_id: <dispositivo del coche>
+style: compact                 # full | compact | mini | data
+image: side                    # isometric | side | top | photo | none
+charging_view: true
+main_value: both
+buttons: [climate, lock, seat, flash]
+columns: 2
+accent: purple                 # blue | green | purple | orange | red | grey
+```
+
 ## Dato principal: autonomía, batería o las dos
 
 En el editor de las dos tarjetas (y de cada una por separado), **Dato

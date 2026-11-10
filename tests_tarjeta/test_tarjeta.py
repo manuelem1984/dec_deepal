@@ -105,6 +105,7 @@ def test_top_view_card(page: Page) -> None:
     assert cards == [
         ["dec-deepal-card", "DEC Deepal"],
         ["dec-deepal-top-card", "DEC Deepal · Vista planta"],
+        ["dec-deepal-flex-card", "DEC Deepal · A medida"],
         ["dec-deepal-charger-card", "DEC Deepal · Cargador"],
     ]
     form = "customElements.get('dec-deepal-top-card').getConfigForm()"
