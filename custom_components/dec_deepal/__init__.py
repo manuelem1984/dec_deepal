@@ -73,6 +73,7 @@ from .coordinator import VehicleCoordinator
 from .debug.history import changes as signal_changes
 from .debug.recorder import DebugRecorder, VehicleRecorder
 from .frontend import async_register_frontend, async_remove_early_loader
+from .last_state import LastStateStore
 from .manual import async_register_manual
 from .panel import async_register_panel, async_unregister_panel
 from .registries import RegistryError
@@ -84,6 +85,7 @@ from .runtime import (
     async_get_registries,
 )
 from .services import async_register_services
+from .telemetry.converters import PHEV_MAX_CHARGE_CURRENT_A
 from .vehicle_store import async_get_store, async_register_export
 from .vehicle_sync import async_schedule_sync, async_sync_vehicles, delete_issues
 
@@ -196,6 +198,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
         runtime.charge_balance_minutes = CHARGE_BALANCE_MINUTES
     appearance_by_vehicle: dict = options.get(OPT_APPEARANCE, {})
     scan_minutes = int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES))
+    last_states = LastStateStore(hass)
+    await last_states.async_load()
     for raw_vehicle in entry.data[CONF_VEHICLES]:
         info = VehicleInfo.from_dict(raw_vehicle)
         appearance = appearance_by_vehicle.get(info.vehicle_id, {})
@@ -218,6 +222,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             use_mqtt=info.uses_mqtt and model.has(FEATURE_MQTT, trim),
             scan_minutes=scan_minutes,
             wake_enabled=bool(options.get(OPT_WAKE, DEFAULT_WAKE)),
+            # El PHEV carga a mucha menos corriente: más de 250 A es un dato falso.
+            max_charge_current=PHEV_MAX_CHARGE_CURRENT_A if model.has(FEATURE_FUEL, trim) else None,
+            last_states=last_states,
         )
         runner = CommandRunner(
             hass,

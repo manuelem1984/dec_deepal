@@ -1,5 +1,20 @@
 # Hoja de ruta
 
+## Beta 2.6.0b17 (23-11-2026) — pendiente de probar
+
+- [ ] **Al despertar el coche:** que no salgan ruedas a 0 bar, 400 A de DC
+      sin cargar, 0 min de carga restante ni una temperatura de consigna
+      imposible; deben quedarse los valores anteriores.
+- [ ] **Testigos al encender:** encender el coche y comprobar que en el primer
+      minuto no salta ningún testigo; airbag, ABS y dirección ya salen del
+      REST (si alguno se queda encendido sin motivo, mandar diagnóstico).
+- [ ] **Reiniciar Home Assistant con el coche dormido:** asientos, volante,
+      clima, testigos, ruedas y combustible deben seguir con su último valor
+      (no "Desconocido").
+- [ ] **PHEV:** ninguna corriente de carga por encima de 250 A.
+- [ ] **Home Assistant 2026.11:** el clima sin avisos de nombres obsoletos
+      en el registro.
+
 ## Beta 2.6.0b16 (10-11-2026) — pendiente de probar
 
 - [ ] **Tarjeta «A medida»:** añadirla desde el selector, probar los cuatro
@@ -218,6 +233,38 @@ Pendiente de comprobar:
 - [ ] Manual del PHEV: cuando se añada ese modelo al catálogo, con su enlace.
 
 ## Pendiente de diseño
+
+Del análisis de **Deepal Alternative 1.9** y **S05 Companion** (23-11-2026).
+Lo de datos (valores de arranque, testigos, tope del PHEV, último estado,
+clima de la 2026.11) entró en la 2.6.0b17. Ojo: S05 Companion es **GPL-3.0**;
+se pueden tomar ideas, pero **no copiar su código ni sus imágenes** en este
+proyecto MIT (sus vistas recoloreadas parten de las nuestras, con atribución).
+
+- [ ] **Humedad interior absoluta:** según Deepal Alternative, el REST
+      `insideHumidity` no es relativa sino absoluta (g/m³ × 10). Confirmar con
+      capturas del coche y, si es así, calcular la relativa con la fórmula de
+      Magnus (`e_s = 6,112·exp(17,62·T/(243,12+T))`, `e = AH·(T+273,15)/216,7`,
+      `HR = 100·e/e_s`; `0` = sin lectura).
+- [ ] **Control del plan de carga:** activar/desactivar y horas (EV y PHEV),
+      acción para fijarlo desde automatizaciones, «cargar al 100 %» y, en el
+      PHEV, añadir/borrar planes. Hay que capturar los comandos.
+- [ ] **Actividades en vivo de la carga** (iOS Live Activities / Android Live
+      Updates de la app de Home Assistant: `live_update`, `tag`, `progress`,
+      `chronometer`, `end_live_activity`): una notificación que se actualiza
+      con el % y el tiempo restante mientras carga. Nunca crítica.
+- [ ] **Aviso «coche abierto o sin cerrar»** pasado un rato, con un botón
+      **Cerrar** en la notificación (acción de la app móvil). Con horas de
+      silencio y por persona, como el resto de avisos.
+- [ ] **Preacondicionamiento programado** desde el panel (días y hora), sin
+      encenderlo si la batería está por debajo de un mínimo.
+- [ ] **Sesión MQTT persistente** (Deepal Alternative la mantiene abierta y
+      vigilada): datos casi al momento sin leer cada 5 min. Gran cambio en el
+      cliente MQTT y en la sesión única de la cuenta; diseñarlo aparte.
+- [ ] **Sesiones de carga sin cargador propio:** registrar cada carga (curva,
+      kWh, ubicación, coste con tarifas o redes de carga) también cuando no
+      hay un cargador configurado, con exportar/importar.
+- [ ] **Diario del coche y estadísticas:** viajes, consumo y cargas por
+      semana o mes en el panel.
 
 - [ ] **Configuración MQTT de respaldo:** si `getConnConf` falla, pedirla a
       `appGetCarConfFunc` (lo hace la app y Deepal Alternative; constante

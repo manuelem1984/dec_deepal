@@ -13,15 +13,18 @@ coche real:
 4. **Conservar el último valor** en confort, clima, testigos y combustible: si ninguna fuente lo
    informa esta vez (módulo dormido, ``6``...), se mantiene el anterior en vez
    de mostrar "Desconocido" o, peor, "apagado".
-5. **Testigos solo con el coche encendido:** con la alimentación a ``0``
-   (coche apagado o dormido), los testigos del cuadro no son de fiar (un S05
-   al que se despierta los manda encendidos sin motivo). Se descartan y se
-   conserva el último que llegó con el coche encendido.
+5. **Testigos solo con el coche encendido y ya listo:** con la alimentación a
+   ``0`` (coche apagado o dormido), los testigos del cuadro no son de fiar (un
+   S05 al que se despierta los manda encendidos sin motivo). Tampoco en el
+   primer minuto tras encenderse (la comprobación de arranque, ``READY_WINDOW``).
+   Se descartan y se conserva el último que llegó con el coche ya listo.
 6. **Valores optimistas** (tras un comando) se aplican encima, en el
    coordinador (ver :func:`apply_holds`).
 7. **El cuentakilómetros nunca baja:** una lectura menor que la anterior es
    un dato falso (un fallo de una fuente o un valor viejo del REST); se
    conserva la anterior.
+8. **Sin cargar no hay tiempo de carga:** ``0`` minutos con el coche sin
+   cargar es el valor de arranque, no "carga terminada" → desconocido.
 
 Además se guarda de dónde salió cada valor (``sources``) para diagnóstico.
 """
@@ -30,7 +33,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Final
 
 from . import signals as s
@@ -48,6 +51,10 @@ REST_PRIORITY: Final = frozenset(
         s.SEAT_VENT_PASSENGER,
         s.STEERING_WHEEL_HEAT,
         s.FRONT_DEFROST,
+        # Registros de sistema del REST (los bits del MQTT fallan en un coche sano).
+        s.WARNING_AIRBAG,
+        s.WARNING_ABS,
+        s.WARNING_EPS,
     }
 )
 
@@ -73,7 +80,10 @@ KEEP_LAST: Final = (
     REST_PRIORITY
     | WARNING_SIGNALS
     | {s.CLIMATE_ON, s.CLIMATE_TARGET_C, s.FUEL_LEVEL, s.FUEL_RANGE_KM, s.FUEL_VOLUME_L, s.CHARGE_LIMIT}
+    | {s.TIRE_PRESSURE_FRONT_LEFT, s.TIRE_PRESSURE_FRONT_RIGHT, s.TIRE_PRESSURE_REAR_LEFT, s.TIRE_PRESSURE_REAR_RIGHT}
 )
+#: Tras encenderse el coche, cuánto se espera antes de fiarse de los testigos.
+READY_WINDOW: Final = timedelta(seconds=60)
 
 SOURCE_MQTT: Final = "mqtt"
 SOURCE_REST: Final = "rest"
@@ -100,6 +110,8 @@ class VehicleState:
     fetched_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     #: Problemas no fatales de esta lectura (p. ej. "REST falló: ...").
     warnings: list[str] = field(default_factory=list)
+    #: Desde cuándo está encendido el coche (regla 5); ``None`` si está apagado.
+    power_on_since: datetime | None = None
 
     def get(self, signal: str) -> Any:
         """Valor de una señal (normal o calculada). ``None`` si no hay dato."""
@@ -119,6 +131,7 @@ def build_state(
     mqtt_params: Mapping[str, Any] | None,
     rest_raw: Mapping[str, Any] | None,
     previous: VehicleState | None,
+    now: datetime | None = None,
 ) -> VehicleState:
     """Construye el estado aplicando las reglas del principio del módulo.
 
@@ -177,10 +190,21 @@ def build_state(
     # fiar: un S05 dormido al que se despierta los manda encendidos aunque no
     # pase nada (falsos ABS y frenos). Se descartan y la regla 4 deja los
     # últimos que llegaron con el coche encendido.
-    if values.get(s.POWER_STATUS) == 0:
+    now = now or datetime.now(UTC)
+    power = values.get(s.POWER_STATUS)
+    power_on_since: datetime | None = None
+    if power not in (None, 0):
+        was_on = previous is not None and previous.values.get(s.POWER_STATUS) not in (None, 0)
+        power_on_since = previous.power_on_since if was_on and previous.power_on_since else now
+    if power == 0 or (power_on_since is not None and now - power_on_since < READY_WINDOW):
         for signal in WARNING_SIGNALS:
             if values.pop(signal, None) is not None:
                 sources.pop(signal, None)
+
+    # Regla 8: 0 minutos de carga sin estar cargando es el valor de arranque.
+    if values.get(s.REMAINING_CHARGE_MIN) == 0 and values.get(s.CHARGING) is not True:
+        values.pop(s.REMAINING_CHARGE_MIN, None)
+        sources.pop(s.REMAINING_CHARGE_MIN, None)
 
     # Regla 4: conservar el último valor conocido. Uno optimista (de un comando
     # que el coche aún no ha confirmado) no cuenta: si se conservara, seguiría
@@ -207,6 +231,7 @@ def build_state(
         sources=sources,
         mqtt_raw=dict(mqtt_params) if mqtt_params else None,
         rest_raw=dict(rest_raw) if rest_raw else None,
+        power_on_since=power_on_since,
     )
 
 

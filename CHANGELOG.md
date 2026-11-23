@@ -3,6 +3,37 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b17] — 2026-11-23
+
+### Corregido
+
+- **Datos falsos al despertar el coche:** los módulos mandan unos segundos
+  valores de arranque que no son lecturas. Ahora se descartan y se conserva
+  el último bueno:
+  - presión de las ruedas a 0 bar;
+  - -400 A en la corriente de DC sin estar cargando en DC (salían 400 A);
+  - 0 min de carga restante sin estar cargando;
+  - temperatura de consigna fuera de 16-32 °C.
+- **Testigos al encender:** en el primer minuto tras encender el coche los
+  testigos no son de fiar (la comprobación de arranque) y se ignoran.
+- **Testigos de airbag, ABS y dirección asistida:** salen de los registros de
+  cada sistema del servidor (`vehicleStatus`), los mismos que pinta la app;
+  los del MQTT a veces se encienden en un coche sano.
+- **PHEV:** una corriente de carga de más de 250 A se descarta (dato falso).
+
+### Añadido
+
+- **Último estado guardado:** al reiniciar Home Assistant con el coche
+  dormido, asientos, volante, clima, testigos, ruedas, combustible y
+  kilómetros siguen con su último valor en vez de «Desconocido»
+  (`.storage/dec_deepal.last_state`).
+
+### Cambiado
+
+- **Home Assistant 2026.11:** el clima da la temperatura también con los
+  nombres nuevos (`native_*`), así que la 2026.11 no avisa de nombres
+  obsoletos. Se sigue admitiendo desde la 2026.3.
+
 ## [2.6.0b16] — 2026-11-10
 
 ### Añadido

@@ -60,6 +60,7 @@ custom_components/dec_deepal/
 ├── idiomas/               TEXTOS: un fichero por idioma (la única fuente)
 ├── textos_generados.py    Avisos y catálogo por idioma (generado desde idiomas/)
 ├── diagnostics.py         "Descargar diagnósticos"
+├── last_state.py          Último estado de cada coche, guardado para después de reiniciar
 ├── strings.json           Textos (idioma base)
 ├── translations/          Un JSON por idioma
 │
@@ -119,9 +120,17 @@ Coordinador (cada N min)
    └─ telemetry.state.build_state()
          ├─ map_mqtt(params)            claves del coche → señales
          ├─ map_rest(json)              rutas REST → señales
-         ├─ fusión (MQTT base, REST rellena, REST manda en confort)
-         ├─ conservar último valor (confort, clima)
+         ├─ conversores: valores de arranque fuera (ruedas a 0, -400 A en DC,
+         │                consigna imposible)
+         ├─ fusión (MQTT base, REST rellena, REST manda en confort y en los
+         │          testigos de airbag, ABS y dirección)
+         ├─ conservar último valor (confort, clima, testigos, ruedas...)
+         ├─ testigos: fuera con el coche apagado y el primer minuto al encender
+         ├─ 0 min de carga sin cargar → desconocido
          └─ apply_holds()               valores optimistas de comandos
+   ├─ corrientes por encima del tope (250 A en el PHEV) → fuera
+   └─ last_state.remember()             guarda lo que se conserva (30 s después)
+                                        y, al arrancar, hace de lectura anterior
                │
                ▼
         VehicleState  →  entidades (signal("battery_level")...)

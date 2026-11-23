@@ -41,6 +41,7 @@ from .api.errors import DeepalAuthError, DeepalError, DeepalRateLimitError
 from .api.models import VehicleInfo
 from .api.mqtt.client import MqttReading
 from .debug.recorder import DebugRecorder
+from .last_state import LastStateStore
 from .telemetry import signals as s
 from .telemetry.state import OptimisticHold, VehicleState, apply_holds, build_state
 
@@ -95,6 +96,8 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         use_mqtt: bool,
         scan_minutes: int,
         wake_enabled: bool = True,
+        max_charge_current: float | None = None,
+        last_states: LastStateStore | None = None,
     ) -> None:
         """Crea el coordinador.
 
@@ -108,6 +111,11 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
             scan_minutes: intervalo entre lecturas.
             wake_enabled: permitir despertar el coche (botón de actualizar y
                 antes de órdenes con PIN). Opción "Despertar el coche".
+            max_charge_current: corriente de carga máxima creíble (A); más es
+                un dato falso y se descarta (250 A en el PHEV). ``None``: el
+                tope general de los conversores (600 A).
+            last_states: último estado guardado de los coches, para no
+                empezar con "Desconocido" tras reiniciar con el coche dormido.
         """
         super().__init__(
             hass,
@@ -130,6 +138,10 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         self.wake_enabled = wake_enabled
         self._last_wake: float | None = None
         self._wake_lock = asyncio.Lock()
+        self.max_charge_current = max_charge_current
+        self._last_states = last_states
+        #: Lo guardado antes de reiniciar: hace de lectura anterior en la primera.
+        self._restored = last_states.restored(vehicle.vehicle_id) if last_states else None
 
     # ------------------------------------------------------------------
     # Lectura
@@ -225,13 +237,27 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         state = build_state(
             mqtt_params=reading.params if reading else None,
             rest_raw=rest,
-            previous=self.data,
+            previous=self.data or self._restored,
         )
+        self._restored = None
+        self._drop_impossible_currents(state)
         if reading is not None:
             state.mqtt_unknown = dict(reading.unknown_services)
         state.warnings = warnings
         apply_holds(state, self._holds, time.monotonic())
+        if self._last_states is not None:
+            self._last_states.remember(self.vehicle.vehicle_id, state)
         return state
+
+    def _drop_impossible_currents(self, state: VehicleState) -> None:
+        """Descarta corrientes por encima de lo que admite el coche (dato falso)."""
+        if self.max_charge_current is None:
+            return
+        for signal in (s.CHARGE_CURRENT, s.AC_CHARGE_CURRENT, s.DC_CHARGE_CURRENT):
+            value = state.values.get(signal)
+            if isinstance(value, int | float) and abs(value) > self.max_charge_current:
+                state.values.pop(signal, None)
+                state.sources.pop(signal, None)
 
     async def _ssl(self) -> ssl.SSLContext:
         """Contexto TLS para MQTT (creado una sola vez)."""

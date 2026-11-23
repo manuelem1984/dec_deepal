@@ -34,6 +34,15 @@ CHARGING_STATES: Final = frozenset({CHARGE_STATE_AC_CHARGING, CHARGE_STATE_DC_CH
 #: 480 A). El coche ha llegado a mandar 2538 A (y -2538) aparcado tras una
 #: carga DC.
 MAX_CHARGE_CURRENT_A: Final = 600.0
+#: En el PHEV (batería pequeña), más de 250 A es un dato falso (Deepal Alternative 1.8.0).
+PHEV_MAX_CHARGE_CURRENT_A: Final = 250.0
+#: Al despertar, los módulos del coche mandan valores de arranque que no son
+#: lecturas (lo vio Deepal Alternative 1.8-1.9 en coches reales): -400 A en la
+#: corriente de DC sin estar cargando en DC y 0,0 de presión en las ruedas.
+WAKE_DC_CURRENT_SENTINEL_A: Final = -400.0
+#: Temperatura de consigna creíble (la app deja de 18 a 32 °C).
+MIN_TARGET_TEMP_C: Final = 16.0
+MAX_TARGET_TEMP_C: Final = 32.0
 
 
 def to_int(value: Any) -> int | None:
@@ -135,6 +144,18 @@ def charge_minutes(value: Any) -> int | None:
     if number is None or number == CHARGE_TIME_SENTINEL or number < 0:
         return None
     return number
+
+
+def tire_pressure(value: Any) -> float | None:
+    """Presión de una rueda (kPa). ``0`` es el valor de arranque del módulo, no una lectura → ``None``."""
+    number = to_float(value)
+    return number if number is not None and number > 0 else None
+
+
+def target_temp(value: Any) -> float | None:
+    """Temperatura de consigna; fuera de 16-32 °C es un valor de arranque → ``None``."""
+    number = to_float(value)
+    return number if number is not None and MIN_TARGET_TEMP_C <= number <= MAX_TARGET_TEMP_C else None
 
 
 def tenths(value: Any) -> float | None:

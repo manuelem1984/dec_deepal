@@ -4,6 +4,7 @@ lista de coches vacía, configuración MQTT reutilizada y mensajes rotos."""
 from __future__ import annotations
 
 import asyncio
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
@@ -87,7 +88,15 @@ async def test_charge_limit_command(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_warnings_only_trusted_with_the_car_on() -> None:
-    on = build_state(mqtt_params={"powerStatusFeedBack": 2, "absLightStatus": 0}, rest_raw=None, previous=None)
+    # Encendido hace más de un minuto (pasada la espera de arranque, READY_WINDOW).
+    t0 = datetime(2026, 11, 23, 10, 0, tzinfo=UTC)
+    started = build_state(mqtt_params={"powerStatusFeedBack": 2}, rest_raw=None, previous=None, now=t0)
+    on = build_state(
+        mqtt_params={"powerStatusFeedBack": 2, "absLightStatus": 0},
+        rest_raw=None,
+        previous=started,
+        now=t0 + timedelta(seconds=90),
+    )
     assert on.get(s.WARNING_ABS) is False
     # Despertado y apagado: manda el ABS encendido sin motivo → se queda el último de fiar.
     woken = build_state(mqtt_params={"powerStatusFeedBack": 0, "absLightStatus": 1}, rest_raw=None, previous=on)
@@ -95,8 +104,19 @@ def test_warnings_only_trusted_with_the_car_on() -> None:
     # Sin un valor anterior, no se sabe (mejor que un falso aviso).
     cold = build_state(mqtt_params={"powerStatusFeedBack": 0, "absLightStatus": 1}, rest_raw=None, previous=None)
     assert cold.get(s.WARNING_ABS) is None
-    # Encendido, el testigo encendido sí cuenta.
-    real = build_state(mqtt_params={"powerStatusFeedBack": 2, "absLightStatus": 1}, rest_raw=None, previous=woken)
+    # Recién encendido: aún en la comprobación de arranque, se queda el último de fiar...
+    t1 = t0 + timedelta(minutes=10)
+    starting = build_state(
+        mqtt_params={"powerStatusFeedBack": 2, "absLightStatus": 1}, rest_raw=None, previous=woken, now=t1
+    )
+    assert starting.get(s.WARNING_ABS) is False
+    # ...y pasado el minuto, el testigo encendido sí cuenta.
+    real = build_state(
+        mqtt_params={"powerStatusFeedBack": 2, "absLightStatus": 1},
+        rest_raw=None,
+        previous=starting,
+        now=t1 + timedelta(seconds=61),
+    )
     assert real.get(s.WARNING_ABS) is True
 
 

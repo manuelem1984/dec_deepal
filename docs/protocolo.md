@@ -79,6 +79,29 @@ la privada firma los comandos.
 categorías. Temperaturas en **décimas**; presión en kPa; `door.doors` y
 `window.windows` son listas de 4.
 
+**Testigos de sistema** en `vehicleStatus` (0 = bien), los que pinta la app:
+`airBagSysStatus` (airbag), `absAntiLockBrakingSysStatus` (ABS) y
+`powerSteeringSysStatus` (dirección asistida). Desde la 2.6.0b17 mandan sobre
+los bits `*LightStatus` del MQTT, que en un S05 sano a veces salen
+encendidos (Deepal Alternative 1.8.0).
+
+### Valores de arranque al despertar ⚠️
+
+Al despertar, los módulos del coche mandan durante unos segundos valores que
+**no son lecturas** (visto por Deepal Alternative 1.8-1.9 en coches reales; pendiente de verlo en nuestras capturas). Desde la
+2.6.0b17 se descartan y se conserva el último valor bueno:
+
+| Dato | Valor de arranque | Qué se hace |
+| --- | --- | --- |
+| Presión de las ruedas (MQTT y REST) | `0` / `0.0` | Desconocido; se conserva la anterior |
+| Corriente DC (`BattDCChrgInCurr`) | `-400` sin `ChrgSts` = 4 | Se descarta (con el valor absoluto saldrían 400 A) |
+| Tiempo de carga restante | `0` sin estar cargando | Desconocido (no es "carga terminada") |
+| Temperatura de consigna | Fuera de 16-32 °C (`0`, `127`...) | Se descarta |
+| Testigos del cuadro | Encendidos en el primer minuto | Se ignoran 60 s tras encender el coche |
+
+En el **PHEV**, una corriente de carga de más de 250 A también se descarta
+(el EV admite hasta 600 A).
+
 ### Capacidades (`function-config`) ✅
 
 `POST /intl-app-gw/intl-app-user/api/vehicle/function-config` con

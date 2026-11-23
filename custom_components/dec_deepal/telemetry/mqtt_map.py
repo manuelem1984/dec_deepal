@@ -73,7 +73,7 @@ MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
     MqttField(s.FUEL_RANGE_KM, ("remainedOilMile",), c.positive),
     MqttField(s.CLIMATE_ON, ("airStatus",), c.to_bool),
     MqttField(s.FAN_LEVEL, ("airConditioningHairRatings",), c.to_int),
-    MqttField(s.CLIMATE_TARGET_C, ("airConditioningSetTemperature",), c.to_float),
+    MqttField(s.CLIMATE_TARGET_C, ("airConditioningSetTemperature",), c.target_temp),
     # --- Confort (el REST tiene prioridad para estas, ver state.py) ---------
     MqttField(s.SEAT_HEAT_DRIVER, ("driverSeatHeatStatus",), c.seat_level),
     MqttField(s.SEAT_HEAT_PASSENGER, ("passengerSeatHeatStatus",), c.seat_level),
@@ -96,10 +96,10 @@ MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
     MqttField(s.LOCKED_DRIVER, ("driverDoorLock",), c.locked_if_zero),
     MqttField(s.LOCKED_PASSENGER, ("passengerDoorLock",), c.locked_if_zero),
     # --- Neumáticos (llegan en kPa) -----------------------------------------
-    MqttField(s.TIRE_PRESSURE_FRONT_LEFT, ("lfTyrePressure",), c.to_float),
-    MqttField(s.TIRE_PRESSURE_FRONT_RIGHT, ("rfTyrePressure",), c.to_float),
-    MqttField(s.TIRE_PRESSURE_REAR_LEFT, ("lrTyrePressure",), c.to_float),
-    MqttField(s.TIRE_PRESSURE_REAR_RIGHT, ("rrTyrePressure",), c.to_float),
+    MqttField(s.TIRE_PRESSURE_FRONT_LEFT, ("lfTyrePressure",), c.tire_pressure),
+    MqttField(s.TIRE_PRESSURE_FRONT_RIGHT, ("rfTyrePressure",), c.tire_pressure),
+    MqttField(s.TIRE_PRESSURE_REAR_LEFT, ("lrTyrePressure",), c.tire_pressure),
+    MqttField(s.TIRE_PRESSURE_REAR_RIGHT, ("rrTyrePressure",), c.tire_pressure),
     MqttField(s.TIRE_ALARM_FRONT_LEFT, ("lfPressureWarning",), c.to_bool),
     MqttField(s.TIRE_ALARM_FRONT_RIGHT, ("rfPressureWarning",), c.to_bool),
     MqttField(s.TIRE_ALARM_REAR_LEFT, ("lrPressureWarning",), c.to_bool),
@@ -180,15 +180,21 @@ def _resolve_charge_currents(params: dict[str, Any], values: dict[str, Any]) -> 
     - Cargando en AC (3): la activa es la de AC; la de DC, 0.
     - Sin cargar (0, 1, 2, 5): todas a 0 (no un valor viejo ni el falso de
       después de una carga).
+    - -400 A en DC sin cargar en DC: valor de arranque del módulo, se descarta.
     - Estado desconocido: la que no sea 0, preferiblemente la de AC.
 
     Solo se pone 0 en una corriente que el coche haya mandado.
     """
     state = values.get(s.CHARGE_STATE)
     ac_sent = c.to_float(first_present(params, AC_CURRENT_KEYS)) is not None
-    dc_sent = c.to_float(first_present(params, DC_CURRENT_KEYS)) is not None
+    dc_raw = c.to_float(first_present(params, DC_CURRENT_KEYS))
+    dc_sent = dc_raw is not None
     ac = values.get(s.AC_CHARGE_CURRENT)
     dc = values.get(s.DC_CHARGE_CURRENT)
+    # -400 A sin estar cargando en DC: el valor de arranque del módulo al
+    # despertar, no una corriente (con el valor absoluto saldría 400 A).
+    if dc_raw == c.WAKE_DC_CURRENT_SENTINEL_A and state != c.CHARGE_STATE_DC_CHARGING:
+        dc, dc_sent = None, False
 
     if state == c.CHARGE_STATE_DC_CHARGING:
         ac, active = (0.0 if ac_sent else None), dc

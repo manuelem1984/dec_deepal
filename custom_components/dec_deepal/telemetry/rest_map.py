@@ -71,6 +71,12 @@ REST_FIELDS: Final[tuple[RestField, ...]] = (
     ),
     RestField(s.ENGINE_ON, (("vehicleStatus", "engineSts"),), c.to_bool),
     RestField(s.POWER_STATUS, (("vehicleStatus", "powerStatus"),), c.to_int),
+    # Testigos de airbag, ABS y dirección: los registros de cada sistema del REST
+    # (0 = bien), los que pinta la app. Los bits del MQTT de estos tres se
+    # encienden sin motivo en un coche sano (Deepal Alternative 1.8.0).
+    RestField(s.WARNING_AIRBAG, (("vehicleStatus", "airBagSysStatus"),), c.to_bool),
+    RestField(s.WARNING_ABS, (("vehicleStatus", "absAntiLockBrakingSysStatus"),), c.to_bool),
+    RestField(s.WARNING_EPS, (("vehicleStatus", "powerSteeringSysStatus"),), c.to_bool),
     RestField(s.ODOMETER_KM, (("vehicleStatus", "totalMileage"),), c.to_float),
     RestField(s.MILEAGE_YESTERDAY_KM, (("vehicleStatus", "totalMeterYesterday"),), c.to_float),
     RestField(s.TRIP_KM, (("vehicleStatus", "igniteCumulativeMileage"),), c.to_float),
@@ -81,7 +87,7 @@ REST_FIELDS: Final[tuple[RestField, ...]] = (
     RestField(s.OUTSIDE_TEMP_C, (("hvac", "outsideTemp"),), c.tenths),
     RestField(s.CLIMATE_ON, (("hvac", "acStatus"),), c.to_bool),
     RestField(s.FAN_LEVEL, (("hvac", "fanLevel"),), c.to_int),
-    RestField(s.CLIMATE_TARGET_C, (("hvac", "remoteTemp"),), c.tenths),
+    RestField(s.CLIMATE_TARGET_C, (("hvac", "remoteTemp"),), lambda value: c.target_temp(c.tenths(value))),
     # --- Confort (prioritario sobre MQTT) ✅ ---------------------------------
     RestField(s.SEAT_HEAT_DRIVER, _seat("leftFront", "heatStatus", "level"), c.seat_level),
     RestField(s.SEAT_HEAT_PASSENGER, _seat("rightFront", "heatStatus", "level"), c.seat_level),
@@ -103,10 +109,10 @@ REST_FIELDS: Final[tuple[RestField, ...]] = (
     RestField(s.LOCKED_DRIVER, (("door", "driverLock"),), c.locked_if_zero),
     RestField(s.LOCKED_PASSENGER, (("door", "passengerLock"),), c.locked_if_zero),
     # --- Neumáticos ---------------------------------------------------------
-    RestField(s.TIRE_PRESSURE_FRONT_LEFT, (("tire", "leftFront", "pressure"),), c.to_float),
-    RestField(s.TIRE_PRESSURE_FRONT_RIGHT, (("tire", "rightFront", "pressure"),), c.to_float),
-    RestField(s.TIRE_PRESSURE_REAR_LEFT, (("tire", "leftBack", "pressure"),), c.to_float),
-    RestField(s.TIRE_PRESSURE_REAR_RIGHT, (("tire", "rightBack", "pressure"),), c.to_float),
+    RestField(s.TIRE_PRESSURE_FRONT_LEFT, (("tire", "leftFront", "pressure"),), c.tire_pressure),
+    RestField(s.TIRE_PRESSURE_FRONT_RIGHT, (("tire", "rightFront", "pressure"),), c.tire_pressure),
+    RestField(s.TIRE_PRESSURE_REAR_LEFT, (("tire", "leftBack", "pressure"),), c.tire_pressure),
+    RestField(s.TIRE_PRESSURE_REAR_RIGHT, (("tire", "rightBack", "pressure"),), c.tire_pressure),
     # --- Luces --------------------------------------------------------------
     RestField(s.HIGH_BEAM, (("lamp", "highBeam"),), c.to_bool),
     RestField(s.LOW_BEAM, (("lamp", "lowBeam"),), c.to_bool),

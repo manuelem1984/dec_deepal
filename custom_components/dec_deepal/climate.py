@@ -50,8 +50,15 @@ async def async_setup_entry(
 
 
 class DecClimate(DecDeepalEntity, ClimateEntity):
-    """Climatización: modo apagado / automático y temperatura."""
+    """Climatización: modo apagado / automático y temperatura.
 
+    Da la temperatura con los dos juegos de nombres: los ``native_*`` que usa
+    Home Assistant desde la 2026.11 y los de siempre, para la 2026.3 a la
+    2026.10. Con los dos, la 2026.11 no avisa de nada (los de siempre dejan de
+    funcionar en la 2027.11).
+    """
+
+    _attr_native_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_hvac_modes = [HVACMode.OFF, HVACMode.HEAT_COOL]
     _attr_supported_features = (
@@ -75,13 +82,23 @@ class DecClimate(DecDeepalEntity, ClimateEntity):
         return HVACMode.HEAT_COOL if on else HVACMode.OFF
 
     @property
+    def native_current_temperature(self) -> float | None:
+        """Temperatura interior actual (Home Assistant 2026.11 y siguientes)."""
+        return self.signal(s.INSIDE_TEMP_C)
+
+    @property
+    def native_target_temperature(self) -> float | None:
+        """Temperatura objetivo (Home Assistant 2026.11 y siguientes)."""
+        return self.signal(s.CLIMATE_TARGET_C)
+
+    @property
     def current_temperature(self) -> float | None:
-        """Temperatura interior actual."""
+        """Temperatura interior actual (hasta Home Assistant 2026.10)."""
         return self.signal(s.INSIDE_TEMP_C)
 
     @property
     def target_temperature(self) -> float | None:
-        """Temperatura objetivo."""
+        """Temperatura objetivo (hasta Home Assistant 2026.10)."""
         return self.signal(s.CLIMATE_TARGET_C)
 
     def icon_state(self) -> str | None:
