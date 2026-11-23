@@ -23,6 +23,7 @@ from ..const import (
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
     DEFAULT_CHARGE_BALANCE,
+    DEFAULT_LIVE_MQTT,
     DEFAULT_PIN_MODE,
     DEFAULT_SCAN_MINUTES,
     DEFAULT_WAKE,
@@ -33,6 +34,7 @@ from ..const import (
     OPT_ARM_SECONDS,
     OPT_CHARGE_BALANCE,
     OPT_DEBUG,
+    OPT_LIVE_MQTT,
     OPT_MANUAL_URLS,
     OPT_PIN,
     OPT_PIN_ENABLED,
@@ -130,6 +132,7 @@ def account_settings(entry: Any) -> dict[str, Any]:
         "scan_minutes": int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES)),
         "scan_limits": [MIN_SCAN_MINUTES, MAX_SCAN_MINUTES],
         "wake": bool(options.get(OPT_WAKE, DEFAULT_WAKE)),
+        "live_mqtt": bool(options.get(OPT_LIVE_MQTT, DEFAULT_LIVE_MQTT)),
         "charge_balance": bool(options.get(OPT_CHARGE_BALANCE, DEFAULT_CHARGE_BALANCE)),
         "debug": bool(options.get(OPT_DEBUG, False)),
         "manual": (

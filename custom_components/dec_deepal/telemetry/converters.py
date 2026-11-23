@@ -8,6 +8,7 @@ Cada conversor recibe un único valor en bruto y devuelve el valor limpio.
 
 from __future__ import annotations
 
+import math
 from datetime import UTC, datetime
 from typing import Any, Final
 
@@ -164,20 +165,36 @@ def tenths(value: Any) -> float | None:
     return None if number is None else number / 10
 
 
-def humidity(value: Any) -> float | None:
-    """Humedad interior en %; fuera de 0-100 → ``None``.
+#: Humedad absoluta máxima creíble (g/m³): el aire saturado a 50 °C tiene ~83.
+MAX_ABSOLUTE_HUMIDITY: Final = 100.0
 
-    El coche la envía de dos formas, según el momento (visto en coches
-    reales): en % (``61.0``) o en décimas de % (``453`` = 45,3 %). Un valor
-    por encima de 100 solo puede ser lo segundo. (Una humedad real por debajo
-    del 10 % enviada en décimas se leería mal, pero en un habitáculo no se da.)
+
+def absolute_humidity(value: Any) -> float | None:
+    """Humedad absoluta del habitáculo en g/m³ (``innerHumidity``, en décimas).
+
+    No es un porcentaje: con nueve lecturas reales (30-09 a 11-10-2026, 26-28,5
+    °C dentro) los valores de 34 a 157 solo cuadran como g/m³ x 10 (del 14 % al
+    62 % de humedad relativa). Como % salían saltos imposibles (97 % y, un rato
+    después, 11,8 %). Lo mismo vio Deepal Alternative 1.9 en el REST.
+    ``0`` es "sin lectura" (módulo dormido) → ``None``.
     """
-    number = to_float(value)
-    if number is None:
+    number = tenths(value)
+    return number if number is not None and 0 < number <= MAX_ABSOLUTE_HUMIDITY else None
+
+
+def relative_humidity(absolute: float | None, temp_c: float | None) -> float | None:
+    """Humedad relativa (%) a partir de la absoluta (g/m³) y la temperatura (°C).
+
+    Fórmula de Magnus (coeficientes de Sonntag, válida de -45 a 60 °C):
+    presión de saturación ``e_s = 6,112·exp(17,62·T/(243,12+T))`` hPa y
+    presión del vapor ``e = AH·(T+273,15)/216,7`` hPa; ``HR = 100·e/e_s``.
+    Se limita a 0-100 % y se redondea a un decimal.
+    """
+    if absolute is None or temp_c is None or not -45 <= temp_c <= 60:
         return None
-    if number > 100:
-        number /= 10
-    return number if 0 <= number <= 100 else None
+    saturation = 6.112 * math.exp(17.62 * temp_c / (243.12 + temp_c))
+    vapour = absolute * (temp_c + 273.15) / 216.7
+    return round(min(100.0, max(0.0, 100 * vapour / saturation)), 1)
 
 
 def locked_if_zero(value: Any) -> bool | None:

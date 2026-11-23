@@ -1,8 +1,10 @@
 """Una lectura completa de telemetría por MQTT (conectar, pedir, desconectar).
 
-No se mantiene una conexión permanente: en cada actualización se abre, se pide
-el estado y se cierra. Es lo que está verificado ✅ y evita problemas de
-reconexión. Duración típica: 2-6 segundos.
+De fábrica no se mantiene una conexión permanente: en cada actualización se
+abre, se pide el estado y se cierra. Es lo que está verificado ✅ y evita
+problemas de reconexión. Duración típica: 2-6 segundos. La conexión
+permanente (experimental, opcional) está en ``live.py`` y usa la misma
+sesión (:func:`open_session`).
 """
 
 from __future__ import annotations
@@ -515,3 +517,7 @@ async def wake_vehicle(
         return await _wake_vehicle(connection, auth_token, ssl_context)
     except _DROPPED_CONNECTION as err:
         raise ConnectionError(f"El broker MQTT cerró la conexión: {err}") from err
+
+
+#: La sesión (conectar, suscribirse y login) para la conexión permanente (``live.py``).
+open_session = _session

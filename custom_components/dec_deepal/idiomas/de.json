@@ -218,6 +218,9 @@
         "cabin_humidity": {
           "name": "Luftfeuchtigkeit im Innenraum"
         },
+        "cabin_absolute_humidity": {
+          "name": "Absolute Luftfeuchtigkeit innen"
+        },
         "climate_target_temperature": {
           "name": "Solltemperatur der Klimaanlage"
         },
@@ -283,6 +286,18 @@
         },
         "fuel_volume": {
           "name": "Kraftstoff im Tank"
+        },
+        "charged_energy": {
+          "name": "Geladene Energie"
+        },
+        "charging_cost": {
+          "name": "Ladekosten"
+        },
+        "average_consumption": {
+          "name": "Durchschnittsverbrauch"
+        },
+        "last_trip": {
+          "name": "Letzte Fahrt"
         }
       },
       "binary_sensor": {
@@ -459,6 +474,18 @@
         },
         "charge_limit": {
           "name": "Ladelimit"
+        },
+        "climate_schedule_temperature": {
+          "name": "Geplante Temperatur"
+        },
+        "climate_schedule_min_battery": {
+          "name": "Mindestakku für die Klimatisierung"
+        },
+        "charge_price_home": {
+          "name": "Strompreis zu Hause"
+        },
+        "charge_price_fast": {
+          "name": "Preis für Schnellladen"
         }
       },
       "switch": {
@@ -467,6 +494,15 @@
         },
         "front_defrost": {
           "name": "Frontscheibe enteisen"
+        },
+        "charge_plan": {
+          "name": "Geplantes Laden"
+        },
+        "charge_plan_until_full": {
+          "name": "Bis voll"
+        },
+        "climate_schedule": {
+          "name": "Geplante Klimatisierung"
         }
       },
       "lock": {
@@ -514,6 +550,27 @@
         },
         "charging_view": {
           "name": "Ladeansicht"
+        }
+      },
+      "time": {
+        "charge_plan_start": {
+          "name": "Beginn des geplanten Ladens"
+        },
+        "charge_plan_end": {
+          "name": "Ende des geplanten Ladens"
+        },
+        "climate_schedule_time": {
+          "name": "Uhrzeit der Klimatisierung"
+        }
+      },
+      "select": {
+        "climate_schedule_days": {
+          "name": "Tage der Klimatisierung",
+          "state": {
+            "daily": "Jeden Tag",
+            "weekdays": "Montag bis Freitag",
+            "weekends": "Wochenende"
+          }
         }
       }
     },
@@ -574,6 +631,21 @@
       },
       "maintenance_no_odometer": {
         "message": "Der Kilometerstand des Autos ist nicht bekannt. Gib die Kilometer an oder erfasse die Wartung im DEC-Deepal-Panel."
+      },
+      "charge_plan_set_in_app": {
+        "message": "Der Ladeplan wurde in der Deepal-App oder im Auto gespeichert, und das Auto lässt ihn von außen nicht ändern. Entferne ihn zuerst in der App oder im Auto."
+      },
+      "charge_plan_no_start": {
+        "message": "Wähle zuerst die Startzeit des geplanten Ladens."
+      },
+      "charge_plan_no_end": {
+        "message": "Wähle die Endzeit des geplanten Ladens oder schalte „Bis voll“ ein."
+      },
+      "charge_plan_too_short": {
+        "message": "Geplantes Laden muss mindestens 30 Minuten dauern (von {start} bis {end})."
+      },
+      "charge_plan_not_supported": {
+        "message": "Dieses Auto hat kein geplantes Laden."
       }
     },
     "services": {
@@ -626,6 +698,42 @@
             "description": "Kilometerstand bei der Wartung. Leer = aktueller Stand des Autos."
           }
         }
+      },
+      "set_charge_plan": {
+        "name": "Laden planen",
+        "description": "Schaltet das geplante Laden des Autos ein oder aus oder ändert es. Was du nicht angibst, bleibt wie es ist.",
+        "fields": {
+          "device_id": {
+            "name": "Fahrzeug",
+            "description": "Das Auto."
+          },
+          "enabled": {
+            "name": "Aktiv",
+            "description": "Geplantes Laden ein- (ja) oder ausschalten (nein)."
+          },
+          "start": {
+            "name": "Beginn",
+            "description": "Uhrzeit, zu der das Laden beginnt (Ortszeit)."
+          },
+          "end": {
+            "name": "Ende",
+            "description": "Uhrzeit, zu der das Laden endet."
+          },
+          "until_full": {
+            "name": "Bis voll",
+            "description": "Ohne Endzeit: lädt bis zum Limit."
+          }
+        }
+      },
+      "export_car_log": {
+        "name": "Fahrtenbuch exportieren",
+        "description": "Gibt die aufgezeichneten Fahrten und Ladungen des Autos mit Summen und Preisen zurück.",
+        "fields": {
+          "device_id": {
+            "name": "Fahrzeug",
+            "description": "Das Auto."
+          }
+        }
       }
     }
   },
@@ -676,7 +784,28 @@
     "date_format": "%d.%m.%Y",
     "panel_target": "Home-Assistant-Benachrichtigungen",
     "backup_notification": "Sicherung der Daten deiner Fahrzeuge. Tippe zum Herunterladen (der Link läuft in 10 Minuten ab).",
-    "pin_armed": "Befehle mit PIN für {seconds} Sekunden erlaubt."
+    "pin_armed": "Befehle mit PIN für {seconds} Sekunden erlaubt.",
+    "charge_live": "Lädt{level}{ends}.",
+    "live_level": ": {level} %",
+    "live_ends": " · fertig gegen {time}",
+    "left_open": "Seit {minutes} Min. aus: {what}.",
+    "left_open_unlocked": "nicht verriegelt",
+    "left_open_doors": "Tür offen",
+    "left_open_windows": "Fenster offen",
+    "left_open_trunk": "Kofferraum offen",
+    "left_open_hood": "Motorhaube offen",
+    "action_lock": "Verriegeln",
+    "lock_done": "Auto verriegelt.",
+    "lock_failed": "Verriegeln fehlgeschlagen: {error}",
+    "climate_schedule_started": "Geplante Klimatisierung mit {temperature} °C eingeschaltet.",
+    "climate_schedule_low_battery": "Geplante Klimatisierung nicht eingeschaltet: Akku bei {battery} % (Minimum {minimum} %) und nicht angesteckt.",
+    "climate_schedule_power_on": "Geplante Klimatisierung nicht eingeschaltet: Das Auto ist an.",
+    "climate_schedule_failed": "Geplante Klimatisierung: Das Auto hat den Befehl nicht angenommen.",
+    "log_trip": "Fahrt über {km} km (Akku von {start} % auf {end} %){energy}.",
+    "log_charge_ac": "Laden zu Hause von {start} % auf {end} %{energy}{cost}.",
+    "log_charge_dc": "Schnellladen von {start} % auf {end} %{energy}{cost}.",
+    "log_energy": " · {kwh} kWh",
+    "log_cost": " · {cost} {currency}"
   },
   "tarjeta": {
     "card_description": "Dein Deepal auf einen Blick: Fahrzeugansicht, Batterie, Komfort und Schnellaktionen.",
@@ -1362,7 +1491,16 @@
     "mine": "Deins",
     "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
     "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen.",
-    "plate": "Kennzeichen"
+    "plate": "Kennzeichen",
+    "notice_charge_live": "Laden live",
+    "when_charge_live": "Eine Handy-Benachrichtigung, die sich während des Ladens aktualisiert",
+    "notice_left_open": "Auto offen oder nicht verriegelt",
+    "when_minutes": "{value} Min. aus",
+    "unit_minutes": "Min.",
+    "notice_climate_schedule": "Geplante Klimatisierung",
+    "when_climate_schedule": "Ob sie eingeschaltet wurde oder warum nicht",
+    "live_title": "Dauerverbindung (experimentell)",
+    "live_help": "Hält die Verbindung zum Auto offen, um seine Daten sofort zu erhalten, ohne auf die nächste Abfrage zu warten. Nur mit einem Auto im Konto. Bei Problemen ausschalten."
   },
   "catalogo": {
     "operacion_general_inspection": "Allgemeine Inspektion (Antrieb, Batterie, Hochvolt, Bremsen und Lenkung)",

@@ -89,6 +89,17 @@ async def async_get_config_entry_diagnostics(
             "usa_mqtt": vehicle.coordinator.use_mqtt,
             "ultima_lectura_ok": vehicle.coordinator.last_update_success,
             "armado": vehicle.runner.is_armed,
+            # Conexión MQTT permanente (experimental): sus números, o si está activada.
+            "mqtt_permanente": (
+                live.stats.as_dict()
+                if (live := getattr(vehicle.coordinator, "live", None)) is not None
+                else bool(getattr(vehicle.coordinator, "live_enabled", False))
+            ),
+            "diario": (
+                car_log.diagnostics(vehicle.info.vehicle_id)
+                if (car_log := getattr(runtime, "car_log", None)) is not None
+                else None
+            ),
             **(runtime.alerts.diagnostics(vehicle.info.vehicle_id) if runtime.alerts else {}),
             **snapshot,
         }

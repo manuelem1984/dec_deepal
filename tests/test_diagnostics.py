@@ -90,7 +90,7 @@ async def test_diagnostics_report(hass: HomeAssistant) -> None:
     assert data["ficha"]["funciones"]["asientos_ventilacion"] is False
     assert data["ficha"]["funciones"]["porton_electrico"] is False
     assert data["ficha"]["testigos_sin_aviso"] == ["warning_airbag"]
-    assert data["senales"]["cabin_humidity"] == 61.0
+    assert data["senales"]["cabin_absolute_humidity"] == 6.1  # g/m³ (innerHumidity en décimas)
 
     # Sus entidades, por su clave interna (aunque contenga "pin", no se oculta).
     assert data["entidades"] == {

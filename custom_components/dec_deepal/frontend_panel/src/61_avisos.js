@@ -35,6 +35,7 @@
       if (notice.threshold == null) return this._maybe(`when_${notice.id}`) || "";
       const value = this._number(this._threshold(car, notice));
       if (notice.unit === "km") return this._t("when_km", { value });
+      if (notice.unit === "min") return this._t("when_minutes", { value });
       return this._t(notice.id.startsWith("insurance_c") ? "when_days_deadline" : "when_days", { value });
     }
 
@@ -73,7 +74,7 @@
             : `<button class="pen" data-action="edit" data-car="${escapeHtml(car.id)}" data-notice="${notice.id}" aria-label="${this._t("edit_threshold")}"><ha-icon icon="mdi:pencil"></ha-icon></button>`;
           const label = editing
             ? `<div class="lab"><b>${this._t(`notice_${notice.id}`)}</b><small></small>
-                <span class="inp"><input type="number" min="${notice.limits[0]}" max="${notice.limits[1]}" value="${this._threshold(car, notice)}"><span>${this._t(notice.unit === "km" ? "unit_km" : "unit_days")}</span></span>
+                <span class="inp"><input type="number" min="${notice.limits[0]}" max="${notice.limits[1]}" value="${this._threshold(car, notice)}"><span>${this._t(notice.unit === "km" ? "unit_km" : notice.unit === "min" ? "unit_minutes" : "unit_days")}</span></span>
                 <button class="mini ok" data-action="edit-ok" aria-label="${this._t("accept")}"><ha-icon icon="mdi:check"></ha-icon></button>
                 <button class="mini" data-action="edit-cancel" aria-label="${this._t("cancel")}"><ha-icon icon="mdi:close"></ha-icon></button></div>`
             : `<div class="lab"><b>${this._t(`notice_${notice.id}`)}</b><small>${escapeHtml(this._when(car, notice))}</small>${pen}</div>`;

@@ -71,7 +71,9 @@ tiempo restante, kilometraje, puertas, ventanillas, cerraduras, capó,
 maletero, presión y avisos de neumáticos, luces, temperatura y humedad
 interior, climatización, recirculación, asientos, volante, antiniebla
 trasera, testigos del cuadro, pila del mando, botones de luces y
-claxon, y seis imágenes (oficial, imagen DEC, vista de planta y vista
+claxon, **carga programada**, **climatización programada** (con batería
+mínima), **diario de viajes y cargas** con energía, coste y consumo medio, y
+seis imágenes (oficial, imagen DEC, vista de planta y vista
 isométrica con puertas, capó, maletero, ventanillas y luces según su estado, y
 vista interior con volante y asientos calefactados o ventilados, y vista de
 carga con el cable enchufado o cargando).
@@ -80,10 +82,14 @@ Qué está comprobado con el coche real y qué no:
 [docs/correlacion_endpoints_entidades.csv](docs/correlacion_endpoints_entidades.csv)
 (columna *Verificado*).
 
+Carga y climatización programadas, diario del coche y conexión permanente:
+[docs/carga-clima-y-diario.md](docs/carga-clima-y-diario.md).
+
 ## 🔔 Avisos y mantenimiento
 
 Desde *Configurar*, sin crear automatizaciones: avisos al móvil (carga,
-testigos, neumáticos, pila del mando) y el mantenimiento de cada coche, con
+carga en vivo, testigos, neumáticos, pila del mando, coche abierto con botón
+Bloquear, climatización programada) y el mantenimiento de cada coche, con
 testigo, días y kilómetros que faltan y avisos al acercarse la revisión.
 Detalles en [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md).
 
@@ -134,6 +140,7 @@ botones y en qué orden, columnas, color, nombre e idioma. Detalles en
 | [docs/tarjeta.md](docs/tarjeta.md) | La tarjeta para los paneles |
 | [docs/idiomas.md](docs/idiomas.md) | Idiomas: cambiar textos y añadir traducciones |
 | [docs/avisos-y-mantenimiento.md](docs/avisos-y-mantenimiento.md) | Avisos al móvil y mantenimiento periódico |
+| [docs/carga-clima-y-diario.md](docs/carga-clima-y-diario.md) | Carga y climatización programadas, diario del coche, conexión permanente |
 | [docs/depuracion.md](docs/depuracion.md) | Modo depuración, diagnósticos y capturas |
 | [docs/anadir-pais-vehiculo-idioma.md](docs/anadir-pais-vehiculo-idioma.md) | Ampliar países, coches e idiomas |
 | [docs/roadmap.md](docs/roadmap.md) | Pendientes |

@@ -31,6 +31,11 @@ CHARGE_CURRENT: Final = "charge_current"  # A (AC o DC, la que haya)
 AC_CHARGE_CURRENT: Final = "ac_charge_current"  # A
 DC_CHARGE_CURRENT: Final = "dc_charge_current"  # A
 REMAINING_CHARGE_MIN: Final = "remaining_charge_min"  # minutos
+# Plan de carga (carga programada), del REST: ver telemetry/charge_plan.py.
+CHARGE_PLAN_ON: Final = "charge_plan_on"  # bool: hay un plan activo
+CHARGE_PLAN_START: Final = "charge_plan_start"  # "HH:MM" hora local del coche
+CHARGE_PLAN_END: Final = "charge_plan_end"  # "HH:MM"; sin valor si es «hasta llenar»
+CHARGE_PLAN_UNTIL_FULL: Final = "charge_plan_until_full"  # bool: sin hora de fin
 
 # --- Estado general ---------------------------------------------------------
 REPORT_TIME: Final = "report_time"  # datetime UTC del último informe del coche
@@ -46,7 +51,8 @@ PARKING_BRAKE: Final = "parking_brake"  # entero en bruto del freno de mano elé
 # --- Clima ------------------------------------------------------------------
 INSIDE_TEMP_C: Final = "inside_temp_c"  # °C
 OUTSIDE_TEMP_C: Final = "outside_temp_c"  # °C (solo REST, sin verificar)
-CABIN_HUMIDITY: Final = "cabin_humidity"  # %
+CABIN_HUMIDITY: Final = "cabin_humidity"  # % (calculada: ver derived.cabin_humidity)
+CABIN_ABSOLUTE_HUMIDITY: Final = "cabin_absolute_humidity"  # g/m³ (la que manda el coche)
 CLIMATE_ON: Final = "climate_on"  # bool
 FAN_LEVEL: Final = "fan_level"  # entero
 CLIMATE_TARGET_C: Final = "climate_target_c"  # °C

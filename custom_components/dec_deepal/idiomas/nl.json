@@ -218,6 +218,9 @@
         "cabin_humidity": {
           "name": "Luchtvochtigheid in het interieur"
         },
+        "cabin_absolute_humidity": {
+          "name": "Absolute luchtvochtigheid binnen"
+        },
         "climate_target_temperature": {
           "name": "Ingestelde temperatuur klimaatregeling"
         },
@@ -283,6 +286,18 @@
         },
         "fuel_volume": {
           "name": "Brandstof in de tank"
+        },
+        "charged_energy": {
+          "name": "Geladen energie"
+        },
+        "charging_cost": {
+          "name": "Laadkosten"
+        },
+        "average_consumption": {
+          "name": "Gemiddeld verbruik"
+        },
+        "last_trip": {
+          "name": "Laatste rit"
         }
       },
       "binary_sensor": {
@@ -459,6 +474,18 @@
         },
         "charge_limit": {
           "name": "Laadlimiet"
+        },
+        "climate_schedule_temperature": {
+          "name": "Geplande temperatuur"
+        },
+        "climate_schedule_min_battery": {
+          "name": "Minimale accu voor klimaatregeling"
+        },
+        "charge_price_home": {
+          "name": "Stroomprijs thuis"
+        },
+        "charge_price_fast": {
+          "name": "Prijs snelladen"
         }
       },
       "switch": {
@@ -467,6 +494,15 @@
         },
         "front_defrost": {
           "name": "Voorruit ontwasemen"
+        },
+        "charge_plan": {
+          "name": "Gepland laden"
+        },
+        "charge_plan_until_full": {
+          "name": "Tot vol"
+        },
+        "climate_schedule": {
+          "name": "Geplande klimaatregeling"
         }
       },
       "lock": {
@@ -514,6 +550,27 @@
         },
         "charging_view": {
           "name": "Laadaanzicht"
+        }
+      },
+      "time": {
+        "charge_plan_start": {
+          "name": "Begin gepland laden"
+        },
+        "charge_plan_end": {
+          "name": "Einde gepland laden"
+        },
+        "climate_schedule_time": {
+          "name": "Tijd van de klimaatregeling"
+        }
+      },
+      "select": {
+        "climate_schedule_days": {
+          "name": "Dagen van de klimaatregeling",
+          "state": {
+            "daily": "Elke dag",
+            "weekdays": "Maandag tot vrijdag",
+            "weekends": "Weekend"
+          }
         }
       }
     },
@@ -574,6 +631,21 @@
       },
       "maintenance_no_odometer": {
         "message": "De kilometerstand van de auto is niet bekend. Vul de kilometers in, of registreer het onderhoud via het DEC Deepal-paneel."
+      },
+      "charge_plan_set_in_app": {
+        "message": "Het laadplan is opgeslagen in de Deepal-app of in de auto, en de auto laat het niet van buitenaf wijzigen. Verwijder het eerst in de app of in de auto."
+      },
+      "charge_plan_no_start": {
+        "message": "Kies eerst de begintijd van het geplande laden."
+      },
+      "charge_plan_no_end": {
+        "message": "Kies de eindtijd van het geplande laden of zet \"Tot vol\" aan."
+      },
+      "charge_plan_too_short": {
+        "message": "Gepland laden moet minstens 30 minuten duren (van {start} tot {end})."
+      },
+      "charge_plan_not_supported": {
+        "message": "Deze auto heeft geen gepland laden."
       }
     },
     "services": {
@@ -626,6 +698,42 @@
             "description": "Kilometerstand bij de beurt. Leeg = de huidige stand van de auto."
           }
         }
+      },
+      "set_charge_plan": {
+        "name": "Laden plannen",
+        "description": "Zet het geplande laden van de auto aan of uit, of wijzigt het. Wat je niet opgeeft, blijft zoals het is.",
+        "fields": {
+          "device_id": {
+            "name": "Voertuig",
+            "description": "De auto."
+          },
+          "enabled": {
+            "name": "Actief",
+            "description": "Gepland laden aan (ja) of uit (nee) zetten."
+          },
+          "start": {
+            "name": "Begin",
+            "description": "Tijd waarop het laden begint (lokale tijd)."
+          },
+          "end": {
+            "name": "Einde",
+            "description": "Tijd waarop het laden stopt."
+          },
+          "until_full": {
+            "name": "Tot vol",
+            "description": "Zonder eindtijd: laadt tot de limiet."
+          }
+        }
+      },
+      "export_car_log": {
+        "name": "Logboek van de auto exporteren",
+        "description": "Geeft de vastgelegde ritten en laadbeurten van de auto terug, met totalen en prijzen.",
+        "fields": {
+          "device_id": {
+            "name": "Voertuig",
+            "description": "De auto."
+          }
+        }
       }
     }
   },
@@ -676,7 +784,28 @@
     "date_format": "%d-%m-%Y",
     "panel_target": "Home Assistant-meldingen",
     "backup_notification": "Back-up van de gegevens van je voertuigen. Tik om te downloaden (de link verloopt over 10 minuten).",
-    "pin_armed": "Opdrachten met pincode toegestaan gedurende {seconds} seconden."
+    "pin_armed": "Opdrachten met pincode toegestaan gedurende {seconds} seconden.",
+    "charge_live": "Laden{level}{ends}.",
+    "live_level": ": {level} %",
+    "live_ends": " · klaar rond {time}",
+    "left_open": "Al {minutes} min uit: {what}.",
+    "left_open_unlocked": "niet vergrendeld",
+    "left_open_doors": "deur open",
+    "left_open_windows": "raam open",
+    "left_open_trunk": "kofferbak open",
+    "left_open_hood": "motorkap open",
+    "action_lock": "Vergrendelen",
+    "lock_done": "Auto vergrendeld.",
+    "lock_failed": "Vergrendelen mislukt: {error}",
+    "climate_schedule_started": "Geplande klimaatregeling aangezet op {temperature} °C.",
+    "climate_schedule_low_battery": "Geplande klimaatregeling niet aangezet: accu op {battery} % (minimum {minimum} %) en niet aangesloten.",
+    "climate_schedule_power_on": "Geplande klimaatregeling niet aangezet: de auto staat aan.",
+    "climate_schedule_failed": "Geplande klimaatregeling: de auto heeft de opdracht niet aangenomen.",
+    "log_trip": "Rit van {km} km (accu van {start} % naar {end} %){energy}.",
+    "log_charge_ac": "Thuis geladen van {start} % naar {end} %{energy}{cost}.",
+    "log_charge_dc": "Snelgeladen van {start} % naar {end} %{energy}{cost}.",
+    "log_energy": " · {kwh} kWh",
+    "log_cost": " · {cost} {currency}"
   },
   "tarjeta": {
     "card_description": "Je Deepal in één oogopslag: aanzicht van de auto, batterij, comfort en snelle acties.",
@@ -1362,7 +1491,16 @@
     "mine": "Van jou",
     "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
     "error_unauthorized": "Alleen een beheerder kan deze wijziging doen.",
-    "plate": "Kenteken"
+    "plate": "Kenteken",
+    "notice_charge_live": "Live laden",
+    "when_charge_live": "Een melding op de telefoon die tijdens het laden wordt bijgewerkt",
+    "notice_left_open": "Auto open of niet vergrendeld",
+    "when_minutes": "{value} min uit",
+    "unit_minutes": "min",
+    "notice_climate_schedule": "Geplande klimaatregeling",
+    "when_climate_schedule": "Of hij aanging, of waarom niet",
+    "live_title": "Permanente verbinding (experimenteel)",
+    "live_help": "Houdt de verbinding met de auto open om de gegevens meteen te ontvangen, zonder op de volgende uitlezing te wachten. Alleen met één auto in het account. Zet hem uit bij problemen."
   },
   "catalogo": {
     "operacion_general_inspection": "Algemene inspectie (aandrijving, batterij, hoogspanning, remmen en stuurinrichting)",

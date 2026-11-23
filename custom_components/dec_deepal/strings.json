@@ -217,6 +217,9 @@
       "cabin_humidity": {
         "name": "Cabin humidity"
       },
+      "cabin_absolute_humidity": {
+        "name": "Cabin absolute humidity"
+      },
       "climate_target_temperature": {
         "name": "Climate target temperature"
       },
@@ -282,6 +285,18 @@
       },
       "fuel_volume": {
         "name": "Fuel in the tank"
+      },
+      "charged_energy": {
+        "name": "Charged energy"
+      },
+      "charging_cost": {
+        "name": "Charging cost"
+      },
+      "average_consumption": {
+        "name": "Average consumption"
+      },
+      "last_trip": {
+        "name": "Last trip"
       }
     },
     "binary_sensor": {
@@ -458,6 +473,18 @@
       },
       "charge_limit": {
         "name": "Charge limit"
+      },
+      "climate_schedule_temperature": {
+        "name": "Scheduled temperature"
+      },
+      "climate_schedule_min_battery": {
+        "name": "Minimum battery for climate"
+      },
+      "charge_price_home": {
+        "name": "Home electricity price"
+      },
+      "charge_price_fast": {
+        "name": "Fast charging price"
       }
     },
     "switch": {
@@ -466,6 +493,15 @@
       },
       "front_defrost": {
         "name": "Front demist"
+      },
+      "charge_plan": {
+        "name": "Scheduled charging"
+      },
+      "charge_plan_until_full": {
+        "name": "Until full"
+      },
+      "climate_schedule": {
+        "name": "Scheduled climate"
       }
     },
     "lock": {
@@ -513,6 +549,27 @@
       },
       "charging_view": {
         "name": "Charging view"
+      }
+    },
+    "time": {
+      "charge_plan_start": {
+        "name": "Scheduled charging start"
+      },
+      "charge_plan_end": {
+        "name": "Scheduled charging end"
+      },
+      "climate_schedule_time": {
+        "name": "Climate time"
+      }
+    },
+    "select": {
+      "climate_schedule_days": {
+        "name": "Climate days",
+        "state": {
+          "daily": "Every day",
+          "weekdays": "Monday to Friday",
+          "weekends": "Weekend"
+        }
       }
     }
   },
@@ -573,6 +630,21 @@
     },
     "maintenance_no_odometer": {
       "message": "The car's mileage is not known. Enter the kilometres, or register the service from the DEC Deepal panel."
+    },
+    "charge_plan_set_in_app": {
+      "message": "The charging plan was saved in the Deepal app or on the car, and the car does not allow changing it from outside. Remove it in the app or on the car first."
+    },
+    "charge_plan_no_start": {
+      "message": "Choose the scheduled charging start time first."
+    },
+    "charge_plan_no_end": {
+      "message": "Choose the scheduled charging end time or turn on \"Until full\"."
+    },
+    "charge_plan_too_short": {
+      "message": "Scheduled charging must last at least 30 minutes (from {start} to {end})."
+    },
+    "charge_plan_not_supported": {
+      "message": "This car has no scheduled charging."
     }
   },
   "services": {
@@ -623,6 +695,42 @@
         "km": {
           "name": "Kilometres",
           "description": "Kilometres at the service. If left empty, the car's current reading."
+        }
+      }
+    },
+    "set_charge_plan": {
+      "name": "Schedule charging",
+      "description": "Turns the car's scheduled charging on or off, or changes it. Anything you leave out stays as it is.",
+      "fields": {
+        "device_id": {
+          "name": "Vehicle",
+          "description": "The car."
+        },
+        "enabled": {
+          "name": "Enabled",
+          "description": "Turn scheduled charging on (yes) or off (no)."
+        },
+        "start": {
+          "name": "Start",
+          "description": "Time charging starts (local time)."
+        },
+        "end": {
+          "name": "End",
+          "description": "Time charging stops."
+        },
+        "until_full": {
+          "name": "Until full",
+          "description": "No end time: charge up to the limit."
+        }
+      }
+    },
+    "export_car_log": {
+      "name": "Export the car log",
+      "description": "Returns the car's recorded trips and charges, with their totals and prices.",
+      "fields": {
+        "device_id": {
+          "name": "Vehicle",
+          "description": "The car."
         }
       }
     }

@@ -25,6 +25,7 @@ NOISY_SIGNALS: Final = frozenset(
         s.ODOMETER_KM,
         s.INSIDE_TEMP_C,
         s.CABIN_HUMIDITY,
+        s.CABIN_ABSOLUTE_HUMIDITY,
         s.CHARGE_CURRENT,
         s.AC_CHARGE_CURRENT,
         s.DC_CHARGE_CURRENT,

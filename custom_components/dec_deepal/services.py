@@ -39,8 +39,10 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
 from homeassistant.util import dt as dt_util
 
+from .charge_plan_control import async_set_charge_plan
 from .const import CAPTURES_DIR, DOMAIN
 from .debug.capture import build_snapshot, diff_snapshots
+from .registries.vehicles import FEATURE_CHARGE_PLAN
 from .runtime import DecDeepalConfigEntry, device_entry_ids
 
 _LOGGER = logging.getLogger(__name__)
@@ -64,6 +66,24 @@ REGISTER_MAINTENANCE_SCHEMA = vol.Schema(
         vol.Optional(ATTR_KM): vol.All(vol.Coerce(int), vol.Range(min=0)),
     }
 )
+
+SERVICE_SET_CHARGE_PLAN = "set_charge_plan"
+ATTR_ENABLED = "enabled"
+ATTR_START = "start"
+ATTR_END = "end"
+ATTR_UNTIL_FULL = "until_full"
+SET_CHARGE_PLAN_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_DEVICE_ID): cv.string,
+        vol.Optional(ATTR_ENABLED): cv.boolean,
+        vol.Optional(ATTR_START): cv.time,
+        vol.Optional(ATTR_END): cv.time,
+        vol.Optional(ATTR_UNTIL_FULL): cv.boolean,
+    }
+)
+
+SERVICE_EXPORT_CAR_LOG = "export_car_log"
+EXPORT_CAR_LOG_SCHEMA = vol.Schema({vol.Required(ATTR_DEVICE_ID): cv.string})
 
 SERVICE_REGISTER_ITV = "register_itv"
 REGISTER_ITV_SCHEMA = vol.Schema(
@@ -168,6 +188,40 @@ async def _async_register_itv(call: ServiceCall) -> None:
     await alerts.async_register_itv(vehicle_id, call.data.get(ATTR_DATE) or dt_util.now().date())
 
 
+async def _async_set_charge_plan(call: ServiceCall) -> None:
+    """Implementación de ``set_charge_plan`` (ver ``charge_plan_control.py``)."""
+    runtime, vehicle = _find_vehicle(call.hass, call.data[ATTR_DEVICE_ID])
+    if not vehicle.has(FEATURE_CHARGE_PLAN):
+        raise ServiceValidationError(translation_domain=DOMAIN, translation_key="charge_plan_not_supported")
+
+    def _clock(key: str) -> str | None:
+        value = call.data.get(key)
+        return None if value is None else f"{value.hour:02d}:{value.minute:02d}"
+
+    await async_set_charge_plan(
+        call.hass,
+        runtime,
+        vehicle,
+        enabled=call.data.get(ATTR_ENABLED),
+        start=_clock(ATTR_START),
+        end=_clock(ATTR_END),
+        until_full=call.data.get(ATTR_UNTIL_FULL),
+    )
+
+
+async def _async_export_car_log(call: ServiceCall) -> ServiceResponse:
+    """Implementación de ``export_car_log``: el diario del coche entero (viajes y cargas)."""
+    runtime, vehicle = _find_vehicle(call.hass, call.data[ATTR_DEVICE_ID])
+    log = runtime.car_log.log(vehicle.info.vehicle_id)
+    return {
+        "coche": vehicle.info.display_name,
+        "capacidad_kwh": runtime.car_log.capacity(vehicle.info.vehicle_id),
+        "precios": dict(log["prices"]),
+        "totales": dict(log["totals"]),
+        "entradas": [dict(entry) for entry in log["entries"]],
+    }
+
+
 def async_register_services(hass: HomeAssistant) -> None:
     """Registra los servicios (una vez por arranque, desde ``async_setup``)."""
     if hass.services.has_service(DOMAIN, SERVICE_CAPTURE):
@@ -187,4 +241,14 @@ def async_register_services(hass: HomeAssistant) -> None:
     )
     hass.services.async_register(
         DOMAIN, SERVICE_REGISTER_ITV, _async_register_itv, schema=REGISTER_ITV_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_SET_CHARGE_PLAN, _async_set_charge_plan, schema=SET_CHARGE_PLAN_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_EXPORT_CAR_LOG,
+        _async_export_car_log,
+        schema=EXPORT_CAR_LOG_SCHEMA,
+        supports_response=SupportsResponse.ONLY,
     )

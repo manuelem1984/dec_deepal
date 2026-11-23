@@ -32,6 +32,10 @@ custom_components/dec_deepal/
 ├── vehicle_sync.py        Coches nuevos o retirados de la cuenta (cada 30 min)
 ├── coordinator.py         Lecturas periódicas de UN coche
 ├── command_runner.py      Aduana de comandos de UN coche
+├── charge_plan_control.py Cambiar el plan de carga (borrar + añadir; reglas en telemetry/charge_plan.py)
+├── climate_schedule.py    Climatización programada con batería mínima (+ climate_schedule_entities.py)
+├── car_log.py             Diario del coche: viajes y cargas con kWh y coste (sin HA)
+├── car_log_manager.py     El diario en HA: escucha, guarda, eventos (+ car_log_entities.py, logbook.py)
 ├── entity.py              Entidad base (dispositivo, nombre, icono)
 ├── sensor.py … image.py   Una plataforma de HA por fichero
 ├── view_renderer.py       Monta las vistas por capas (planta, isométrica, interior, carga; Pillow)
@@ -45,9 +49,9 @@ custom_components/dec_deepal/
 │   ├── comun.py           Permisos (administrador / solo lectura), coches y errores
 │   ├── estado.py          Lo que pinta el panel, según quién mira
 │   └── coches.py, avisos.py, datos.py, ajustes.py   Órdenes de cada pestaña
-├── services.py/.yaml      Servicios: captura de depuración y registrar mantenimiento
+├── services.py/.yaml      Servicios: captura, mantenimiento/ITV, plan de carga y exportar el diario
 ├── alerts/                Avisos al móvil y fichas de mantenimiento, ITV y seguro
-│   │                      (gestor + una parte por tema: coche, mantenimiento, documentos)
+│   │                      (gestor + una parte por tema: coche, vivo, mantenimiento, documentos)
 ├── chargers/              Cargadores: gestor + una parte por tema (ver su __init__.py)
 ├── debug/history.py       Qué señales cambian entre lecturas (historial del diagnóstico; sin HA)
 ├── vehicle_data.py        Datos por coche: formato, migración y copias (sin HA)
@@ -75,14 +79,15 @@ custom_components/dec_deepal/
 │   ├── endpoints.py       Rutas de los endpoints
 │   ├── errors.py          Excepciones y códigos de error del servidor
 │   ├── models.py          VehicleInfo, CommandResult, Capabilities
-│   └── mqtt/              Cliente MQTT mínimo (protocolo, topics, lectura)
+│   └── mqtt/              Cliente MQTT mínimo (protocolo, topics, lectura; live.py = conexión permanente)
 │
 ├── telemetry/             De datos en bruto a señales (sin Home Assistant)
 │   ├── signals.py         Vocabulario de señales
 │   ├── converters.py      Conversores (décimas, conector, nivel de asiento…)
 │   ├── mqtt_map.py        Tabla clave MQTT → señal
 │   ├── rest_map.py        Tabla ruta REST → señal
-│   ├── derived.py         Señales calculadas
+│   ├── derived.py         Señales calculadas (humedad relativa, estado de carga...)
+│   ├── charge_plan.py     Plan de carga: leer la lista y decidir qué borrar y añadir
 │   └── state.py           Fusión MQTT + REST + último valor + optimista
 │
 ├── registries/            Cargadores de catálogos (sin Home Assistant)

@@ -37,7 +37,9 @@ from .api.models import Capabilities, VehicleInfo
 from .api.session import DeepalSession
 from .api.transport import DeepalTransport
 from .appearance import issue_id
+from .car_log_manager import CarLogManager
 from .chargers import async_get_manager
+from .climate_schedule import ClimateScheduleManager
 from .command_runner import CommandRunner
 from .const import (
     CHARGE_BALANCE_MINUTES,
@@ -49,6 +51,7 @@ from .const import (
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
     DEFAULT_CHARGE_BALANCE,
+    DEFAULT_LIVE_MQTT,
     DEFAULT_PIN_MODE,
     DEFAULT_SCAN_MINUTES,
     DEFAULT_WAKE,
@@ -59,6 +62,7 @@ from .const import (
     OPT_CHARGE_BALANCE,
     OPT_COLOR,
     OPT_DEBUG,
+    OPT_LIVE_MQTT,
     OPT_MODEL,
     OPT_PIN,
     OPT_PIN_ENABLED,
@@ -200,6 +204,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
     scan_minutes = int(options.get(OPT_SCAN_MINUTES, DEFAULT_SCAN_MINUTES))
     last_states = LastStateStore(hass)
     await last_states.async_load()
+    mqtt_cars = sum(1 for raw in entry.data[CONF_VEHICLES] if VehicleInfo.from_dict(raw).uses_mqtt)
+    live_mqtt = bool(options.get(OPT_LIVE_MQTT, DEFAULT_LIVE_MQTT)) and mqtt_cars == 1
     for raw_vehicle in entry.data[CONF_VEHICLES]:
         info = VehicleInfo.from_dict(raw_vehicle)
         appearance = appearance_by_vehicle.get(info.vehicle_id, {})
@@ -225,6 +231,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
             # El PHEV carga a mucha menos corriente: más de 250 A es un dato falso.
             max_charge_current=PHEV_MAX_CHARGE_CURRENT_A if model.has(FEATURE_FUEL, trim) else None,
             last_states=last_states,
+            # Una sola conexión MQTT por cuenta: la permanente, solo con un coche MQTT.
+            live=live_mqtt,
         )
         runner = CommandRunner(
             hass,
@@ -282,9 +290,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: DecDeepalConfigEntry) ->
         recorder=recorder,
     )
     await runtime.alerts.async_load()
+    runtime.climate_schedule = ClimateScheduleManager(hass, runtime.vehicles, runtime.alerts)
+    await runtime.climate_schedule.async_load()
+    runtime.car_log = CarLogManager(hass, entry.entry_id, runtime.vehicles)
+    await runtime.car_log.async_load()
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     runtime.alerts.async_start()
+    runtime.climate_schedule.async_start()
+    entry.async_on_unload(runtime.climate_schedule.async_stop)
+    runtime.car_log.async_start()
+    entry.async_on_unload(runtime.car_log.async_stop)
+    for vehicle in runtime.vehicles.values():
+        await vehicle.coordinator.async_start_live()
+        entry.async_on_unload(vehicle.coordinator.async_stop_live)
     # Panel de la barra lateral (una vez, con la primera cuenta).
     await async_register_panel(hass)
 

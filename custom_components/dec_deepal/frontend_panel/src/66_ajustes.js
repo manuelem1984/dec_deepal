@@ -67,6 +67,7 @@
           ${row("mdi:timer-outline", "scan_title", "scan_help", "")}
           ${segment("scan_minutes", scan, "minutes")}
           ${row("mdi:sleep-off", "wake_title", "wake_help", toggle("wake"))}
+          ${row("mdi:access-point-network", "live_title", "live_help", toggle("live_mqtt"))}
           ${row("mdi:scale-balance", "balance_title", "balance_help", toggle("charge_balance"))}
           ${manual}
           ${row("mdi:bug-outline", "debug_title", "debug_help", toggle("debug"), true)}
@@ -112,6 +113,7 @@
         arm_notify: Boolean(now.arm_notify),
         scan_minutes: Number(now.scan_minutes),
         wake: Boolean(now.wake),
+        live_mqtt: Boolean(now.live_mqtt),
         charge_balance: Boolean(now.charge_balance),
         debug: Boolean(now.debug),
       };

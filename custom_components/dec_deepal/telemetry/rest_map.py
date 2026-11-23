@@ -19,6 +19,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Final
 
+from . import charge_plan
 from . import converters as c
 from . import signals as s
 
@@ -148,4 +149,6 @@ def map_rest(raw: dict[str, Any]) -> dict[str, Any]:
             if value is not None:
                 values[field.signal] = value
                 break
+    # El plan de carga es una lista con reglas propias (ver charge_plan.py).
+    values.update(charge_plan.signals_from_rest(raw))
     return values

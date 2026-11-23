@@ -217,6 +217,9 @@
       "cabin_humidity": {
         "name": "Luchtvochtigheid in het interieur"
       },
+      "cabin_absolute_humidity": {
+        "name": "Absolute luchtvochtigheid binnen"
+      },
       "climate_target_temperature": {
         "name": "Ingestelde temperatuur klimaatregeling"
       },
@@ -282,6 +285,18 @@
       },
       "fuel_volume": {
         "name": "Brandstof in de tank"
+      },
+      "charged_energy": {
+        "name": "Geladen energie"
+      },
+      "charging_cost": {
+        "name": "Laadkosten"
+      },
+      "average_consumption": {
+        "name": "Gemiddeld verbruik"
+      },
+      "last_trip": {
+        "name": "Laatste rit"
       }
     },
     "binary_sensor": {
@@ -458,6 +473,18 @@
       },
       "charge_limit": {
         "name": "Laadlimiet"
+      },
+      "climate_schedule_temperature": {
+        "name": "Geplande temperatuur"
+      },
+      "climate_schedule_min_battery": {
+        "name": "Minimale accu voor klimaatregeling"
+      },
+      "charge_price_home": {
+        "name": "Stroomprijs thuis"
+      },
+      "charge_price_fast": {
+        "name": "Prijs snelladen"
       }
     },
     "switch": {
@@ -466,6 +493,15 @@
       },
       "front_defrost": {
         "name": "Voorruit ontwasemen"
+      },
+      "charge_plan": {
+        "name": "Gepland laden"
+      },
+      "charge_plan_until_full": {
+        "name": "Tot vol"
+      },
+      "climate_schedule": {
+        "name": "Geplande klimaatregeling"
       }
     },
     "lock": {
@@ -513,6 +549,27 @@
       },
       "charging_view": {
         "name": "Laadaanzicht"
+      }
+    },
+    "time": {
+      "charge_plan_start": {
+        "name": "Begin gepland laden"
+      },
+      "charge_plan_end": {
+        "name": "Einde gepland laden"
+      },
+      "climate_schedule_time": {
+        "name": "Tijd van de klimaatregeling"
+      }
+    },
+    "select": {
+      "climate_schedule_days": {
+        "name": "Dagen van de klimaatregeling",
+        "state": {
+          "daily": "Elke dag",
+          "weekdays": "Maandag tot vrijdag",
+          "weekends": "Weekend"
+        }
       }
     }
   },
@@ -573,6 +630,21 @@
     },
     "maintenance_no_odometer": {
       "message": "De kilometerstand van de auto is niet bekend. Vul de kilometers in, of registreer het onderhoud via het DEC Deepal-paneel."
+    },
+    "charge_plan_set_in_app": {
+      "message": "Het laadplan is opgeslagen in de Deepal-app of in de auto, en de auto laat het niet van buitenaf wijzigen. Verwijder het eerst in de app of in de auto."
+    },
+    "charge_plan_no_start": {
+      "message": "Kies eerst de begintijd van het geplande laden."
+    },
+    "charge_plan_no_end": {
+      "message": "Kies de eindtijd van het geplande laden of zet \"Tot vol\" aan."
+    },
+    "charge_plan_too_short": {
+      "message": "Gepland laden moet minstens 30 minuten duren (van {start} tot {end})."
+    },
+    "charge_plan_not_supported": {
+      "message": "Deze auto heeft geen gepland laden."
     }
   },
   "services": {
@@ -623,6 +695,42 @@
         "km": {
           "name": "Kilometers",
           "description": "Kilometerstand bij de beurt. Leeg = de huidige stand van de auto."
+        }
+      }
+    },
+    "set_charge_plan": {
+      "name": "Laden plannen",
+      "description": "Zet het geplande laden van de auto aan of uit, of wijzigt het. Wat je niet opgeeft, blijft zoals het is.",
+      "fields": {
+        "device_id": {
+          "name": "Voertuig",
+          "description": "De auto."
+        },
+        "enabled": {
+          "name": "Actief",
+          "description": "Gepland laden aan (ja) of uit (nee) zetten."
+        },
+        "start": {
+          "name": "Begin",
+          "description": "Tijd waarop het laden begint (lokale tijd)."
+        },
+        "end": {
+          "name": "Einde",
+          "description": "Tijd waarop het laden stopt."
+        },
+        "until_full": {
+          "name": "Tot vol",
+          "description": "Zonder eindtijd: laadt tot de limiet."
+        }
+      }
+    },
+    "export_car_log": {
+      "name": "Logboek van de auto exporteren",
+      "description": "Geeft de vastgelegde ritten en laadbeurten van de auto terug, met totalen en prijzen.",
+      "fields": {
+        "device_id": {
+          "name": "Voertuig",
+          "description": "De auto."
         }
       }
     }

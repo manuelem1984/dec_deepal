@@ -31,8 +31,9 @@ from enum import StrEnum
 from typing import Any, Final
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api.account import DeepalAccount
@@ -40,10 +41,11 @@ from .api.client import DeepalClient
 from .api.errors import DeepalAuthError, DeepalError, DeepalRateLimitError
 from .api.models import VehicleInfo
 from .api.mqtt.client import MqttReading
+from .api.mqtt.live import LiveSession
 from .debug.recorder import DebugRecorder
 from .last_state import LastStateStore
 from .telemetry import signals as s
-from .telemetry.state import OptimisticHold, VehicleState, apply_holds, build_state
+from .telemetry.state import SOURCE_LOCAL, OptimisticHold, VehicleState, apply_holds, build_state
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -78,6 +80,8 @@ class WakeResult(StrEnum):
 #: Errores de la lectura MQTT que permiten seguir con el REST.
 #: ``EOFError`` cubre el cierre de la conexión por el broker (por si alguno se
 #: escapa de la traducción a ConnectionError de ``api/mqtt/client.py``).
+#: Segundos que se esperan para juntar los informes de la conexión permanente.
+LIVE_DEBOUNCE_SECONDS: Final = 2
 _MQTT_RECOVERABLE: Final = (DeepalError, ConnectionError, TimeoutError, OSError, ValueError, EOFError)
 
 
@@ -98,6 +102,7 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         wake_enabled: bool = True,
         max_charge_current: float | None = None,
         last_states: LastStateStore | None = None,
+        live: bool = False,
     ) -> None:
         """Crea el coordinador.
 
@@ -116,6 +121,8 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
                 tope general de los conversores (600 A).
             last_states: último estado guardado de los coches, para no
                 empezar con "Desconocido" tras reiniciar con el coche dormido.
+            live: usar la conexión MQTT permanente (experimental; ver
+                ``api/mqtt/live.py``). Se abre con :meth:`async_start_live`.
         """
         super().__init__(
             hass,
@@ -142,6 +149,11 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         self._last_states = last_states
         #: Lo guardado antes de reiniciar: hace de lectura anterior en la primera.
         self._restored = last_states.restored(vehicle.vehicle_id) if last_states else None
+        self.live_enabled = live and use_mqtt
+        self.live: LiveSession | None = None
+        #: Último informe REST (lo reutilizan los mensajes de la conexión permanente).
+        self._last_rest: dict[str, Any] | None = None
+        self._live_pending: CALLBACK_TYPE | None = None
 
     # ------------------------------------------------------------------
     # Lectura
@@ -189,7 +201,16 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         warnings: list[str] = []
 
         reading: MqttReading | None = None
-        if self.use_mqtt:
+        live = self.live
+        if live is not None and live.connected and live.reading.params:
+            # Conexión permanente abierta: sus datos y, para la próxima, que mande todo.
+            reading = MqttReading(params=dict(live.reading.params), model_code=live.reading.model_code)
+            reading.unknown_services = dict(live.reading.unknown_services)
+            try:
+                await live.request_condition()
+            except _MQTT_RECOVERABLE as err:  # la conexión se cae sola y se reabre
+                _LOGGER.debug("%s: petición por la conexión permanente fallida: %s", self.vehicle.display_name, err)
+        elif self.use_mqtt:
             try:
                 reading = await self.client.read_mqtt(self.vehicle, await self._ssl())
             except DeepalAuthError:
@@ -233,6 +254,8 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
 
         if reading is None and not rest:
             raise UpdateFailed("El vehículo no devolvió datos")
+        if rest:
+            self._last_rest = rest
 
         state = build_state(
             mqtt_params=reading.params if reading else None,
@@ -258,6 +281,51 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
             if isinstance(value, int | float) and abs(value) > self.max_charge_current:
                 state.values.pop(signal, None)
                 state.sources.pop(signal, None)
+
+    # ------------------------------------------------------------------
+    # Conexión MQTT permanente (experimental)
+    # ------------------------------------------------------------------
+
+    async def async_start_live(self) -> None:
+        """Abre la conexión permanente (si está activada) en segundo plano."""
+        if not self.live_enabled or self.live is not None:
+            return
+        self.live = self.client.live_session(self.vehicle, await self._ssl(), self._on_live)
+        self.live.start(
+            lambda coro: self.config_entry.async_create_background_task(
+                self.hass, coro, f"dec_deepal: MQTT permanente {self.vehicle.vehicle_id}"
+            )
+        )
+
+    async def async_stop_live(self) -> None:
+        """Cierra la conexión permanente (al descargar la cuenta)."""
+        if self._live_pending is not None:
+            self._live_pending()
+            self._live_pending = None
+        if self.live is not None:
+            await self.live.stop()
+            self.client.live.pop(self.vehicle.vehicle_id, None)
+            self.live = None
+
+    @callback
+    def _on_live(self, _reading: MqttReading) -> None:
+        """Llegó un informe por la conexión permanente: se junta todo en 2 s y se publica."""
+        if self._live_pending is None:
+            self._live_pending = async_call_later(self.hass, LIVE_DEBOUNCE_SECONDS, self._publish_live)
+
+    @callback
+    def _publish_live(self, _now: Any = None) -> None:
+        self._live_pending = None
+        if self.live is None or self.data is None:
+            return
+        reading = self.live.reading
+        state = build_state(mqtt_params=dict(reading.params), rest_raw=self._last_rest, previous=self.data)
+        state.mqtt_unknown = dict(reading.unknown_services)
+        self._drop_impossible_currents(state)
+        apply_holds(state, self._holds, time.monotonic())
+        if self._last_states is not None:
+            self._last_states.remember(self.vehicle.vehicle_id, state)
+        self.async_set_updated_data(state)
 
     async def _ssl(self) -> ssl.SSLContext:
         """Contexto TLS para MQTT (creado una sola vez)."""
@@ -357,6 +425,24 @@ class VehicleCoordinator(DataUpdateCoordinator[VehicleState]):
         apply_holds(state, self._holds, now)
         self.async_set_updated_data(state)
         return previous
+
+    def set_local_values(self, values: dict[str, Any]) -> None:
+        """Apunta valores elegidos en Home Assistant que el coche no tiene.
+
+        Sin plazo (no son optimistas): se conservan entre lecturas si la señal
+        está en ``KEEP_LAST`` y el coche no manda otra cosa. Se usa para las
+        horas del plan de carga con el plan apagado.
+        """
+        if self.data is None or not values:
+            return
+        state = dataclasses.replace(
+            self.data, values={**self.data.values, **values}, sources=dict(self.data.sources)
+        )
+        for signal in values:
+            state.sources[signal] = SOURCE_LOCAL
+        self.async_set_updated_data(state)
+        if self._last_states is not None:
+            self._last_states.remember(self.vehicle.vehicle_id, state)
 
     def revert_optimistic(self, previous: dict[str, Any]) -> None:
         """Deshace un valor optimista (el coche rechazó el comando)."""

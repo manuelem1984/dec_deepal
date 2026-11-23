@@ -47,7 +47,13 @@ nombre del coche en el título: **DEC Deepal Changote**.
 | Testigos del cuadro | El coche enciende un testigo | Testigo encendido: Testigo ABS. |
 | Neumáticos | El coche enciende el aviso de presión | Aviso de neumáticos: Aviso neumático delantero izquierdo. |
 | Pila del mando baja | El coche lo indica | Pila del mando baja. Cámbiala por una CR2032. |
+| Carga en vivo (2.6.0b18) | Mientras carga; se actualiza sola y se quita al acabar (solo móviles) | Cargando: 56 % · termina hacia las 07:40. |
+| Coche abierto o sin bloquear (2.6.0b18) | Apagado y sin cerrar tras N minutos (10 de fábrica); con botón **Bloquear** si hay PIN | Apagado desde hace 12 min: sin bloquear y maletero abierto. |
+| Climatización programada (2.6.0b18) | A la hora programada: si se encendió o por qué no | Climatización programada no encendida: batería al 18 % (mínimo 30 %) y sin enchufar. |
 | Mantenimiento | Ver más abajo | Quedan 2.000 km o 47 días para la 2ª revisión. |
+
+Los tres de la 2.6.0b18 nacen sin destinos (se eligen en el panel). Más
+detalles en [carga-clima-y-diario.md](carga-clima-y-diario.md).
 
 Detalles:
 

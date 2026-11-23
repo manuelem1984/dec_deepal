@@ -131,6 +131,25 @@ Se usan solo para **proponer** la versión (ventilación → Max).
 Servicios aceptados: `car_condition`, `BDC_Service`, `BMS_Service`,
 `OBC_Service`, `THU_Service`. Otros se guardan como "desconocidos".
 
+### Humedad interior: absoluta, no relativa ✅
+
+`innerHumidity` es la **humedad absoluta en décimas de g/m³**, no un %
+(nueve lecturas reales, 30-09 a 11-10-2026, con `vehicleTemperature` de
+26-28,5 °C: 34-157 → 14-62 % de humedad relativa). Desde la 2.6.0b18 la
+relativa se calcula con la fórmula de Magnus (`converters.relative_humidity`).
+`0` = sin lectura.
+
+### Conexión MQTT permanente (experimental) ⚠️
+
+Desde la 2.6.0b18, opcional (`api/mqtt/live.py`). La misma sesión que la
+lectura (CONNECT, SUBSCRIBE, `loginout`), pero sin cerrar: tras la
+`secretKey` se pide un `car_condition` completo y después se reciben los
+informes que manda el coche solo (completos y trocitos, que se acumulan).
+PINGREQ cada 45 s sin mensajes (keepalive de 60 s). Una sola conexión por
+cuenta: solo con un coche MQTT. Despertar y la lectura normal la pausan.
+Cómo se comporta el broker con una conexión larga lo comprobó Deepal
+Alternative 1.9; falta verlo con nuestros coches.
+
 ### Despertar el coche (MQTT) ⚠️
 
 Comprobado en un coche real el 30-09-2026; ⚠️ pendiente de comprobar con un S05 de España.
@@ -186,6 +205,15 @@ Un error con `TBOX_` suele indicar coche dormido u ocupado.
 | Puertas (PIN) | `control/doors` | `command: lock, open` (`open: true` = desbloquear) | ⚠️ |
 | Ventanillas (PIN) | `control/windows` | `command: window, open, openType: 10` → **entreabrir** (ventilar) o cerrar todas | ✅ (cerrar exige coche apagado: 1032) |
 | Maletero (PIN) | `control/trunk` | `command: trunk, open` | ⚠️ |
+| Plan de carga: añadir | `charge/add-plan` (serie tipo 2) | `command: add_charge_plan, startTime "HHMM", endTime "HHMM" (sin él = hasta llenar), endSwitch 1/0, planType 1, timeFormat 1, timeZone "GMT+01:00"` | ⚠️ (Deepal Alternative 1.9) |
+| Plan de carga: borrar | `charge/delete-plan` (serie tipo 2) | `command: delete_charge_plan, planId` | ⚠️ (ídem) |
+
+**Plan de carga** (2.6.0b18): se lee en el REST, `charge.chargePlanList`
+(lista de `{planId, startTime, endTime, isValid, timeZone…}`; un historial,
+con planes viejos inactivos). El S05 no acepta `modify-plan`: un plan se
+sustituye (borrar los activos + añadir) y se apaga borrándolo. En el PHEV el
+plan con id `1` es el de la app o el coche: ni se apaga ni se borra desde
+fuera (`HW_1_1_01_001`). Mínimo 30 minutos. Ver `telemetry/charge_plan.py`.
 
 Asientos: para **apagar**, `switch: 0` **sin** nivel (un nivel 0 lo rechaza el
 servidor con `COMMON_1_1_01_005`).

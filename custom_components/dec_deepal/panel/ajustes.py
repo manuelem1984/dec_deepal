@@ -14,6 +14,7 @@ from ..const import (
     DEFAULT_ARM_NOTIFY,
     DEFAULT_ARM_SECONDS,
     DEFAULT_CHARGE_BALANCE,
+    DEFAULT_LIVE_MQTT,
     DEFAULT_PIN_MODE,
     MAX_SCAN_MINUTES,
     MIN_SCAN_MINUTES,
@@ -21,6 +22,7 @@ from ..const import (
     OPT_ARM_SECONDS,
     OPT_CHARGE_BALANCE,
     OPT_DEBUG,
+    OPT_LIVE_MQTT,
     OPT_MANUAL_URLS,
     OPT_PIN,
     OPT_PIN_ENABLED,
@@ -70,6 +72,7 @@ async def _checked_pin(entry: Any, pin: str) -> str:
             int, vol.Range(min=MIN_SCAN_MINUTES, max=MAX_SCAN_MINUTES)
         ),
         vol.Required("wake"): bool,
+        vol.Optional("live_mqtt", default=DEFAULT_LIVE_MQTT): bool,
         vol.Optional("charge_balance", default=DEFAULT_CHARGE_BALANCE): bool,
         vol.Required("debug"): bool,
         vol.Optional("manual_url"): str,
@@ -83,6 +86,7 @@ async def ws_set_settings(hass: HomeAssistant, msg: dict[str, Any], user: User) 
     changes: dict[str, Any] = {
         OPT_SCAN_MINUTES: msg["scan_minutes"],
         OPT_WAKE: msg["wake"],
+        OPT_LIVE_MQTT: msg["live_mqtt"],
         OPT_CHARGE_BALANCE: msg["charge_balance"],
         OPT_DEBUG: msg["debug"],
     }

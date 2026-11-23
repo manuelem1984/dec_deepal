@@ -217,6 +217,9 @@
       "cabin_humidity": {
         "name": "Wilgotność wewnątrz"
       },
+      "cabin_absolute_humidity": {
+        "name": "Wilgotność bezwzględna w kabinie"
+      },
       "climate_target_temperature": {
         "name": "Temperatura klimatyzacji"
       },
@@ -282,6 +285,18 @@
       },
       "fuel_volume": {
         "name": "Paliwo w zbiorniku"
+      },
+      "charged_energy": {
+        "name": "Energia naładowana"
+      },
+      "charging_cost": {
+        "name": "Koszt ładowań"
+      },
+      "average_consumption": {
+        "name": "Średnie zużycie"
+      },
+      "last_trip": {
+        "name": "Ostatnia podróż"
       }
     },
     "binary_sensor": {
@@ -458,6 +473,18 @@
       },
       "charge_limit": {
         "name": "Limit ładowania"
+      },
+      "climate_schedule_temperature": {
+        "name": "Zaplanowana temperatura"
+      },
+      "climate_schedule_min_battery": {
+        "name": "Minimalna bateria do klimatyzacji"
+      },
+      "charge_price_home": {
+        "name": "Cena prądu w domu"
+      },
+      "charge_price_fast": {
+        "name": "Cena szybkiego ładowania"
       }
     },
     "switch": {
@@ -466,6 +493,15 @@
       },
       "front_defrost": {
         "name": "Odparowanie przedniej szyby"
+      },
+      "charge_plan": {
+        "name": "Ładowanie zaplanowane"
+      },
+      "charge_plan_until_full": {
+        "name": "Do pełna"
+      },
+      "climate_schedule": {
+        "name": "Zaplanowana klimatyzacja"
       }
     },
     "lock": {
@@ -513,6 +549,27 @@
       },
       "charging_view": {
         "name": "Widok ładowania"
+      }
+    },
+    "time": {
+      "charge_plan_start": {
+        "name": "Początek zaplanowanego ładowania"
+      },
+      "charge_plan_end": {
+        "name": "Koniec zaplanowanego ładowania"
+      },
+      "climate_schedule_time": {
+        "name": "Godzina klimatyzacji"
+      }
+    },
+    "select": {
+      "climate_schedule_days": {
+        "name": "Dni klimatyzacji",
+        "state": {
+          "daily": "Codziennie",
+          "weekdays": "Od poniedziałku do piątku",
+          "weekends": "Weekend"
+        }
       }
     }
   },
@@ -573,6 +630,21 @@
     },
     "maintenance_no_odometer": {
       "message": "Przebieg samochodu nie jest znany. Podaj kilometry lub zarejestruj przegląd w panelu DEC Deepal."
+    },
+    "charge_plan_set_in_app": {
+      "message": "Plan ładowania zapisano w aplikacji Deepal lub w samochodzie i samochód nie pozwala go zmienić z zewnątrz. Najpierw usuń go w aplikacji lub w samochodzie."
+    },
+    "charge_plan_no_start": {
+      "message": "Najpierw wybierz godzinę rozpoczęcia zaplanowanego ładowania."
+    },
+    "charge_plan_no_end": {
+      "message": "Wybierz godzinę zakończenia zaplanowanego ładowania albo włącz „Do pełna”."
+    },
+    "charge_plan_too_short": {
+      "message": "Zaplanowane ładowanie musi trwać co najmniej 30 minut (od {start} do {end})."
+    },
+    "charge_plan_not_supported": {
+      "message": "Ten samochód nie ma zaplanowanego ładowania."
     }
   },
   "services": {
@@ -623,6 +695,42 @@
         "km": {
           "name": "Kilometry",
           "description": "Przebieg przy przeglądzie. Jeśli puste, aktualny przebieg samochodu."
+        }
+      }
+    },
+    "set_charge_plan": {
+      "name": "Zaplanuj ładowanie",
+      "description": "Włącza, wyłącza lub zmienia zaplanowane ładowanie samochodu. To, czego nie podasz, zostaje bez zmian.",
+      "fields": {
+        "device_id": {
+          "name": "Pojazd",
+          "description": "Samochód."
+        },
+        "enabled": {
+          "name": "Włączone",
+          "description": "Włącz (tak) lub wyłącz (nie) zaplanowane ładowanie."
+        },
+        "start": {
+          "name": "Początek",
+          "description": "Godzina rozpoczęcia ładowania (czas lokalny)."
+        },
+        "end": {
+          "name": "Koniec",
+          "description": "Godzina zakończenia ładowania."
+        },
+        "until_full": {
+          "name": "Do pełna",
+          "description": "Bez godziny końca: ładuje do limitu."
+        }
+      }
+    },
+    "export_car_log": {
+      "name": "Eksportuj dziennik samochodu",
+      "description": "Zwraca zapisane podróże i ładowania samochodu wraz z sumami i cenami.",
+      "fields": {
+        "device_id": {
+          "name": "Pojazd",
+          "description": "Samochód."
         }
       }
     }

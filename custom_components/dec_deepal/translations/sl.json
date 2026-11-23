@@ -217,6 +217,9 @@
       "cabin_humidity": {
         "name": "Vlažnost v kabini"
       },
+      "cabin_absolute_humidity": {
+        "name": "Absolutna vlažnost v kabini"
+      },
       "climate_target_temperature": {
         "name": "Ciljna temperatura klime"
       },
@@ -282,6 +285,18 @@
       },
       "fuel_volume": {
         "name": "Gorivo v rezervoarju"
+      },
+      "charged_energy": {
+        "name": "Napolnjena energija"
+      },
+      "charging_cost": {
+        "name": "Strošek polnjenj"
+      },
+      "average_consumption": {
+        "name": "Povprečna poraba"
+      },
+      "last_trip": {
+        "name": "Zadnja vožnja"
       }
     },
     "binary_sensor": {
@@ -458,6 +473,18 @@
       },
       "charge_limit": {
         "name": "Omejitev polnjenja"
+      },
+      "climate_schedule_temperature": {
+        "name": "Načrtovana temperatura"
+      },
+      "climate_schedule_min_battery": {
+        "name": "Najmanjša baterija za klimatizacijo"
+      },
+      "charge_price_home": {
+        "name": "Cena elektrike doma"
+      },
+      "charge_price_fast": {
+        "name": "Cena hitrega polnjenja"
       }
     },
     "switch": {
@@ -466,6 +493,15 @@
       },
       "front_defrost": {
         "name": "Sušenje vetrobranskega stekla"
+      },
+      "charge_plan": {
+        "name": "Načrtovano polnjenje"
+      },
+      "charge_plan_until_full": {
+        "name": "Do polnega"
+      },
+      "climate_schedule": {
+        "name": "Načrtovana klimatizacija"
       }
     },
     "lock": {
@@ -513,6 +549,27 @@
       },
       "charging_view": {
         "name": "Pogled polnjenja"
+      }
+    },
+    "time": {
+      "charge_plan_start": {
+        "name": "Začetek načrtovanega polnjenja"
+      },
+      "charge_plan_end": {
+        "name": "Konec načrtovanega polnjenja"
+      },
+      "climate_schedule_time": {
+        "name": "Ura klimatizacije"
+      }
+    },
+    "select": {
+      "climate_schedule_days": {
+        "name": "Dnevi klimatizacije",
+        "state": {
+          "daily": "Vsak dan",
+          "weekdays": "Od ponedeljka do petka",
+          "weekends": "Konec tedna"
+        }
       }
     }
   },
@@ -573,6 +630,21 @@
     },
     "maintenance_no_odometer": {
       "message": "Stanje kilometrov avtomobila ni znano. Vnesite kilometre ali zabeležite servis na plošči DEC Deepal."
+    },
+    "charge_plan_set_in_app": {
+      "message": "Načrt polnjenja je bil shranjen v aplikaciji Deepal ali v avtomobilu, avtomobil pa ga ne dovoli spremeniti od zunaj. Najprej ga odstrani v aplikaciji ali v avtomobilu."
+    },
+    "charge_plan_no_start": {
+      "message": "Najprej izberi uro začetka načrtovanega polnjenja."
+    },
+    "charge_plan_no_end": {
+      "message": "Izberi uro konca načrtovanega polnjenja ali vklopi »Do polnega«."
+    },
+    "charge_plan_too_short": {
+      "message": "Načrtovano polnjenje mora trajati vsaj 30 minut (od {start} do {end})."
+    },
+    "charge_plan_not_supported": {
+      "message": "Ta avtomobil nima načrtovanega polnjenja."
     }
   },
   "services": {
@@ -623,6 +695,42 @@
         "km": {
           "name": "Kilometri",
           "description": "Kilometri ob servisu. Prazno = trenutno stanje avtomobila."
+        }
+      }
+    },
+    "set_charge_plan": {
+      "name": "Načrtuj polnjenje",
+      "description": "Vklopi, izklopi ali spremeni načrtovano polnjenje avtomobila. Kar ne navedeš, ostane nespremenjeno.",
+      "fields": {
+        "device_id": {
+          "name": "Vozilo",
+          "description": "Avtomobil."
+        },
+        "enabled": {
+          "name": "Vklopljeno",
+          "description": "Vklopi (da) ali izklopi (ne) načrtovano polnjenje."
+        },
+        "start": {
+          "name": "Začetek",
+          "description": "Ura začetka polnjenja (lokalni čas)."
+        },
+        "end": {
+          "name": "Konec",
+          "description": "Ura konca polnjenja."
+        },
+        "until_full": {
+          "name": "Do polnega",
+          "description": "Brez ure konca: polni do omejitve."
+        }
+      }
+    },
+    "export_car_log": {
+      "name": "Izvozi dnevnik avtomobila",
+      "description": "Vrne zabeležene vožnje in polnjenja avtomobila s seštevki in cenami.",
+      "fields": {
+        "device_id": {
+          "name": "Vozilo",
+          "description": "Avtomobil."
         }
       }
     }

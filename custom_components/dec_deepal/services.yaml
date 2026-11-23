@@ -50,3 +50,37 @@ register_itv:
       required: false
       selector:
         date:
+
+set_charge_plan:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: dec_deepal
+    enabled:
+      required: false
+      selector:
+        boolean:
+    start:
+      required: false
+      example: "01:00"
+      selector:
+        time:
+    end:
+      required: false
+      example: "07:00"
+      selector:
+        time:
+    until_full:
+      required: false
+      selector:
+        boolean:
+
+export_car_log:
+  fields:
+    device_id:
+      required: true
+      selector:
+        device:
+          integration: dec_deepal

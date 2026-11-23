@@ -67,7 +67,8 @@ MQTT_FIELDS: Final[tuple[MqttField, ...]] = (
     # --- Clima --------------------------------------------------------------
     MqttField(s.INSIDE_TEMP_C, ("vehicleTemperature",), c.to_float),
     MqttField(s.OUTSIDE_TEMP_C, ("outsideTemperature", "externalTemperature"), c.to_float),
-    MqttField(s.CABIN_HUMIDITY, ("innerHumidity",), c.humidity),
+    # Humedad ABSOLUTA en décimas de g/m³; la relativa (%) se calcula (derived.py).
+    MqttField(s.CABIN_ABSOLUTE_HUMIDITY, ("innerHumidity",), c.absolute_humidity),
     # Combustible (S05 PHEV).
     MqttField(s.FUEL_LEVEL, ("remainingFuel",), c.percent),
     MqttField(s.FUEL_RANGE_KM, ("remainedOilMile",), c.positive),

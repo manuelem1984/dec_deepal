@@ -70,6 +70,9 @@ SEATS_WIND: Final = f"{_CONTROL}/control/seats/wind"
 STEERING_WHEEL_HEAT: Final = f"{_CONTROL}/control/steering-wheel/heat"
 #: % máximo de carga en AC (S05 PHEV). ⚠️ Sin verificar en un coche real.
 CHARGE_PERCENTAGE: Final = f"{_CONTROL}/charge/percentage"
+#: Plan de carga: añadir y borrar (el S05 no acepta modify-plan). ⚠️ De Deepal Alternative 1.9.
+CHARGE_ADD_PLAN: Final = f"{_CONTROL}/charge/add-plan"
+CHARGE_DELETE_PLAN: Final = f"{_CONTROL}/charge/delete-plan"
 DEFROST: Final = f"{_CONTROL}/control/defrost"
 
 # Con PIN (rcToken):

@@ -218,6 +218,9 @@
         "cabin_humidity": {
           "name": "Luftfuktighet i kupeen"
         },
+        "cabin_absolute_humidity": {
+          "name": "Absolutt luftfuktighet i kupeen"
+        },
         "climate_target_temperature": {
           "name": "Ønsket temperatur for klimaanlegget"
         },
@@ -283,6 +286,18 @@
         },
         "fuel_volume": {
           "name": "Drivstoff i tanken"
+        },
+        "charged_energy": {
+          "name": "Ladet energi"
+        },
+        "charging_cost": {
+          "name": "Ladekostnad"
+        },
+        "average_consumption": {
+          "name": "Gjennomsnittlig forbruk"
+        },
+        "last_trip": {
+          "name": "Siste tur"
         }
       },
       "binary_sensor": {
@@ -459,6 +474,18 @@
         },
         "charge_limit": {
           "name": "Ladegrense"
+        },
+        "climate_schedule_temperature": {
+          "name": "Planlagt temperatur"
+        },
+        "climate_schedule_min_battery": {
+          "name": "Minste batteri for klima"
+        },
+        "charge_price_home": {
+          "name": "Strømpris hjemme"
+        },
+        "charge_price_fast": {
+          "name": "Pris for hurtiglading"
         }
       },
       "switch": {
@@ -467,6 +494,15 @@
         },
         "front_defrost": {
           "name": "Avdugging foran"
+        },
+        "charge_plan": {
+          "name": "Planlagt lading"
+        },
+        "charge_plan_until_full": {
+          "name": "Til full"
+        },
+        "climate_schedule": {
+          "name": "Planlagt klima"
         }
       },
       "lock": {
@@ -514,6 +550,27 @@
         },
         "charging_view": {
           "name": "Ladevisning"
+        }
+      },
+      "time": {
+        "charge_plan_start": {
+          "name": "Start på planlagt lading"
+        },
+        "charge_plan_end": {
+          "name": "Slutt på planlagt lading"
+        },
+        "climate_schedule_time": {
+          "name": "Tidspunkt for klima"
+        }
+      },
+      "select": {
+        "climate_schedule_days": {
+          "name": "Dager for klima",
+          "state": {
+            "daily": "Hver dag",
+            "weekdays": "Mandag til fredag",
+            "weekends": "Helg"
+          }
         }
       }
     },
@@ -574,6 +631,21 @@
       },
       "maintenance_no_odometer": {
         "message": "Bilens kilometerstand er ikke kjent. Oppgi kilometerne, eller registrer servicen fra DEC Deepal-panelet."
+      },
+      "charge_plan_set_in_app": {
+        "message": "Ladeplanen ble lagret i Deepal-appen eller i bilen, og bilen lar den ikke endres utenfra. Fjern den først i appen eller i bilen."
+      },
+      "charge_plan_no_start": {
+        "message": "Velg først starttidspunktet for planlagt lading."
+      },
+      "charge_plan_no_end": {
+        "message": "Velg slutttidspunktet for planlagt lading, eller slå på «Til full»."
+      },
+      "charge_plan_too_short": {
+        "message": "Planlagt lading må vare minst 30 minutter (fra {start} til {end})."
+      },
+      "charge_plan_not_supported": {
+        "message": "Denne bilen har ikke planlagt lading."
       }
     },
     "services": {
@@ -626,6 +698,42 @@
             "description": "Kilometerstand ved servicen. Tomt = bilens nåværende stand."
           }
         }
+      },
+      "set_charge_plan": {
+        "name": "Planlegg lading",
+        "description": "Slår bilens planlagte lading på eller av, eller endrer den. Det du ikke oppgir, forblir som det er.",
+        "fields": {
+          "device_id": {
+            "name": "Kjøretøy",
+            "description": "Bilen."
+          },
+          "enabled": {
+            "name": "Aktiv",
+            "description": "Slå planlagt lading på (ja) eller av (nei)."
+          },
+          "start": {
+            "name": "Start",
+            "description": "Tidspunkt ladingen starter (lokal tid)."
+          },
+          "end": {
+            "name": "Slutt",
+            "description": "Tidspunkt ladingen stopper."
+          },
+          "until_full": {
+            "name": "Til full",
+            "description": "Uten slutttidspunkt: lader opp til grensen."
+          }
+        }
+      },
+      "export_car_log": {
+        "name": "Eksporter bilens loggbok",
+        "description": "Returnerer bilens registrerte turer og ladinger med totaler og priser.",
+        "fields": {
+          "device_id": {
+            "name": "Kjøretøy",
+            "description": "Bilen."
+          }
+        }
       }
     }
   },
@@ -676,7 +784,28 @@
     "date_format": "%d.%m.%Y",
     "panel_target": "Home Assistant-varsler",
     "backup_notification": "Sikkerhetskopi av dataene til kjøretøyene dine. Trykk for å laste ned (lenken utløper om 10 minutter).",
-    "pin_armed": "Kommandoer med PIN-kode tillatt i {seconds} sekunder."
+    "pin_armed": "Kommandoer med PIN-kode tillatt i {seconds} sekunder.",
+    "charge_live": "Lader{level}{ends}.",
+    "live_level": ": {level} %",
+    "live_ends": " · ferdig rundt {time}",
+    "left_open": "Avslått i {minutes} min: {what}.",
+    "left_open_unlocked": "ikke låst",
+    "left_open_doors": "dør åpen",
+    "left_open_windows": "vindu åpent",
+    "left_open_trunk": "bagasjerom åpent",
+    "left_open_hood": "panser åpent",
+    "action_lock": "Lås",
+    "lock_done": "Bilen er låst.",
+    "lock_failed": "Kunne ikke låse: {error}",
+    "climate_schedule_started": "Planlagt klima slått på til {temperature} °C.",
+    "climate_schedule_low_battery": "Planlagt klima ikke slått på: batteri på {battery} % (minimum {minimum} %) og ikke tilkoblet.",
+    "climate_schedule_power_on": "Planlagt klima ikke slått på: bilen er på.",
+    "climate_schedule_failed": "Planlagt klima: bilen godtok ikke kommandoen.",
+    "log_trip": "Tur på {km} km (batteri fra {start} % til {end} %){energy}.",
+    "log_charge_ac": "Lading hjemme fra {start} % til {end} %{energy}{cost}.",
+    "log_charge_dc": "Hurtiglading fra {start} % til {end} %{energy}{cost}.",
+    "log_energy": " · {kwh} kWh",
+    "log_cost": " · {cost} {currency}"
   },
   "tarjeta": {
     "card_description": "Din Deepal på et øyeblikk: bilvisning, batteri, komfort og hurtighandlinger.",
@@ -1362,7 +1491,16 @@
     "mine": "Din",
     "error_unknown_person": "Den personen finnes ikke lenger i Home Assistant.",
     "error_unauthorized": "Bare en administrator kan gjøre denne endringen.",
-    "plate": "Registreringsnummer"
+    "plate": "Registreringsnummer",
+    "notice_charge_live": "Lading live",
+    "when_charge_live": "Et varsel på telefonen som oppdateres under lading",
+    "notice_left_open": "Bil åpen eller ikke låst",
+    "when_minutes": "avslått i {value} min",
+    "unit_minutes": "min",
+    "notice_climate_schedule": "Planlagt klima",
+    "when_climate_schedule": "Om det ble slått på, eller hvorfor ikke",
+    "live_title": "Permanent tilkobling (eksperimentell)",
+    "live_help": "Holder tilkoblingen til bilen åpen for å motta dataene med en gang, uten å vente på neste avlesning. Bare med én bil på kontoen. Slå den av hvis den gir problemer."
   },
   "catalogo": {
     "operacion_general_inspection": "Generell inspeksjon (drivenhet, batteri, høyspenning, bremser og styring)",

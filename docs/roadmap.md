@@ -1,5 +1,31 @@
 # Hoja de ruta
 
+## Beta 2.6.0b18 (23-11-2026) — pendiente de probar
+
+Guía: [carga-clima-y-diario.md](carga-clima-y-diario.md).
+
+- [ ] **Humedad interior:** que salga un % creíble (30-70 %) y no salte; la
+      «Humedad absoluta interior» (desactivada) en g/m³.
+- [ ] **Carga programada:** encender, cambiar las horas, «Hasta llenar» y
+      apagar; mirar en la app oficial que el plan del coche es el mismo. En
+      el PHEV, con un plan puesto desde la app, debe salir el aviso de
+      quitarlo allí.
+- [ ] **Carga en vivo:** activarla en el panel para un móvil y cargar: una
+      notificación que se actualiza (Android: barra y cuenta atrás) y se
+      quita al acabar.
+- [ ] **Coche abierto:** dejarlo apagado sin bloquear 10 min; el botón
+      **Bloquear** de la notificación (con PIN activo) debe cerrarlo.
+- [ ] **Climatización programada:** programarla a una hora cercana; probar
+      también con batería por debajo del mínimo y sin enchufar (no debe
+      encender y debe avisar).
+- [ ] **Diario:** un viaje y una carga deben salir en el Registro; poner los
+      precios y ver «Energía cargada», «Coste de las cargas» y «Consumo
+      medio». Probar `dec_deepal.export_car_log`.
+- [ ] **Conexión permanente (experimental):** activarla en Ajustes con un
+      solo coche; los datos deben llegar al momento al abrir el coche o
+      enchufarlo. Mirar `mqtt_permanente` en el diagnóstico tras unas horas
+      (reconexiones, último error). Si falla, desactivarla.
+
 ## Beta 2.6.0b17 (23-11-2026) — pendiente de probar
 
 - [ ] **Al despertar el coche:** que no salgan ruedas a 0 bar, 400 A de DC
@@ -236,35 +262,40 @@ Pendiente de comprobar:
 
 Del análisis de **Deepal Alternative 1.9** y **S05 Companion** (23-11-2026).
 Lo de datos (valores de arranque, testigos, tope del PHEV, último estado,
-clima de la 2026.11) entró en la 2.6.0b17. Ojo: S05 Companion es **GPL-3.0**;
-se pueden tomar ideas, pero **no copiar su código ni sus imágenes** en este
-proyecto MIT (sus vistas recoloreadas parten de las nuestras, con atribución).
+clima de la 2026.11) entró en la 2.6.0b17; los bloques B, C y D, en la
+2.6.0b18 (tachados abajo). Ojo: S05 Companion es **GPL-3.0**; se pueden tomar
+ideas, pero **no copiar su código ni sus imágenes** en este proyecto MIT (sus
+vistas recoloreadas parten de las nuestras, con atribución).
 
-- [ ] **Humedad interior absoluta:** según Deepal Alternative, el REST
-      `insideHumidity` no es relativa sino absoluta (g/m³ × 10). Confirmar con
-      capturas del coche y, si es así, calcular la relativa con la fórmula de
-      Magnus (`e_s = 6,112·exp(17,62·T/(243,12+T))`, `e = AH·(T+273,15)/216,7`,
-      `HR = 100·e/e_s`; `0` = sin lectura).
-- [ ] **Control del plan de carga:** activar/desactivar y horas (EV y PHEV),
-      acción para fijarlo desde automatizaciones, «cargar al 100 %» y, en el
-      PHEV, añadir/borrar planes. Hay que capturar los comandos.
-- [ ] **Actividades en vivo de la carga** (iOS Live Activities / Android Live
-      Updates de la app de Home Assistant: `live_update`, `tag`, `progress`,
-      `chronometer`, `end_live_activity`): una notificación que se actualiza
-      con el % y el tiempo restante mientras carga. Nunca crítica.
-- [ ] **Aviso «coche abierto o sin cerrar»** pasado un rato, con un botón
-      **Cerrar** en la notificación (acción de la app móvil). Con horas de
-      silencio y por persona, como el resto de avisos.
-- [ ] **Preacondicionamiento programado** desde el panel (días y hora), sin
-      encenderlo si la batería está por debajo de un mínimo.
-- [ ] **Sesión MQTT persistente** (Deepal Alternative la mantiene abierta y
-      vigilada): datos casi al momento sin leer cada 5 min. Gran cambio en el
-      cliente MQTT y en la sesión única de la cuenta; diseñarlo aparte.
-- [ ] **Sesiones de carga sin cargador propio:** registrar cada carga (curva,
-      kWh, ubicación, coste con tarifas o redes de carga) también cuando no
-      hay un cargador configurado, con exportar/importar.
-- [ ] **Diario del coche y estadísticas:** viajes, consumo y cargas por
-      semana o mes en el panel.
+Lo que queda de esos bloques:
+
+- [ ] **Plan de carga en el PHEV:** «cargar al 100 %» y quitar el plan de la
+      app (id `1`) cuando se sepa cómo (hoy el coche lo rechaza).
+- [ ] **Diario en el panel:** una pestaña con la lista de viajes y cargas y
+      el resumen por mes (hoy: Registro, sensores y `export_car_log`);
+      importar un diario; ubicación de las cargas cuando el S05 la mande.
+- [ ] **Conexión permanente con varios coches:** una conexión para todos los
+      coches de la cuenta (como Deepal Alternative), y usarla también para
+      despertar y para las órdenes sin cerrarla.
+- [ ] **Tarjeta:** enseñar la carga programada, la climatización programada
+      y el diario en la tarjeta «A medida».
+
+- [x] ~~**Humedad interior absoluta**~~ (2.6.0b18): confirmada con nueve
+      lecturas reales (`innerHumidity` = g/m³ × 10); relativa con Magnus.
+- [x] ~~**Control del plan de carga**~~ (2.6.0b18): interruptor, horas,
+      «Hasta llenar» y `dec_deepal.set_charge_plan`.
+- [x] ~~**Carga en vivo**~~ (2.6.0b18): notificación que se actualiza
+      (Android Live Update; en iPhone se reemplaza). Pendiente: Live Activity
+      propia de iOS cuando la app de Home Assistant la documente.
+- [x] ~~**Aviso «coche abierto o sin bloquear»**~~ (2.6.0b18) con botón
+      **Bloquear**.
+- [x] ~~**Climatización programada**~~ (2.6.0b18) con batería mínima (con
+      entidades, no desde el panel).
+- [x] ~~**Conexión MQTT permanente**~~ (2.6.0b18, experimental y opcional,
+      solo con un coche MQTT).
+- [x] ~~**Cargas sin cargador propio**~~ y ~~**diario y estadísticas**~~
+      (2.6.0b18): viajes y cargas con kWh y coste, Registro, sensores con
+      estadísticas y `export_car_log`.
 
 - [ ] **Configuración MQTT de respaldo:** si `getConnConf` falla, pedirla a
       `appGetCarConfFunc` (lo hace la app y Deepal Alternative; constante

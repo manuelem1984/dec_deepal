@@ -218,6 +218,9 @@
         "cabin_humidity": {
           "name": "Cabin humidity"
         },
+        "cabin_absolute_humidity": {
+          "name": "Cabin absolute humidity"
+        },
         "climate_target_temperature": {
           "name": "Climate target temperature"
         },
@@ -283,6 +286,18 @@
         },
         "fuel_volume": {
           "name": "Fuel in the tank"
+        },
+        "charged_energy": {
+          "name": "Charged energy"
+        },
+        "charging_cost": {
+          "name": "Charging cost"
+        },
+        "average_consumption": {
+          "name": "Average consumption"
+        },
+        "last_trip": {
+          "name": "Last trip"
         }
       },
       "binary_sensor": {
@@ -459,6 +474,18 @@
         },
         "charge_limit": {
           "name": "Charge limit"
+        },
+        "climate_schedule_temperature": {
+          "name": "Scheduled temperature"
+        },
+        "climate_schedule_min_battery": {
+          "name": "Minimum battery for climate"
+        },
+        "charge_price_home": {
+          "name": "Home electricity price"
+        },
+        "charge_price_fast": {
+          "name": "Fast charging price"
         }
       },
       "switch": {
@@ -467,6 +494,15 @@
         },
         "front_defrost": {
           "name": "Front demist"
+        },
+        "charge_plan": {
+          "name": "Scheduled charging"
+        },
+        "charge_plan_until_full": {
+          "name": "Until full"
+        },
+        "climate_schedule": {
+          "name": "Scheduled climate"
         }
       },
       "lock": {
@@ -514,6 +550,27 @@
         },
         "charging_view": {
           "name": "Charging view"
+        }
+      },
+      "time": {
+        "charge_plan_start": {
+          "name": "Scheduled charging start"
+        },
+        "charge_plan_end": {
+          "name": "Scheduled charging end"
+        },
+        "climate_schedule_time": {
+          "name": "Climate time"
+        }
+      },
+      "select": {
+        "climate_schedule_days": {
+          "name": "Climate days",
+          "state": {
+            "daily": "Every day",
+            "weekdays": "Monday to Friday",
+            "weekends": "Weekend"
+          }
         }
       }
     },
@@ -574,6 +631,21 @@
       },
       "maintenance_no_odometer": {
         "message": "The car's mileage is not known. Enter the kilometres, or register the service from the DEC Deepal panel."
+      },
+      "charge_plan_set_in_app": {
+        "message": "The charging plan was saved in the Deepal app or on the car, and the car does not allow changing it from outside. Remove it in the app or on the car first."
+      },
+      "charge_plan_no_start": {
+        "message": "Choose the scheduled charging start time first."
+      },
+      "charge_plan_no_end": {
+        "message": "Choose the scheduled charging end time or turn on \"Until full\"."
+      },
+      "charge_plan_too_short": {
+        "message": "Scheduled charging must last at least 30 minutes (from {start} to {end})."
+      },
+      "charge_plan_not_supported": {
+        "message": "This car has no scheduled charging."
       }
     },
     "services": {
@@ -626,6 +698,42 @@
             "description": "Kilometres at the service. If left empty, the car's current reading."
           }
         }
+      },
+      "set_charge_plan": {
+        "name": "Schedule charging",
+        "description": "Turns the car's scheduled charging on or off, or changes it. Anything you leave out stays as it is.",
+        "fields": {
+          "device_id": {
+            "name": "Vehicle",
+            "description": "The car."
+          },
+          "enabled": {
+            "name": "Enabled",
+            "description": "Turn scheduled charging on (yes) or off (no)."
+          },
+          "start": {
+            "name": "Start",
+            "description": "Time charging starts (local time)."
+          },
+          "end": {
+            "name": "End",
+            "description": "Time charging stops."
+          },
+          "until_full": {
+            "name": "Until full",
+            "description": "No end time: charge up to the limit."
+          }
+        }
+      },
+      "export_car_log": {
+        "name": "Export the car log",
+        "description": "Returns the car's recorded trips and charges, with their totals and prices.",
+        "fields": {
+          "device_id": {
+            "name": "Vehicle",
+            "description": "The car."
+          }
+        }
       }
     }
   },
@@ -676,7 +784,28 @@
     "date_format": "%d/%m/%Y",
     "panel_target": "Home Assistant notifications",
     "backup_notification": "Backup of your vehicles' data. Tap to download it (the link expires in 10 minutes).",
-    "pin_armed": "PIN commands allowed for {seconds} seconds."
+    "pin_armed": "PIN commands allowed for {seconds} seconds.",
+    "charge_live": "Charging{level}{ends}.",
+    "live_level": ": {level} %",
+    "live_ends": " · done around {time}",
+    "left_open": "Off for {minutes} min: {what}.",
+    "left_open_unlocked": "not locked",
+    "left_open_doors": "door open",
+    "left_open_windows": "window open",
+    "left_open_trunk": "boot open",
+    "left_open_hood": "bonnet open",
+    "action_lock": "Lock",
+    "lock_done": "Car locked.",
+    "lock_failed": "Could not lock: {error}",
+    "climate_schedule_started": "Scheduled climate turned on at {temperature} °C.",
+    "climate_schedule_low_battery": "Scheduled climate not turned on: battery at {battery} % (minimum {minimum} %) and not plugged in.",
+    "climate_schedule_power_on": "Scheduled climate not turned on: the car is on.",
+    "climate_schedule_failed": "Scheduled climate: the car did not accept the command.",
+    "log_trip": "Trip of {km} km (battery from {start} % to {end} %){energy}.",
+    "log_charge_ac": "Home charge from {start} % to {end} %{energy}{cost}.",
+    "log_charge_dc": "Fast charge from {start} % to {end} %{energy}{cost}.",
+    "log_energy": " · {kwh} kWh",
+    "log_cost": " · {cost} {currency}"
   },
   "tarjeta": {
     "card_description": "Your Deepal at a glance: car view, battery, comfort and quick actions.",
@@ -1362,7 +1491,16 @@
     "mine": "Yours",
     "error_unknown_person": "That person no longer exists in Home Assistant.",
     "error_unauthorized": "Only an administrator can make this change.",
-    "plate": "Number plate"
+    "plate": "Number plate",
+    "notice_charge_live": "Live charging",
+    "when_charge_live": "A phone notification that updates while charging",
+    "notice_left_open": "Car left open or unlocked",
+    "when_minutes": "off for {value} min",
+    "unit_minutes": "min",
+    "notice_climate_schedule": "Scheduled climate",
+    "when_climate_schedule": "Whether it turned on, or why not",
+    "live_title": "Permanent connection (experimental)",
+    "live_help": "Keeps the connection to the car open to receive its data right away, without waiting for the next reading. Only with one car in the account. If it causes problems, turn it off."
   },
   "catalogo": {
     "operacion_general_inspection": "General inspection (drive unit, battery, high voltage, brakes and steering)",

@@ -24,6 +24,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.const import (
+    CONCENTRATION_GRAMS_PER_CUBIC_METER,
     PERCENTAGE,
     EntityCategory,
     UnitOfElectricCurrent,
@@ -38,6 +39,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .api.models import VehicleInfo
+from .car_log_entities import log_sensors
 from .entity import DecDeepalEntity, DecMaintenanceEntity, remove_entities
 from .maintenance import MaintenanceStatus
 from .registries.vehicles import FEATURE_FUEL
@@ -231,6 +233,16 @@ SENSORS: tuple[DecSensorDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
     ),
+    # La que manda el coche; la relativa de arriba se calcula con ella.
+    DecSensorDescription(
+        key="cabin_absolute_humidity",
+        signal=s.CABIN_ABSOLUTE_HUMIDITY,
+        device_class=SensorDeviceClass.ABSOLUTE_HUMIDITY,
+        native_unit_of_measurement=CONCENTRATION_GRAMS_PER_CUBIC_METER,
+        state_class=SensorStateClass.MEASUREMENT,
+        suggested_display_precision=1,
+        entity_registry_enabled_default=False,
+    ),
     DecSensorDescription(
         key="climate_target_temperature",
         signal=s.CLIMATE_TARGET_C,
@@ -370,6 +382,8 @@ async def async_setup_entry(
             entities.extend(
                 DecDocumentSensor(runtime, vehicle, description) for description in descriptions
             )
+    # Diario del coche: energía y coste de las cargas, consumo y último viaje.
+    entities.extend(log_sensors(runtime))
     async_add_entities(entities)
 
 

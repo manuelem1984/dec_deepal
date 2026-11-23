@@ -81,6 +81,9 @@ KEEP_LAST: Final = (
     | WARNING_SIGNALS
     | {s.CLIMATE_ON, s.CLIMATE_TARGET_C, s.FUEL_LEVEL, s.FUEL_RANGE_KM, s.FUEL_VOLUME_L, s.CHARGE_LIMIT}
     | {s.TIRE_PRESSURE_FRONT_LEFT, s.TIRE_PRESSURE_FRONT_RIGHT, s.TIRE_PRESSURE_REAR_LEFT, s.TIRE_PRESSURE_REAR_RIGHT}
+    # Plan de carga: solo llega por REST; con el plan apagado (borrado) se
+    # guardan sus horas para volver a encenderlo igual.
+    | {s.CHARGE_PLAN_ON, s.CHARGE_PLAN_START, s.CHARGE_PLAN_END, s.CHARGE_PLAN_UNTIL_FULL}
 )
 #: Tras encenderse el coche, cuánto se espera antes de fiarse de los testigos.
 READY_WINDOW: Final = timedelta(seconds=60)
@@ -90,6 +93,8 @@ SOURCE_REST: Final = "rest"
 SOURCE_PREVIOUS: Final = "anterior"
 SOURCE_OPTIMISTIC: Final = "optimista"
 SOURCE_DERIVED: Final = "calculado"
+#: Elegido en Home Assistant y aún no en el coche (p. ej. horas del plan de carga apagado).
+SOURCE_LOCAL: Final = "local"
 
 
 @dataclass(slots=True)

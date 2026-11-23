@@ -159,6 +159,10 @@ outside_temperature:
 cabin_humidity:
   plataforma: sensor
   descripcion: Humedad interior
+cabin_absolute_humidity:
+  plataforma: sensor
+  descripcion: Humedad absoluta interior (g/m³)
+  defecto: mdi:water
 climate_target_temperature:
   plataforma: sensor
   descripcion: Temperatura objetivo del climatizador
@@ -588,3 +592,69 @@ window_opening_rear_right:
   plataforma: sensor
   descripcion: Apertura de la ventanilla trasera derecha (0 = cerrada)
   defecto: mdi:window-open-variant
+charge_plan:
+  plataforma: switch
+  descripcion: Carga programada (plan de carga activo)
+  defecto: mdi:calendar-clock
+  estados:
+    "on": {mdi: mdi:calendar-check}
+    "off": {mdi: mdi:calendar-remove}
+charge_plan_until_full:
+  plataforma: switch
+  descripcion: Carga programada hasta llenar (sin hora de fin)
+  defecto: mdi:battery-arrow-up
+charge_plan_start:
+  plataforma: time
+  descripcion: Hora de inicio de la carga programada
+  defecto: mdi:clock-start
+charge_plan_end:
+  plataforma: time
+  descripcion: Hora de fin de la carga programada
+  defecto: mdi:clock-end
+climate_schedule:
+  plataforma: switch
+  descripcion: Climatización programada (activa o no)
+  defecto: mdi:calendar-clock
+  estados:
+    "on": {mdi: mdi:air-conditioner}
+    "off": {mdi: mdi:calendar-remove}
+climate_schedule_time:
+  plataforma: time
+  descripcion: Hora de la climatización programada
+  defecto: mdi:clock-outline
+climate_schedule_days:
+  plataforma: select
+  descripcion: Días de la climatización programada
+  defecto: mdi:calendar-week
+climate_schedule_temperature:
+  plataforma: number
+  descripcion: Temperatura de la climatización programada
+  defecto: mdi:thermometer
+climate_schedule_min_battery:
+  plataforma: number
+  descripcion: Batería mínima para la climatización programada
+  defecto: mdi:battery-alert-variant-outline
+charged_energy:
+  plataforma: sensor
+  descripcion: Energía que ha entrado en la batería (todas las cargas del diario)
+  defecto: mdi:battery-charging-high
+charging_cost:
+  plataforma: sensor
+  descripcion: Coste de las cargas del diario
+  defecto: mdi:cash
+average_consumption:
+  plataforma: sensor
+  descripcion: Consumo medio de los últimos viajes (kWh/100 km)
+  defecto: mdi:gauge
+last_trip:
+  plataforma: sensor
+  descripcion: Km del último viaje
+  defecto: mdi:map-marker-distance
+charge_price_home:
+  plataforma: number
+  descripcion: Precio de la electricidad en casa (cargas AC)
+  defecto: mdi:home-lightning-bolt-outline
+charge_price_fast:
+  plataforma: number
+  descripcion: Precio de la carga rápida (cargas DC)
+  defecto: mdi:ev-station

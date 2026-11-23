@@ -218,6 +218,9 @@
         "cabin_humidity": {
           "name": "Humidité de l'habitacle"
         },
+        "cabin_absolute_humidity": {
+          "name": "Humidité absolue intérieure"
+        },
         "climate_target_temperature": {
           "name": "Température de consigne de la climatisation"
         },
@@ -283,6 +286,18 @@
         },
         "fuel_volume": {
           "name": "Carburant dans le réservoir"
+        },
+        "charged_energy": {
+          "name": "Énergie chargée"
+        },
+        "charging_cost": {
+          "name": "Coût des recharges"
+        },
+        "average_consumption": {
+          "name": "Consommation moyenne"
+        },
+        "last_trip": {
+          "name": "Dernier trajet"
         }
       },
       "binary_sensor": {
@@ -459,6 +474,18 @@
         },
         "charge_limit": {
           "name": "Limite de charge"
+        },
+        "climate_schedule_temperature": {
+          "name": "Température programmée"
+        },
+        "climate_schedule_min_battery": {
+          "name": "Batterie minimale pour climatiser"
+        },
+        "charge_price_home": {
+          "name": "Prix de l'électricité à la maison"
+        },
+        "charge_price_fast": {
+          "name": "Prix de la recharge rapide"
         }
       },
       "switch": {
@@ -467,6 +494,15 @@
         },
         "front_defrost": {
           "name": "Désembuage avant"
+        },
+        "charge_plan": {
+          "name": "Recharge programmée"
+        },
+        "charge_plan_until_full": {
+          "name": "Jusqu'au plein"
+        },
+        "climate_schedule": {
+          "name": "Climatisation programmée"
         }
       },
       "lock": {
@@ -514,6 +550,27 @@
         },
         "charging_view": {
           "name": "Vue de recharge"
+        }
+      },
+      "time": {
+        "charge_plan_start": {
+          "name": "Début de la recharge programmée"
+        },
+        "charge_plan_end": {
+          "name": "Fin de la recharge programmée"
+        },
+        "climate_schedule_time": {
+          "name": "Heure de la climatisation"
+        }
+      },
+      "select": {
+        "climate_schedule_days": {
+          "name": "Jours de la climatisation",
+          "state": {
+            "daily": "Tous les jours",
+            "weekdays": "Du lundi au vendredi",
+            "weekends": "Week-end"
+          }
         }
       }
     },
@@ -574,6 +631,21 @@
       },
       "maintenance_no_odometer": {
         "message": "Le kilométrage de la voiture n'est pas connu. Indiquez les kilomètres, ou enregistrez l'entretien depuis le panneau DEC Deepal."
+      },
+      "charge_plan_set_in_app": {
+        "message": "Le plan de recharge a été enregistré dans l'app Deepal ou dans la voiture, et la voiture ne permet pas de le modifier de l'extérieur. Supprime-le d'abord dans l'app ou dans la voiture."
+      },
+      "charge_plan_no_start": {
+        "message": "Choisis d'abord l'heure de début de la recharge programmée."
+      },
+      "charge_plan_no_end": {
+        "message": "Choisis l'heure de fin de la recharge programmée ou active « Jusqu'au plein »."
+      },
+      "charge_plan_too_short": {
+        "message": "La recharge programmée doit durer au moins 30 minutes (de {start} à {end})."
+      },
+      "charge_plan_not_supported": {
+        "message": "Cette voiture n'a pas de recharge programmée."
       }
     },
     "services": {
@@ -626,6 +698,42 @@
             "description": "Kilomètres lors de l'entretien. Vide = le kilométrage actuel de la voiture."
           }
         }
+      },
+      "set_charge_plan": {
+        "name": "Programmer la recharge",
+        "description": "Active, désactive ou modifie la recharge programmée de la voiture. Ce que tu n'indiques pas reste tel quel.",
+        "fields": {
+          "device_id": {
+            "name": "Véhicule",
+            "description": "La voiture."
+          },
+          "enabled": {
+            "name": "Active",
+            "description": "Activer (oui) ou désactiver (non) la recharge programmée."
+          },
+          "start": {
+            "name": "Début",
+            "description": "Heure de début de la recharge (heure locale)."
+          },
+          "end": {
+            "name": "Fin",
+            "description": "Heure de fin de la recharge."
+          },
+          "until_full": {
+            "name": "Jusqu'au plein",
+            "description": "Sans heure de fin : recharge jusqu'à la limite."
+          }
+        }
+      },
+      "export_car_log": {
+        "name": "Exporter le journal de la voiture",
+        "description": "Renvoie les trajets et recharges enregistrés de la voiture, avec totaux et prix.",
+        "fields": {
+          "device_id": {
+            "name": "Véhicule",
+            "description": "La voiture."
+          }
+        }
       }
     }
   },
@@ -676,7 +784,28 @@
     "date_format": "%d/%m/%Y",
     "panel_target": "Notifications de Home Assistant",
     "backup_notification": "Sauvegarde des données de vos véhicules. Touchez pour la télécharger (le lien expire dans 10 minutes).",
-    "pin_armed": "Commandes avec code PIN autorisées pendant {seconds} secondes."
+    "pin_armed": "Commandes avec code PIN autorisées pendant {seconds} secondes.",
+    "charge_live": "En charge{level}{ends}.",
+    "live_level": " : {level} %",
+    "live_ends": " · fin vers {time}",
+    "left_open": "Éteinte depuis {minutes} min : {what}.",
+    "left_open_unlocked": "non verrouillée",
+    "left_open_doors": "portière ouverte",
+    "left_open_windows": "vitre ouverte",
+    "left_open_trunk": "coffre ouvert",
+    "left_open_hood": "capot ouvert",
+    "action_lock": "Verrouiller",
+    "lock_done": "Voiture verrouillée.",
+    "lock_failed": "Verrouillage impossible : {error}",
+    "climate_schedule_started": "Climatisation programmée allumée à {temperature} °C.",
+    "climate_schedule_low_battery": "Climatisation programmée non allumée : batterie à {battery} % (minimum {minimum} %) et non branchée.",
+    "climate_schedule_power_on": "Climatisation programmée non allumée : la voiture est allumée.",
+    "climate_schedule_failed": "Climatisation programmée : la voiture n'a pas accepté la commande.",
+    "log_trip": "Trajet de {km} km (batterie de {start} % à {end} %){energy}.",
+    "log_charge_ac": "Recharge à la maison de {start} % à {end} %{energy}{cost}.",
+    "log_charge_dc": "Recharge rapide de {start} % à {end} %{energy}{cost}.",
+    "log_energy": " · {kwh} kWh",
+    "log_cost": " · {cost} {currency}"
   },
   "tarjeta": {
     "card_description": "Votre Deepal en un coup d'œil : vue de la voiture, batterie, confort et actions rapides.",
@@ -1362,7 +1491,16 @@
     "mine": "À vous",
     "error_unknown_person": "Cette personne n'existe plus dans Home Assistant.",
     "error_unauthorized": "Seul un administrateur peut faire cette modification.",
-    "plate": "Plaque d'immatriculation"
+    "plate": "Plaque d'immatriculation",
+    "notice_charge_live": "Recharge en direct",
+    "when_charge_live": "Une notification sur le téléphone qui se met à jour pendant la recharge",
+    "notice_left_open": "Voiture ouverte ou non verrouillée",
+    "when_minutes": "éteinte depuis {value} min",
+    "unit_minutes": "min",
+    "notice_climate_schedule": "Climatisation programmée",
+    "when_climate_schedule": "Si elle s'est allumée, ou pourquoi pas",
+    "live_title": "Connexion permanente (expérimental)",
+    "live_help": "Garde la connexion avec la voiture ouverte pour recevoir ses données tout de suite, sans attendre la lecture suivante. Seulement avec une voiture dans le compte. En cas de problème, désactive-la."
   },
   "catalogo": {
     "operacion_general_inspection": "Inspection générale (groupe motopropulseur, batterie, haute tension, freins et direction)",

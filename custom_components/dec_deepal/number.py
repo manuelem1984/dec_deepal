@@ -1,4 +1,4 @@
-"""Niveles de asientos delanteros (0 = apagado, 1-3) y límite de carga. ⚠️
+"""Niveles de asientos delanteros (0 = apagado, 1-3), límite de carga ⚠️ y climatización programada.
 
 La ventilación solo se crea si el modelo/versión la tiene (en el S05, el Max).
 El icono puede cambiar con el nivel: ``icons/svg/seat_heat_driver_2.svg``...
@@ -16,6 +16,8 @@ from homeassistant.components.number import NumberEntity, NumberEntityDescriptio
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from .car_log_entities import log_numbers
+from .climate_schedule_entities import ScheduleMinBattery, ScheduleTemperature, schedule_vehicles
 from .entity import DecDeepalEntity, remove_entities
 from .registries.vehicles import FEATURE_CHARGE_LIMIT, FEATURE_SEAT_HEAT, FEATURE_SEAT_VENT
 from .runtime import DecDeepalConfigEntry, DecDeepalRuntime, VehicleContext
@@ -86,6 +88,12 @@ async def async_setup_entry(
         for vehicle in runtime.vehicles.values()
         if vehicle.has(FEATURE_CHARGE_LIMIT)
     )
+    # Climatización programada: temperatura y batería mínima (climate_schedule.py).
+    schedule = schedule_vehicles(runtime)
+    async_add_entities(ScheduleTemperature(runtime, vehicle) for vehicle in schedule)
+    async_add_entities(ScheduleMinBattery(runtime, vehicle) for vehicle in schedule)
+    # Precios de la electricidad del diario del coche (car_log.py).
+    async_add_entities(log_numbers(runtime))
 
 
 #: Límite de carga: lo que acepta la app oficial.

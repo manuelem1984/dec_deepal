@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from itertools import pairwise
 from typing import Any, Final
 
@@ -53,6 +53,11 @@ ALERT_KEY_BATTERY: Final = "key_battery"
 ALERT_MAINTENANCE: Final = "maintenance"
 ALERT_ITV: Final = "itv"
 ALERT_INSURANCE: Final = "insurance"
+#: 2.6.0b17 (alerts/vivo.py). No están en ALERT_TYPES: solo se eligen en el panel.
+ALERT_CHARGE_LIVE: Final = "charge_live"
+ALERT_LEFT_OPEN: Final = "left_open"
+#: Resultado de la climatización programada (climate_schedule.py).
+ALERT_CLIMATE_SCHEDULE: Final = "climate_schedule"
 
 #: Todos los tipos, en el orden en que se ofrecen en Configurar.
 ALERT_TYPES: Final = (
@@ -95,6 +100,7 @@ SECTIONS: Final = (
 )  # fmt: skip
 UNIT_DAYS: Final = "days"
 UNIT_KM: Final = "km"
+UNIT_MINUTES: Final = "min"
 
 
 @dataclass(frozen=True, slots=True)
@@ -119,6 +125,8 @@ class Notice:
         """Mínimo y máximo que se puede poner de plazo."""
         if self.unit == UNIT_DAYS:
             return (1, 365)
+        if self.unit == UNIT_MINUTES:
+            return (5, 240)
         return (100, 20000) if self.unit == UNIT_KM else None
 
 
@@ -133,9 +141,12 @@ NOTICES: Final[tuple[Notice, ...]] = (
     Notice(ALERT_CHARGE_STARTED, SECTION_CHARGE),
     Notice(ALERT_CHARGE_INTERRUPTED, SECTION_CHARGE),
     Notice(ALERT_CHARGE_FINISHED, SECTION_CHARGE),
+    Notice(ALERT_CHARGE_LIVE, SECTION_CHARGE, opt_in=True),
     Notice(ALERT_WARNINGS, SECTION_WARNINGS),
     Notice(ALERT_TIRES, SECTION_WARNINGS),
     Notice(ALERT_KEY_BATTERY, SECTION_WARNINGS),
+    Notice(ALERT_LEFT_OPEN, SECTION_WARNINGS, 10, UNIT_MINUTES, opt_in=True),
+    Notice(ALERT_CLIMATE_SCHEDULE, SECTION_WARNINGS, opt_in=True),
     _due(SECTION_CHARGER, "confirm"),
     _due(SECTION_CHARGER, "unlocked"),
     _due(SECTION_CHARGER, "not_charging"),
@@ -518,6 +529,20 @@ def charge_text(alert: str, level: float | None, language: str) -> str:
     texts = _texts(language)
     battery = "" if level is None else texts["battery"].format(level=round(level))
     return texts[alert].format(battery=battery)
+
+
+def live_charge_text(level: float | None, ends: datetime | None, language: str) -> str:
+    """Texto de «Carga en vivo»: «Cargando: 56 % · termina hacia las 07:40»."""
+    texts = _texts(language)
+    level_text = "" if level is None else texts["live_level"].format(level=round(level))
+    end_text = "" if ends is None else texts["live_ends"].format(time=ends.strftime("%H:%M"))
+    return texts["charge_live"].format(level=level_text, ends=end_text)
+
+
+def left_open_text(parts: Iterable[str], minutes: int, language: str) -> str:
+    """Texto de «Coche abierto»: «Apagado desde hace 12 min: sin bloquear y maletero abierto.»"""
+    texts = _texts(language)
+    return texts["left_open"].format(minutes=minutes, what=texts["and"].join(texts[part] for part in parts))
 
 
 def problem_text(alert: str, names: Iterable[str], language: str) -> str:

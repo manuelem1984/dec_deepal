@@ -377,7 +377,7 @@ def test_settings_tab(panel: Page) -> None:
     panel.wait_for_function("banco.avisos.includes('Guardado')")
     assert orders(panel)[-1] == {
         "type": "dec_deepal/panel/set_settings", "entry_id": "entry1", "pin_enabled": True, "pin": "2468",
-        "pin_mode": "armed", "arm_seconds": 60, "arm_notify": False, "scan_minutes": 10, "wake": True,
+        "pin_mode": "armed", "arm_seconds": 60, "arm_notify": False, "scan_minutes": 10, "wake": True, "live_mqtt": False,
         "charge_balance": False, "debug": True, "manual_url": "https://example.com/otro.pdf",
     }
     panel.wait_for_function("!banco.texto().includes('Hay cambios sin guardar')")

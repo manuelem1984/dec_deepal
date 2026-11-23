@@ -112,6 +112,9 @@ OPT_SCAN_MINUTES: Final = "scan_minutes"
 OPT_DEBUG: Final = "debug"
 #: Permitir despertar el coche (botón Actualizar y órdenes con PIN).
 OPT_WAKE: Final = "wake"
+#: Conexión MQTT permanente (experimental, api/mqtt/live.py). Solo con un coche MQTT en la cuenta.
+OPT_LIVE_MQTT: Final = "live_mqtt"
+DEFAULT_LIVE_MQTT: Final = False
 DEFAULT_WAKE: Final = True
 #: Sumar el equilibrado de la batería al tiempo de carga (ventana de carga).
 OPT_CHARGE_BALANCE: Final = "charge_balance"
@@ -148,8 +151,10 @@ PLATFORMS: Final = (
     "image",
     "lock",
     "number",
+    "select",
     "sensor",
     "switch",
+    "time",
 )
 
 # ---------------------------------------------------------------------------

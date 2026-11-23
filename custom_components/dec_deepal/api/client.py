@@ -9,9 +9,11 @@ y reintenta una vez si el servidor dice que el token caducó.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import ssl
 import time
+from collections.abc import AsyncIterator, Callable
 from typing import Any, Final
 
 from . import endpoints
@@ -24,7 +26,8 @@ from .errors import (
     DeepalRateLimitError,
 )
 from .models import Capabilities, VehicleInfo
-from .mqtt.client import MqttReading, read_telemetry, wake_vehicle
+from .mqtt.client import MqttReading, open_session, read_telemetry, wake_vehicle
+from .mqtt.live import LiveSession
 from .mqtt.topics import MqttConnection, parse_connection_config
 
 _LOGGER = logging.getLogger(__name__)
@@ -62,6 +65,9 @@ class DeepalClient:
         #: Configuración del broker y token de cada coche, reutilizados entre
         #: lecturas (``MQTT_SESSION_TTL``): ahorra dos peticiones por lectura.
         self._mqtt_sessions: dict[str, tuple[float, MqttConnection, str]] = {}
+        #: Conexiones MQTT permanentes abiertas (experimental): las lecturas y
+        #: despertares de siempre las pausan mientras usan el MQTT.
+        self.live: dict[str, LiveSession] = {}
 
     @property
     def _transport(self):  # noqa: ANN202 - atajo interno
@@ -163,7 +169,7 @@ class DeepalClient:
                 self._mqtt_sessions.pop(vehicle.vehicle_id, None)  # se pide de nuevo
                 raise
 
-        async with self._mqtt_lock:
+        async with self._live_paused(vehicle), self._mqtt_lock:
             return await self._with_ca_retry(_read)
 
     async def wake(self, vehicle: VehicleInfo, ssl_context: ssl.SSLContext) -> str:
@@ -185,8 +191,39 @@ class DeepalClient:
                 self._mqtt_sessions.pop(vehicle.vehicle_id, None)  # se pide de nuevo
                 raise
 
-        async with self._mqtt_lock:
+        async with self._live_paused(vehicle), self._mqtt_lock:
             return await self._with_ca_retry(_wake)
+
+    def _live_paused(self, vehicle: VehicleInfo) -> contextlib.AbstractAsyncContextManager[None]:
+        """Pausa la conexión permanente del coche, si la tiene (si no, nada)."""
+        live = self.live.get(vehicle.vehicle_id)
+        return live.paused() if live is not None else contextlib.nullcontext()
+
+    def live_session(
+        self,
+        vehicle: VehicleInfo,
+        ssl_context: ssl.SSLContext,
+        on_params: Callable[[MqttReading], None],
+    ) -> LiveSession:
+        """Crea la conexión MQTT permanente de un coche (experimental; ver ``mqtt/live.py``).
+
+        Mientras está abierta tiene el candado MQTT de la cuenta.
+        """
+
+        @contextlib.asynccontextmanager
+        async def _open() -> AsyncIterator[tuple[asyncio.StreamReader, asyncio.StreamWriter, MqttConnection]]:
+            async with self._mqtt_lock:
+                connection, token = await self._mqtt_session(vehicle)
+                try:
+                    async with open_session(connection, token, ssl_context) as (reader, writer):
+                        yield reader, writer, connection
+                except Exception:
+                    self._mqtt_sessions.pop(vehicle.vehicle_id, None)  # se pide de nuevo
+                    raise
+
+        live = LiveSession(_open, on_params)
+        self.live[vehicle.vehicle_id] = live
+        return live
 
     async def _with_ca_retry(self, action):  # noqa: ANN001, ANN202
         """Ejecuta ``action``; si el token de la pasarela CA caducó, renueva y reintenta."""

@@ -217,6 +217,9 @@
       "cabin_humidity": {
         "name": "Umidità interna"
       },
+      "cabin_absolute_humidity": {
+        "name": "Umidità assoluta interna"
+      },
       "climate_target_temperature": {
         "name": "Temperatura del climatizzatore"
       },
@@ -282,6 +285,18 @@
       },
       "fuel_volume": {
         "name": "Carburante nel serbatoio"
+      },
+      "charged_energy": {
+        "name": "Energia caricata"
+      },
+      "charging_cost": {
+        "name": "Costo delle ricariche"
+      },
+      "average_consumption": {
+        "name": "Consumo medio"
+      },
+      "last_trip": {
+        "name": "Ultimo viaggio"
       }
     },
     "binary_sensor": {
@@ -458,6 +473,18 @@
       },
       "charge_limit": {
         "name": "Limite di ricarica"
+      },
+      "climate_schedule_temperature": {
+        "name": "Temperatura programmata"
+      },
+      "climate_schedule_min_battery": {
+        "name": "Batteria minima per climatizzare"
+      },
+      "charge_price_home": {
+        "name": "Prezzo dell'elettricità a casa"
+      },
+      "charge_price_fast": {
+        "name": "Prezzo della ricarica rapida"
       }
     },
     "switch": {
@@ -466,6 +493,15 @@
       },
       "front_defrost": {
         "name": "Disappannamento anteriore"
+      },
+      "charge_plan": {
+        "name": "Ricarica programmata"
+      },
+      "charge_plan_until_full": {
+        "name": "Fino al pieno"
+      },
+      "climate_schedule": {
+        "name": "Climatizzazione programmata"
       }
     },
     "lock": {
@@ -513,6 +549,27 @@
       },
       "charging_view": {
         "name": "Vista di ricarica"
+      }
+    },
+    "time": {
+      "charge_plan_start": {
+        "name": "Inizio della ricarica programmata"
+      },
+      "charge_plan_end": {
+        "name": "Fine della ricarica programmata"
+      },
+      "climate_schedule_time": {
+        "name": "Ora della climatizzazione"
+      }
+    },
+    "select": {
+      "climate_schedule_days": {
+        "name": "Giorni della climatizzazione",
+        "state": {
+          "daily": "Tutti i giorni",
+          "weekdays": "Da lunedì a venerdì",
+          "weekends": "Fine settimana"
+        }
       }
     }
   },
@@ -573,6 +630,21 @@
     },
     "maintenance_no_odometer": {
       "message": "Il chilometraggio dell'auto non è noto. Indica i chilometri o registra il tagliando dal pannello DEC Deepal."
+    },
+    "charge_plan_set_in_app": {
+      "message": "Il piano di ricarica è stato salvato nell'app Deepal o nell'auto e l'auto non permette di cambiarlo dall'esterno. Rimuovilo prima nell'app o nell'auto."
+    },
+    "charge_plan_no_start": {
+      "message": "Scegli prima l'ora di inizio della ricarica programmata."
+    },
+    "charge_plan_no_end": {
+      "message": "Scegli l'ora di fine della ricarica programmata o attiva «Fino al pieno»."
+    },
+    "charge_plan_too_short": {
+      "message": "La ricarica programmata deve durare almeno 30 minuti (dalle {start} alle {end})."
+    },
+    "charge_plan_not_supported": {
+      "message": "Questa auto non ha la ricarica programmata."
     }
   },
   "services": {
@@ -623,6 +695,42 @@
         "km": {
           "name": "Chilometri",
           "description": "Chilometri al tagliando. Se lasciato vuoto, quelli che l'auto segna adesso."
+        }
+      }
+    },
+    "set_charge_plan": {
+      "name": "Programma la ricarica",
+      "description": "Attiva, disattiva o modifica la ricarica programmata dell'auto. Ciò che non indichi resta com'è.",
+      "fields": {
+        "device_id": {
+          "name": "Veicolo",
+          "description": "L'auto."
+        },
+        "enabled": {
+          "name": "Attiva",
+          "description": "Attivare (sì) o disattivare (no) la ricarica programmata."
+        },
+        "start": {
+          "name": "Inizio",
+          "description": "Ora in cui inizia a caricare (ora locale)."
+        },
+        "end": {
+          "name": "Fine",
+          "description": "Ora in cui smette di caricare."
+        },
+        "until_full": {
+          "name": "Fino al pieno",
+          "description": "Senza ora di fine: carica fino al limite."
+        }
+      }
+    },
+    "export_car_log": {
+      "name": "Esporta il diario dell'auto",
+      "description": "Restituisce i viaggi e le ricariche registrati dell'auto, con totali e prezzi.",
+      "fields": {
+        "device_id": {
+          "name": "Veicolo",
+          "description": "L'auto."
         }
       }
     }

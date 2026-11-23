@@ -218,6 +218,9 @@
         "cabin_humidity": {
           "name": "Humidade interior"
         },
+        "cabin_absolute_humidity": {
+          "name": "Humidade absoluta interior"
+        },
         "climate_target_temperature": {
           "name": "Temperatura da climatização"
         },
@@ -283,6 +286,18 @@
         },
         "fuel_volume": {
           "name": "Combustível no depósito"
+        },
+        "charged_energy": {
+          "name": "Energia carregada"
+        },
+        "charging_cost": {
+          "name": "Custo dos carregamentos"
+        },
+        "average_consumption": {
+          "name": "Consumo médio"
+        },
+        "last_trip": {
+          "name": "Última viagem"
         }
       },
       "binary_sensor": {
@@ -459,6 +474,18 @@
         },
         "charge_limit": {
           "name": "Limite de carga"
+        },
+        "climate_schedule_temperature": {
+          "name": "Temperatura programada"
+        },
+        "climate_schedule_min_battery": {
+          "name": "Bateria mínima para climatizar"
+        },
+        "charge_price_home": {
+          "name": "Preço da eletricidade em casa"
+        },
+        "charge_price_fast": {
+          "name": "Preço do carregamento rápido"
         }
       },
       "switch": {
@@ -467,6 +494,15 @@
         },
         "front_defrost": {
           "name": "Desembaciamento dianteiro"
+        },
+        "charge_plan": {
+          "name": "Carregamento programado"
+        },
+        "charge_plan_until_full": {
+          "name": "Até encher"
+        },
+        "climate_schedule": {
+          "name": "Climatização programada"
         }
       },
       "lock": {
@@ -514,6 +550,27 @@
         },
         "charging_view": {
           "name": "Vista de carregamento"
+        }
+      },
+      "time": {
+        "charge_plan_start": {
+          "name": "Início do carregamento programado"
+        },
+        "charge_plan_end": {
+          "name": "Fim do carregamento programado"
+        },
+        "climate_schedule_time": {
+          "name": "Hora da climatização"
+        }
+      },
+      "select": {
+        "climate_schedule_days": {
+          "name": "Dias da climatização",
+          "state": {
+            "daily": "Todos os dias",
+            "weekdays": "Segunda a sexta",
+            "weekends": "Fim de semana"
+          }
         }
       }
     },
@@ -574,6 +631,21 @@
       },
       "maintenance_no_odometer": {
         "message": "Não se conhece a quilometragem do carro. Indique os quilómetros ou registe a revisão no painel DEC Deepal."
+      },
+      "charge_plan_set_in_app": {
+        "message": "O plano de carregamento foi guardado na app da Deepal ou no carro, e o carro não permite alterá-lo de fora. Remova-o primeiro na app ou no carro."
+      },
+      "charge_plan_no_start": {
+        "message": "Escolha primeiro a hora de início do carregamento programado."
+      },
+      "charge_plan_no_end": {
+        "message": "Escolha a hora de fim do carregamento programado ou ative «Até encher»."
+      },
+      "charge_plan_too_short": {
+        "message": "O carregamento programado tem de durar pelo menos 30 minutos (das {start} às {end})."
+      },
+      "charge_plan_not_supported": {
+        "message": "Este carro não tem carregamento programado."
       }
     },
     "services": {
@@ -626,6 +698,42 @@
             "description": "Quilómetros na revisão. Se ficar vazio, os que o carro marca agora."
           }
         }
+      },
+      "set_charge_plan": {
+        "name": "Programar o carregamento",
+        "description": "Liga, desliga ou altera o carregamento programado do carro. O que não indicar fica como está.",
+        "fields": {
+          "device_id": {
+            "name": "Veículo",
+            "description": "O carro."
+          },
+          "enabled": {
+            "name": "Ativo",
+            "description": "Ligar (sim) ou desligar (não) o carregamento programado."
+          },
+          "start": {
+            "name": "Início",
+            "description": "Hora a que começa a carregar (hora local)."
+          },
+          "end": {
+            "name": "Fim",
+            "description": "Hora a que deixa de carregar."
+          },
+          "until_full": {
+            "name": "Até encher",
+            "description": "Sem hora de fim: carrega até ao limite."
+          }
+        }
+      },
+      "export_car_log": {
+        "name": "Exportar o diário do carro",
+        "description": "Devolve as viagens e os carregamentos registados do carro, com os totais e preços.",
+        "fields": {
+          "device_id": {
+            "name": "Veículo",
+            "description": "O carro."
+          }
+        }
       }
     }
   },
@@ -676,7 +784,28 @@
     "date_format": "%d/%m/%Y",
     "panel_target": "Notificações do Home Assistant",
     "backup_notification": "Cópia dos dados dos seus veículos. Toque para a descarregar (a ligação expira em 10 minutos).",
-    "pin_armed": "Comandos com PIN permitidos durante {seconds} segundos."
+    "pin_armed": "Comandos com PIN permitidos durante {seconds} segundos.",
+    "charge_live": "A carregar{level}{ends}.",
+    "live_level": ": {level} %",
+    "live_ends": " · termina por volta das {time}",
+    "left_open": "Desligado há {minutes} min: {what}.",
+    "left_open_unlocked": "sem trancar",
+    "left_open_doors": "porta aberta",
+    "left_open_windows": "janela aberta",
+    "left_open_trunk": "mala aberta",
+    "left_open_hood": "capô aberto",
+    "action_lock": "Trancar",
+    "lock_done": "Carro trancado.",
+    "lock_failed": "Não foi possível trancar: {error}",
+    "climate_schedule_started": "Climatização programada ligada a {temperature} °C.",
+    "climate_schedule_low_battery": "Climatização programada não ligada: bateria a {battery} % (mínimo {minimum} %) e sem ligar à corrente.",
+    "climate_schedule_power_on": "Climatização programada não ligada: o carro está ligado.",
+    "climate_schedule_failed": "Climatização programada: o carro não aceitou a ordem.",
+    "log_trip": "Viagem de {km} km (bateria de {start} % a {end} %){energy}.",
+    "log_charge_ac": "Carregamento em casa de {start} % a {end} %{energy}{cost}.",
+    "log_charge_dc": "Carregamento rápido de {start} % a {end} %{energy}{cost}.",
+    "log_energy": " · {kwh} kWh",
+    "log_cost": " · {cost} {currency}"
   },
   "tarjeta": {
     "card_description": "O seu Deepal num relance: vista do carro, bateria, conforto e ações rápidas.",
@@ -1362,7 +1491,16 @@
     "mine": "Teu",
     "error_unknown_person": "Essa pessoa já não existe no Home Assistant.",
     "error_unauthorized": "Só um administrador pode fazer esta alteração.",
-    "plate": "Matrícula"
+    "plate": "Matrícula",
+    "notice_charge_live": "Carregamento em direto",
+    "when_charge_live": "Uma notificação no telemóvel que se atualiza durante o carregamento",
+    "notice_left_open": "Carro aberto ou sem trancar",
+    "when_minutes": "desligado {value} min",
+    "unit_minutes": "min",
+    "notice_climate_schedule": "Climatização programada",
+    "when_climate_schedule": "Se foi ligada ou porque não",
+    "live_title": "Ligação permanente (experimental)",
+    "live_help": "Mantém aberta a ligação com o carro para receber os dados no momento, sem esperar pela leitura seguinte. Só com um carro na conta. Se der problemas, desative-a."
   },
   "catalogo": {
     "operacion_general_inspection": "Inspeção geral (propulsão, bateria, alta tensão, travões e direção)",

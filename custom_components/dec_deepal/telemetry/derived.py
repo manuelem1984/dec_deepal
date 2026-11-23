@@ -196,6 +196,11 @@ def charger_plugged(values: Mapping[str, Any]) -> bool | None:
 
 
 #: Señal calculada → función que la calcula.
+def cabin_humidity(values: Mapping[str, Any]) -> float | None:
+    """Humedad relativa del habitáculo (%), de la absoluta y la temperatura interior."""
+    return c.relative_humidity(values.get(s.CABIN_ABSOLUTE_HUMIDITY), values.get(s.INSIDE_TEMP_C))
+
+
 DERIVED: Final[dict[str, Callable[[Mapping[str, Any]], Any]]] = {
     s.CHARGE_STATUS: charge_status,
     s.REMAINING_CHARGE_HHMM: remaining_charge_hhmm,
@@ -205,4 +210,5 @@ DERIVED: Final[dict[str, Callable[[Mapping[str, Any]], Any]]] = {
     s.CHARGER_PLUGGED: charger_plugged,
     s.AC_PLUGGED: ac_plugged,
     s.DC_PLUGGED: dc_plugged,
+    s.CABIN_HUMIDITY: cabin_humidity,
 }

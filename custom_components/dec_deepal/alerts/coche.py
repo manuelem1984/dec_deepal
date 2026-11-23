@@ -99,5 +99,7 @@ class CarMixin:
             ]
             self._send(vehicle_id, alert, problem_text(alert, names, language))
 
+        self._check_live_charge(vehicle_id, data)
+        self._check_left_open(vehicle_id, data)
         self._check_maintenance(vehicle_id)
         self._check_documents(vehicle_id)

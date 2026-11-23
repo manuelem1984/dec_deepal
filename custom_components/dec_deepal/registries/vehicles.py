@@ -47,6 +47,7 @@ FEATURE_PIN_COMMANDS: Final = "comandos_pin"
 FEATURE_POWER_TAILGATE: Final = "porton_electrico"
 FEATURE_FUEL: Final = "combustible"
 FEATURE_CHARGE_LIMIT: Final = "limite_carga"
+FEATURE_CHARGE_PLAN: Final = "plan_carga"
 
 #: Tipo de motor según el código de modelo del coche (``b.mc`` del MQTT).
 POWERTRAIN_EV: Final = "ev"
@@ -70,6 +71,7 @@ KNOWN_FEATURES: Final = frozenset(
     {
         FEATURE_MQTT,
         FEATURE_CHARGE_LIMIT,
+        FEATURE_CHARGE_PLAN,
         FEATURE_CLIMATE,
         FEATURE_LIGHTS_HORN,
         FEATURE_SEAT_HEAT,

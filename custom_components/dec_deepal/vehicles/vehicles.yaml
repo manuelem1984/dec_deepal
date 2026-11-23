@@ -165,6 +165,7 @@ modelos:
       porton_electrico: true         # abrir/cerrar el maletero a distancia (el Pro no)
       combustible: false             # solo híbridos enchufables / autonomía extendida
       limite_carga: false            # el EV acepta la orden pero no cambia el límite (probado por otros)
+      plan_carga: true               # carga programada (inicio, fin o hasta llenar). ⚠️ Sin probar con nuestros coches
     carpeta_fotos: s05_2024
     foto_defecto: default.png
     # Max: 20" con tapacubos (cover) o sin él (open). El Pro lleva 18" (abajo).

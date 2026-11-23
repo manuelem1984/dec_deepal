@@ -36,11 +36,12 @@ from .coche import CarMixin
 from .const import DAILY_CHECK_HOURS
 from .documentos import DocumentsMixin
 from .mantenimiento import MaintenanceMixin
+from .vivo import EVENT_ACTION, LiveMixin
 
 _LOGGER = logging.getLogger(__package__)
 
 
-class AlertManager(CarMixin, MaintenanceMixin, DocumentsMixin):
+class AlertManager(CarMixin, LiveMixin, MaintenanceMixin, DocumentsMixin):
     """Avisos y mantenimiento de los coches de una cuenta.
 
     Aquí está lo común (arranque, guardado, escuchas, destinos y envío); los
@@ -161,12 +162,15 @@ class AlertManager(CarMixin, MaintenanceMixin, DocumentsMixin):
                 self.hass, self._on_daily_check, hour=DAILY_CHECK_HOURS, minute=0, second=30
             )
         )
+        # Botón «Bloquear» de «Coche abierto» (alerts/vivo.py).
+        self._unsubscribe.append(self.hass.bus.async_listen(EVENT_ACTION, self._on_notification_action))
 
     async def async_stop(self) -> None:
         """Deja de vigilar y guarda lo pendiente (al descargar la cuenta)."""
         for unsubscribe in self._unsubscribe:
             unsubscribe()
         self._unsubscribe.clear()
+        self._stop_live()
         await self._async_save()
 
     def _save(self) -> None:
@@ -291,14 +295,27 @@ class AlertManager(CarMixin, MaintenanceMixin, DocumentsMixin):
             return device.name_by_user or device.name
         return self._vehicles[vehicle_id].info.display_name
 
+    def notify(self, vehicle_id: str, alert: str, message: str) -> None:
+        """Manda un aviso a sus destinos (para otras partes de la integración)."""
+        if vehicle_id in self._routes and self._wants(vehicle_id, alert):
+            self._send(vehicle_id, alert, message)
+
     def _send(
-        self, vehicle_id: str, alert: str, message: str, targets: tuple[str, ...] | None = None
+        self,
+        vehicle_id: str,
+        alert: str,
+        message: str,
+        targets: tuple[str, ...] | None = None,
+        *,
+        data: dict[str, Any] | None = None,
     ) -> None:
         """Envía un aviso (sin esperar a que llegue).
 
         Args:
             alert: tipo de aviso (para el historial).
             targets: a quién; si no se dice, los destinos de ese aviso.
+            data: datos extra para la app móvil (``tag``, botones, Live
+                Update...). Solo se mandan a ``notify.mobile_app_*``.
         """
         title = f"{NAME} {self._vehicle_name(vehicle_id)}"
         _LOGGER.debug("Aviso: %s — %s", title, message)
@@ -313,10 +330,11 @@ class AlertManager(CarMixin, MaintenanceMixin, DocumentsMixin):
             if not self.hass.services.has_service("notify", service):
                 _LOGGER.warning("Aviso no enviado: ya no existe notify.%s", service)
                 continue
+            payload: dict[str, Any] = {"title": title, "message": message}
+            if data and service.startswith("mobile_app_"):
+                payload["data"] = data
             self.hass.async_create_task(
-                self.hass.services.async_call(
-                    "notify", service, {"title": title, "message": message}, blocking=False
-                ),
+                self.hass.services.async_call("notify", service, payload, blocking=False),
                 "dec_deepal: aviso",
             )
             sent += 1

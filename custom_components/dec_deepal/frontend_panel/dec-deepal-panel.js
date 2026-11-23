@@ -520,7 +520,16 @@
       "mine": "Tuyo",
       "error_unknown_person": "Esa persona ya no existe en Home Assistant.",
       "error_unauthorized": "Solo un administrador puede hacer este cambio.",
-      "plate": "Matrícula"
+      "plate": "Matrícula",
+      "notice_charge_live": "Carga en vivo",
+      "when_charge_live": "Una notificación en el móvil que se actualiza mientras carga",
+      "notice_left_open": "Coche abierto o sin bloquear",
+      "when_minutes": "apagado {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Climatización programada",
+      "when_climate_schedule": "Si se enciende o por qué no",
+      "live_title": "Conexión permanente (experimental)",
+      "live_help": "Mantiene abierta la conexión con el coche para recibir sus datos al momento, sin esperar a la siguiente lectura. Solo con un coche en la cuenta. Si da problemas, desactívala."
     },
     "en": {
       "tab_cars": "Vehicles",
@@ -933,7 +942,16 @@
       "mine": "Yours",
       "error_unknown_person": "That person no longer exists in Home Assistant.",
       "error_unauthorized": "Only an administrator can make this change.",
-      "plate": "Number plate"
+      "plate": "Number plate",
+      "notice_charge_live": "Live charging",
+      "when_charge_live": "A phone notification that updates while charging",
+      "notice_left_open": "Car left open or unlocked",
+      "when_minutes": "off for {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Scheduled climate",
+      "when_climate_schedule": "Whether it turned on, or why not",
+      "live_title": "Permanent connection (experimental)",
+      "live_help": "Keeps the connection to the car open to receive its data right away, without waiting for the next reading. Only with one car in the account. If it causes problems, turn it off."
     },
     "pt": {
       "tab_cars": "Veículos",
@@ -1346,7 +1364,16 @@
       "mine": "Teu",
       "error_unknown_person": "Essa pessoa já não existe no Home Assistant.",
       "error_unauthorized": "Só um administrador pode fazer esta alteração.",
-      "plate": "Matrícula"
+      "plate": "Matrícula",
+      "notice_charge_live": "Carregamento em direto",
+      "when_charge_live": "Uma notificação no telemóvel que se atualiza durante o carregamento",
+      "notice_left_open": "Carro aberto ou sem trancar",
+      "when_minutes": "desligado {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Climatização programada",
+      "when_climate_schedule": "Se foi ligada ou porque não",
+      "live_title": "Ligação permanente (experimental)",
+      "live_help": "Mantém aberta a ligação com o carro para receber os dados no momento, sem esperar pela leitura seguinte. Só com um carro na conta. Se der problemas, desative-a."
     },
     "it": {
       "tab_cars": "Veicoli",
@@ -1759,7 +1786,16 @@
       "mine": "Tua",
       "error_unknown_person": "Quella persona non esiste più in Home Assistant.",
       "error_unauthorized": "Solo un amministratore può fare questa modifica.",
-      "plate": "Targa"
+      "plate": "Targa",
+      "notice_charge_live": "Ricarica in diretta",
+      "when_charge_live": "Una notifica sul telefono che si aggiorna durante la ricarica",
+      "notice_left_open": "Auto aperta o non chiusa",
+      "when_minutes": "spenta da {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Climatizzazione programmata",
+      "when_climate_schedule": "Se si è accesa o perché no",
+      "live_title": "Connessione permanente (sperimentale)",
+      "live_help": "Mantiene aperta la connessione con l'auto per ricevere i dati subito, senza aspettare la lettura successiva. Solo con un'auto nell'account. Se dà problemi, disattivala."
     },
     "pl": {
       "tab_cars": "Pojazdy",
@@ -2172,7 +2208,16 @@
       "mine": "Twój",
       "error_unknown_person": "Ta osoba już nie istnieje w Home Assistant.",
       "error_unauthorized": "Tę zmianę może wprowadzić tylko administrator.",
-      "plate": "Tablica rejestracyjna"
+      "plate": "Tablica rejestracyjna",
+      "notice_charge_live": "Ładowanie na żywo",
+      "when_charge_live": "Powiadomienie w telefonie aktualizowane podczas ładowania",
+      "notice_left_open": "Samochód otwarty lub niezamknięty",
+      "when_minutes": "wyłączony {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Zaplanowana klimatyzacja",
+      "when_climate_schedule": "Czy się włączyła, a jeśli nie, to dlaczego",
+      "live_title": "Stałe połączenie (eksperymentalne)",
+      "live_help": "Utrzymuje otwarte połączenie z samochodem, aby od razu otrzymywać dane bez czekania na kolejny odczyt. Tylko z jednym samochodem na koncie. W razie problemów wyłącz."
     },
     "de": {
       "tab_cars": "Fahrzeuge",
@@ -2585,7 +2630,16 @@
       "mine": "Deins",
       "error_unknown_person": "Diese Person gibt es in Home Assistant nicht mehr.",
       "error_unauthorized": "Nur ein Administrator kann diese Änderung vornehmen.",
-      "plate": "Kennzeichen"
+      "plate": "Kennzeichen",
+      "notice_charge_live": "Laden live",
+      "when_charge_live": "Eine Handy-Benachrichtigung, die sich während des Ladens aktualisiert",
+      "notice_left_open": "Auto offen oder nicht verriegelt",
+      "when_minutes": "{value} Min. aus",
+      "unit_minutes": "Min.",
+      "notice_climate_schedule": "Geplante Klimatisierung",
+      "when_climate_schedule": "Ob sie eingeschaltet wurde oder warum nicht",
+      "live_title": "Dauerverbindung (experimentell)",
+      "live_help": "Hält die Verbindung zum Auto offen, um seine Daten sofort zu erhalten, ohne auf die nächste Abfrage zu warten. Nur mit einem Auto im Konto. Bei Problemen ausschalten."
     },
     "fr": {
       "tab_cars": "Véhicules",
@@ -2998,7 +3052,16 @@
       "mine": "À vous",
       "error_unknown_person": "Cette personne n'existe plus dans Home Assistant.",
       "error_unauthorized": "Seul un administrateur peut faire cette modification.",
-      "plate": "Plaque d'immatriculation"
+      "plate": "Plaque d'immatriculation",
+      "notice_charge_live": "Recharge en direct",
+      "when_charge_live": "Une notification sur le téléphone qui se met à jour pendant la recharge",
+      "notice_left_open": "Voiture ouverte ou non verrouillée",
+      "when_minutes": "éteinte depuis {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Climatisation programmée",
+      "when_climate_schedule": "Si elle s'est allumée, ou pourquoi pas",
+      "live_title": "Connexion permanente (expérimental)",
+      "live_help": "Garde la connexion avec la voiture ouverte pour recevoir ses données tout de suite, sans attendre la lecture suivante. Seulement avec une voiture dans le compte. En cas de problème, désactive-la."
     },
     "nl": {
       "tab_cars": "Voertuigen",
@@ -3411,7 +3474,16 @@
       "mine": "Van jou",
       "error_unknown_person": "Die persoon bestaat niet meer in Home Assistant.",
       "error_unauthorized": "Alleen een beheerder kan deze wijziging doen.",
-      "plate": "Kenteken"
+      "plate": "Kenteken",
+      "notice_charge_live": "Live laden",
+      "when_charge_live": "Een melding op de telefoon die tijdens het laden wordt bijgewerkt",
+      "notice_left_open": "Auto open of niet vergrendeld",
+      "when_minutes": "{value} min uit",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Geplande klimaatregeling",
+      "when_climate_schedule": "Of hij aanging, of waarom niet",
+      "live_title": "Permanente verbinding (experimenteel)",
+      "live_help": "Houdt de verbinding met de auto open om de gegevens meteen te ontvangen, zonder op de volgende uitlezing te wachten. Alleen met één auto in het account. Zet hem uit bij problemen."
     },
     "nb": {
       "tab_cars": "Kjøretøy",
@@ -3824,7 +3896,16 @@
       "mine": "Din",
       "error_unknown_person": "Den personen finnes ikke lenger i Home Assistant.",
       "error_unauthorized": "Bare en administrator kan gjøre denne endringen.",
-      "plate": "Registreringsnummer"
+      "plate": "Registreringsnummer",
+      "notice_charge_live": "Lading live",
+      "when_charge_live": "Et varsel på telefonen som oppdateres under lading",
+      "notice_left_open": "Bil åpen eller ikke låst",
+      "when_minutes": "avslått i {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Planlagt klima",
+      "when_climate_schedule": "Om det ble slått på, eller hvorfor ikke",
+      "live_title": "Permanent tilkobling (eksperimentell)",
+      "live_help": "Holder tilkoblingen til bilen åpen for å motta dataene med en gang, uten å vente på neste avlesning. Bare med én bil på kontoen. Slå den av hvis den gir problemer."
     },
     "da": {
       "tab_cars": "Køretøjer",
@@ -4237,7 +4318,16 @@
       "mine": "Din",
       "error_unknown_person": "Den person findes ikke længere i Home Assistant.",
       "error_unauthorized": "Kun en administrator kan foretage denne ændring.",
-      "plate": "Nummerplade"
+      "plate": "Nummerplade",
+      "notice_charge_live": "Opladning live",
+      "when_charge_live": "En notifikation på telefonen, der opdateres under opladning",
+      "notice_left_open": "Bil åben eller ikke låst",
+      "when_minutes": "slukket i {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Planlagt klima",
+      "when_climate_schedule": "Om det blev tændt, eller hvorfor ikke",
+      "live_title": "Permanent forbindelse (eksperimentel)",
+      "live_help": "Holder forbindelsen til bilen åben for at modtage dens data med det samme uden at vente på næste aflæsning. Kun med én bil på kontoen. Slå den fra, hvis den giver problemer."
     },
     "el": {
       "tab_cars": "Οχήματα",
@@ -4650,7 +4740,16 @@
       "mine": "Δικό σου",
       "error_unknown_person": "Αυτό το άτομο δεν υπάρχει πια στο Home Assistant.",
       "error_unauthorized": "Μόνο ένας διαχειριστής μπορεί να κάνει αυτή την αλλαγή.",
-      "plate": "Πινακίδα"
+      "plate": "Πινακίδα",
+      "notice_charge_live": "Φόρτιση ζωντανά",
+      "when_charge_live": "Μια ειδοποίηση στο κινητό που ενημερώνεται κατά τη φόρτιση",
+      "notice_left_open": "Αυτοκίνητο ανοιχτό ή ξεκλείδωτο",
+      "when_minutes": "σβηστό {value} λεπτά",
+      "unit_minutes": "λεπτά",
+      "notice_climate_schedule": "Προγραμματισμένος κλιματισμός",
+      "when_climate_schedule": "Αν άναψε ή γιατί όχι",
+      "live_title": "Μόνιμη σύνδεση (πειραματική)",
+      "live_help": "Κρατά ανοιχτή τη σύνδεση με το αυτοκίνητο για να λαμβάνεις τα δεδομένα αμέσως, χωρίς να περιμένεις την επόμενη ανάγνωση. Μόνο με ένα αυτοκίνητο στον λογαριασμό. Αν δημιουργεί προβλήματα, απενεργοποίησέ τη."
     },
     "sl": {
       "tab_cars": "Vozila",
@@ -5063,7 +5162,16 @@
       "mine": "Tvoje",
       "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
       "error_unauthorized": "To spremembo lahko naredi samo skrbnik.",
-      "plate": "Registrska tablica"
+      "plate": "Registrska tablica",
+      "notice_charge_live": "Polnjenje v živo",
+      "when_charge_live": "Obvestilo v telefonu, ki se med polnjenjem posodablja",
+      "notice_left_open": "Avtomobil odprt ali ni zaklenjen",
+      "when_minutes": "izklopljen {value} min",
+      "unit_minutes": "min",
+      "notice_climate_schedule": "Načrtovana klimatizacija",
+      "when_climate_schedule": "Ali se je vklopila oziroma zakaj ne",
+      "live_title": "Stalna povezava (preizkusno)",
+      "live_help": "Ohranja povezavo z avtomobilom odprto, da podatke prejmeš takoj, brez čakanja na naslednje branje. Samo z enim avtomobilom v računu. Če povzroča težave, jo izklopi."
     }
   };
 
@@ -5895,6 +6003,7 @@
       if (notice.threshold == null) return this._maybe(`when_${notice.id}`) || "";
       const value = this._number(this._threshold(car, notice));
       if (notice.unit === "km") return this._t("when_km", { value });
+      if (notice.unit === "min") return this._t("when_minutes", { value });
       return this._t(notice.id.startsWith("insurance_c") ? "when_days_deadline" : "when_days", { value });
     }
 
@@ -5933,7 +6042,7 @@
             : `<button class="pen" data-action="edit" data-car="${escapeHtml(car.id)}" data-notice="${notice.id}" aria-label="${this._t("edit_threshold")}"><ha-icon icon="mdi:pencil"></ha-icon></button>`;
           const label = editing
             ? `<div class="lab"><b>${this._t(`notice_${notice.id}`)}</b><small></small>
-                <span class="inp"><input type="number" min="${notice.limits[0]}" max="${notice.limits[1]}" value="${this._threshold(car, notice)}"><span>${this._t(notice.unit === "km" ? "unit_km" : "unit_days")}</span></span>
+                <span class="inp"><input type="number" min="${notice.limits[0]}" max="${notice.limits[1]}" value="${this._threshold(car, notice)}"><span>${this._t(notice.unit === "km" ? "unit_km" : notice.unit === "min" ? "unit_minutes" : "unit_days")}</span></span>
                 <button class="mini ok" data-action="edit-ok" aria-label="${this._t("accept")}"><ha-icon icon="mdi:check"></ha-icon></button>
                 <button class="mini" data-action="edit-cancel" aria-label="${this._t("cancel")}"><ha-icon icon="mdi:close"></ha-icon></button></div>`
             : `<div class="lab"><b>${this._t(`notice_${notice.id}`)}</b><small>${escapeHtml(this._when(car, notice))}</small>${pen}</div>`;
@@ -6672,6 +6781,7 @@
           ${row("mdi:timer-outline", "scan_title", "scan_help", "")}
           ${segment("scan_minutes", scan, "minutes")}
           ${row("mdi:sleep-off", "wake_title", "wake_help", toggle("wake"))}
+          ${row("mdi:access-point-network", "live_title", "live_help", toggle("live_mqtt"))}
           ${row("mdi:scale-balance", "balance_title", "balance_help", toggle("charge_balance"))}
           ${manual}
           ${row("mdi:bug-outline", "debug_title", "debug_help", toggle("debug"), true)}
@@ -6717,6 +6827,7 @@
         arm_notify: Boolean(now.arm_notify),
         scan_minutes: Number(now.scan_minutes),
         wake: Boolean(now.wake),
+        live_mqtt: Boolean(now.live_mqtt),
         charge_balance: Boolean(now.charge_balance),
         debug: Boolean(now.debug),
       };

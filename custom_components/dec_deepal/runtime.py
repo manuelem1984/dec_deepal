@@ -48,6 +48,8 @@ from .registries.vehicles import VehicleModel
 
 if TYPE_CHECKING:
     from .alerts import AlertManager
+    from .car_log_manager import CarLogManager
+    from .climate_schedule import ClimateScheduleManager
     from .command_runner import CommandRunner
     from .coordinator import VehicleCoordinator
 
@@ -103,6 +105,10 @@ class DecDeepalRuntime:
     vehicles: dict[str, VehicleContext] = field(default_factory=dict)
     #: Avisos y mantenimiento (se crea al arrancar la cuenta).
     alerts: AlertManager | None = None
+    #: Climatización programada de cada coche (climate_schedule.py).
+    climate_schedule: ClimateScheduleManager | None = None
+    #: Diario de los coches: viajes y cargas (car_log_manager.py).
+    car_log: CarLogManager | None = None
     #: Últimas capturas por vehículo (servicio capture_snapshot).
     captures: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
     #: Minutos de equilibrado que la tarjeta suma al tiempo de carga (0 = no).

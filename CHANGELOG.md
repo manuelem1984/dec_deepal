@@ -3,6 +3,45 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b18] — 2026-11-23
+
+Bloques B, C y D del análisis de Deepal Alternative 1.9 y S05 Companion. Guía:
+[docs/carga-clima-y-diario.md](docs/carga-clima-y-diario.md).
+
+### Corregido
+
+- **Humedad interior:** el coche manda la humedad **absoluta** (décimas de
+  g/m³), no un %. Antes salían valores imposibles (un 97 % y, al rato, un
+  11,8 %). Ahora la «Humedad interior» se calcula bien (fórmula de Magnus con
+  la temperatura interior) y hay una entidad nueva, «Humedad absoluta
+  interior» (g/m³, desactivada de fábrica).
+
+### Añadido
+
+- **Carga programada:** interruptores «Carga programada» y «Hasta llenar» y
+  horas de inicio y fin, en el S05 EV y PHEV. Acción
+  `dec_deepal.set_charge_plan` para automatizaciones. Con el plan apagado,
+  cambiar las horas solo las apunta.
+- **Climatización programada:** a una hora, unos días (todos, laborables o
+  fin de semana) y a una temperatura, sin encenderla por debajo de una
+  batería mínima (salvo enchufado) ni con el coche encendido.
+- **Avisos nuevos** (panel → Avisos, nacen sin destinos):
+  - **Carga en vivo:** una notificación en el móvil que se actualiza con el
+    % y la hora de fin, y se quita al acabar.
+  - **Coche abierto o sin bloquear:** apagado y sin cerrar tras N minutos
+    (10 de fábrica), con botón **Bloquear** si el control con PIN está
+    activo.
+  - **Climatización programada:** si se encendió o por qué no.
+- **Diario del coche:** cada viaje y cada carga (con o sin cargador
+  vinculado), con kWh, coste y consumo. Sale en el **Registro** de Home
+  Assistant. Sensores nuevos «Energía cargada», «Coste de las cargas»,
+  «Consumo medio» y «Último viaje», que dan las estadísticas por día, semana y
+  mes. También «Precio de la electricidad en casa» y «Precio de la carga
+  rápida», y la acción `dec_deepal.export_car_log`.
+- **Conexión permanente (experimental):** panel → Ajustes → Lectura de
+  datos. Mantiene abierta la conexión MQTT para recibir los datos al
+  momento. Desactivada de fábrica y solo con un coche MQTT en la cuenta.
+
 ## [2.6.0b17] — 2026-11-23
 
 ### Corregido

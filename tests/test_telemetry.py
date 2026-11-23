@@ -9,6 +9,7 @@ from custom_components.dec_deepal.telemetry import signals as s
 from custom_components.dec_deepal.telemetry.mqtt_map import map_mqtt
 from custom_components.dec_deepal.telemetry.rest_map import map_rest, value_at
 from custom_components.dec_deepal.telemetry.state import (
+    SOURCE_DERIVED,
     SOURCE_OPTIMISTIC,
     SOURCE_PREVIOUS,
     SOURCE_REST,
@@ -47,7 +48,7 @@ def test_map_mqtt_typos_and_units() -> None:
             "soc": "80",
             "diverWindow": 1,
             "turnLndicatorLeft": 0,
-            "innerHumidity": 453,
+            "innerHumidity": 118.0,
             "driverDoorLock": 0,
             "chargDeltMins": 8191,
         }
@@ -55,11 +56,10 @@ def test_map_mqtt_typos_and_units() -> None:
     assert values[s.BATTERY_LEVEL] == 80
     assert values[s.WINDOW_FRONT_LEFT] is True
     assert values[s.INDICATOR_LEFT] is False
-    assert values[s.CABIN_HUMIDITY] == 45.3
-    # El mismo dato llega a veces ya en % (visto el 11-10-2026): no se divide.
-    assert map_mqtt({"innerHumidity": 61.0})[s.CABIN_HUMIDITY] == 61.0
-    assert map_mqtt({"innerHumidity": 0.0})[s.CABIN_HUMIDITY] == 0.0
-    assert s.CABIN_HUMIDITY not in map_mqtt({"innerHumidity": 1500})
+    # Humedad ABSOLUTA en décimas de g/m³ (no un %); 0 es "sin lectura".
+    assert values[s.CABIN_ABSOLUTE_HUMIDITY] == 11.8
+    assert s.CABIN_ABSOLUTE_HUMIDITY not in map_mqtt({"innerHumidity": 0.0})
+    assert s.CABIN_ABSOLUTE_HUMIDITY not in map_mqtt({"innerHumidity": 1500})
     assert values[s.LOCKED_DRIVER] is True
     assert s.REMAINING_CHARGE_MIN not in values
 
@@ -354,3 +354,15 @@ def test_odometer_never_goes_down() -> None:
     assert lower.get(s.ODOMETER_KM) == 3645 and lower.sources[s.ODOMETER_KM] == "anterior"
     higher = build_state(mqtt_params={"totalOdometer": 3650}, rest_raw=None, previous=lower)
     assert higher.get(s.ODOMETER_KM) == 3650
+
+
+def test_cabin_humidity_from_real_readings() -> None:
+    """Lecturas reales (innerHumidity, vehicleTemperature) → humedad relativa creíble."""
+    for raw, temp, expected in ((34.0, 26.5, 13.6), (97.0, 26.5, 38.8), (118.0, 26.0, 48.6), (157.0, 27.0, 61.1)):
+        state = build_state(mqtt_params={"innerHumidity": raw, "vehicleTemperature": temp}, rest_raw=None, previous=None)
+        assert state.get(s.CABIN_HUMIDITY) == expected
+        assert state.source(s.CABIN_HUMIDITY) == SOURCE_DERIVED
+    # Sin temperatura no se puede calcular; saturado no pasa del 100 %.
+    assert build_state(mqtt_params={"innerHumidity": 118.0}, rest_raw=None, previous=None).get(s.CABIN_HUMIDITY) is None
+    assert c.relative_humidity(80.0, 20.0) == 100.0
+    assert c.relative_humidity(10.0, 80.0) is None

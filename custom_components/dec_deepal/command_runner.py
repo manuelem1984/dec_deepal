@@ -321,6 +321,14 @@ class CommandRunner:
                 return
             await asyncio.sleep(RESULT_INTERVAL)
 
+    async def refresh_soon(self) -> None:
+        """Relee el coche en segundo plano, como tras un comando (para órdenes en varios pasos)."""
+        self.coordinator.config_entry.async_create_background_task(
+            self.hass,
+            self._refresh_after_command(),
+            name=f"{DOMAIN}_refresh_{self.vehicle_id}",
+        )
+
     async def _refresh_after_command(self) -> None:
         """Pide datos frescos al coche y relee (en segundo plano)."""
         try:

@@ -218,6 +218,9 @@
         "cabin_humidity": {
           "name": "Vlažnost v kabini"
         },
+        "cabin_absolute_humidity": {
+          "name": "Absolutna vlažnost v kabini"
+        },
         "climate_target_temperature": {
           "name": "Ciljna temperatura klime"
         },
@@ -283,6 +286,18 @@
         },
         "fuel_volume": {
           "name": "Gorivo v rezervoarju"
+        },
+        "charged_energy": {
+          "name": "Napolnjena energija"
+        },
+        "charging_cost": {
+          "name": "Strošek polnjenj"
+        },
+        "average_consumption": {
+          "name": "Povprečna poraba"
+        },
+        "last_trip": {
+          "name": "Zadnja vožnja"
         }
       },
       "binary_sensor": {
@@ -459,6 +474,18 @@
         },
         "charge_limit": {
           "name": "Omejitev polnjenja"
+        },
+        "climate_schedule_temperature": {
+          "name": "Načrtovana temperatura"
+        },
+        "climate_schedule_min_battery": {
+          "name": "Najmanjša baterija za klimatizacijo"
+        },
+        "charge_price_home": {
+          "name": "Cena elektrike doma"
+        },
+        "charge_price_fast": {
+          "name": "Cena hitrega polnjenja"
         }
       },
       "switch": {
@@ -467,6 +494,15 @@
         },
         "front_defrost": {
           "name": "Sušenje vetrobranskega stekla"
+        },
+        "charge_plan": {
+          "name": "Načrtovano polnjenje"
+        },
+        "charge_plan_until_full": {
+          "name": "Do polnega"
+        },
+        "climate_schedule": {
+          "name": "Načrtovana klimatizacija"
         }
       },
       "lock": {
@@ -514,6 +550,27 @@
         },
         "charging_view": {
           "name": "Pogled polnjenja"
+        }
+      },
+      "time": {
+        "charge_plan_start": {
+          "name": "Začetek načrtovanega polnjenja"
+        },
+        "charge_plan_end": {
+          "name": "Konec načrtovanega polnjenja"
+        },
+        "climate_schedule_time": {
+          "name": "Ura klimatizacije"
+        }
+      },
+      "select": {
+        "climate_schedule_days": {
+          "name": "Dnevi klimatizacije",
+          "state": {
+            "daily": "Vsak dan",
+            "weekdays": "Od ponedeljka do petka",
+            "weekends": "Konec tedna"
+          }
         }
       }
     },
@@ -574,6 +631,21 @@
       },
       "maintenance_no_odometer": {
         "message": "Stanje kilometrov avtomobila ni znano. Vnesite kilometre ali zabeležite servis na plošči DEC Deepal."
+      },
+      "charge_plan_set_in_app": {
+        "message": "Načrt polnjenja je bil shranjen v aplikaciji Deepal ali v avtomobilu, avtomobil pa ga ne dovoli spremeniti od zunaj. Najprej ga odstrani v aplikaciji ali v avtomobilu."
+      },
+      "charge_plan_no_start": {
+        "message": "Najprej izberi uro začetka načrtovanega polnjenja."
+      },
+      "charge_plan_no_end": {
+        "message": "Izberi uro konca načrtovanega polnjenja ali vklopi »Do polnega«."
+      },
+      "charge_plan_too_short": {
+        "message": "Načrtovano polnjenje mora trajati vsaj 30 minut (od {start} do {end})."
+      },
+      "charge_plan_not_supported": {
+        "message": "Ta avtomobil nima načrtovanega polnjenja."
       }
     },
     "services": {
@@ -626,6 +698,42 @@
             "description": "Kilometri ob servisu. Prazno = trenutno stanje avtomobila."
           }
         }
+      },
+      "set_charge_plan": {
+        "name": "Načrtuj polnjenje",
+        "description": "Vklopi, izklopi ali spremeni načrtovano polnjenje avtomobila. Kar ne navedeš, ostane nespremenjeno.",
+        "fields": {
+          "device_id": {
+            "name": "Vozilo",
+            "description": "Avtomobil."
+          },
+          "enabled": {
+            "name": "Vklopljeno",
+            "description": "Vklopi (da) ali izklopi (ne) načrtovano polnjenje."
+          },
+          "start": {
+            "name": "Začetek",
+            "description": "Ura začetka polnjenja (lokalni čas)."
+          },
+          "end": {
+            "name": "Konec",
+            "description": "Ura konca polnjenja."
+          },
+          "until_full": {
+            "name": "Do polnega",
+            "description": "Brez ure konca: polni do omejitve."
+          }
+        }
+      },
+      "export_car_log": {
+        "name": "Izvozi dnevnik avtomobila",
+        "description": "Vrne zabeležene vožnje in polnjenja avtomobila s seštevki in cenami.",
+        "fields": {
+          "device_id": {
+            "name": "Vozilo",
+            "description": "Avtomobil."
+          }
+        }
       }
     }
   },
@@ -676,7 +784,28 @@
     "date_format": "%d. %m. %Y",
     "panel_target": "Obvestila Home Assistanta",
     "backup_notification": "Varnostna kopija podatkov vaših vozil. Tapnite za prenos (povezava poteče čez 10 minut).",
-    "pin_armed": "Ukazi s kodo PIN so dovoljeni {seconds} s."
+    "pin_armed": "Ukazi s kodo PIN so dovoljeni {seconds} s.",
+    "charge_live": "Polnjenje{level}{ends}.",
+    "live_level": ": {level} %",
+    "live_ends": " · konec okoli {time}",
+    "left_open": "Izklopljen že {minutes} min: {what}.",
+    "left_open_unlocked": "ni zaklenjen",
+    "left_open_doors": "odprta vrata",
+    "left_open_windows": "odprto okno",
+    "left_open_trunk": "odprt prtljažnik",
+    "left_open_hood": "odprt pokrov motorja",
+    "action_lock": "Zakleni",
+    "lock_done": "Avtomobil zaklenjen.",
+    "lock_failed": "Zaklepanje ni uspelo: {error}",
+    "climate_schedule_started": "Načrtovana klimatizacija vklopljena na {temperature} °C.",
+    "climate_schedule_low_battery": "Načrtovana klimatizacija ni vklopljena: baterija na {battery} % (najmanj {minimum} %) in ni priklopljen.",
+    "climate_schedule_power_on": "Načrtovana klimatizacija ni vklopljena: avtomobil je vklopljen.",
+    "climate_schedule_failed": "Načrtovana klimatizacija: avtomobil ni sprejel ukaza.",
+    "log_trip": "Vožnja {km} km (baterija s {start} % na {end} %){energy}.",
+    "log_charge_ac": "Polnjenje doma s {start} % na {end} %{energy}{cost}.",
+    "log_charge_dc": "Hitro polnjenje s {start} % na {end} %{energy}{cost}.",
+    "log_energy": " · {kwh} kWh",
+    "log_cost": " · {cost} {currency}"
   },
   "tarjeta": {
     "card_description": "Vaš Deepal na prvi pogled: pogled avtomobila, baterija, udobje in hitra dejanja.",
@@ -1362,7 +1491,16 @@
     "mine": "Tvoje",
     "error_unknown_person": "Ta oseba v Home Assistantu ne obstaja več.",
     "error_unauthorized": "To spremembo lahko naredi samo skrbnik.",
-    "plate": "Registrska tablica"
+    "plate": "Registrska tablica",
+    "notice_charge_live": "Polnjenje v živo",
+    "when_charge_live": "Obvestilo v telefonu, ki se med polnjenjem posodablja",
+    "notice_left_open": "Avtomobil odprt ali ni zaklenjen",
+    "when_minutes": "izklopljen {value} min",
+    "unit_minutes": "min",
+    "notice_climate_schedule": "Načrtovana klimatizacija",
+    "when_climate_schedule": "Ali se je vklopila oziroma zakaj ne",
+    "live_title": "Stalna povezava (preizkusno)",
+    "live_help": "Ohranja povezavo z avtomobilom odprto, da podatke prejmeš takoj, brez čakanja na naslednje branje. Samo z enim avtomobilom v računu. Če povzroča težave, jo izklopi."
   },
   "catalogo": {
     "operacion_general_inspection": "Splošni pregled (pogonska enota, baterija, visoka napetost, zavore in krmiljenje)",

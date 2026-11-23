@@ -289,6 +289,38 @@ class DeepalCommands:
             serial_type="2",
         )
 
+    async def charge_plan_add(
+        self, vehicle_id: str, *, start: str, end: str | None, time_zone: str
+    ) -> str:
+        """Añade un plan de carga activo. ⚠️ (formato de Deepal Alternative 1.9)
+
+        Args:
+            start: hora de inicio ``"HHMM"`` (hora local).
+            end: hora de fin ``"HHMM"``; ``None`` = «hasta llenar» (sin
+                ``endTime`` y ``endSwitch`` 0, como lo escribe la app).
+            time_zone: zona del plan, ``"GMT+01:00"``.
+        """
+        payload: dict[str, Any] = {
+            "command": "add_charge_plan",
+            "endSwitch": 1 if end is not None else 0,
+            "planType": 1,
+            "startTime": start,
+            "timeFormat": 1,
+            "timeZone": time_zone,
+        }
+        if end is not None:
+            payload["endTime"] = end
+        return await self.send(endpoints.CHARGE_ADD_PLAN, vehicle_id, payload, serial_type="2")
+
+    async def charge_plan_delete(self, vehicle_id: str, plan_id: str) -> str:
+        """Borra un plan de carga (así se apaga en el S05). ⚠️"""
+        return await self.send(
+            endpoints.CHARGE_DELETE_PLAN,
+            vehicle_id,
+            {"command": "delete_charge_plan", "planId": str(plan_id)},
+            serial_type="2",
+        )
+
     async def defrost(self, vehicle_id: str, enabled: bool) -> str:
         """Desempañado delantero on/off. ⚠️"""
         return await self.send(
