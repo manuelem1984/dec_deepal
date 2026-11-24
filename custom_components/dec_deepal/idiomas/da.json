@@ -499,7 +499,7 @@
           "name": "Planlagt opladning"
         },
         "charge_plan_until_full": {
-          "name": "Til fuld"
+          "name": "Uden sluttidspunkt"
         },
         "climate_schedule": {
           "name": "Planlagt klima"
@@ -639,7 +639,7 @@
         "message": "Vælg først starttidspunktet for den planlagte opladning."
       },
       "charge_plan_no_end": {
-        "message": "Vælg sluttidspunktet for den planlagte opladning, eller slå \"Til fuld\" til."
+        "message": "Vælg sluttidspunktet for den planlagte opladning, eller slå \"Uden sluttidspunkt\" til."
       },
       "charge_plan_too_short": {
         "message": "Planlagt opladning skal vare mindst 30 minutter (fra {start} til {end})."
@@ -720,8 +720,8 @@
             "description": "Tidspunkt, hvor opladningen stopper."
           },
           "until_full": {
-            "name": "Til fuld",
-            "description": "Uden sluttidspunkt: oplader op til grænsen."
+            "name": "Uden sluttidspunkt",
+            "description": "Oplader fra starttidspunktet op til bilens opladningsgrænse uden at stoppe på et bestemt tidspunkt."
           }
         }
       },

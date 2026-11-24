@@ -601,7 +601,7 @@ charge_plan:
     "off": {mdi: mdi:calendar-remove}
 charge_plan_until_full:
   plataforma: switch
-  descripcion: Carga programada hasta llenar (sin hora de fin)
+  descripcion: Carga programada sin hora de fin (hasta el límite de carga)
   defecto: mdi:battery-arrow-up
 charge_plan_start:
   plataforma: time

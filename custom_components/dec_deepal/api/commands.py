@@ -296,7 +296,7 @@ class DeepalCommands:
 
         Args:
             start: hora de inicio ``"HHMM"`` (hora local).
-            end: hora de fin ``"HHMM"``; ``None`` = «hasta llenar» (sin
+            end: hora de fin ``"HHMM"``; ``None`` = «sin hora de fin» (sin
                 ``endTime`` y ``endSwitch`` 0, como lo escribe la app).
             time_zone: zona del plan, ``"GMT+01:00"``.
         """

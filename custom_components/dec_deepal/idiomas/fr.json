@@ -499,7 +499,7 @@
           "name": "Recharge programmée"
         },
         "charge_plan_until_full": {
-          "name": "Jusqu'au plein"
+          "name": "Sans heure de fin"
         },
         "climate_schedule": {
           "name": "Climatisation programmée"
@@ -639,7 +639,7 @@
         "message": "Choisis d'abord l'heure de début de la recharge programmée."
       },
       "charge_plan_no_end": {
-        "message": "Choisis l'heure de fin de la recharge programmée ou active « Jusqu'au plein »."
+        "message": "Choisis l'heure de fin de la recharge programmée ou active « Sans heure de fin »."
       },
       "charge_plan_too_short": {
         "message": "La recharge programmée doit durer au moins 30 minutes (de {start} à {end})."
@@ -720,8 +720,8 @@
             "description": "Heure de fin de la recharge."
           },
           "until_full": {
-            "name": "Jusqu'au plein",
-            "description": "Sans heure de fin : recharge jusqu'à la limite."
+            "name": "Sans heure de fin",
+            "description": "Recharge depuis l'heure de début jusqu'à la limite de charge de la voiture, sans s'arrêter à une heure."
           }
         }
       },

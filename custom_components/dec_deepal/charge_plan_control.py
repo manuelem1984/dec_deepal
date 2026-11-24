@@ -1,7 +1,7 @@
 """Cambiar el plan de carga del coche (carga programada). ⚠️ Sin probar con nuestros coches.
 
 Lo usan el interruptor «Carga programada», las horas de inicio y fin, el
-interruptor «Hasta llenar» y la acción ``dec_deepal.set_charge_plan``.
+interruptor «Sin hora de fin» y la acción ``dec_deepal.set_charge_plan``.
 
 Pasos (las reglas del coche están en ``telemetry/charge_plan.py``):
 

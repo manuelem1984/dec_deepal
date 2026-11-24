@@ -3,6 +3,16 @@
 Formato: [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 Versiones: [SemVer](https://semver.org/lang/es/) (`2.0.0b1` = beta).
 
+## [2.6.0b19] — 2026-11-24
+
+### Cambiado
+
+- **Carga programada:** el interruptor «Hasta llenar» pasa a llamarse **«Sin
+  hora de fin»**, en los 12 idiomas. Hace lo mismo: carga desde la hora de
+  inicio hasta el límite de carga del coche, sin cortar a una hora. El nombre
+  anterior hacía pensar que cargaba al 100 %. El id de la entidad y el campo
+  `until_full` de la acción no cambian.
+
 ## [2.6.0b18] — 2026-11-23
 
 Bloques B, C y D del análisis de Deepal Alternative 1.9 y S05 Companion. Guía:

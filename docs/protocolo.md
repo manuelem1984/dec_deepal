@@ -205,7 +205,7 @@ Un error con `TBOX_` suele indicar coche dormido u ocupado.
 | Puertas (PIN) | `control/doors` | `command: lock, open` (`open: true` = desbloquear) | ⚠️ |
 | Ventanillas (PIN) | `control/windows` | `command: window, open, openType: 10` → **entreabrir** (ventilar) o cerrar todas | ✅ (cerrar exige coche apagado: 1032) |
 | Maletero (PIN) | `control/trunk` | `command: trunk, open` | ⚠️ |
-| Plan de carga: añadir | `charge/add-plan` (serie tipo 2) | `command: add_charge_plan, startTime "HHMM", endTime "HHMM" (sin él = hasta llenar), endSwitch 1/0, planType 1, timeFormat 1, timeZone "GMT+01:00"` | ⚠️ (Deepal Alternative 1.9) |
+| Plan de carga: añadir | `charge/add-plan` (serie tipo 2) | `command: add_charge_plan, startTime "HHMM", endTime "HHMM" (sin él = sin hora de fin), endSwitch 1/0, planType 1, timeFormat 1, timeZone "GMT+01:00"` | ⚠️ (Deepal Alternative 1.9) |
 | Plan de carga: borrar | `charge/delete-plan` (serie tipo 2) | `command: delete_charge_plan, planId` | ⚠️ (ídem) |
 
 **Plan de carga** (2.6.0b18): se lee en el REST, `charge.chargePlanList`

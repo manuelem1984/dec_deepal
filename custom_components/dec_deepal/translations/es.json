@@ -498,7 +498,7 @@
         "name": "Carga programada"
       },
       "charge_plan_until_full": {
-        "name": "Hasta llenar"
+        "name": "Sin hora de fin"
       },
       "climate_schedule": {
         "name": "Climatización programada"
@@ -638,7 +638,7 @@
       "message": "Elige primero la hora de inicio de la carga programada."
     },
     "charge_plan_no_end": {
-      "message": "Elige la hora de fin de la carga programada o activa «Hasta llenar»."
+      "message": "Elige la hora de fin de la carga programada o activa «Sin hora de fin»."
     },
     "charge_plan_too_short": {
       "message": "La carga programada tiene que durar al menos 30 minutos (de {start} a {end})."
@@ -719,8 +719,8 @@
           "description": "Hora a la que deja de cargar."
         },
         "until_full": {
-          "name": "Hasta llenar",
-          "description": "Sin hora de fin: carga hasta el límite."
+          "name": "Sin hora de fin",
+          "description": "Carga desde la hora de inicio hasta el límite de carga del coche, sin cortar a una hora."
         }
       }
     },

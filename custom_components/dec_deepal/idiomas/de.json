@@ -499,7 +499,7 @@
           "name": "Geplantes Laden"
         },
         "charge_plan_until_full": {
-          "name": "Bis voll"
+          "name": "Ohne Endzeit"
         },
         "climate_schedule": {
           "name": "Geplante Klimatisierung"
@@ -639,7 +639,7 @@
         "message": "Wähle zuerst die Startzeit des geplanten Ladens."
       },
       "charge_plan_no_end": {
-        "message": "Wähle die Endzeit des geplanten Ladens oder schalte „Bis voll“ ein."
+        "message": "Wähle die Endzeit des geplanten Ladens oder schalte „Ohne Endzeit“ ein."
       },
       "charge_plan_too_short": {
         "message": "Geplantes Laden muss mindestens 30 Minuten dauern (von {start} bis {end})."
@@ -720,8 +720,8 @@
             "description": "Uhrzeit, zu der das Laden endet."
           },
           "until_full": {
-            "name": "Bis voll",
-            "description": "Ohne Endzeit: lädt bis zum Limit."
+            "name": "Ohne Endzeit",
+            "description": "Lädt ab der Startzeit bis zum Ladelimit des Autos, ohne zu einer Uhrzeit aufzuhören."
           }
         }
       },

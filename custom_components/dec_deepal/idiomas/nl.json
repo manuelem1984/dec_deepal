@@ -499,7 +499,7 @@
           "name": "Gepland laden"
         },
         "charge_plan_until_full": {
-          "name": "Tot vol"
+          "name": "Zonder eindtijd"
         },
         "climate_schedule": {
           "name": "Geplande klimaatregeling"
@@ -639,7 +639,7 @@
         "message": "Kies eerst de begintijd van het geplande laden."
       },
       "charge_plan_no_end": {
-        "message": "Kies de eindtijd van het geplande laden of zet \"Tot vol\" aan."
+        "message": "Kies de eindtijd van het geplande laden of zet \"Zonder eindtijd\" aan."
       },
       "charge_plan_too_short": {
         "message": "Gepland laden moet minstens 30 minuten duren (van {start} tot {end})."
@@ -720,8 +720,8 @@
             "description": "Tijd waarop het laden stopt."
           },
           "until_full": {
-            "name": "Tot vol",
-            "description": "Zonder eindtijd: laadt tot de limiet."
+            "name": "Zonder eindtijd",
+            "description": "Laadt vanaf de starttijd tot de laadlimiet van de auto, zonder op een tijdstip te stoppen."
           }
         }
       },

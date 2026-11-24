@@ -499,7 +499,7 @@
           "name": "Ładowanie zaplanowane"
         },
         "charge_plan_until_full": {
-          "name": "Do pełna"
+          "name": "Bez godziny końca"
         },
         "climate_schedule": {
           "name": "Zaplanowana klimatyzacja"
@@ -639,7 +639,7 @@
         "message": "Najpierw wybierz godzinę rozpoczęcia zaplanowanego ładowania."
       },
       "charge_plan_no_end": {
-        "message": "Wybierz godzinę zakończenia zaplanowanego ładowania albo włącz „Do pełna”."
+        "message": "Wybierz godzinę zakończenia zaplanowanego ładowania albo włącz „Bez godziny końca”."
       },
       "charge_plan_too_short": {
         "message": "Zaplanowane ładowanie musi trwać co najmniej 30 minut (od {start} do {end})."
@@ -720,8 +720,8 @@
             "description": "Godzina zakończenia ładowania."
           },
           "until_full": {
-            "name": "Do pełna",
-            "description": "Bez godziny końca: ładuje do limitu."
+            "name": "Bez godziny końca",
+            "description": "Ładuje od godziny rozpoczęcia do limitu ładowania samochodu, bez przerywania o określonej godzinie."
           }
         }
       },

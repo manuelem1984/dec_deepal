@@ -499,7 +499,7 @@
           "name": "Scheduled charging"
         },
         "charge_plan_until_full": {
-          "name": "Until full"
+          "name": "No end time"
         },
         "climate_schedule": {
           "name": "Scheduled climate"
@@ -639,7 +639,7 @@
         "message": "Choose the scheduled charging start time first."
       },
       "charge_plan_no_end": {
-        "message": "Choose the scheduled charging end time or turn on \"Until full\"."
+        "message": "Choose the scheduled charging end time or turn on \"No end time\"."
       },
       "charge_plan_too_short": {
         "message": "Scheduled charging must last at least 30 minutes (from {start} to {end})."
@@ -720,8 +720,8 @@
             "description": "Time charging stops."
           },
           "until_full": {
-            "name": "Until full",
-            "description": "No end time: charge up to the limit."
+            "name": "No end time",
+            "description": "Charges from the start time up to the car's charge limit, without stopping at a set time."
           }
         }
       },

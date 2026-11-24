@@ -499,7 +499,7 @@
           "name": "Ricarica programmata"
         },
         "charge_plan_until_full": {
-          "name": "Fino al pieno"
+          "name": "Senza ora di fine"
         },
         "climate_schedule": {
           "name": "Climatizzazione programmata"
@@ -639,7 +639,7 @@
         "message": "Scegli prima l'ora di inizio della ricarica programmata."
       },
       "charge_plan_no_end": {
-        "message": "Scegli l'ora di fine della ricarica programmata o attiva «Fino al pieno»."
+        "message": "Scegli l'ora di fine della ricarica programmata o attiva «Senza ora di fine»."
       },
       "charge_plan_too_short": {
         "message": "La ricarica programmata deve durare almeno 30 minuti (dalle {start} alle {end})."
@@ -720,8 +720,8 @@
             "description": "Ora in cui smette di caricare."
           },
           "until_full": {
-            "name": "Fino al pieno",
-            "description": "Senza ora di fine: carica fino al limite."
+            "name": "Senza ora di fine",
+            "description": "Carica dall'ora di inizio fino al limite di carica dell'auto, senza fermarsi a un'ora."
           }
         }
       },

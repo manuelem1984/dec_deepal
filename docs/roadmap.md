@@ -6,7 +6,7 @@ Guía: [carga-clima-y-diario.md](carga-clima-y-diario.md).
 
 - [ ] **Humedad interior:** que salga un % creíble (30-70 %) y no salte; la
       «Humedad absoluta interior» (desactivada) en g/m³.
-- [ ] **Carga programada:** encender, cambiar las horas, «Hasta llenar» y
+- [ ] **Carga programada:** encender, cambiar las horas, «Sin hora de fin» y
       apagar; mirar en la app oficial que el plan del coche es el mismo. En
       el PHEV, con un plan puesto desde la app, debe salir el aviso de
       quitarlo allí.
@@ -283,7 +283,7 @@ Lo que queda de esos bloques:
 - [x] ~~**Humedad interior absoluta**~~ (2.6.0b18): confirmada con nueve
       lecturas reales (`innerHumidity` = g/m³ × 10); relativa con Magnus.
 - [x] ~~**Control del plan de carga**~~ (2.6.0b18): interruptor, horas,
-      «Hasta llenar» y `dec_deepal.set_charge_plan`.
+      «Sin hora de fin» y `dec_deepal.set_charge_plan`.
 - [x] ~~**Carga en vivo**~~ (2.6.0b18): notificación que se actualiza
       (Android Live Update; en iPhone se reemplaza). Pendiente: Live Activity
       propia de iOS cuando la app de Home Assistant la documente.

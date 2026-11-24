@@ -498,7 +498,7 @@
         "name": "Planlagt lading"
       },
       "charge_plan_until_full": {
-        "name": "Til full"
+        "name": "Uten sluttidspunkt"
       },
       "climate_schedule": {
         "name": "Planlagt klima"
@@ -638,7 +638,7 @@
       "message": "Velg først starttidspunktet for planlagt lading."
     },
     "charge_plan_no_end": {
-      "message": "Velg slutttidspunktet for planlagt lading, eller slå på «Til full»."
+      "message": "Velg slutttidspunktet for planlagt lading, eller slå på «Uten sluttidspunkt»."
     },
     "charge_plan_too_short": {
       "message": "Planlagt lading må vare minst 30 minutter (fra {start} til {end})."
@@ -719,8 +719,8 @@
           "description": "Tidspunkt ladingen stopper."
         },
         "until_full": {
-          "name": "Til full",
-          "description": "Uten slutttidspunkt: lader opp til grensen."
+          "name": "Uten sluttidspunkt",
+          "description": "Lader fra starttidspunktet opp til bilens ladegrense, uten å stoppe på et bestemt tidspunkt."
         }
       }
     },

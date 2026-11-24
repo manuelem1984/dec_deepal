@@ -498,7 +498,7 @@
         "name": "Načrtovano polnjenje"
       },
       "charge_plan_until_full": {
-        "name": "Do polnega"
+        "name": "Brez ure konca"
       },
       "climate_schedule": {
         "name": "Načrtovana klimatizacija"
@@ -638,7 +638,7 @@
       "message": "Najprej izberi uro začetka načrtovanega polnjenja."
     },
     "charge_plan_no_end": {
-      "message": "Izberi uro konca načrtovanega polnjenja ali vklopi »Do polnega«."
+      "message": "Izberi uro konca načrtovanega polnjenja ali vklopi »Brez ure konca«."
     },
     "charge_plan_too_short": {
       "message": "Načrtovano polnjenje mora trajati vsaj 30 minut (od {start} do {end})."
@@ -719,8 +719,8 @@
           "description": "Ura konca polnjenja."
         },
         "until_full": {
-          "name": "Do polnega",
-          "description": "Brez ure konca: polni do omejitve."
+          "name": "Brez ure konca",
+          "description": "Polni od ure začetka do omejitve polnjenja avtomobila, brez ustavitve ob določeni uri."
         }
       }
     },

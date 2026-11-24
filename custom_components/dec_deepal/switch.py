@@ -9,7 +9,7 @@ Su estado se lee del REST (el MQTT no es fiable para ellos, ver
 informa, para que encender el clima no los "apague" en pantalla.
 
 **Plan de carga** (``plan_carga`` en la ficha): «Carga programada» lo
-enciende o lo apaga con las horas elegidas, y «Hasta llenar» quita la hora
+enciende o lo apaga con las horas elegidas, y «Sin hora de fin» quita la hora
 de fin (carga hasta el límite). Ver ``charge_plan_control.py``.
 """
 
@@ -155,7 +155,7 @@ CHARGE_PLAN_SWITCHES: dict[str, str] = {
 
 
 class DecChargePlanSwitch(DecDeepalEntity, SwitchEntity):
-    """«Carga programada» (plan activo) o «Hasta llenar» (sin hora de fin)."""
+    """«Carga programada» (plan activo) o «Sin hora de fin» (sin hora de fin)."""
 
     def __init__(self, runtime: DecDeepalRuntime, vehicle: VehicleContext, key: str) -> None:
         super().__init__(runtime, vehicle, "switch", key)

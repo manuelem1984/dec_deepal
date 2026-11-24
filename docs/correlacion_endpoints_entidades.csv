@@ -110,7 +110,7 @@ MQTT properties/set/req (TxWakeup / Cnr_ReWakeup),MQTT (orden),Servicio cifrado;
 MQTT car_condition / REST condition,MQTT / REST (lectura),Decimal (grados),"lat | latitude, lng | lon | longitude (sin distinguir mayúsculas, en cualquier nivel)",Ubicación del coche,location (Ubicación),device_tracker (deshabilitado),No,"Hoy el S05 de España no la envía. Búsqueda genérica por si aparece; 0,0 se descarta"
 REST condition,REST (lectura),Lista de planes (HHMM),charge.chargePlanList,Plan de carga activo,charge_plan (Carga programada),switch,No,Nuevo en v2.6.0b18 (formato de Deepal Alternative 1.9). Se enciende con add-plan y se apaga con delete-plan
 REST condition,REST (lectura),HHMM,charge.chargePlanList[].startTime,Inicio de la carga programada,charge_plan_start,time,No,Nuevo en v2.6.0b18
-REST condition,REST (lectura),HHMM (sin él = hasta llenar),charge.chargePlanList[].endTime,Fin de la carga programada,charge_plan_end / charge_plan_until_full,time / switch,No,Nuevo en v2.6.0b18
+REST condition,REST (lectura),HHMM (sin él = sin hora de fin),charge.chargePlanList[].endTime,Fin de la carga programada,charge_plan_end / charge_plan_until_full,time / switch,No,Nuevo en v2.6.0b18
 Integración,Calculada,kWh,battery_level + capacidad del catálogo,Energía cargada,charged_energy,sensor (total creciente),No,Nuevo en v2.6.0b18: diario del coche (car_log.py)
 Integración,Calculada,Moneda,kWh x precio,Coste de las cargas,charging_cost,sensor (total),No,Nuevo en v2.6.0b18
 Integración,Calculada,kWh/100 km,odometer_km + battery_level,Consumo medio,average_consumption,sensor,No,Nuevo en v2.6.0b18: últimos 10 viajes de 20 km o más

@@ -31,10 +31,10 @@ Entidades del coche (S05 EV y PHEV):
 | **Carga programada** (interruptor) | Enciende o apaga el plan de carga del coche |
 | **Inicio de la carga programada** (hora) | A qué hora empieza a cargar |
 | **Fin de la carga programada** (hora) | A qué hora deja de cargar |
-| **Hasta llenar** (interruptor) | Sin hora de fin: carga hasta el límite |
+| **Sin hora de fin** (interruptor) | Carga desde la hora de inicio hasta el límite de carga del coche, sin cortar a una hora. Si se elige una hora de fin, se apaga solo. (Hasta la 2.6.0b18 se llamaba «Hasta llenar»; renombrado en la 2.6.0b19.) |
 
 Y la acción **`dec_deepal.set_charge_plan`** para automatizaciones
-(vehículo, activa, inicio, fin, hasta llenar; lo que no se indica no cambia).
+(vehículo, activa, inicio, fin, sin hora de fin (`until_full`); lo que no se indica no cambia).
 
 Cómo lo hace (`charge_plan_control.py` y `telemetry/charge_plan.py`):
 

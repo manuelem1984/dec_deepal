@@ -262,4 +262,4 @@ La versión no solo cambia la foto: también decide qué entidades existen.
 | `porton_electrico` | Abrir y cerrar el maletero a distancia (en el S05, no en los Pro). Sin ella, el botón Maletero de la tarjeta solo enseña el estado |
 | `combustible` | Depósito, litros y autonomía de gasolina (S05 PHEV); también marca el coche como PHEV para el plan de carga y el tope de corriente |
 | `limite_carga` | Límite de carga en AC (hoy desactivado: ni el EV ni el PHEV lo cumplen) |
-| `plan_carga` | Carga programada: interruptores «Carga programada» y «Hasta llenar» y horas de inicio y fin (S05 EV y PHEV) |
+| `plan_carga` | Carga programada: interruptores «Carga programada» y «Sin hora de fin» y horas de inicio y fin (S05 EV y PHEV) |
